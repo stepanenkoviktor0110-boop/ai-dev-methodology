@@ -110,9 +110,31 @@ CLAUDE.md             # Global agent preferences
 
 ## What's New in v1.2
 
-- **Added `quick-learning` skill** — fast meta-analysis at every session break. Extracts reasoning patterns (not specific decisions) and writes them to shared knowledge base. Runs as a background subagent to avoid context token overhead.
-- **Integrated into pipeline** — auto-triggered in `feature-execution` and `do-task` before session handoff. Also available manually via `/quick-learning`.
-- **Self-improving methodology** — learnings from all users accumulate in `reasoning-patterns.md` and feed back into future sessions.
+### Quick Learning — self-improving methodology
+
+A TRIZ-optimized skill that extracts **reasoning patterns** (not specific decisions) from every session.
+
+**How to use:**
+- **Automatic:** runs before every session break in `/do-feature` and `/do-task` — no action needed.
+- **Manual:** `/quick-learning` or say "быстрый анализ", "что улучшить в процессе".
+
+**How it works:**
+
+1. **Signal gate** — checks 3 binary signals (fix rounds, scope changes, recovery events). Clean session = skip entirely, zero cost.
+2. **Triad decomposition** — each insight is split into `trigger → action → goal`. This enables precise similarity matching: exact match (Seen++), near match (merge best wording), or distinct (new entry).
+3. **4-tier knowledge system:**
+
+```
+Tier 0: Triad Index          Tier 1: Transit Buffer       Tier 2: Skill Instructions    Tier 3: Quick Ref Card
+triad-index.md               reasoning-patterns.md        {skill}/SKILL.md              quick-ref.md
+~20 lines, read for dedup    Full entries, max 20         Promoted (Seen ≥ 3)           Top 7 one-liners
+                              universal / situational      Permanent                     Loaded at session start
+```
+
+4. **Scope segmentation** — patterns classified as `universal` (always apply) or `situational` (context-matched, with explicit `Situation` field).
+5. **Auto-promotion** — when a pattern is seen 3+ times across different features, it graduates into the relevant skill's SKILL.md as a permanent instruction and is removed from the buffer.
+
+**Token cost:** background subagent (~5-7K tokens in isolated context). Main session cost: ~50 tokens (spawn + one-line summary). Signal gate skips clean sessions for zero cost.
 
 <details>
 <summary>What was new in v1.1</summary>
