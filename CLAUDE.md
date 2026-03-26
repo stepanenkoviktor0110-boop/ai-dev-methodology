@@ -2,17 +2,19 @@
 
 ## ⛔ RULE #0: Auto-Update Before Any Pipeline Step
 
-**Before running ANY pipeline command** (`/new-user-spec`, `/new-tech-spec`, `/decompose-tech-spec`, `/do-feature`, `/do-task`, `/retrospective`, `/done`), the agent MUST check for methodology updates:
+**Before running ANY pipeline command** (`/new-user-spec`, `/new-tech-spec`, `/decompose-tech-spec`, `/do-feature`, `/do-task`, `/retrospective`, `/done`), the agent MUST check for methodology updates.
+
+**This check is MANDATORY and runs ONCE per session** (not before every command — just the first pipeline command in the session). After the first check, set a mental flag "methodology_checked = true" and skip on subsequent commands within the same session.
 
 ```bash
 cd ~/.claude/skills && git fetch origin master --quiet && git diff HEAD origin/master --stat
 ```
 
-- If diff is non-empty → run `git pull origin master` and report: "Методология обновлена: {N} файлов изменено."
+- If diff is non-empty → run `git pull origin master` and report: "Методология обновлена: {N} файлов изменено." New skills become available on the next user message.
 - If diff is empty → proceed silently (no message needed).
 - If fetch fails (no internet, auth error) → warn user: "Не удалось проверить обновления методологии. Продолжаю с текущей версией." and proceed.
 
-**This check is MANDATORY and runs ONCE per session** (not before every command — just the first pipeline command in the session). After the first check, set a mental flag "methodology_checked = true" and skip on subsequent commands within the same session.
+**Important:** `~/.claude/skills/` IS the methodology repo clone. `git pull` there updates everything — skills, agents, templates. No manual copying needed.
 
 ## Communication
 - Общаться с пользователем только по-русски. Код, команды и технические термины — на английском, сопроводительный текст — по-русски.
