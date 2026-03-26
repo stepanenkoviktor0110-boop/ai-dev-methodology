@@ -13,6 +13,15 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
+### 2026-03-26 quick-learning / meta: Верифицируй доставку, а не только создание
+
+**Seen:** 1 (quick-learning/meta)
+**Triad:** создание нового артефакта → проверить доступность в runtime среде → не объявлять "готово" пока не виден потребителю
+**Context:** Скилл quick-learning был создан в репо и закоммичен, но не попал в ~/.claude/skills/ — Claude Code его не видел, /quick-learning не работал.
+**Pattern:** После создания любого артефакта (скилл, конфиг, шаблон) — проверь что он доступен в той среде, где будет использоваться. Создать в репо ≠ доставить потребителю.
+**Scope:** universal
+**Category:** sequencing
+
 ## Situational
 
 Patterns that apply only in specific contexts. Each has a `Situation` field describing when it's relevant.
