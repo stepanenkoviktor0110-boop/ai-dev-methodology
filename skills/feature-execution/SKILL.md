@@ -14,6 +14,8 @@ Team lead orchestrates feature delivery. You are a dispatcher: spawn agents, tra
 
 Before starting, check [lessons-learned.md](references/lessons-learned.md) for known pitfalls from past feature execution (if file exists).
 
+Also read [quick-ref.md](../quick-learning/references/quick-ref.md) — top reasoning patterns from past sessions (~7 lines, if file exists and non-empty).
+
 ## Phase 1: Initialization
 
 0. Check `work/{feature}/logs/checkpoint.yml`:
