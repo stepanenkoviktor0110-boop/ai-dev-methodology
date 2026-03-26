@@ -43,6 +43,7 @@ Analyze evidence for these signals:
 | Blocked by missing info | decisions.md: clarifications needed, assumptions made |
 | Wrong technical choice | decisions.md: approach changed, rollback commits |
 | Repeated code pattern | git log: similar fixes across multiple tasks |
+| Tasks done with concerns | decisions.md: status "Done with concerns" + Concerns field; task frontmatter: `status: done_with_concerns` |
 
 For each problem found, extract:
 - **What happened** (1 sentence)

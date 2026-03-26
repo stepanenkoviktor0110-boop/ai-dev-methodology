@@ -1,5 +1,6 @@
 ---
-status: planned                    # planned -> in_progress -> done
+status: planned                    # planned -> in_progress -> done | done_with_concerns
+concerns:                           # only when done_with_concerns — what worries you (performance, edge case, tech debt)
 depends_on: []                     # номера задач-зависимостей
 wave: 1                            # волна параллельного выполнения
 skills: [code-writing]             # МАССИВ скиллов для загрузки

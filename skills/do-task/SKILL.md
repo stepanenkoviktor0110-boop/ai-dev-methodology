@@ -43,8 +43,8 @@ Execute a spec-driven task with validation and status tracking.
 
 ## Step 4: Complete
 
-1. Read template `~/.claude/shared/work-templates/decisions.md.template` and write a concise execution report to `work/{feature}/decisions.md`. Follow template format strictly — no extra sections.
-2. Update task frontmatter: `status: in_progress` → `status: done`
+1. Read template `~/.claude/shared/work-templates/decisions.md.template` and write a concise execution report to `work/{feature}/decisions.md`. Follow template format strictly — no extra sections. Use Planned/Actual/Deviation structure.
+2. Update task frontmatter: `status: in_progress` → `status: done` (or `done_with_concerns` + fill `concerns:` field if something worries you — performance risk, edge case not covered, code smell that passed review, tech debt introduced). Use `done_with_concerns` when the task works but you have reservations. Retrospective will prioritize these.
 3. Update tech-spec: `- [ ] Task N` → `- [x] Task N`
 4. Git commit: `chore: complete task {N} — update status and decisions`
 5. **Session boundary check** (skip if `work/{feature}/logs/session-plan.md` does not exist):

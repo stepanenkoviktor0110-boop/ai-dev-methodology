@@ -79,8 +79,8 @@ Also read [quick-ref.md](../quick-learning/references/quick-ref.md) — top reas
 
    After task complete:
    - Write entry to {feature_dir}/decisions.md (follow template at ~/.claude/shared/work-templates/decisions.md.template).
-     Summary: 1-3 sentences describing what was done and key decisions. Link JSON reports for review details.
-   - Message team lead: "Task {N} complete. decisions.md updated."
+     Use Planned/Actual/Deviation structure. If you have concerns (performance, edge case, tech debt) — set status "Done with concerns" and fill the Concerns field.
+   - Message team lead: "Task {N} complete. decisions.md updated." (add "with concerns: {brief}" if applicable)
 
    Feature dir: {feature_dir}
    ```
@@ -165,7 +165,7 @@ When lead spawns an agent outside the original execution plan (to fix audit find
 
 1. Verify decisions.md entries exist and match template (`~/.claude/shared/work-templates/decisions.md.template`)
 2. If task had Smoke/User verification steps — confirm decisions.md Verification section includes results. Missing results without explanation → ask user whether to proceed.
-3. Update task frontmatter: `status: in_progress` → `status: done`
+3. Update task frontmatter: `status: in_progress` → `status: done` (or `done_with_concerns` if teammate reported concerns — preserve the `concerns:` field from decisions.md entry into task frontmatter)
 4. Git commit: `chore: complete wave {N} — update task statuses and decisions`. Code is already committed by teammates.
 5. Update `work/{feature}/logs/checkpoint.yml`: set `last_completed_wave`, update task statuses, set `next_wave`.
 6. **Session boundary check** (skip if session-plan.md does not exist):

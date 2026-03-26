@@ -12,11 +12,13 @@ Review details — in JSON files via links. QA report — in logs/working/.
 
 ## Task N: [title]
 
-**Status:** Done
+**Status:** Done | Done with concerns
 **Commit:** abc1234
 **Agent:** [teammate name or "main agent"]
-**Summary:** 1-3 sentences: what was done, key decisions. Not a file list.
-**Deviations:** None / Deviated from spec: [reason], did [what].
+**Planned:** [scope from task AC — what was supposed to happen, 1 sentence]
+**Actual:** [what was actually done and key decisions, 1-3 sentences]
+**Deviation:** None / [what changed vs plan and why — enables retrospective to catch patterns]
+**Concerns:** None / [if status is "Done with concerns": what worries you — performance, edge case, code smell, tech debt]
 
 **Reviews:**
 
