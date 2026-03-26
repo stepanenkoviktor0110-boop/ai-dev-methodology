@@ -9,7 +9,8 @@ description: |
   Three-tier knowledge system: transit buffer → skill instructions → quick reference card.
   Signal-gated: skips clean sessions automatically (zero cost).
 
-  Automatic trigger: called by feature-execution and do-task before SESSION END PROTOCOL.
+  Automatic trigger: called by feature-execution, do-task, design-generate (context exhaustion),
+  and design-retrospective (before next-session prompt).
   Manual trigger: "quick learning", "быстрый анализ", "что улучшить в процессе"
 ---
 
@@ -48,6 +49,14 @@ Check 3 binary signals. If ALL are zero — **skip entirely** with summary "Clea
 | Fix rounds | `git log --oneline -20` — count `fix:` commits | Something went wrong and was corrected |
 | Scope change | `decisions.md` — any deviation, unplanned work, changed approach | Plan didn't survive contact with reality |
 | Recovery event | `git log` — rollbacks, retries, blocked→unblocked | A non-obvious recovery path was found |
+
+**For design sessions** (called from design-generate or design-retrospective), use design-specific signals:
+
+| Signal | How to check | Meaning |
+|--------|-------------|---------|
+| Iteration rounds | Count user feedback cycles in session | Multiple rounds = initial approach missed the mark |
+| Taste correction | User changed color/font/spacing after proposal | Proposal didn't match user's aesthetic sense |
+| Layout rework | User rejected layout and asked for different one | Wrong layout pattern selected for the content |
 
 **If at least 1 signal is present → proceed to Step 2.**
 
@@ -119,7 +128,7 @@ When merging, keep the **most general trigger** and the **most actionable wordin
 **Pattern:** {the transferable reasoning approach — 1-2 sentences, imperative}
 **Scope:** {universal | situational}
 **Situation:** {only for situational — when this applies}
-**Category:** {sequencing | information-gathering | problem-decomposition | scope-management | recovery | communication | tool-selection}
+**Category:** {sequencing | information-gathering | problem-decomposition | scope-management | recovery | communication | tool-selection | design-taste | design-process | design-iteration}
 ```
 
 **Scope rules:**
@@ -190,6 +199,9 @@ Format:
 | recovery | feature-execution |
 | communication | feature-execution |
 | tool-selection | code-writing |
+| design-taste | design-system-init |
+| design-process | design-generate |
+| design-iteration | design-retrospective |
 
 2. Add the pattern as a permanent instruction in the target skill's SKILL.md (1-2 lines, imperative).
 3. **Remove the entry from reasoning-patterns.md.**
