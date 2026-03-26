@@ -26,7 +26,7 @@ Patterns that apply to any project, any stack, any domain.
 
 **Seen:** 2
 **Triad:** изменение сигнатуры функции-callback → запустить build до коммита → не ломать deploy из-за type error
-**Context:** Добавил optional параметр в `applyFilters()`, которая использовалась как `onClick` handler. TypeScript локально не ругался (vitest не проверяет JSX), но production build упал — `MouseEvent` не совместим с `"list" | "grid"`. Deploy failed, потерял ~3 мин на fix + redeploy. Та же ситуация зафиксирована в lessons-learned code-writing.
+**Context:** Добавил optional параметр в `applyFilters()`, которая использовалась как `onClick` handler. TypeScript локально не ругался (vitest не проверяет JSX), но production build упал — `MouseEvent` не совместим с `"list" | "grid"`. Deploy failed, потерял ~3 мин на fix + redeploy. Паттерн подтверждён дважды (quick-learning + retrospective).
 **Pattern:** При изменении сигнатуры функции, которая используется как event handler или callback — запускай `npm run build` до коммита. Vitest не проверяет JSX-совместимость типов, только build ловит эти ошибки.
 **Scope:** universal
 **Category:** sequencing

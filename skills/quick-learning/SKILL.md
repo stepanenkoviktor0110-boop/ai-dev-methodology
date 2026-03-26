@@ -37,7 +37,7 @@ description: |
 Four contradictions resolved via TRIZ principles:
 
 1. **Signal gate** (TRIZ-15: Dynamicity) — don't analyze by schedule, analyze by signal. No signals = skip immediately, zero token cost.
-2. **Write-only subagent** (TRIZ-2: Extraction) — the subagent ONLY writes patterns. It never reads the full buffer. Reads last 30 lines for dedup only. Application of patterns happens through promoted instructions already in skills.
+2. **Write-only subagent** (TRIZ-2: Extraction) — the subagent ONLY writes patterns. It never reads the full buffer. Reads triad-index.md (~30 lines) for dedup only. Application of patterns happens through promoted instructions already in skills.
 3. **Three-tier graduation** (TRIZ-1: Segmentation + TRIZ-10: Prior action) — raw buffer → skill instructions → quick reference card. Each tier is smaller and cheaper to read than the previous.
 4. **Scope segmentation** (TRIZ-1: Segmentation) — universal patterns (always apply) vs situational (context-matched). Different read cost, different application rules.
 
@@ -96,6 +96,8 @@ Each pattern is decomposed into a **trigger → action → goal** triad. Two pat
 | **Near** | Same goal, different action (or same action, different goal) | **Merge**: keep the more actionable wording, combine triggers, increment `Seen`. |
 | **Distinct** | Different goal | Add as new entry. |
 
+**Mechanical pre-filter:** if the Goal of a new triad shares 3+ content words (nouns/verbs, ignoring stop-words) with an existing Goal — treat it as a Near match candidate and verify manually. This reduces reliance on subjective judgment.
+
 **Examples of SAME (exact or near):**
 
 ```
@@ -141,8 +143,18 @@ When merging, keep the **most general trigger** and the **most actionable wordin
 **Writing rules:**
 - Must be actionable — a concrete instruction, not vague advice.
 - Must be non-obvious — "write tests" is obvious. "Run smoke before spawning reviewers" is not.
-- Max 2 entries per session.
+- Max 2 entries per session (retrospective allows max 3 per feature — larger scope).
 - **Every entry MUST have a Triad field** — this is the key for similarity matching.
+
+### Step 3.5: Pruning Check (5 sec)
+
+After writing, count rows in `triad-index.md`. If more than 25 rows:
+
+1. Remove `Seen: 1` entries with date older than 30 days — from both `triad-index.md` and `reasoning-patterns.md`.
+2. Merge similar entries (same goal, different wording) — combine triggers, keep most actionable wording.
+3. Remove entries contradicted by later experience.
+
+This step is **mandatory** for both quick-learning and retrospective. It is the only mechanism that keeps the buffer bounded.
 
 ### Step 4: Summary (5 sec)
 
@@ -186,8 +198,8 @@ Format:
 **Rules:**
 - Updated on every write, merge, or promotion.
 - When a pattern is promoted (Seen ≥ 3) — remove its row from the index.
-- The subagent reads triad-index.md (~20 lines) instead of reasoning-patterns.md (~200+ lines) for similarity matching.
-- After finding a match in the index, the subagent edits the corresponding entry in reasoning-patterns.md by row number.
+- The subagent reads triad-index.md (~30 lines) instead of the full reasoning-patterns.md for similarity matching.
+- After finding a match in the index, the subagent locates the corresponding entry in reasoning-patterns.md by matching its title (`### date feature: title`).
 
 ### Tier 1 → Tier 2: Promotion (when Seen reaches 3)
 
@@ -229,7 +241,9 @@ This file is loaded by feature-execution at **session start** (Phase 1). Cost: ~
 
 **When to regenerate:** every time a universal pattern is promoted to Tier 2. Read all promoted universal patterns from skill SKILL.md files, pick top 7 by impact, rewrite quick-ref.md.
 
-### Pruning (when buffer exceeds 30 entries)
+### Pruning
+
+Pruning is executed by Step 3.5 (above) after every write. Trigger: triad-index exceeds 25 rows. Rules:
 
 1. Merge similar patterns (same insight, different wording).
 2. Remove `Seen: 1` entries older than 30 days — they didn't recur, noise.

@@ -37,6 +37,8 @@ Run retrospective skill to extract lessons learned from the feature process:
 2. Pass feature path to the skill
 3. Wait for completion — lessons will be written to `~/.claude/skills/quick-learning/references/reasoning-patterns.md`
 
+Note: `/done` runs retrospective (WHAT went wrong), not quick-learning (HOW decisions were made). Quick-learning runs at session breaks during feature execution — it has already been called by that point.
+
 ## Step 5: Update Project Knowledge
 
 If `.claude/skills/project-knowledge/references/` does not exist or is empty — skip this step, inform the user that project knowledge has not been initialized.

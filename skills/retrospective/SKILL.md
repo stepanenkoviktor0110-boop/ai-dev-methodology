@@ -66,6 +66,9 @@ Category mapping:
 | Problems during testing | tool-selection |
 | Problems during QA | sequencing |
 | Problems during deploy | sequencing |
+| Problems during design (taste/aesthetics) | design-taste |
+| Problems during design (process/workflow) | design-process |
+| Problems during design (iteration/feedback) | design-iteration |
 
 If no problems found (single validation pass, no fix rounds, no deviations) → tell user "Clean run, no lessons to extract." and stop.
 
@@ -105,7 +108,7 @@ If distinct — append to the appropriate section of `$AGENTS_HOME/skills/quick-
 **Pattern:** {the transferable instruction — 1-2 sentences, imperative}
 **Scope:** {universal | situational}
 **Situation:** {only for situational — when this applies}
-**Category:** {sequencing | information-gathering | problem-decomposition | scope-management | recovery | communication | tool-selection}
+**Category:** {sequencing | information-gathering | problem-decomposition | scope-management | recovery | communication | tool-selection | design-taste | design-process | design-iteration}
 ```
 
 ### Step 3.4: Update Triad Index
@@ -121,13 +124,21 @@ If any entry reaches Seen: 3 — follow the promotion pipeline from quick-learni
 4. Remove row from triad-index.md
 5. Update quick-ref.md if universal
 
+### Step 3.6: Pruning Check
+
+After writing, count rows in `triad-index.md`. If more than 25 rows — run pruning as defined in quick-learning SKILL.md Step 3.5:
+1. Remove `Seen: 1` entries older than 30 days from both `triad-index.md` and `reasoning-patterns.md`.
+2. Merge similar entries.
+3. Remove contradicted entries.
+
 **Writing rules (same as quick-learning):**
 - Must be actionable — a concrete instruction, not vague advice
 - Must be non-obvious — "write tests" is obvious, "run smoke before spawning reviewers" is not
-- Max 3 entries per retrospective
+- Max 3 entries per retrospective (quick-learning allows max 2 — smaller scope)
 - Every entry MUST have a Triad field
+- **Mechanical pre-filter for similarity:** if Goal shares 3+ content words with existing Goal — treat as Near match candidate
 
-**Checkpoint:** entries written, triad-index updated, promotions executed if any.
+**Checkpoint:** entries written, triad-index updated, pruning executed if needed, promotions executed if any.
 
 ## Phase 4: Report
 
