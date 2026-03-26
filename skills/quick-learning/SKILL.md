@@ -65,18 +65,60 @@ If analysis produces nothing non-obvious — **skip writing**. Don't force lesso
 
 If insights found, append to the appropriate section of `$AGENTS_HOME/skills/quick-learning/references/reasoning-patterns.md`.
 
-Before writing — **read last 30 lines** of the file. If the same insight exists, **increment its `Seen` counter** instead of adding a duplicate.
+**Before writing — run the Similarity Check (mandatory).**
 
-Entry format:
+#### Similarity Check
+
+Each pattern is decomposed into a **trigger → action → goal** triad. Two patterns are the SAME if they share the same action+goal, even with different wording or trigger.
+
+1. Formulate your new insight as a triad:
+   - **Trigger:** what situation or signal initiates the action (e.g. "before spawning reviewers")
+   - **Action:** what to DO (the verb, e.g. "run smoke test")
+   - **Goal:** what outcome this achieves (e.g. "avoid wasting review rounds on broken code")
+
+2. Read `$AGENTS_HOME/skills/quick-learning/references/triad-index.md` (~20 lines max). For each existing row, compare triads:
+
+| Match level | Criteria | What to do |
+|-------------|----------|-----------|
+| **Exact** | Same action AND same goal | Increment `Seen` counter. Do NOT add new entry. |
+| **Near** | Same goal, different action (or same action, different goal) | **Merge**: keep the more actionable wording, combine triggers, increment `Seen`. |
+| **Distinct** | Different goal | Add as new entry. |
+
+**Examples of SAME (exact or near):**
+
+```
+Existing:  trigger: "before review"      → action: "run smoke test"   → goal: "don't waste review on broken code"
+New:       trigger: "before code review"  → action: "verify it builds" → goal: "avoid review cycles on non-working code"
+Verdict:   NEAR — same goal, similar action. Merge, Seen++.
+```
+
+```
+Existing:  trigger: "multi-task feature"  → action: "define shared types in task 1" → goal: "avoid type drift"
+New:       trigger: "shared data model"   → action: "centralize types early"        → goal: "prevent inconsistency across tasks"
+Verdict:   NEAR — same goal. Merge, Seen++.
+```
+
+**Example of DISTINCT:**
+
+```
+Existing:  trigger: "before review"  → action: "run smoke test"       → goal: "don't waste review rounds"
+New:       trigger: "before review"  → action: "check test coverage"  → goal: "ensure tests exist for new code"
+Verdict:   DISTINCT — same trigger, but different goal. Add as new.
+```
+
+When merging, keep the **most general trigger** and the **most actionable wording**. Update the date to the latest occurrence.
+
+#### Entry format
 
 ```markdown
 ### {YYYY-MM-DD} {feature-name} / session {N}: {pattern title}
 
 **Seen:** 1 (this feature/session)
+**Triad:** {trigger} → {action} → {goal}
 **Context:** {what situation triggered this insight — 1 sentence}
 **Pattern:** {the transferable reasoning approach — 1-2 sentences, imperative}
 **Scope:** {universal | situational}
-**Situation:** {only for situational — when this applies, e.g. "CRUD with role-based access", "multi-session features with shared types"}
+**Situation:** {only for situational — when this applies}
 **Category:** {sequencing | information-gathering | problem-decomposition | scope-management | recovery | communication | tool-selection}
 ```
 
@@ -88,6 +130,7 @@ Entry format:
 - Must be actionable — a concrete instruction, not vague advice.
 - Must be non-obvious — "write tests" is obvious. "Run smoke before spawning reviewers" is not.
 - Max 2 entries per session.
+- **Every entry MUST have a Triad field** — this is the key for similarity matching.
 
 ### Step 4: Summary (5 sec)
 
@@ -104,15 +147,35 @@ Move on to session end protocol.
 Patterns live in three tiers. Each tier is smaller, cheaper, and more permanent than the previous.
 
 ```
-Tier 1: Transit Buffer              Tier 2: Skill Instructions        Tier 3: Quick Reference Card
-reasoning-patterns.md               {skill}/SKILL.md                  quick-ref.md
-━━━━━━━━━━━━━━━━━━━━━               ━━━━━━━━━━━━━━━━━━━━━             ━━━━━━━━━━━━━━━━━━━━━
-Raw observations                    Promoted patterns (Seen ≥ 3)      Top 5-7 one-liners
-Seen counter tracks recurrence      Permanent, always loaded by       Loaded by feature-execution
-Max 20 entries, auto-pruned         skill at execution time           at session START
-Written by quick-learning           Written at promotion time         Auto-generated at promotion
-Read: last 30 lines (dedup only)    Read: by skill itself             Read: 7 lines max
+Tier 0: Triad Index                 Tier 1: Transit Buffer         Tier 2: Skill Instructions     Tier 3: Quick Reference Card
+triad-index.md                      reasoning-patterns.md          {skill}/SKILL.md               quick-ref.md
+━━━━━━━━━━━━━━━━━━━━━               ━━━━━━━━━━━━━━━━━━━━━          ━━━━━━━━━━━━━━━━━━━━━          ━━━━━━━━━━━━━━━━━━━━━
+1-line summaries of all triads      Full entries with context       Promoted patterns (Seen ≥ 3)   Top 5-7 one-liners
+~1 line per pattern (max 20)        Seen counter, scope, category   Permanent, loaded by skill     Loaded at session START
+Read: ALWAYS (for similarity)       Read: only on merge/promote     Read: by skill itself          Read: 7 lines max
+Written: on every add/merge         Written: on new insight         Written: at promotion          Auto-generated
 ```
+
+### Tier 0: Triad Index (the similarity engine)
+
+File: `$AGENTS_HOME/skills/quick-learning/references/triad-index.md`
+
+Compact index of all patterns — one line per entry. The subagent reads ONLY this file for similarity check (~20 lines max). This is what makes dedup cheap.
+
+Format:
+```markdown
+# Triad Index
+| # | Trigger | Action | Goal | Scope | Seen | Section |
+|---|---------|--------|------|-------|------|---------|
+| 1 | before review | run smoke test | avoid wasted review rounds | universal | 2 | Universal |
+| 2 | multi-task feature | define shared types in task 1 | prevent type drift | situational | 1 | Situational |
+```
+
+**Rules:**
+- Updated on every write, merge, or promotion.
+- When a pattern is promoted (Seen ≥ 3) — remove its row from the index.
+- The subagent reads triad-index.md (~20 lines) instead of reasoning-patterns.md (~200+ lines) for similarity matching.
+- After finding a match in the index, the subagent edits the corresponding entry in reasoning-patterns.md by row number.
 
 ### Tier 1 → Tier 2: Promotion (when Seen reaches 3)
 
