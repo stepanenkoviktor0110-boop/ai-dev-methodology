@@ -17,7 +17,7 @@ Create technical specification through code research, adaptive clarification, an
 **Output:** `work/{feature}/tech-spec.md` (approved)
 **Language:** Technical documentation in English, communication in Russian
 
-Before starting, check [lessons-learned.md](references/lessons-learned.md) for known pitfalls from past tech-spec work (if file exists).
+Before starting, read [quick-ref.md](../quick-learning/references/quick-ref.md) — top reasoning patterns from past sessions (if file exists and non-empty).
 
 ## Phase 1: Load Context
 

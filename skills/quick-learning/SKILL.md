@@ -1,12 +1,14 @@
 ---
 name: quick-learning
 description: |
-  Fast meta-analysis of session reasoning patterns. Runs automatically before
-  every session break. Focuses NOT on specific decisions made, but on the LOGIC
-  of decision-making — what reasoning approaches worked, what didn't, and what
-  patterns can improve future work on similar projects.
+  Owner of the unified methodology knowledge system: format, triad structure,
+  similarity check, 4-tier graduation, promotion, and pruning rules.
 
-  Three-tier knowledge system: transit buffer → skill instructions → quick reference card.
+  Two writers feed this system:
+  - quick-learning (this skill) — reasoning patterns from sessions (HOW decisions were made)
+  - retrospective — operational lessons from features (WHAT went wrong and why)
+
+  Both write to the same buffer (reasoning-patterns.md) using the same triad format.
   Signal-gated: skips clean sessions automatically (zero cost).
 
   Automatic trigger: called by feature-execution, do-task, design-generate (context exhaustion),
@@ -16,7 +18,7 @@ description: |
 
 # Quick Learning
 
-Fast session analysis — extract reasoning patterns, not specific decisions.
+**Format owner** for the unified methodology knowledge system. Defines triad structure, similarity check, promotion pipeline, and pruning rules. Both quick-learning and retrospective follow these rules when writing entries.
 
 **Time budget:** Under 60 seconds. This is NOT a full retrospective.
 **Input:** `work/{feature}/decisions.md` + git log of current session
@@ -25,9 +27,10 @@ Fast session analysis — extract reasoning patterns, not specific decisions.
 
 ## What This Is NOT
 
-- NOT a retrospective (that's `/retrospective` — runs after full feature, maps problems to skills)
+- NOT a retrospective (that's `/retrospective` — runs after full feature, analyzes WHAT went wrong)
 - NOT a code review (that's done per-task by reviewers)
-- NOT about WHAT was decided — it's about HOW decisions were reached
+- quick-learning focuses on HOW decisions were reached; retrospective focuses on WHAT problems occurred
+- Both write to the same buffer using the same format defined here
 
 ## Design: TRIZ-Optimized
 
@@ -160,9 +163,9 @@ Tier 0: Triad Index                 Tier 1: Transit Buffer         Tier 2: Skill
 triad-index.md                      reasoning-patterns.md          {skill}/SKILL.md               quick-ref.md
 ━━━━━━━━━━━━━━━━━━━━━               ━━━━━━━━━━━━━━━━━━━━━          ━━━━━━━━━━━━━━━━━━━━━          ━━━━━━━━━━━━━━━━━━━━━
 1-line summaries of all triads      Full entries with context       Promoted patterns (Seen ≥ 3)   Top 5-7 one-liners
-~1 line per pattern (max 20)        Seen counter, scope, category   Permanent, loaded by skill     Loaded at session START
+~1 line per pattern (max 30)        Seen counter, scope, category   Permanent, loaded by skill     Loaded at session START
 Read: ALWAYS (for similarity)       Read: only on merge/promote     Read: by skill itself          Read: 7 lines max
-Written: on every add/merge         Written: on new insight         Written: at promotion          Auto-generated
+Writers: quick-learning + retro     Writers: quick-learning + retro Written: at promotion          Auto-generated
 ```
 
 ### Tier 0: Triad Index (the similarity engine)
@@ -226,7 +229,7 @@ This file is loaded by feature-execution at **session start** (Phase 1). Cost: ~
 
 **When to regenerate:** every time a universal pattern is promoted to Tier 2. Read all promoted universal patterns from skill SKILL.md files, pick top 7 by impact, rewrite quick-ref.md.
 
-### Pruning (when buffer exceeds 20 entries)
+### Pruning (when buffer exceeds 30 entries)
 
 1. Merge similar patterns (same insight, different wording).
 2. Remove `Seen: 1` entries older than 30 days — they didn't recur, noise.

@@ -35,7 +35,7 @@ Run retrospective skill to extract lessons learned from the feature process:
 
 1. Use Skill tool: `retrospective`
 2. Pass feature path to the skill
-3. Wait for completion — lessons will be written to relevant skills' `references/lessons-learned.md`
+3. Wait for completion — lessons will be written to `~/.claude/skills/quick-learning/references/reasoning-patterns.md`
 
 ## Step 5: Update Project Knowledge
 

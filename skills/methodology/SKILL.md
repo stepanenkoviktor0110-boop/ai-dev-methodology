@@ -151,11 +151,11 @@ Tasks can be code, user-action, deploy, config, or verification. Task nature is 
 **Process:**
 - Reads `decisions.md` and git log of the feature
 - Identifies process problems: multiple validation rounds, review fix cycles, scope changes, wrong technical choices
-- Writes lessons as entries in `{skill}/references/lessons-learned.md` for the relevant skills
-- Each entry: Problem → Cause → Solution → Rule for the future
-- Adds link to `lessons-learned.md` in target skill's SKILL.md (if not yet linked)
+- Writes lessons as triad entries in `~/.claude/skills/quick-learning/references/reasoning-patterns.md`
+- Uses triad-based dedup via `triad-index.md` — same as quick-learning
+- Each entry: Triad (trigger → action → goal) + Context + Pattern + Scope + Category
 
-**Output:** entries in `~/.claude/skills/{skill}/references/lessons-learned.md`
+**Output:** entries in `~/.claude/skills/quick-learning/references/reasoning-patterns.md`
 
 **Skill:** `retrospective`
 
