@@ -16,6 +16,16 @@ cd ~/.claude/skills && git fetch origin master --quiet && git diff HEAD origin/m
 
 **Important:** `~/.claude/skills/` IS the methodology repo clone. `git pull` there updates everything — skills, agents, templates. No manual copying needed.
 
+## ⛔ RULE #1: Single Source of Truth
+
+**`~/.claude/skills/` — единственный source of truth для всех знаний методологии.**
+
+All writes — lessons-learned (retrospective), reasoning-patterns (quick-learning), triad-index, quick-ref — go to `~/.claude/skills/` and nowhere else. After writing, commit and push to origin.
+
+- `$AGENTS_HOME = ~/.claude/skills` — every skill that references `$AGENTS_HOME` writes HERE.
+- No copies in `c:/tmp/` or other locations. If a separate platform (Codex) uses its own repo — it has its own knowledge base. Cross-sync is manual and explicit.
+- After `/retrospective` or `/quick-learning` writes files → `cd ~/.claude/skills && git add -A && git commit && git push origin master`.
+
 ## Communication
 - Общаться с пользователем только по-русски. Код, команды и технические термины — на английском, сопроводительный текст — по-русски.
 
