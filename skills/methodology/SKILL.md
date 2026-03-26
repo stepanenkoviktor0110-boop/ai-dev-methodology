@@ -142,6 +142,8 @@ Tasks can be code, user-action, deploy, config, or verification. Task nature is 
 
 **After completion:** run `/retrospective` to extract lessons from the implementation process.
 
+**Note:** At every session break within `/do-feature` and `/do-task`, the `quick-learning` skill runs automatically as a background subagent. It extracts meta-level reasoning patterns — not specific technical decisions, but transferable insights about HOW problems were approached. These accumulate in `~/.claude/skills/quick-learning/references/reasoning-patterns.md` and benefit all methodology users.
+
 ### Step 5: Retrospective — `/retrospective`
 
 **What:** Extract lessons learned from problems encountered during tech-spec creation and implementation.
@@ -298,6 +300,7 @@ Feature execution persists state to `checkpoint.yml` after each wave. A `Session
 |-------|---------|
 | `methodology` | This skill — how the process works |
 | `retrospective` | Extract lessons learned from process problems, embed best practices into skills |
+| `quick-learning` | Fast meta-analysis at session breaks — reasoning patterns, not decisions. Auto-triggered + manual via `/quick-learning` |
 | `documentation-writing` | Manage Project Knowledge files |
 | `skill-master` | Create and maintain quality skills |
 | `infrastructure-setup` | Framework init, Docker, pre-commit hooks, testing setup |
@@ -353,6 +356,7 @@ Agents are isolated subprocesses with fresh context. They receive input, do one 
 | `/do-task` | Execute single task with quality gates |
 | `/do-feature` | Execute all tasks via agent teams |
 | `/retrospective` | Extract lessons learned, update skills with best practices |
+| `/quick-learning` | Fast reasoning analysis — auto at session breaks, manual anytime |
 | `/done` | Update PK, archive feature |
 | `/write-code` | Ad-hoc coding with TDD and reviews |
 | `/init-project` | Initialize new project with template, git, GitHub |

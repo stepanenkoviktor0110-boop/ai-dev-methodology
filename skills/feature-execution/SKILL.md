@@ -168,6 +168,7 @@ When lead spawns an agent outside the original execution plan (to fix audit find
 5. Update `work/{feature}/logs/checkpoint.yml`: set `last_completed_wave`, update task statuses, set `next_wave`.
 6. **Session boundary check** (skip if session-plan.md does not exist):
    Read session-plan.md. If current wave is the **last wave of current_session**:
+   a0. **Quick Learning (subagent, background).** Spawn a subagent to run [quick-learning](../quick-learning/SKILL.md). Pass it: feature path, current session number, path to decisions.md. The subagent runs in the **background** while you proceed with the session report. When it finishes, show the user its one-line summary. Do NOT read the quick-learning SKILL.md yourself — the subagent loads it independently in its own context.
    a. Increment `current_session` in checkpoint.yml.
    b. Generate next-session prompt from template `~/.claude/shared/work-templates/session-prompt.md.template`:
       - Fill: feature name, description (first line of tech-spec Description), completed sessions/waves, next session's waves and tasks, context files from session-plan.md.

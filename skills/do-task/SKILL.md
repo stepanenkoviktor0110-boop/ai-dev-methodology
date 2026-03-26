@@ -50,6 +50,7 @@ Execute a spec-driven task with validation and status tracking.
 5. **Session boundary check** (skip if `work/{feature}/logs/session-plan.md` does not exist):
    Read session-plan.md. Find which session this task belongs to.
    - If this task is the **last task of current session** (all session's tasks are now `done`):
+     **Quick Learning (subagent, background).** Spawn a subagent to run [quick-learning](../quick-learning/SKILL.md). Pass it: feature path, current session number, path to decisions.md. The subagent runs in the **background** while you proceed. When it finishes, show the user its one-line summary. Do NOT read the quick-learning SKILL.md yourself — the subagent loads it independently.
      Generate next-session prompt from `~/.claude/shared/work-templates/session-prompt.md.template`.
      Save to `work/{feature}/logs/next-session-prompt.md`.
      Present to user:
