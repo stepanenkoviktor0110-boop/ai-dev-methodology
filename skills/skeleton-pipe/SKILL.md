@@ -1,12 +1,13 @@
 ---
-name: instantiate-pipeline
+name: skeleton-pipe
 description: |
   Creates a domain-specific pipeline from skeleton-pipe.md through adaptive interview.
   Clarifies execution environment, domain mechanics, roles, validators, templates.
   Generates all pipeline artifacts: skills, agents, templates, configuration.
 
   Use when: "создай пайплайн", "инстанцируй пайплайн", "instantiate pipeline",
-  "новый пайплайн", "create pipeline", "пайплайн для", "pipeline for"
+  "новый пайплайн", "create pipeline", "пайплайн для", "pipeline for",
+  "skeleton-pipe", "skeleton pipe", "скелет пайп"
 ---
 
 # Instantiate Pipeline
