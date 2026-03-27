@@ -1,4 +1,4 @@
-# AI-First Development Methodology v1.2
+# AI-First Development Methodology v1.4
 
 A structured methodology for building software with AI coding agents (Claude Code). Instead of ad-hoc prompting, every feature follows a disciplined pipeline: requirements interview, technical specification, task decomposition, automated implementation with reviews, and retrospective learning.
 
@@ -108,7 +108,31 @@ CLAUDE.md             # Global agent preferences
 | Audit | same 3 reviewers (holistic) | Cross-task inconsistencies, integration issues |
 | QA | pre-deploy + post-deploy | Acceptance criteria verification |
 
-## What's New in v1.2
+## What's New in v1.4
+
+### Pruning & quality improvements
+
+- **Auto-pruning** — added Step 3.5 (quick-learning) and Step 3.6 (retrospective) pruning checks that trigger when the knowledge buffer exceeds 25 entries, preventing unbounded growth.
+- **Mechanical pre-filter** — similarity matching now uses a 3+ content word overlap heuristic before semantic comparison, reducing false positives.
+- **Design categories** — retrospective now recognizes `design-taste`, `design-process`, and `design-iteration` categories alongside existing engineering ones.
+- **Cross-reference by title** — triad-index references entries by matching title instead of fragile row numbers.
+
+<details>
+<summary>What was new in v1.3</summary>
+
+### Unified knowledge system
+
+The biggest architectural change since v1.2: all learning outputs now flow through a single pipeline.
+
+- **One buffer** — merged 4 separate `lessons-learned.md` files (from feature-execution, code-writing, task-decomposition, user-spec-planning) into a single `reasoning-patterns.md` using the triad format.
+- **One format** — both quick-learning (session reasoning) and retrospective (feature post-mortem) write to the same buffer using the same `trigger → action → goal` triad structure.
+- **RULE #1: Single Source of Truth** — `~/.claude/skills/` is the only location for methodology knowledge. No copies, no forks. After retrospective/quick-learning writes, changes are committed and pushed to origin.
+- **Triad index expanded** — from 5 fragmented entries to 12 unified entries with proper dedup.
+
+</details>
+
+<details>
+<summary>What was new in v1.2</summary>
 
 ### Quick Learning — self-improving methodology
 
@@ -135,6 +159,8 @@ triad-index.md               reasoning-patterns.md        {skill}/SKILL.md      
 5. **Auto-promotion** — when a pattern is seen 3+ times across different features, it graduates into the relevant skill's SKILL.md as a permanent instruction and is removed from the buffer.
 
 **Token cost:** background subagent (~5-7K tokens in isolated context). Main session cost: ~50 tokens (spawn + one-line summary). Signal gate skips clean sessions for zero cost.
+
+</details>
 
 <details>
 <summary>What was new in v1.1</summary>
