@@ -17,3 +17,6 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 10 | ревью нашло паттерн ошибки (не разовый баг) | добавить предупреждение в промт следующего teammate | предотвратить повторение ошибки в следующих задачах | situational | 1 | Situational |
 | 11 | написание тестов в multi-agent workflow | требовать assertion на результат функции, не только на mock | тесты ловят баги, а не проверяют форму вызова | situational | 1 | Situational |
 | 12 | security/code audit в multi-task feature | вести known-issues.md, аудитор читает перед ревью | не тратить время на повторный репорт известных проблем | situational | 1 | Situational |
+| 13 | внешний сервис возвращает неожиданный результат | провести эскалирующую диагностику (параметры → curl → перечитать docs) | найти рабочий обходной путь через существующие API-параметры | universal | 1 | Universal |
+| 14 | unit-тесты написаны по документации API | сделать golden test на реальном JSON fixture | предотвратить ложное "all tests pass" при расхождении мока и реальности | universal | 1 | Universal |
+| 15 | API с лимитом запросов + retry decorator | проверить считаются ли failed requests в лимит до включения retry | не сжечь квоту на бессмысленные повторы | universal | 1 | Universal |

@@ -40,12 +40,12 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** tool-selection
 
-### 2026-03-26 tech-spec / meta: Верифицируй библиотечные методы из code-research
+### 2026-03-26 tech-spec / meta: Верифицируй API response shapes из code-research
 
-**Seen:** 1
-**Triad:** tech-spec использует библиотечные методы из code-research → проверить методы по реальной документации до включения в спек → предотвратить propagation миражей code-research → tech-spec → implementation
-**Context:** Code-research может содержать неточные или устаревшие описания API — если tech-spec копирует их без проверки, мираж распространяется до реализации.
-**Pattern:** Перед включением конкретных методов/функций из code-research в tech-spec — проверь их существование и сигнатуры по официальной документации или исходникам библиотеки.
+**Seen:** 2
+**Triad:** code-research описывает внешний API (методы или response shape) → сделать live call и проверить реальную документацию до включения в спек и написания тестов → предотвратить propagation миражей code-research → tech-spec → implementation → тесты
+**Context:** (1) Code-research может содержать неточные описания API — если tech-spec копирует их без проверки, мираж распространяется до реализации. (2) mvp-parser: code-research задокументировал `/stat/` как `{"remaining": N}`. Реальный ответ — `[{"service":"arbitr","month_request_count":2,"month_limit":200,...}]`. Тесты написаны под неверную форму, прошли 100%. Audit-агенты нашли код консистентным. Баг обнаружен только при live testing.
+**Pattern:** Перед включением API response shapes из code-research в tech-spec — сделай реальный API call и сверь с документацией. Один live call стоит дёшево, а propagation миража через весь pipeline (spec → code → tests → audit) стоит дорого.
 **Scope:** universal
 **Category:** information-gathering
 
@@ -84,6 +84,24 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** При написании AC для markdown-only фич (скиллы, reference-файлы) формулировать критерии через наличие конкретных артефактов: "файл X содержит Y", "SKILL.md содержит шаг Z в Phase N".
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-03-26 mvp-parser / session 2: HTTP timeout — обязательный параметр
+
+**Seen:** 1
+**Triad:** реализация HTTP-вызовов к внешним сервисам → устанавливать явный timeout на каждый запрос → предотвратить бесконечное зависание pipeline при stale соединении
+**Context:** В парсере не было timeout на requests — при chunked encoding issue с parser-api.com pipeline завис indefinitely, ожидая ответа который никогда не придёт.
+**Pattern:** При любом HTTP-вызове к внешнему сервису — устанавливай явный `timeout` параметр (в requests: `timeout=(connect, read)`). Отсутствие timeout превращает stale соединение в бесконечное зависание всего pipeline.
+**Scope:** universal
+**Category:** tool-selection
+
+### 2026-03-26 mvp-parser / session 2: Эскалирующая диагностика перед гипотезой "сервис сломан"
+
+**Seen:** 1
+**Triad:** внешний сервис возвращает неожиданный результат → провести эскалирующую диагностику (менять параметры запроса, сравнить с curl, перечитать документацию) → найти рабочий обходной путь через существующие API-параметры, не ждать исправления сервиса
+**Context:** parser-api.com обрывал ответ на ~23KB. Агент сначала предположил "API сломан" — пользователь возразил. Последовательная диагностика: разные даты → curl-тест → streaming → повторное чтение docs с нуля → обнаружено, что `Inn` принимает строку, не только ИНН → `Inn=ИП` дало малый ответ → решение: разбить запросы по типу ответчика.
+**Pattern:** Когда внешний сервис ведёт себя неожиданно — не объявляй "сервис сломан" без исчерпывающей диагностики: (1) измени параметры запроса, (2) протестируй curl (изолируй Python), (3) перечитай документацию целиком с нуля. Часто fix — это нестандартное использование уже существующего параметра.
+**Scope:** universal
+**Category:** recovery
 
 ## Situational
 
@@ -130,3 +148,21 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** multi-task features с security/code audit
 **Category:** information-gathering
+
+### 2026-03-27 mvp-parser / live-test: Тесты на моках скрывают расхождение с реальным API
+
+**Seen:** 1
+**Triad:** unit-тесты написаны по документации API → сделать хотя бы один тест на реальном ответе API (сохранённый JSON fixture) → предотвратить ложное "75 tests pass" при реальном расхождении структуры
+**Context:** 75 unit-тестов проходили с `details.get("Result")`, но реальный API возвращает данные в `details.get("Cases")[0]`. Баг не обнаружен 4 аудитами. Найден только при live-тесте. Причина: моки в тестах отражали документацию, а не реальность.
+**Pattern:** При интеграции с внешним API, сохранить реальный ответ как JSON fixture и написать хотя бы 1 тест на нём (golden test). Не доверять документации API для структуры мока.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-03-27 mvp-parser / live-test: Проверить стоимость retry до включения
+
+**Seen:** 1
+**Triad:** API с лимитом запросов + retry decorator → проверить считаются ли неудачные запросы в лимит ДО включения retry → не сжечь квоту на бессмысленные повторы
+**Context:** retry_with_backoff на parser-api.com сжёг 51 запрос из 200/месяц за одну сессию. Каждый обрыв соединения (ConnectionError, ReadTimeout) = запрос списан. Документация не указывает, считаются ли failed requests. Предположение "считаются только успешные" оказалось ложным.
+**Pattern:** Перед добавлением retry на API с жёстким лимитом, сделать 2-3 тестовых запроса и сверить счётчик через /stat/ (или аналог). Если failed считаются — retry убрать или ограничить 1 попыткой.
+**Scope:** universal
+**Category:** tool-selection
