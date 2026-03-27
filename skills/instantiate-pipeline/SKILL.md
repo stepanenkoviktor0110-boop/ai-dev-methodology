@@ -1,7 +1,7 @@
 ---
 name: instantiate-pipeline
 description: |
-  Creates a domain-specific pipeline from pipeline-skeleton.md through adaptive interview.
+  Creates a domain-specific pipeline from skeleton-pipe.md through adaptive interview.
   Clarifies execution environment, domain mechanics, roles, validators, templates.
   Generates all pipeline artifacts: skills, agents, templates, configuration.
 
@@ -15,7 +15,7 @@ Create a domain-specific pipeline from the universal skeleton through structured
 
 ## Input
 
-- Pipeline skeleton: `pipeline-skeleton.md` in current project directory
+- Pipeline skeleton: `skeleton-pipe.md` in current project directory
 - If not found: check `~/.claude/shared/templates/` or ask user for path
 
 ## Output
@@ -52,7 +52,7 @@ All artifacts are generated in the current project directory:
 
 ### Phase 0: Locate Skeleton
 
-1. Search for `pipeline-skeleton.md` in project directory
+1. Search for `skeleton-pipe.md` in project directory
 2. If not found — ask user for path
 3. Read skeleton, confirm it contains all 12 mechanics + instantiation checklist
 4. Read Section 13 (Instantiation Checklist) — this drives the interview
@@ -237,7 +237,7 @@ Generate all pipeline artifacts based on interview results.
 
 #### 4.1 Pipeline Document
 
-Create `pipeline.md` — instantiated version of `pipeline-skeleton.md`:
+Create `pipeline.md` — instantiated version of `skeleton-pipe.md`:
 - Replace all placeholders with domain-specific terms
 - Fill validation matrix with concrete validators
 - Fill review assignments with concrete reviewers
