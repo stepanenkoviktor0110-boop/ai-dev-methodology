@@ -54,7 +54,7 @@ All artifacts are generated in the current project directory:
 ### Phase 0: Locate Skeleton
 
 1. Search for `skeleton-pipe.md` in project directory
-2. If not found — copy from skill references: `~/.claude/skills/instantiate-pipeline/references/skeleton-pipe.md` to project root
+2. If not found — copy from skill references: `~/.claude/skills/skeleton-pipe/references/skeleton-pipe.md` to project root
 3. If references copy also missing — ask user for path
 4. Read skeleton, confirm it contains all 12 mechanics + instantiation checklist
 5. Read Section 13 (Instantiation Checklist) — this drives the interview
