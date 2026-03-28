@@ -92,7 +92,7 @@ git log --all --format='%H %s' | grep -iE 'wave [0-9]|session.plan|draft\(techsp
 Detect source directories dynamically:
 ```bash
 # Find directories containing source code (exclude node_modules, .git, venv, etc.)
-SOURCE_DIRS=$(find . -maxdepth 2 -type f \( -name '*.py' -o -name '*.ts' -o -name '*.js' -o -name '*.tsx' -o -name '*.jsx' -o -name '*.go' -o -name '*.rs' -o -name '*.java' \) \
+SOURCE_DIRS=$(find . -type f \( -name '*.py' -o -name '*.ts' -o -name '*.js' -o -name '*.tsx' -o -name '*.jsx' -o -name '*.go' -o -name '*.rs' -o -name '*.java' \) \
   -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/venv/*' -not -path '*/__pycache__/*' \
   | xargs -I{} dirname {} | sort -u)
 ```
@@ -149,15 +149,15 @@ Ask user: "Remove tracked pipeline artifacts from git index? (files stay on disk
 
 If confirmed:
 ```bash
-git rm -r --cached .claude/ 2>/dev/null
-git rm --cached CLAUDE.md 2>/dev/null
-git rm -r --cached work/ 2>/dev/null
-git rm --cached .pytest_cache/README.md 2>/dev/null
+git rm -r --cached --ignore-unmatch .claude/ 2>/dev/null
+git rm --cached --ignore-unmatch CLAUDE.md 2>/dev/null
+git rm -r --cached --ignore-unmatch work/ 2>/dev/null
+git rm --cached --ignore-unmatch .pytest_cache/README.md 2>/dev/null
 ```
 
-Commit:
+Commit (only if there are staged changes):
 ```bash
-git commit -m "chore: update gitignore"
+git diff --cached --quiet || git commit -m "chore: update gitignore"
 ```
 
 ### 2.3 Clean Code Comments
@@ -324,7 +324,7 @@ If `.pre-commit-config.yaml` exists, add a local hook:
     hooks:
       - id: block-ai-artifacts
         name: Block AI pipeline artifacts
-        entry: bash -c 'if git diff --cached --name-only | grep -qE "^\.claude/|^CLAUDE\.md"; then echo "ERROR: pipeline artifact staged"; exit 1; fi'
+        entry: bash -c 'if git diff --cached --name-only | grep -qE "^\.claude/|^CLAUDE\.md|^work/"; then echo "ERROR: pipeline artifact staged"; exit 1; fi'
         language: system
         always_run: true
       - id: block-ai-commit-msg
@@ -344,7 +344,7 @@ Create `.git/hooks/pre-commit`:
 
 STAGED=$(git diff --cached --name-only)
 
-if echo "$STAGED" | grep -qE '^\.claude/|^CLAUDE\.md'; then
+if echo "$STAGED" | grep -qE '^\.claude/|^CLAUDE\.md|^work/'; then
   echo "ERROR: Attempting to commit pipeline artifact (.claude/ or CLAUDE.md)"
   echo "These files should stay in .gitignore"
   exit 1
@@ -384,7 +384,7 @@ chmod +x .git/hooks/pre-commit .git/hooks/commit-msg
 
 This skill is safe to run multiple times:
 - .gitignore additions check for duplicates before appending
-- `git rm --cached` on untracked files is a no-op (exits with warning, not error)
+- `git rm --cached --ignore-unmatch` on untracked files is a no-op
 - filter-repo on already-clean history produces no changes
 - Verification step confirms current state regardless of prior runs
 - Pre-commit hooks overwrite cleanly
