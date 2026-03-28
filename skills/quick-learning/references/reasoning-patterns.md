@@ -158,6 +158,15 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** information-gathering
 
+### 2026-03-28 mvp-parser / live-test: Google Sheets — удалять дефолтный лист при программном создании
+
+**Seen:** 1
+**Triad:** программное создание spreadsheet через API → удалить дефолтный лист ("Sheet1"/"Лист1") после создания первого рабочего листа → не оставлять пустой мусорный лист в финальном документе
+**Context:** SheetsClient создавал spreadsheet через Drive API, потом добавлял вкладки по судам. Дефолтный "Лист1" оставался пустым. Проверка `row_count <= 1` не работала — у пустого листа row_count=1000 (default). Заказчик заметил. Фикс: проверять по имени ("Sheet1"/"Лист1"), не по row_count.
+**Pattern:** При программном создании Google Sheets с кастомными вкладками — после создания первого рабочего листа найти и удалить дефолтный лист по имени. Не проверять пустоту по row_count (default = 1000). Имена дефолтного листа зависят от локали: "Sheet1" (EN), "Лист1" (RU).
+**Scope:** universal
+**Category:** tool-selection
+
 ### 2026-03-27 mvp-parser / live-test: Проверить стоимость retry до включения
 
 **Seen:** 1
