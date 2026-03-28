@@ -249,6 +249,15 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** scope-management
 
+### 2026-03-28 design-pipeline-v2 / techspec: Verify-smoke для markdown — проверяй структуру, не ключевые слова
+
+**Seen:** 1
+**Triad:** verify-smoke для markdown-артефакта (SKILL.md, шаблон) → проверять структурные элементы (фазы, ссылки на файлы, guard-ы), не просто ключевые слова → убедиться что артефакт полноценный, а не stub с нужными словами
+**Context:** Изначально verify-smoke для ~180-строчного deep skill содержал 2 grep-проверки (имя скилла + слово "Phase"). Test reviewer справедливо указал: SKILL.md из одной строки с этими словами пройдёт проверку. После фикса — 6-8 проверок: Phase 0, Phase 2, ссылки на input-файлы, corruption guard.
+**Pattern:** Для markdown-only артефактов verify-smoke должен проверять не наличие слов, а структурные элементы: (1) множественные фазы по номерам, (2) ссылки на input/output файлы, (3) guard-ы для edge cases, (4) resolution ссылок на reference-файлы. Количество проверок пропорционально размеру артефакта.
+**Scope:** universal
+**Category:** tool-selection
+
 ### 2026-03-28 design-pipeline-v2 / userspec: Генерируй все шаги deliverable целиком, не только ближайший
 
 **Seen:** 1
