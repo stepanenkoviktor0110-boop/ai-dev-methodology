@@ -9,7 +9,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 2 | добавление auth flow к импортированным данным | проверить credentials + isActive | не обнаруживать missing auth на user verification | universal | 1 | Universal |
 | 3 | generic retry decorator оборачивает API-вызов | явно исключить non-retryable exceptions | не ретраить ошибки, которые повторятся всегда | universal | 1 | Universal |
 | 4 | tech-spec использует библиотечные методы из code-research | проверить методы по реальной документации до включения в спек | предотвратить propagation миражей code-research → tech-spec → implementation | universal | 1 | Universal |
-| 5 | tech-spec для проекта с внешними API | задокументировать error state machine в Decisions | предотвратить неоднозначную реализацию error handling | universal | 1 | Universal |
+| 5 | спек для интеграции с внешним API | перенести ВСЕ коды ответа из docs/code-research в спек | предотвратить пропуск нестандартных ответов API | universal | 2 | Universal |
 | 6 | post-deploy verification с пользователем | планировать 2-4 итерации UX-правок как норму | не считать UX-корректировки проблемой процесса | universal | 1 | Universal |
 | 7 | генерация задач из tech-spec | проверять каждый путь через test -e, валидировать depends_on | предотвратить задачи с несуществующими файлами | universal | 1 | Universal |
 | 8 | AC для markdown-only фич | формулировать через наличие конкретных артефактов | сделать AC автоматически проверяемыми | universal | 1 | Universal |

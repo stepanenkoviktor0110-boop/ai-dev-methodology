@@ -51,10 +51,10 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-03-26 tech-spec / meta: Error state machine для внешних API
 
-**Seen:** 1
-**Triad:** tech-spec для проекта с внешними API → задокументировать error state machine (HTTP код → состояние приложения) в Decisions → предотвратить неоднозначную реализацию error handling разными исполнителями
-**Context:** Без явной error state machine каждый исполнитель реализует error handling по-своему — результат непредсказуем.
-**Pattern:** При написании tech-spec для фичи с внешними API — добавь в Decisions таблицу: HTTP status → app state → user message → retry policy. Это устраняет неоднозначность реализации.
+**Seen:** 2
+**Triad:** спек для интеграции с внешним API → перенести ВСЕ коды ответа (включая edge cases) из документации/code-research в спек → предотвратить пропуск нестандартных ответов API при реализации
+**Context:** user-spec для court-workdays описал только isDayOff ответы 0/1, пропустив код 2 (сокращённый день) и коды ошибок 100/101/199, хотя code-research их задокументировал. Валидаторы поймали. Ранее: без error state machine исполнители реализуют handling по-своему.
+**Pattern:** При написании любого спека (user-spec, tech-spec) для фичи с внешним API — перенеси ВСЕ возможные коды ответа из документации/code-research. Не только happy path (0/1), но и edge cases (код 2), и error codes. Таблица: response → app behavior → fallback.
 **Scope:** universal
 **Category:** information-gathering
 
