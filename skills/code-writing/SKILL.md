@@ -35,6 +35,18 @@ description: |
 
    **No project patterns?** Apply baseline from [universal-patterns.md](references/universal-patterns.md) — naming, error handling, structure.
 
+   **Design tokens (conditional).** If ALL conditions are true:
+   - `.design-system/tokens.json` exists in the project root
+   - The task touches at least one UI file (`.css`, `.scss`, `.tsx`, `.html`, `.vue`, `.svelte`)
+
+   Then read `.design-system/tokens.json` and keep its top-level categories (`colors`, `typography`, `spacing`, `radii`, `shadows`) as passive reference for Phase 2.
+
+   **Silent skip** (no error, no message) if:
+   - `.design-system/tokens.json` does not exist
+   - The task does not touch UI files
+   - The file is larger than 50 KB
+   - The file contains invalid JSON
+
 3. **Analyze & Review Approach**
 
    Before coding, output your findings:
@@ -65,6 +77,18 @@ description: |
    - Follow project patterns (from Phase 1) or apply baseline from [universal-patterns.md](references/universal-patterns.md)
    - Use env vars for secrets, validate inputs at boundaries
    - Handle edge cases, comment WHY not WHAT
+   - **Design tokens in UI code.** If tokens.json was loaded in Phase 1, use CSS custom properties (`var(--color-primary-500)`) instead of hardcoded values (`#3B82F6`, `16px`). Derive variable names from the JSON key path using the pattern `--{category}-{path}`, replacing dots and nesting with hyphens:
+
+     | JSON key path | CSS custom property |
+     |---|---|
+     | `colors.primary.500` | `--color-primary-500` |
+     | `typography.families.heading` | `--font-heading` |
+     | `typography.sizes.base` | `--font-size-base` |
+     | `spacing.4` | `--space-4` |
+     | `radii.md` | `--radius-md` |
+     | `shadows.md` | `--shadow-md` |
+
+     For unlisted paths, apply the same pattern: `--{category}-{remaining-path}` with hyphens as separators.
 
 3. **Run Tests**
    - All new tests pass
@@ -140,4 +164,5 @@ Verify each item before marking complete. If any item fails, return to the relev
 - [ ] Each reviewer finding evaluated and logged
 - [ ] Findings log table produced
 - [ ] Review JSON reports saved to `logs/working/task-{N}/`
+- [ ] Design tokens used via CSS custom properties for UI files (if tokens.json was loaded)
 
