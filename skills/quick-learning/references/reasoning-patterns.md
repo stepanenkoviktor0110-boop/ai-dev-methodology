@@ -103,6 +103,15 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** recovery
 
+### 2026-03-28 bp-pipeline / skeleton-pipe Phase 4: проверять enum-значения при генерации конфигов
+
+**Seen:** 1
+**Triad:** генерация конфигурационного файла с enum-полями (frontmatter, YAML, JSON schema) → проверить допустимые значения enum перед записью → избежать невалидных значений, которые выглядят правдоподобно но отклоняются средой
+**Context:** В agent-файле записал `model: claude-sonnet-4-6` — выглядит логично (полный model ID), но Claude Code принимает только `sonnet|opus|haiku|inherit`. IDE диагностика поймала, без неё ошибка проявилась бы только в runtime.
+**Pattern:** При генерации конфигурационных файлов с enum-полями — не подставляй "логичный" вариант, а проверь список допустимых значений из документации или схемы. "Правдоподобно" ≠ "валидно".
+**Scope:** universal
+**Category:** tool-selection
+
 ## Situational
 
 Patterns that apply only in specific contexts. Each has a `Situation` field describing when it's relevant.
