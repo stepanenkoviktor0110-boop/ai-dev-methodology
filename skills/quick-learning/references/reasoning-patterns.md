@@ -112,6 +112,15 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** tool-selection
 
+### 2026-03-28 mvp-parser / session 4: Кэш обработанных записей при работе с платным API
+
+**Seen:** 1 (this feature/session)
+**Triad:** платный API с лимитом + данные пересекаются между запусками → кэшировать обработанные записи в БД, пропускать известные → не тратить квоту на уже обработанные данные
+**Context:** parser-api.com, 200 квот/месяц, 231 дело/день — без кэша квота сгорает за 1 день полностью. С кэшем (пропуск уже известных case_number) расход падает в 5-7 раз со второго дня.
+**Pattern:** При интеграции с любым платным API с лимитом запросов — сразу закладывай кэш обработанных записей в БД. Перед запросом details/enrichment проверяй, есть ли запись в базе. Это не оптимизация, а обязательный паттерн — без него лимит может сгореть за один запуск.
+**Scope:** universal
+**Category:** information-gathering
+
 ## Situational
 
 Patterns that apply only in specific contexts. Each has a `Situation` field describing when it's relevant.
