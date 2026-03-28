@@ -41,9 +41,9 @@ description: |
    - File contains valid, non-empty JSON
    - The task touches at least one UI file (`.css`, `.scss`, `.tsx`, `.html`, `.vue`, `.svelte`)
 
-   Then read `.design-system/tokens.json` and keep its categories and first-level values as passive reference for Phase 2 (context budget: ~500-1000 tokens — read category keys and their direct children, not deeply nested trees).
+   Then read `.design-system/tokens.json` and keep it as passive reference for Phase 2 (context budget: ~500-1000 tokens — the 50 KB size guard keeps the file manageable).
 
-   **Standalone (no task file)?** Check if the files you are about to create or modify include any UI extensions from the list above.
+   **Standalone (no task file)?** Check if the files you are about to create or modify include any UI extension (`.css`, `.scss`, `.tsx`, `.html`, `.vue`, `.svelte`).
 
    **Silent skip** (no error, no message) if any condition above is not met.
 
@@ -91,7 +91,7 @@ description: |
      | `shadows` | `--shadow` |
      | `breakpoints` | `--breakpoint` |
 
-     Append the remaining key path with hyphens: `colors.primary.500` → `--color-primary-500`, `typography.families.heading` → `--font-heading`, `spacing.4` → `--space-4`.
+     Append the remaining key path with hyphens: `colors.primary.500` → `--color-primary-500`, `typography.families.heading` → `--font-heading`, `typography.sizes.base` → `--font-size-base`, `spacing.4` → `--space-4`, `radii.md` → `--radius-md`, `shadows.md` → `--shadow-md`.
 
      For categories not in this table, use `--{category}-{remaining-path}` with hyphens as separators.
 
