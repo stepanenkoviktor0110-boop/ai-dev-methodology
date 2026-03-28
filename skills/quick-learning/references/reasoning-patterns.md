@@ -22,12 +22,12 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** sequencing
 
-### 2026-03-26 shift-confirmation / session 2: Build-before-commit при изменении сигнатур
+### 2026-03-28 employee-dashboard / session 3: Build-before-commit при server/client boundary
 
-**Seen:** 2
-**Triad:** изменение сигнатуры функции-callback → запустить полный build до коммита → не ломать deploy из-за type error
-**Context:** Изменение сигнатуры функции, которая используется как callback в UI, не было поймано тестами — они не проверяют совместимость типов в контексте вызова. Только production build поймал ошибку.
-**Pattern:** При изменении сигнатуры функции, которая используется как callback — запускай полный build до коммита. Unit-тесты могут не проверять совместимость типов в контексте использования (event handlers, HOC обёртки), только build ловит эти ошибки.
+**Seen:** 3 → PROMOTED to feature-execution
+**Triad:** изменение server/client boundary или сигнатуры → запустить build между волнами → поймать type/import violations до QA
+**Context:** Tasks 8-9 импортировали getSession() (server-only, uses next/headers) в "use client" pages. Unit-тесты прошли, build сломался. Обнаружено только на QA wave. Ранее: callback type mismatch тоже поймал только build.
+**Pattern:** Запускай полный build после каждой волны (не только на QA). Unit-тесты не ловят: server/client boundary violations, callback type mismatches, import ошибки runtime-only модулей.
 **Scope:** universal
 **Category:** sequencing
 
@@ -138,6 +138,15 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Когда запрос к внешней системе вернул пустой результат, но есть основания полагать что данные существуют — не заключай "ничего нет". Перечисли все каналы/endpoints где данные могут храниться (GitHub: issues/comments + pulls/comments + pulls/reviews; Slack: channel + threads; Jira: comments + linked issues) и проверь каждый.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-03-28 employee-dashboard / session 3: Auth credentials для импортированных данных
+
+**Seen:** 1
+**Triad:** добавление auth flow к данным, импортированным вне seed → проверить что все записи имеют auth credentials → не обнаруживать missing auth на user verification
+**Context:** Сотрудники были импортированы на прод вручную (вне seed.ts). При деплое employee-dashboard — credential для Горбунова существовала, но isActive=false. Обнаружено только при user verification ("Доступ заблокирован"). Потребовался debug-скрипт и ручной UPDATE.
+**Pattern:** При добавлении auth flow — проверять не только наличие credential records, но и их isActive status. Для данных, импортированных вне стандартного seed — написать миграционный скрипт, который создаёт/активирует credentials.
+**Scope:** universal
+**Category:** sequencing
 
 ## Situational
 

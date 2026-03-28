@@ -163,6 +163,7 @@ When lead spawns an agent outside the original execution plan (to fix audit find
 
 ## Phase 3: Wave Transition
 
+0. **Build check (mandatory).** Run full production build (`npm run build` or equivalent) after each wave completes. Unit tests don't catch server/client boundary violations, callback type mismatches, or runtime-only import errors — only build does. If build fails, fix before proceeding.
 1. Verify decisions.md entries exist and match template (`~/.claude/shared/work-templates/decisions.md.template`)
 2. If task had Smoke/User verification steps — confirm decisions.md Verification section includes results. Missing results without explanation → ask user whether to proceed.
 3. Update task frontmatter: `status: in_progress` → `status: done` (or `done_with_concerns` if teammate reported concerns — preserve the `concerns:` field from decisions.md entry into task frontmatter)
