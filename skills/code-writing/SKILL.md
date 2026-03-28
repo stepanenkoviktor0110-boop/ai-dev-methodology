@@ -37,15 +37,15 @@ description: |
 
    **Design tokens (conditional).** If ALL conditions are true:
    - `.design-system/tokens.json` exists in the project root
+   - File size is under 50 KB
+   - File contains valid, non-empty JSON
    - The task touches at least one UI file (`.css`, `.scss`, `.tsx`, `.html`, `.vue`, `.svelte`)
 
-   Then read `.design-system/tokens.json` and keep its top-level categories (`colors`, `typography`, `spacing`, `radii`, `shadows`) as passive reference for Phase 2.
+   Then read `.design-system/tokens.json` and keep its categories and first-level values as passive reference for Phase 2 (context budget: ~500-1000 tokens — read category keys and their direct children, not deeply nested trees).
 
-   **Silent skip** (no error, no message) if:
-   - `.design-system/tokens.json` does not exist
-   - The task does not touch UI files
-   - The file is larger than 50 KB
-   - The file contains invalid JSON
+   **Standalone (no task file)?** Check if the files you are about to create or modify include any UI extensions from the list above.
+
+   **Silent skip** (no error, no message) if any condition above is not met.
 
 3. **Analyze & Review Approach**
 
@@ -77,18 +77,23 @@ description: |
    - Follow project patterns (from Phase 1) or apply baseline from [universal-patterns.md](references/universal-patterns.md)
    - Use env vars for secrets, validate inputs at boundaries
    - Handle edge cases, comment WHY not WHAT
-   - **Design tokens in UI code.** If tokens.json was loaded in Phase 1, use CSS custom properties (`var(--color-primary-500)`) instead of hardcoded values (`#3B82F6`, `16px`). Derive variable names from the JSON key path using the pattern `--{category}-{path}`, replacing dots and nesting with hyphens:
+   - **Design tokens in UI code.** If tokens.json was loaded in Phase 1, use CSS custom properties (`var(--color-primary-500)`) instead of hardcoded values (`#3B82F6`, `16px`). Use category aliases to derive variable names:
 
-     | JSON key path | CSS custom property |
+     | JSON category prefix | CSS variable prefix |
      |---|---|
-     | `colors.primary.500` | `--color-primary-500` |
-     | `typography.families.heading` | `--font-heading` |
-     | `typography.sizes.base` | `--font-size-base` |
-     | `spacing.4` | `--space-4` |
-     | `radii.md` | `--radius-md` |
-     | `shadows.md` | `--shadow-md` |
+     | `colors` | `--color` |
+     | `typography.families` | `--font` |
+     | `typography.sizes` | `--font-size` |
+     | `typography.weights` | `--font-weight` |
+     | `typography.lineHeights` | `--line-height` |
+     | `spacing` | `--space` |
+     | `radii` | `--radius` |
+     | `shadows` | `--shadow` |
+     | `breakpoints` | `--breakpoint` |
 
-     For unlisted paths, apply the same pattern: `--{category}-{remaining-path}` with hyphens as separators.
+     Append the remaining key path with hyphens: `colors.primary.500` → `--color-primary-500`, `typography.families.heading` → `--font-heading`, `spacing.4` → `--space-4`.
+
+     For categories not in this table, use `--{category}-{remaining-path}` with hyphens as separators.
 
 3. **Run Tests**
    - All new tests pass
