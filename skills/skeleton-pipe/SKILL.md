@@ -12,6 +12,8 @@ description: |
 
 # Instantiate Pipeline
 
+> **CRITICAL:** NEVER generate multiple artifacts without stopping. After EACH artifact: list controversial points, explain simply, WAIT for user decision. Only then proceed.
+
 Create a domain-specific pipeline from the universal skeleton through structured interview and artifact generation.
 
 ## Input

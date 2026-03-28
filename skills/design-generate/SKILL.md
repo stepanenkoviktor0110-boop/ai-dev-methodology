@@ -13,6 +13,8 @@ description: |
 
 # Design Generate
 
+> **CRITICAL:** NEVER generate multiple artifacts without stopping. After EACH artifact: list controversial points, explain simply, WAIT for user decision. Only then proceed.
+
 Generate HTML+SVG page mockups from text descriptions using the project's design system.
 
 ```

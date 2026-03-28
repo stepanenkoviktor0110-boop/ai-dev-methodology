@@ -9,6 +9,8 @@ description: |
 
 # Task Decomposition
 
+> **CRITICAL:** NEVER generate multiple artifacts without stopping. After EACH artifact: list controversial points, explain simply, WAIT for user decision. Only then proceed.
+
 Decompose tech-spec Implementation Tasks into individual task files with parallel creation and validation.
 
 **Input:** `work/{feature}/tech-spec.md` (status: approved)

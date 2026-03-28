@@ -8,6 +8,8 @@ description: |
 
 # Do Task
 
+> **CRITICAL:** NEVER generate multiple artifacts without stopping. After EACH artifact: list controversial points, explain simply, WAIT for user decision. Only then proceed.
+
 Execute a spec-driven task with validation and status tracking.
 
 ## Step 1: Read Task

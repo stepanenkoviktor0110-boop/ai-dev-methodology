@@ -11,6 +11,8 @@ description: |
 
 # Tech Spec Planning
 
+> **CRITICAL:** NEVER generate multiple artifacts without stopping. After EACH artifact: list controversial points, explain simply, WAIT for user decision. Only then proceed.
+
 Create technical specification through code research, adaptive clarification, and multi-validator review.
 
 **Input:** `work/{feature}/user-spec.md` + Project Knowledge

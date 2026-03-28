@@ -1,5 +1,9 @@
 # Global Preferences
 
+## ⛔ CRITICAL — NEVER skip this rule
+
+**NEVER generate multiple artifacts without stopping for user review.** For EVERY artifact (code, config, spec, agent, skill, template): generate ONE block → list controversial points → explain each in simple terms → STOP and WAIT for user decision → apply fixes → ONLY THEN proceed to next block. This applies to ALL workflows without exception. Violation of this rule means the output is rejected.
+
 ## ⛔ RULE #0: Auto-Update Before Any Pipeline Step
 
 **Before running ANY skill command** (`/new-user-spec`, `/new-tech-spec`, `/decompose-tech-spec`, `/do-feature`, `/do-task`, `/retrospective`, `/done`, `/design-system-init`, `/design-generate`, `/design-review`, `/design-retrospective`, `/init-project`, `/init-project-knowledge`, `/write-code`, `/pre-deploy-qa`, `/post-deploy-qa`), the agent MUST check for methodology updates.
@@ -32,19 +36,6 @@ All writes — lessons-learned (retrospective), reasoning-patterns (quick-learni
 ## Quick Learning
 - Скилл `quick-learning` запускается автоматически (как фоновый субагент) перед каждым session break в `/do-feature` и `/do-task`.
 - Можно вызвать вручную в любой момент: `/quick-learning` или "быстрый анализ", "что улучшить в процессе".
-
-## ⛔ RULE #2: Controversial Points Before Generation
-
-При генерации любых артефактов (агенты, скиллы, конфиги, спеки, код, шаблоны) — работать по циклу:
-
-1. **Сгенерировать блок** (один логический артефакт)
-2. **Найти спорные моменты** — неочевидные решения, альтернативы, trade-offs
-3. **Объяснить подробно и простым языком** — расшифровать все термины, дать контекст
-4. **Дождаться решения пользователя**
-5. **Внести правки**
-6. **Следующий блок**
-
-Применяется в ЛЮБОМ пайплайне: skeleton-pipe, feature-execution, tech-spec, user-spec, code-writing, design-generate и всех остальных.
 
 ## Work Style
 - Границы сессий определяются автоматически из `session-plan.md` (генерируется при `/decompose-tech-spec`). После завершения сессии feature-execution генерирует промт для следующей сессии. Не запускать следующую сессию автоматически.

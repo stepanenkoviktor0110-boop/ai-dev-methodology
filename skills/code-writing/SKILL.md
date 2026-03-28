@@ -11,6 +11,8 @@ description: |
 
 # Code Writing
 
+> **CRITICAL:** NEVER generate multiple artifacts without stopping. After EACH artifact: list controversial points, explain simply, WAIT for user decision. Only then proceed.
+
 ## Phase 1: Preparation
 
 1. **Parse Requirements**
