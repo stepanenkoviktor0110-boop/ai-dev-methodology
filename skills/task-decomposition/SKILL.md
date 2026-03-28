@@ -131,10 +131,10 @@ After user approves task decomposition, calculate session grouping for predictab
    f. If a single wave > budget → it gets its own session (warn user: "Wave N exceeds session budget").
 3. For each session, collect unique Context Files from all tasks in that session (deduplicate).
 4. Give each session a short descriptive title based on its tasks' descriptions.
-5. Generate `work/{feature}/logs/session-plan.md` from template `~/.claude/shared/work-templates/session-plan.md.template`.
+5. Generate `work/{feature}/logs/session-plan.md` from template `~/.claude/shared/work-templates/session-plan.md.template`. Include prompts for ALL sessions in the file (for reference).
 6. Present session plan to user as a table: session number, title, waves, tasks, estimated LOC.
 7. Git commit: `chore(tasks): session plan for {feature} — {N} sessions`
-8. Suggest next step: `/do-feature {feature}` to start session 1, or `/do-task` for manual execution.
+8. Show ONLY the prompt for Session 1. Do NOT show prompts for later sessions — they are in session-plan.md and will be delivered by feature-execution at the end of each session.
 
 **Checkpoint:**
 - [ ] session-plan.md created and committed
