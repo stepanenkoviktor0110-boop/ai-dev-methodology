@@ -143,6 +143,7 @@ When merging, keep the **most general trigger** and the **most actionable wordin
 **Writing rules:**
 - Must be actionable — a concrete instruction, not vague advice.
 - Must be non-obvious — "write tests" is obvious. "Run smoke before spawning reviewers" is not.
+- **Must capture REASONING LOGIC, not implementation specifics.** The pattern should be transferable to any project. Bad: "удалять Лист1 в Google Sheets по имени". Good: "при программном создании документа — зачищать дефолтные артефакты по имени, не по содержимому". If you can't remove the technology name from the pattern and it still makes sense — it's too specific.
 - Max 2 entries per session (retrospective allows max 3 per feature — larger scope).
 - **Every entry MUST have a Triad field** — this is the key for similarity matching.
 

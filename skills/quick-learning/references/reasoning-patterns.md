@@ -25,9 +25,9 @@ Patterns that apply to any project, any stack, any domain.
 ### 2026-03-26 shift-confirmation / session 2: Build-before-commit при изменении сигнатур
 
 **Seen:** 2
-**Triad:** изменение сигнатуры функции-callback → запустить build до коммита → не ломать deploy из-за type error
-**Context:** Добавил optional параметр в `applyFilters()`, которая использовалась как `onClick` handler. TypeScript локально не ругался (vitest не проверяет JSX), но production build упал — `MouseEvent` не совместим с `"list" | "grid"`. Deploy failed, потерял ~3 мин на fix + redeploy. Паттерн подтверждён дважды (quick-learning + retrospective).
-**Pattern:** При изменении сигнатуры функции, которая используется как event handler или callback — запускай `npm run build` до коммита. Vitest не проверяет JSX-совместимость типов, только build ловит эти ошибки.
+**Triad:** изменение сигнатуры функции-callback → запустить полный build до коммита → не ломать deploy из-за type error
+**Context:** Изменение сигнатуры функции, которая используется как callback в UI, не было поймано тестами — они не проверяют совместимость типов в контексте вызова. Только production build поймал ошибку.
+**Pattern:** При изменении сигнатуры функции, которая используется как callback — запускай полный build до коммита. Unit-тесты могут не проверять совместимость типов в контексте использования (event handlers, HOC обёртки), только build ловит эти ошибки.
 **Scope:** universal
 **Category:** sequencing
 
@@ -88,9 +88,9 @@ Patterns that apply to any project, any stack, any domain.
 ### 2026-03-26 mvp-parser / session 2: HTTP timeout — обязательный параметр
 
 **Seen:** 1
-**Triad:** реализация HTTP-вызовов к внешним сервисам → устанавливать явный timeout на каждый запрос → предотвратить бесконечное зависание pipeline при stale соединении
-**Context:** В парсере не было timeout на requests — при chunked encoding issue с parser-api.com pipeline завис indefinitely, ожидая ответа который никогда не придёт.
-**Pattern:** При любом HTTP-вызове к внешнему сервису — устанавливай явный `timeout` параметр (в requests: `timeout=(connect, read)`). Отсутствие timeout превращает stale соединение в бесконечное зависание всего pipeline.
+**Triad:** реализация вызовов к внешним сервисам → устанавливать явный timeout на каждый вызов → предотвратить бесконечное зависание pipeline при stale соединении
+**Context:** Вызов к внешнему API без timeout привёл к бесконечному зависанию pipeline — сервер начал отдавать ответ, но не завершил передачу.
+**Pattern:** При любом вызове к внешнему сервису — устанавливай явный timeout. Отсутствие timeout превращает stale соединение в бесконечное зависание всего pipeline. Это касается HTTP, gRPC, WebSocket, DB-соединений.
 **Scope:** universal
 **Category:** tool-selection
 
