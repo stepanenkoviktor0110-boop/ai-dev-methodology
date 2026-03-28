@@ -30,6 +30,17 @@ All writes — lessons-learned (retrospective), reasoning-patterns (quick-learni
 - No copies in `c:/tmp/` or other locations. If a separate platform (Codex) uses its own repo — it has its own knowledge base. Cross-sync is manual and explicit.
 - After `/retrospective` or `/quick-learning` writes files → `cd ~/.claude/skills && git add -A && git commit && git push origin master`.
 
+## ⛔ RULE #2: NEVER Leak Secrets
+
+**NEVER output contents of .env, credentials, tokens, passwords, API keys, or any secrets.** This applies to ALL contexts — diagnostics, debugging, deployment, any SSH commands.
+
+- **NEVER** run `cat .env`, `grep PASSWORD`, `echo $DATABASE_URL` or any command that could print secrets
+- To check a variable exists: `grep -c VARIABLE_NAME .env` (returns count, not value)
+- To show masked value: `sed 's/:[^@]*@/:***@/g'` or similar masking
+- If you accidentally output a secret: **immediately** rotate it, don't just apologize
+
+Violation = credentials compromised, requires emergency rotation.
+
 ## Communication
 - Общаться с пользователем только по-русски. Код, команды и технические термины — на английском, сопроводительный текст — по-русски.
 

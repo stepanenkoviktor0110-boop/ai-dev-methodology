@@ -49,12 +49,12 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
-### 2026-03-26 tech-spec / meta: Error state machine для внешних API
+### 2026-03-29 tech-spec / meta: Error state machine для внешних API
 
-**Seen:** 2
-**Triad:** спек для интеграции с внешним API → перенести ВСЕ коды ответа (включая edge cases) из документации/code-research в спек → предотвратить пропуск нестандартных ответов API при реализации
-**Context:** user-spec для court-workdays описал только isDayOff ответы 0/1, пропустив код 2 (сокращённый день) и коды ошибок 100/101/199, хотя code-research их задокументировал. Валидаторы поймали. Ранее: без error state machine исполнители реализуют handling по-своему.
-**Pattern:** При написании любого спека (user-spec, tech-spec) для фичи с внешним API — перенеси ВСЕ возможные коды ответа из документации/code-research. Не только happy path (0/1), но и edge cases (код 2), и error codes. Таблица: response → app behavior → fallback.
+**Seen:** 3 → PROMOTED to tech-spec-planning
+**Triad:** спек для интеграции с внешним API → перенести ВСЕ коды ответа И формат данных из документации/code-research в спек → предотвратить пропуск нестандартных ответов API при реализации
+**Context:** (1) user-spec court-workdays пропустил isDayOff код 2 и ошибки 100/101/199. (2) tech-spec указал xmlcalendar как JSON, реально — XML. Название "xmlcalendar" буквально содержит "xml", но спек копировал предположение. (3) Ранее: без error state machine исполнители реализуют handling по-своему.
+**Pattern:** PROMOTED: При написании спека для внешнего API — перенести ВСЕ коды ответа, формат данных, и edge cases. Сделать live call для проверки формата до включения в спек.
 **Scope:** universal
 **Category:** information-gathering
 
@@ -293,3 +293,12 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Когда deliverable состоит из нескольких шагов (серия промптов, roadmap, план сессий) — генерировать ВСЕ шаги сразу, даже если пользователь явно просил только следующий. Предвидеть проблему устаревания, а не ждать пока пользователь её поймает.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-03-28 analiticxxs / perf-fix: Проверяй дефолты библиотек до оптимизации кода
+
+**Seen:** 1
+**Triad:** performance problem на сервере с низким трафиком → проверить дефолтные таймауты/лимиты connection pool и кэшей → найти root cause в конфигурации до оптимизации кода
+**Context:** TTFB 7-23 секунд на Next.js SSR. Инстинкт — искать тяжёлые запросы, N+1, SSR complexity. Реальная причина: pg Pool `idleTimeoutMillis: 10000` (дефолт) — на low-traffic сервере ВСЕ соединения закрывались каждые 10 секунд, каждый запрос = DNS + TCP + PG handshake. Фикс: одно число `10000 → 60000` = TTFB с 7-23 сек до 196 мс.
+**Pattern:** При performance-проблемах на low-traffic серверах — первым делом проверять дефолтные таймауты и лимиты библиотек (connection pool idle timeout, cache TTL, keepalive). Одно число в конфиге часто даёт больше, чем рефакторинг запросов.
+**Scope:** universal
+**Category:** information-gathering

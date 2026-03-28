@@ -8,8 +8,8 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 1 | создание нового артефакта | проверить доступность в runtime среде | не объявлять "готово" пока не виден потребителю | universal | 1 | Universal |
 | 2 | добавление auth flow к импортированным данным | проверить credentials + isActive | не обнаруживать missing auth на user verification | universal | 1 | Universal |
 | 3 | generic retry decorator оборачивает API-вызов | явно исключить non-retryable exceptions | не ретраить ошибки, которые повторятся всегда | universal | 1 | Universal |
-| 4 | tech-spec использует библиотечные методы из code-research | проверить методы по реальной документации до включения в спек | предотвратить propagation миражей code-research → tech-spec → implementation | universal | 1 | Universal |
-| 5 | спек для интеграции с внешним API | перенести ВСЕ коды ответа из docs/code-research в спек | предотвратить пропуск нестандартных ответов API | universal | 2 | Universal |
+| 4 | PROMOTED → tech-spec-planning | verify values/methods against real docs | — | — | 3 | — |
+| 5 | PROMOTED → tech-spec-planning | перенести ВСЕ коды ответа И формат данных в спек | — | — | 3 | — |
 | 6 | post-deploy verification с пользователем | планировать 2-4 итерации UX-правок как норму | не считать UX-корректировки проблемой процесса | universal | 1 | Universal |
 | 7 | генерация задач из tech-spec | проверять каждый путь через test -e, валидировать depends_on | предотвратить задачи с несуществующими файлами | universal | 1 | Universal |
 | 8 | AC для markdown-only фич | формулировать через наличие конкретных артефактов | сделать AC автоматически проверяемыми | universal | 1 | Universal |
@@ -32,3 +32,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 25 | deploy script с именованным ресурсом | чистить по identity (имя/ID), не через management tool | предотвратить сбой от orphaned ресурса | universal | 1 | Universal |
 | 26 | старт комплексного проекта по методологии | включить server action timing в scope MVP | иметь baseline метрик до оптимизаций, видеть деградацию | universal | 1 | Universal |
 | 27 | чтение конфигов удалённой системы | маскировать секреты в команде до выполнения | не допустить утечку секретов в логи | universal | 1 | Universal |
+| 28 | performance problem на low-traffic сервере | проверить дефолтные таймауты/лимиты connection pool и кэшей | найти root cause в конфигурации до оптимизации кода | universal | 1 | Universal |

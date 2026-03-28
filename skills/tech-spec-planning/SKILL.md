@@ -49,6 +49,8 @@ If during later phases a gap is discovered — launch `code-researcher` again wi
 - [ ] code-research.md created/updated with implementation-level analysis
 - [ ] Research file read by orchestrator
 
+**PROMOTED PATTERN:** При интеграции с внешним API — перенести в спек ВСЕ коды ответа, формат данных (JSON/XML/plain text), и edge cases. Перед включением response shapes из code-research — сделать live API call для проверки. Один вызов дешевле propagation миража через весь pipeline.
+
 ## Phase 3: Clarification (Adaptive)
 
 Analyze if additional information is needed based on user-spec and code research.
