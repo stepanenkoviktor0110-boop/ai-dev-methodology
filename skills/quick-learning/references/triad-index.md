@@ -31,3 +31,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 24 | verify-smoke для markdown-артефакта | проверять структурные элементы (фазы, ссылки, guard-ы), не ключевые слова | убедиться что артефакт полноценный, а не stub | universal | 1 | Universal |
 | 25 | deploy script с именованным ресурсом | чистить по identity (имя/ID), не через management tool | предотвратить сбой от orphaned ресурса | universal | 1 | Universal |
 | 26 | старт комплексного проекта по методологии | включить server action timing в scope MVP | иметь baseline метрик до оптимизаций, видеть деградацию | universal | 1 | Universal |
+| 27 | чтение конфигов удалённой системы | маскировать секреты в команде до выполнения | не допустить утечку секретов в логи | universal | 1 | Universal |

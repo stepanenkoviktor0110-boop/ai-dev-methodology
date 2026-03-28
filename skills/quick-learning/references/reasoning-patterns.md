@@ -148,6 +148,15 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** sequencing
 
+### 2026-03-28 performance-review / session 2: Маскируй секреты ДО выполнения команды
+
+**Seen:** 1
+**Triad:** чтение конфигов удалённой системы для диагностики → маскировать секретные поля в самой команде (sed/pipe), не полагаться на пост-обработку → не допустить утечку секретов в персистентные логи сессии
+**Context:** При диагностике скорости VPS выполнил `cat .env | grep DATABASE` — полный пароль PostgreSQL попал в логи VSCode и контекст разговора. Пришлось ротировать пароль на сервере.
+**Pattern:** При любом чтении конфигов с удалённой машины — встраивать маскировку прямо в команду (`sed 's/:[^@]*@/:***@/'`). Лучше: проверять наличие переменной без вывода значения (`grep -c`). Никогда не выводить .env, credentials, secrets целиком — даже если кажется что "это только в контексте".
+**Scope:** universal
+**Category:** tool-selection
+
 ### 2026-03-28 performance-review / deploy-fix: Чисти ресурс по identity, не по management context
 
 **Seen:** 1
