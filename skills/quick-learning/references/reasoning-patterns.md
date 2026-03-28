@@ -148,6 +148,24 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** sequencing
 
+### 2026-03-28 performance-review / deploy-fix: Чисти ресурс по identity, не по management context
+
+**Seen:** 1
+**Triad:** deploy script с именованным ресурсом (container_name, named volume, PID-файл) → чистить по identity (имя/ID), а не через management tool (compose down) → предотвратить сбой от orphaned ресурса, созданного другим инструментом или прерванным запуском
+**Context:** `docker compose -f docker-compose.prod.yml down` не удалял контейнер `analiticxxs-app`, созданный ранее через другой compose-файл или ручной запуск. Deploy падал с "container already exists". Фикс: `docker rm -f analiticxxs-app` перед `compose down`.
+**Pattern:** Если deploy/teardown скрипт управляет именованным ресурсом — чисти его напрямую по имени (`docker rm -f`, `rm -f pidfile`, `kill $(cat pidfile)`), а не только через management tool (`compose down`, `systemctl stop`). Management tool знает только о "своих" ресурсах, но ресурс с тем же именем мог быть создан другим способом.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-03-28 performance-review / analiticxxs: Timing с первого дня в комплексных проектах
+
+**Seen:** 1
+**Triad:** старт комплексного проекта по методологии → включить server action timing (withTiming-обёртка + таблица + UI) в scope MVP → иметь baseline метрик до оптимизаций, видеть деградацию на проде
+**Context:** В AnaliticXXS timing добавлен постфактум — после 4 блоков оптимизаций. Baseline "до" потерян, сравнить before/after невозможно. Если бы timing был с MVP — каждая оптимизация имела бы измеримый эффект.
+**Pattern:** В комплексных проектах включать server action timing в MVP scope наравне с audit log. Стоимость минимальна (модель + обёртка + 1 страница), а ценность растёт с каждой итерацией: baseline → оптимизации → мониторинг деградации.
+**Scope:** universal
+**Category:** sequencing
+
 ## Situational
 
 Patterns that apply only in specific contexts. Each has a `Situation` field describing when it's relevant.
@@ -194,12 +212,12 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Situation:** multi-task features с security/code audit
 **Category:** information-gathering
 
-### 2026-03-27 mvp-parser / live-test: Тесты на моках скрывают расхождение с реальным API
+### 2026-03-28 mvp-pipeline-core + mvp-parser: Тесты на моках скрывают расхождение с реальным внешним процессом
 
-**Seen:** 1
-**Triad:** unit-тесты написаны по документации API → сделать хотя бы один тест на реальном ответе API (сохранённый JSON fixture) → предотвратить ложное "75 tests pass" при реальном расхождении структуры
-**Context:** 75 unit-тестов проходили с `details.get("Result")`, но реальный API возвращает данные в `details.get("Cases")[0]`. Баг не обнаружен 4 аудитами. Найден только при live-тесте. Причина: моки в тестах отражали документацию, а не реальность.
-**Pattern:** При интеграции с внешним API, сохранить реальный ответ как JSON fixture и написать хотя бы 1 тест на нём (golden test). Не доверять документации API для структуры мока.
+**Seen:** 2
+**Triad:** unit-тесты с моками для внешнего процесса/API → провести минимум 1 live smoke-прогон перед объявлением QA passed → предотвратить ложное "all tests pass" при расхождении мока и реальности
+**Context:** (1) mvp-parser: 75 тестов pass, но реальный API возвращал другую структуру. (2) mvp-pipeline-core: 77 тестов pass, QA passed — но реальный `claude -p` вернул JSON в envelope + markdown fences + свой формат полей. 7 fix-коммитов после "успешного" QA.
+**Pattern:** Перед объявлением QA passed — сделать минимум 1 live прогон с реальным внешним процессом (API/CLI). Не доверять мокнутым тестам для валидации интеграции. Сохранить реальный ответ как golden fixture.
 **Scope:** universal
 **Category:** information-gathering
 

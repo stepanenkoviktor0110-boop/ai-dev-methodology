@@ -18,7 +18,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 11 | написание тестов в multi-agent workflow | требовать assertion на результат функции, не только на mock | тесты ловят баги, а не проверяют форму вызова | situational | 1 | Situational |
 | 12 | security/code audit в multi-task feature | вести known-issues.md, аудитор читает перед ревью | не тратить время на повторный репорт известных проблем | situational | 1 | Situational |
 | 13 | внешний сервис возвращает неожиданный результат | провести эскалирующую диагностику (параметры → curl → перечитать docs) | найти рабочий обходной путь через существующие API-параметры | universal | 1 | Universal |
-| 14 | unit-тесты написаны по документации API | сделать golden test на реальном JSON fixture | предотвратить ложное "all tests pass" при расхождении мока и реальности | universal | 1 | Universal |
+| 14 | unit-тесты с моками для внешнего процесса/API | провести минимум 1 live smoke-прогон перед объявлением QA passed | предотвратить ложное "all tests pass" при расхождении мока и реальности | universal | 2 | Universal |
 | 15 | API с лимитом запросов + retry decorator | проверить считаются ли failed requests в лимит до включения retry | не сжечь квоту на бессмысленные повторы | universal | 1 | Universal |
 | 16 | генерация большого артефакта с множеством решений | выделить спорные решения и утвердить ДО генерации | избежать массовой переделки после ревью | universal | 2 | Universal |
 | 17 | обсуждение решений с пользователем | использовать язык пользователя, расшифровывать каждый термин | ускорить принятие решений | universal | 1 | Universal |
@@ -29,3 +29,5 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 22 | запрос данных из внешней системы вернул "пусто" | перечислить и проверить все каналы/endpoints | не пропустить данные в альтернативном канале | universal | 1 | Universal |
 | 23 | создание multi-step deliverable | сгенерировать все шаги целиком, не только ближайший | не заставлять пользователя ловить недостающие части | universal | 1 | Universal |
 | 24 | verify-smoke для markdown-артефакта | проверять структурные элементы (фазы, ссылки, guard-ы), не ключевые слова | убедиться что артефакт полноценный, а не stub | universal | 1 | Universal |
+| 25 | deploy script с именованным ресурсом | чистить по identity (имя/ID), не через management tool | предотвратить сбой от orphaned ресурса | universal | 1 | Universal |
+| 26 | старт комплексного проекта по методологии | включить server action timing в scope MVP | иметь baseline метрик до оптимизаций, видеть деградацию | universal | 1 | Universal |
