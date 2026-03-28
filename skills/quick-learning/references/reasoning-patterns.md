@@ -130,6 +130,15 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** communication
 
+### 2026-03-28 ai-dev-methodology / ad-hoc: "Пусто" ≠ "данных нет" — проверь все каналы
+
+**Seen:** 1
+**Triad:** запрос данных из внешней системы вернул "пусто" → перечислить и проверить все каналы/endpoints где данные могут храниться → не пропустить данные в альтернативном канале
+**Context:** `gh pr list --json comments` вернул 0 комментариев для обоих PR. На самом деле Codex-бот оставил 5 review comments (inline на строках кода). GitHub хранит комментарии в 3 местах: issue comments, PR conversation, PR review comments — каждый со своим API-эндпоинтом. Первый запрос проверил только один.
+**Pattern:** Когда запрос к внешней системе вернул пустой результат, но есть основания полагать что данные существуют — не заключай "ничего нет". Перечисли все каналы/endpoints где данные могут храниться (GitHub: issues/comments + pulls/comments + pulls/reviews; Slack: channel + threads; Jira: comments + linked issues) и проверь каждый.
+**Scope:** universal
+**Category:** information-gathering
+
 ## Situational
 
 Patterns that apply only in specific contexts. Each has a `Situation` field describing when it's relevant.
