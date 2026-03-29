@@ -67,14 +67,23 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** scope-management
 
-### 2026-03-25 design-pipeline: Проверяй пути в сгенерированных задачах
+### 2026-03-29 design-pipeline-v2: Проверяй все cross-references в сгенерированных задачах
 
-**Seen:** 1
-**Triad:** генерация задач из tech-spec → проверять каждый путь через test -e, валидировать depends_on → предотвратить задачи с несуществующими файлами
-**Context:** Первый раунд валидации нашёл несуществующие пути к файлам и неверные depends_on ссылки в 12 задачах. Task creator генерировал пути по предположению из tech-spec.
-**Pattern:** После генерации задач проверяй каждый путь к файлу через `test -e`. Валидируй depends_on: зависимость должна создавать артефакт, который зависимая задача читает.
+**Seen:** 2
+**Triad:** генерация задач из tech-spec → проверять все cross-references (пути файлов через test -e, номера решений, depends_on) → предотвратить битые ссылки в задачах
+**Context:** (1) 2026-03-25: task-creator сгенерировал несуществующие пути к файлам и неверные depends_on ссылки в 12 задачах. (2) 2026-03-29: task-creator создал ссылку "Decision 12" в tech-spec с только 10 решениями — номер взят по предположению.
+**Pattern:** После генерации задач проверяй все cross-references по source: пути через `test -e`, номера решений — пересчётом по tech-spec, depends_on — что зависимость реально создаёт нужный артефакт. Агент генерирует ссылки по аналогии/предположению, не по факту.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-03-29 design-pipeline-v2 / session 6: awk не фейлит pipe — используй [ ... ] для size guard
+
+**Seen:** 1
+**Triad:** smoke-команды с проверкой размера файла → использовать `[ $(wc -l < FILE) -lt N ]` вместо awk-условия → предотвратить ложно-проходящий size guard
+**Context:** Smoke-команды из tech-spec содержали `wc -l | awk '{if ($1 < 500) print "OK"; else print "OVER LIMIT"}'` — повторились в 4 задачах и Task 8 QA. awk всегда exit 0 (даже когда печатает OVER LIMIT), поэтому smoke всегда проходит.
+**Pattern:** Для проверки размера через CLI используй `[ $(wc -l < FILE) -lt N ]` — это bash test, exit 1 при провале. Awk в конце pipe не фейлит pipeline независимо от вывода. Проверяй exit-логику в smoke-командах перед тем как копировать из tech-spec в задачи.
+**Scope:** universal
+**Category:** sequencing
 
 ### 2026-03-26 design-pipeline-v1: AC через артефакты, не через поведение
 
@@ -347,3 +356,12 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** При редактировании или компрессии AI-промтов — добавить финальный чеклист перед ревью: (1) найти все КАПСЛОК-заголовки, (2) найти все формулировки "нельзя/запрещено/жёсткие/строгие", (3) заменить на мотивационное обоснование ("чтобы X, делай Y" вместо "ЗАПРЕЩЕНО делать Y"). Prohibition-framing — предсказуемая находка в любом AI-промте.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-03-29 fix-knowledge-pipeline: Overflow-политика при распределении в capped buckets
+
+**Seen:** 1
+**Triad:** алгоритм распределяет записи по bucket-ам с max-cap → определить overflow-политику (куда идут записи сверх лимита) до реализации → не терять записи при заполнении bucket-а
+**Context:** Task 5 генерировал per-skill quick-ref файлы с лимитом 10 записей. quick-ref-feature-execution.md заполнился (10 записей из sequencing/recovery/communication), запись #32 была молча отброшена. Reviewer обнаружил: #32 должна попасть в do-task (overflow bucket). Задача не описывала overflow-поведение.
+**Pattern:** При реализации алгоритма "распределить N элементов по M buckets с max-cap" — явно определить политику overflow до написания кода: (1) куда попадают элементы сверх cap (следующий bucket, default bucket, ошибка), (2) как проверить что ни один элемент не потерян. Без явной политики реализатор молча выбросит overflow.
+**Scope:** universal
+**Category:** tool-selection

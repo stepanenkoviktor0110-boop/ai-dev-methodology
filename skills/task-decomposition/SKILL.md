@@ -147,3 +147,7 @@ After user approves task decomposition, calculate session grouping for predictab
 - [ ] All phases completed (tasks created, validation passed)
 - [ ] All tasks match template (frontmatter: status, depends_on, wave, skills, reviewers, teammate_name)
 - [ ] Validation: both validators passed or user confirmed remaining issues
+
+## Promoted Patterns
+
+**Verify all cross-references after task generation (Seen: 2):** Check file paths via `test -e`, decision numbers by counting in tech-spec, depends_on by confirming the dependency actually produces the referenced artifact. Agents generate references by analogy/assumption, not by verification.
