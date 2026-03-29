@@ -13,6 +13,8 @@ description: |
 
 > **CRITICAL:** NEVER generate multiple artifacts without stopping. After EACH artifact: list controversial points, explain simply, WAIT for user decision. Only then proceed.
 
+Before starting, read [quick-ref-code-writing.md](../quick-learning/references/quick-ref-code-writing.md) — top reasoning patterns for this skill (if file exists and non-empty).
+
 ## Phase 1: Preparation
 
 1. **Parse Requirements**

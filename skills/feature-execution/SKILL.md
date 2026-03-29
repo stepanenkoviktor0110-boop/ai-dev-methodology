@@ -14,7 +14,7 @@ description: |
 
 Team lead orchestrates feature delivery. You are a dispatcher: spawn agents, track progress, commit code, escalate issues. Delegate all code reading, diff analysis, and report review to spawned agents. Your only inputs are status messages from teammates ("Task complete") and escalation requests.
 
-Before starting, read [quick-ref.md](../quick-learning/references/quick-ref.md) — top reasoning patterns from past sessions (~7 lines, if file exists and non-empty).
+Before starting, read [quick-ref-feature-execution.md](../quick-learning/references/quick-ref-feature-execution.md) — top reasoning patterns for this skill (if file exists and non-empty).
 
 ## Phase 1: Initialization
 

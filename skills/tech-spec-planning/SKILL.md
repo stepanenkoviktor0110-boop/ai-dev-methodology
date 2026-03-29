@@ -19,7 +19,7 @@ Create technical specification through code research, adaptive clarification, an
 **Output:** `work/{feature}/tech-spec.md` (approved)
 **Language:** Technical documentation in English, communication in Russian
 
-Before starting, read [quick-ref.md](../quick-learning/references/quick-ref.md) — top reasoning patterns from past sessions (if file exists and non-empty).
+Before starting, read [quick-ref-tech-spec-planning.md](../quick-learning/references/quick-ref-tech-spec-planning.md) — top reasoning patterns for this skill (if file exists and non-empty).
 
 ## Phase 1: Load Context
 

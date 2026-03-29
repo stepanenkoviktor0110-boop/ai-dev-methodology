@@ -13,6 +13,8 @@ description: |
 
 Decompose tech-spec Implementation Tasks into individual task files with parallel creation and validation.
 
+Before starting, read [quick-ref-task-decomposition.md](../quick-learning/references/quick-ref-task-decomposition.md) — top reasoning patterns for this skill (if file exists and non-empty).
+
 **Input:** `work/{feature}/tech-spec.md` (status: approved)
 **Output:** `work/{feature}/tasks/*.md` (validated)
 **Language:** Task files in English, communication in Russian

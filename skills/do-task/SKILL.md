@@ -12,6 +12,8 @@ description: |
 
 Execute a spec-driven task with validation and status tracking.
 
+Before starting, read [quick-ref-do-task.md](../quick-learning/references/quick-ref-do-task.md) — top reasoning patterns for this skill (if file exists and non-empty).
+
 ## Step 1: Read Task
 
 1. Read task file (user provides path or task number)

@@ -46,6 +46,8 @@ Conduct interview in Russian. Be thorough and opinionated — an engaged co-thin
 
 ### Phase 1: Study Project Knowledge
 
+Before starting, read [quick-ref-user-spec-planning.md](../quick-learning/references/quick-ref-user-spec-planning.md) — top reasoning patterns for this skill (if file exists and non-empty).
+
 Read ALL files from `.claude/skills/project-knowledge/references/`. If directory missing or empty — warn user, suggest running project-planning skill (or `/init-project-knowledge` command).
 
 These files are your context for the entire interview. Reference them when asking questions and proposing solutions.
