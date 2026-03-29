@@ -115,21 +115,18 @@ If distinct — append to the appropriate section of `$AGENTS_HOME/skills/quick-
 
 Add/update the entry in `$AGENTS_HOME/skills/quick-learning/references/triad-index.md`.
 
-### Step 3.5: Promote (if Seen reaches 3)
+### Step 3.5: Promote (if Seen reaches 2)
 
-If any entry reaches Seen: 3 — follow the promotion pipeline from quick-learning SKILL.md:
+If any entry reaches Seen: 2 — follow the promotion pipeline from quick-learning SKILL.md:
 1. Identify target skill by category
 2. Add pattern as permanent instruction in target skill's SKILL.md
 3. Remove entry from reasoning-patterns.md
 4. Remove row from triad-index.md
-5. Update quick-ref.md if universal
+5. Update per-skill quick-ref-{skill-name}.md if universal
 
 ### Step 3.6: Pruning Check
 
-After writing, count rows in `triad-index.md`. If more than 25 rows — run pruning as defined in quick-learning SKILL.md Step 3.5:
-1. Remove `Seen: 1` entries older than 30 days from both `triad-index.md` and `reasoning-patterns.md`.
-2. Merge similar entries.
-3. Remove contradicted entries.
+Patterns are deleted only if explicitly contradicted by newer experience. No automatic cap or TTL-based removal.
 
 **Writing rules (same as quick-learning):**
 - Must be actionable — a concrete instruction, not vague advice
@@ -138,7 +135,7 @@ After writing, count rows in `triad-index.md`. If more than 25 rows — run prun
 - Every entry MUST have a Triad field
 - **Mechanical pre-filter for similarity:** if Goal shares 3+ content words with existing Goal — treat as Near match candidate
 
-**Checkpoint:** entries written, triad-index updated, pruning executed if needed, promotions executed if any.
+**Checkpoint:** entries written, triad-index updated, promotions executed if any.
 
 ## Phase 4: Report
 
@@ -163,5 +160,5 @@ Before finishing, verify:
 - [ ] Similarity check performed against triad-index
 - [ ] No duplicates — existing patterns got Seen++ instead
 - [ ] Triad-index updated
-- [ ] Promotions executed if any pattern reached Seen: 3
+- [ ] Promotions executed if any pattern reached Seen: 2
 - [ ] Summary shown to user
