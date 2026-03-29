@@ -37,3 +37,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 30 | написание нового скилла по образцу существующего | прочитать оригинальный SKILL.md и копировать пути буквально | не воспроизводить пути к артефактам по памяти-предположению | universal | 1 | Universal |
 | 31 | задача в одной волне ссылается на результат другой задачи | заменить зависимость на чтение общего source of truth | сохранить параллельность волны без рисков read-after-write | universal | 1 | Universal |
 | 32 | задача на удаление фичи/константы/поля | перед ревью проверить dead variables, stale comments, duplicate tests | не тратить review-раунд на предсказуемые артефакты удаления | universal | 1 | Universal |
+| 33 | редактирование/компрессия AI-промта | проверить prohibition/caps → заменить на motivation-framing | не тратить review-раунды на предсказуемую emphasis-ошибку | universal | 1 | Universal |
