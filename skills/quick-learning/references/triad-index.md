@@ -11,7 +11,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 4 | PROMOTED → tech-spec-planning | verify values/methods against real docs | — | — | 3 | — |
 | 5 | PROMOTED → tech-spec-planning | перенести ВСЕ коды ответа И формат данных в спек | — | — | 3 | — |
 | 6 | post-deploy verification с пользователем | планировать 2-4 итерации UX-правок как норму | не считать UX-корректировки проблемой процесса | universal | 1 | Universal |
-| 7 | генерация задач из tech-spec | проверять все cross-references (пути через test -e, номера решений, depends_on) | предотвратить битые ссылки в задачах | universal | 2 | Universal |
+| 7 | PROMOTED → task-decomposition | проверять все cross-references после генерации задач | — | — | 2 | — |
 | 8 | AC для markdown-only фич | формулировать через наличие конкретных артефактов | сделать AC автоматически проверяемыми | universal | 1 | Universal |
 | 9 | audit-агенты сообщают о невозможности записи | lead сразу записывает результаты сам | не терять время на повторные попытки агента | situational | 1 | Situational |
 | 10 | ревью нашло паттерн ошибки (не разовый баг) | добавить предупреждение в промт следующего teammate | предотвратить повторение ошибки в следующих задачах | situational | 1 | Situational |
@@ -39,4 +39,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 32 | задача на удаление фичи/константы/поля | перед ревью проверить dead variables, stale comments, duplicate tests | не тратить review-раунд на предсказуемые артефакты удаления | universal | 1 | Universal |
 | 33 | редактирование/компрессия AI-промта | проверить prohibition/caps → заменить на motivation-framing | не тратить review-раунды на предсказуемую emphasis-ошибку | universal | 1 | Universal |
 | 34 | smoke-команды с проверкой размера файла | использовать `[ $(wc -l < FILE) -lt N ]` вместо awk-условия | предотвратить ложно-проходящий size guard | universal | 1 | Universal |
-| 34 | алгоритм распределяет записи по bucket-ам с max-cap | определить overflow-политику до реализации | не терять записи при заполнении bucket-а | universal | 1 | Universal |
+| 35 | алгоритм распределяет записи по bucket-ам с max-cap | определить overflow-политику до реализации | не терять записи при заполнении bucket-а | universal | 1 | Universal |
