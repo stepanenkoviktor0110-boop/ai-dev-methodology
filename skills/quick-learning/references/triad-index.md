@@ -5,7 +5,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 
 | # | Trigger | Action | Goal | Scope | Seen | Section |
 |---|---------|--------|------|-------|------|---------|
-| 1 | создание нового артефакта | проверить доступность в runtime среде | не объявлять "готово" пока не виден потребителю | universal | 1 | Universal |
+| 1 | создание/изменение артефакта | верифицировать результат в реальной среде перед объявлением "готово" | не объявлять "готово" пока результат не подтверждён | universal | 2 | Universal |
 | 2 | добавление auth flow к импортированным данным | проверить credentials + isActive | не обнаруживать missing auth на user verification | universal | 1 | Universal |
 | 3 | generic retry decorator оборачивает API-вызов | явно исключить non-retryable exceptions | не ретраить ошибки, которые повторятся всегда | universal | 1 | Universal |
 | 4 | PROMOTED → tech-spec-planning | verify values/methods against real docs | — | — | 3 | — |
@@ -33,3 +33,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 26 | старт комплексного проекта по методологии | включить server action timing в scope MVP | иметь baseline метрик до оптимизаций, видеть деградацию | universal | 1 | Universal |
 | 27 | чтение конфигов удалённой системы | маскировать секреты в команде до выполнения | не допустить утечку секретов в логи | universal | 1 | Universal |
 | 28 | performance problem на low-traffic сервере | проверить дефолтные таймауты/лимиты connection pool и кэшей | найти root cause в конфигурации до оптимизации кода | universal | 1 | Universal |
+| 29 | визуальная задача с референс-скриншотами | сверить типографику с референсом ДО написания CSS | избежать серии fix-коммитов по визуальному несоответствию | universal | 1 | Universal |

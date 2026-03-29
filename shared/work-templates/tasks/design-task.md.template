@@ -1,0 +1,126 @@
+---
+status: planned                    # planned -> in_progress -> done
+screen:                            # screen name from design-plan.md
+page_type:                         # login, dashboard, landing, catalog, settings, etc.
+layout:                            # layout pattern from generation-guide.md (15 available)
+complexity: normal                 # normal | high (high for dashboards with 3+ widget sections)
+depends_on: []                     # design task dependencies
+wave: 1                            # parallel execution wave
+reviewers: [skill-checker]         # reviewers for this task
+---
+
+# Task N: [Screen Name]
+
+## Description
+
+What we are generating and why. Link to the screen's role in the product flow.
+
+## What to Generate
+
+Concrete description of the page for design-generate:
+- Page purpose and user goal
+- Key interactions on this page
+- Navigation context (where user comes from, where they go next)
+
+## Visual Hierarchy
+
+Element priority on the page (primary -> secondary -> tertiary):
+
+1. **Primary:** [main CTA or key content — what the user sees first]
+2. **Secondary:** [supporting content — what draws attention next]
+3. **Tertiary:** [supplementary info — navigation, metadata, footer]
+
+## Components
+
+List of components with variants (component:variant format):
+
+- `button:primary` — [purpose]
+- `button:secondary` — [purpose]
+- `card:elevated` — [purpose]
+- `input:default` — [purpose]
+- `navigation:top` — [purpose]
+
+<!-- Add or remove components as needed. Use component:variant notation
+     so design-generate can match them to .design-system/components/. -->
+
+## Content
+
+Real content or placeholder descriptions for each section:
+
+- **Heading:** [exact text or description]
+- **Subheading:** [exact text or description]
+- **Body text:** [exact text or "realistic placeholder about..."]
+- **Images:** [description of what images show, colored rectangles if placeholder]
+- **Data:** [realistic sample data for tables, lists, cards]
+
+<!-- Provide real content when available. For placeholders: use diverse names,
+     meaningful text, realistic numbers — not "Lorem ipsum". -->
+
+## Layout Details
+
+Selected layout pattern: `[layout name from generation-guide.md]`
+
+- **Structure:** [description of how sections are arranged]
+- **Grid/columns:** [column setup, sidebar width, content area]
+- **Spacing:** [key spacing decisions — section gaps, padding]
+- **Alignment:** [alignment strategy for content blocks]
+
+<!-- Reference generation-guide.md for layout CSS implementation details. -->
+
+## Responsive Notes
+
+Adaptive behavior for this page:
+
+- **Mobile breakpoint:** [e.g., 768px — stack columns, hide sidebar]
+- **Tablet breakpoint:** [e.g., 1024px — collapse grid to 2 columns]
+- **Reflow strategy:** [stack / collapse / hide / reorganize]
+- **Touch targets:** [minimum 44px for interactive elements]
+- **Content priority on mobile:** [what stays visible, what collapses]
+
+## Acceptance Criteria
+
+- [ ] HTML file generated at `.design-system/pages/[name].html`
+- [ ] SVG file generated at `.design-system/pages/[name].svg`
+- [ ] All design tokens from tokens.json applied (no hardcoded values)
+- [ ] Visual hierarchy matches the specified primary/secondary/tertiary order
+- [ ] All listed components present on the page
+- [ ] Layout matches the specified pattern
+- [ ] Content matches specifications (real or realistic placeholders)
+- [ ] [screen-specific criteria]
+
+## Context Files
+
+- [design-plan.md](../design-plan.md)
+- [design-spec.md](../design-spec.md)
+- [decisions.md](../decisions.md)
+- [tokens.json](.design-system/tokens.json)
+- [taste-profile.md](.design-system/taste-profile.md)
+
+## Verification Steps
+
+### Smoke
+
+<!-- Bash checks for generated files. No deployment needed. -->
+
+```bash
+test -f .design-system/pages/[name].html && test -f .design-system/pages/[name].svg && echo "Files exist"
+```
+
+## Details
+
+<!-- All details for task execution — layout specifics, edge cases, component notes. -->
+
+**Sections:** [list of page sections with their layout regions]
+**Missing components:** [components not in .design-system/components/ that need on-the-fly creation]
+**Edge cases:** [empty states, long text, missing images, error states]
+**Complexity notes:** [if complexity: high — additional details for widget sections, data density]
+
+## Reviewers
+
+- **skill-checker** -> `logs/working/task-{N}/skill-checker-{round}.json`
+
+## Post-completion
+
+- [ ] Record brief report in decisions.md (Summary: 1-3 sentences, reviews with links to JSON, no findings tables or dumps)
+- [ ] If deviated from spec — describe deviation and reason
+- [ ] Update design-plan/design-spec if anything changed
