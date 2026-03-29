@@ -194,3 +194,7 @@ Verify each item before marking complete. If any item fails, return to the relev
 - [ ] Review JSON reports saved to `logs/working/task-{N}/`
 - [ ] Design tokens used via CSS custom properties for UI files (if tokens.json was loaded)
 
+
+## Promoted Patterns
+
+- **Маскируй секреты ДО выполнения команды** (Seen: 2): при любом чтении конфигов удалённой машины — встраивать маскировку в команду (`sed 's/:[^@]*@/:***@/'`) или проверять наличие переменной через `grep -c`. Никогда не выводить `.env` целиком.
