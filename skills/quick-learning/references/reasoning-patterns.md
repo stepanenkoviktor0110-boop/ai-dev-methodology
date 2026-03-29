@@ -383,3 +383,22 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** При первом применении шаблона к новому домену — сгенерировать 1 пилотную задачу, прогнать через валидатор, зафиксировать все несоответствия. Только после успешной пилотной — генерировать остальные. Стоимость пилота минимальна; стоимость 30+ правок в 8 задачах — в 8 раз выше.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-03-29 pipeline-stabilization / session-3: Security severity привязывается к модели развёртывания
+
+**Seen:** 1
+**Triad:** security audit находит medium-уязвимости в локальном CLI-инструменте → классифицировать как non-blocking с явным условием "до перехода на service/multi-user деплой" → не блокировать релиз по находкам нерелевантным текущей модели развёртывания
+**Context:** Task 9 нашла 3 medium-находки (отсутствие hard-limit на --text, произвольный --data-dir, отсутствие size limits на validator fields). Все три реальны и требуют fix — но только перед service deployment. Для single-user CLI они не создают угрозы.
+**Pattern:** При аудите безопасности явно привязывать severity к модели развёртывания. Medium-находка в single-user CLI и medium-находка в multi-user service — разные приоритеты. Записывать условие перехода ("before service deployment") прямо в статус задачи, не только в comments.
+**Scope:** situational
+**Situation:** инструмент развёртывается как локальный CLI для одного пользователя; есть планы перейти на service-модель
+**Category:** scope-management
+
+### 2026-03-29 pipeline-stabilization / session-3: QA разделяет failed и deferred
+
+**Seen:** 1
+**Triad:** QA-критерий требует live-вызова внешнего сервиса (LLM, API, DB) недоступного в test-среде → отметить как deferred с явным условием, не как failed → получить чистый QA pass на автоматизируемых критериях без блокировки
+**Context:** Task 11 (pre-deploy QA) прошла 20 из 22 критериев. 2 оставшихся требуют live Claude CLI вызова с активной подпиской. Вместо fail или skip — deferred с записью в deferredToPostDeploy, что даёт чёткий план для post-deploy verification.
+**Pattern:** В QA-отчёте явно разделять три статуса: passed, failed, deferred. Deferred — критерий, истинность которого не может быть проверена автоматически (требует live-среды, подписки, внешнего пользователя). Deferred не блокирует релиз, но создаёт обязательный чеклист для post-deploy. Не смешивать с "не успели проверить".
+**Scope:** universal
+**Category:** sequencing
