@@ -312,6 +312,15 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** information-gathering
 
+### 2026-03-29 fix-knowledge-pipeline / decompose: Заменяй межзадачную зависимость на общий source of truth
+
+**Seen:** 1
+**Triad:** задача в одной волне ссылается на результат другой задачи той же волны → заменить зависимость на чтение общего source of truth (decisions.md, tech-spec.md) → сохранить параллельность волны без рисков read-after-write
+**Context:** Task 2 (align retrospective) ссылалась на quick-learning/SKILL.md "after Task 1 modifies it", но обе задачи в Wave 1 (параллельно). depends_on: [1] + wave: 1 — противоречие. Решение: Task 2 читает decisions.md напрямую (те же решения, но source of truth, а не output другой задачи). Зависимость убрана, параллельность сохранена.
+**Pattern:** При декомпозиции на параллельные задачи — если задача "читает результат другой" в той же волне, заменить зависимость на чтение общего документа (decisions.md, tech-spec.md). Если это невозможно — перенести задачу в следующую волну. Третьего не дано: depends_on + same wave = гонка данных.
+**Scope:** universal
+**Category:** problem-decomposition
+
 ### 2026-03-29 missing-ui-details / wave-2: Сверяй типографику с референсом ДО реализации
 
 **Seen:** 1

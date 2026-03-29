@@ -35,3 +35,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 28 | performance problem на low-traffic сервере | проверить дефолтные таймауты/лимиты connection pool и кэшей | найти root cause в конфигурации до оптимизации кода | universal | 1 | Universal |
 | 29 | визуальная задача с референс-скриншотами | сверить типографику с референсом ДО написания CSS | избежать серии fix-коммитов по визуальному несоответствию | universal | 1 | Universal |
 | 30 | написание нового скилла по образцу существующего | прочитать оригинальный SKILL.md и копировать пути буквально | не воспроизводить пути к артефактам по памяти-предположению | universal | 1 | Universal |
+| 31 | задача в одной волне ссылается на результат другой задачи | заменить зависимость на чтение общего source of truth | сохранить параллельность волны без рисков read-after-write | universal | 1 | Universal |
