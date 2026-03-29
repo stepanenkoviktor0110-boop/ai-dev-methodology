@@ -122,7 +122,28 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
    Smoke catches integration bugs that mocked tests miss:
    real API responses, library initialization, config validity.
 
-4. **Run Reviews** (launch in parallel)
+4. **Post-Generation Guard**
+
+   Load [quick-ref-code-writing.md](../quick-learning/references/quick-ref-code-writing.md) as text reminders (if file exists). Scan all code generated or modified in this task for the following violations:
+
+   **Check 1 — Secrets in log calls:**
+   Grep generated code for `.env`, `password`, `secret`, `token`, `api_key` appearing inside `console.log`, `print`, `logger.*` or similar logging calls.
+   If found → remove the secret from the log call immediately.
+
+   **Check 2 — Missing timeout in HTTP calls:**
+   Check all `fetch()`, `axios.*()`, `requests.*()` calls for a timeout parameter.
+   If a call lacks timeout → add a 30 s timeout.
+
+   **Check 3 — Missing cache/dedup on rate-limited API calls:**
+   Check external API calls that may be rate-limited for cache or dedup logic.
+   If repeated calls to the same endpoint without caching → add caching or dedup.
+
+   **Fix-and-reinforce:** if any violation is found, fix the code before proceeding.
+   After fixing, check whether the violation matches a trigger in
+   [triad-index.md](../quick-learning/references/triad-index.md). If it matches →
+   increment that pattern's Seen counter by 1.
+
+5. **Run Reviews** (launch in parallel)
 
    **Working as part of a team** (received reviewer instructions from team lead via SendMessage)? Follow team protocol instead of steps below — team lead manages reviewer flow.
 
@@ -140,7 +161,7 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
    `{N}` = task number from task file; `"standalone"` if no task file.
    On re-review: new file with incremented round number, old file stays.
 
-5. **Process Findings**
+6. **Process Findings**
 
    Evaluate each finding on merit — severity is metadata, not a filter.
    A valid minor fix still improves quality. Reason: skipping valid findings
