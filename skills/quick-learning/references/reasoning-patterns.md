@@ -287,7 +287,7 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 
 ### 2026-03-28 design-pipeline-v2 / userspec: Генерируй все шаги deliverable целиком, не только ближайший
 
-**Seen:** 1
+**Seen:** 2
 **Triad:** создание multi-step deliverable (план, roadmap, серия промптов) → сгенерировать все шаги целиком, не только ближайший → не заставлять пользователя ловить недостающие части
 **Context:** Создал промпт только для Session 1 из 6. Пользователь сразу заметил что промпт для Session 2 будет некорректным. Пришлось создавать session-roadmap.md со всеми промптами — то, что нужно было сделать сразу.
 **Pattern:** Когда deliverable состоит из нескольких шагов (серия промптов, roadmap, план сессий) — генерировать ВСЕ шаги сразу, даже если пользователь явно просил только следующий. Предвидеть проблему устаревания, а не ждать пока пользователь её поймает.
@@ -300,6 +300,15 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Triad:** performance problem на сервере с низким трафиком → проверить дефолтные таймауты/лимиты connection pool и кэшей → найти root cause в конфигурации до оптимизации кода
 **Context:** TTFB 7-23 секунд на Next.js SSR. Инстинкт — искать тяжёлые запросы, N+1, SSR complexity. Реальная причина: pg Pool `idleTimeoutMillis: 10000` (дефолт) — на low-traffic сервере ВСЕ соединения закрывались каждые 10 секунд, каждый запрос = DNS + TCP + PG handshake. Фикс: одно число `10000 → 60000` = TTFB с 7-23 сек до 196 мс.
 **Pattern:** При performance-проблемах на low-traffic серверах — первым делом проверять дефолтные таймауты и лимиты библиотек (connection pool idle timeout, cache TTL, keepalive). Одно число в конфиге часто даёт больше, чем рефакторинг запросов.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-03-29 design-pipeline-v2 / v2.2: При адаптации скилла по аналогии — читай оригинал, не полагайся на память
+
+**Seen:** 1
+**Triad:** написание нового скилла по образцу существующего → прочитать оригинальный скилл и скопировать пути/форматы буквально → не воспроизводить пути по памяти-предположению
+**Context:** design-task-decompose (Task 3) написан по образцу task-decomposition. Путь к session-plan.md указан как `work/{feature}/logs/session-plan.md` — по аналогии с логами. Реальный путь в task-decomposition: `work/{feature}/session-plan.md`. Ошибка обнаружена только в round 1 review, потребовала fix-коммита.
+**Pattern:** При написании нового скилла по образцу существующего — открыть оригинальный SKILL.md и копировать пути к генерируемым артефактам буквально, не из памяти. Особенно: пути к session-plan.md, task-файлам, decisions.md — они не интуитивны и легко воспроизводятся неверно.
 **Scope:** universal
 **Category:** information-gathering
 
