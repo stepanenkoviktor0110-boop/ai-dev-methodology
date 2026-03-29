@@ -2,7 +2,7 @@
 name: quick-learning
 description: |
   Owner of the unified methodology knowledge system: format, triad structure,
-  similarity check, 4-tier graduation, promotion, and pruning rules.
+  similarity check, 4-tier graduation, and promotion rules.
 
   Two writers feed this system:
   - quick-learning (this skill) — reasoning patterns from sessions (HOW decisions were made)
@@ -18,7 +18,7 @@ description: |
 
 # Quick Learning
 
-**Format owner** for the unified methodology knowledge system. Defines triad structure, similarity check, promotion pipeline, and pruning rules. Both quick-learning and retrospective follow these rules when writing entries.
+**Format owner** for the unified methodology knowledge system. Defines triad structure, similarity check, and promotion pipeline. Both quick-learning and retrospective follow these rules when writing entries.
 
 **Time budget:** Under 60 seconds. This is NOT a full retrospective.
 **Input:** `work/{feature}/decisions.md` + git log of current session
@@ -147,16 +147,6 @@ When merging, keep the **most general trigger** and the **most actionable wordin
 - Max 2 entries per session (retrospective allows max 3 per feature — larger scope).
 - **Every entry MUST have a Triad field** — this is the key for similarity matching.
 
-### Step 3.5: Pruning Check (5 sec)
-
-After writing, count rows in `triad-index.md`. If more than 25 rows:
-
-1. Remove `Seen: 1` entries with date older than 30 days — from both `triad-index.md` and `reasoning-patterns.md`.
-2. Merge similar entries (same goal, different wording) — combine triggers, keep most actionable wording.
-3. Remove entries contradicted by later experience.
-
-This step is **mandatory** for both quick-learning and retrospective. It is the only mechanism that keeps the buffer bounded.
-
 ### Step 4: Summary (5 sec)
 
 Show user ONE line:
@@ -172,13 +162,13 @@ Move on to session end protocol.
 Patterns live in three tiers. Each tier is smaller, cheaper, and more permanent than the previous.
 
 ```
-Tier 0: Triad Index                 Tier 1: Transit Buffer         Tier 2: Skill Instructions     Tier 3: Quick Reference Card
-triad-index.md                      reasoning-patterns.md          {skill}/SKILL.md               quick-ref.md
+Tier 0: Triad Index                 Tier 1: Transit Buffer         Tier 2: Skill Instructions     Tier 3: Quick Reference Cards
+triad-index.md                      reasoning-patterns.md          {skill}/SKILL.md               quick-ref-{skill-name}.md
 ━━━━━━━━━━━━━━━━━━━━━               ━━━━━━━━━━━━━━━━━━━━━          ━━━━━━━━━━━━━━━━━━━━━          ━━━━━━━━━━━━━━━━━━━━━
-1-line summaries of all triads      Full entries with context       Promoted patterns (Seen ≥ 3)   Top 5-7 one-liners
-~1 line per pattern (max 30)        Seen counter, scope, category   Permanent, loaded by skill     Loaded at session START
-Read: ALWAYS (for similarity)       Read: only on merge/promote     Read: by skill itself          Read: 7 lines max
-Writers: quick-learning + retro     Writers: quick-learning + retro Written: at promotion          Auto-generated
+1-line summaries of all triads      Full entries with context       Promoted patterns (Seen ≥ 2)   Top 10 one-liners per skill
+~1 line per pattern                 Seen counter, scope, category   Permanent, loaded by skill     Loaded at session START
+Read: ALWAYS (for similarity)       Read: only on merge/promote     Read: by skill itself          Read: max 10 lines per file
+Writers: quick-learning + retro     Writers: quick-learning + retro Written: at promotion          Auto-generated per skill
 ```
 
 ### Tier 0: Triad Index (the similarity engine)
@@ -198,11 +188,11 @@ Format:
 
 **Rules:**
 - Updated on every write, merge, or promotion.
-- When a pattern is promoted (Seen ≥ 3) — remove its row from the index.
+- When a pattern is promoted (Seen ≥ 2) — remove its row from the index.
 - The subagent reads triad-index.md (~30 lines) instead of the full reasoning-patterns.md for similarity matching.
 - After finding a match in the index, the subagent locates the corresponding entry in reasoning-patterns.md by matching its title (`### date feature: title`).
 
-### Tier 1 → Tier 2: Promotion (when Seen reaches 3)
+### Tier 1 → Tier 2: Promotion (when Seen reaches 2)
 
 1. Identify target skill by category:
 
@@ -220,35 +210,51 @@ Format:
 | design-iteration | design-retrospective |
 
 2. Add the pattern as a permanent instruction in the target skill's SKILL.md (1-2 lines, imperative).
-3. **Remove the entry from reasoning-patterns.md.**
-4. Update quick-ref.md if the pattern is universal.
+3. Remove the entry from reasoning-patterns.md.
+4. Regenerate `quick-ref-{skill-name}.md` for the target skill (see Tier 3 below).
 5. Log: `Quick Learning: promoted "{pattern}" → {skill} SKILL.md`
 
-### Tier 2 → Tier 3: Quick Reference Card
+#### Guard-triggered Seen increment
 
-File: `$AGENTS_HOME/skills/quick-learning/references/quick-ref.md`
+When a guard (smoke test, reviewer, self-verification) catches an error that matches an existing pattern's trigger, increment that pattern's Seen counter in `triad-index.md` — even outside the quick-learning flow. This creates a feedback loop: patterns that keep catching real issues get promoted faster.
 
-Auto-generated from the strongest promoted universal patterns. Max 7 entries. Format:
+#### Manual promote
+
+User can say "promote pattern {N}" (where N is the row number in triad-index.md) to force-promote any pattern to its target skill regardless of Seen count. Follow the same promotion steps 1-5 above.
+
+### Tier 2 → Tier 3: Quick Reference Cards (per-skill)
+
+Files: `$AGENTS_HOME/skills/quick-learning/references/quick-ref-{skill-name}.md`
+
+Auto-generated per skill from promoted patterns filtered by category. Max 10 entries per file, sorted by Seen desc. Each pipeline skill reads its own file at session start.
+
+Category-to-file mapping (derived from category-to-skill table above):
+
+| File | Categories |
+|------|-----------|
+| `quick-ref-feature-execution.md` | sequencing, recovery, communication |
+| `quick-ref-tech-spec-planning.md` | information-gathering |
+| `quick-ref-task-decomposition.md` | problem-decomposition |
+| `quick-ref-user-spec-planning.md` | scope-management |
+| `quick-ref-code-writing.md` | tool-selection |
+| `quick-ref-do-task.md` | orchestration-level patterns (cross-cutting, not covered by categories above) |
+| `quick-ref-design-system-init.md` | design-taste |
+| `quick-ref-design-generate.md` | design-process |
+| `quick-ref-design-retrospective.md` | design-iteration |
+
+Format per file:
 
 ```markdown
-# Quick Reference — Reasoning Patterns
+# Quick Reference — {Skill Name}
 
-1. {one-line pattern}
-2. {one-line pattern}
+1. {one-line pattern} (Seen: N)
+2. {one-line pattern} (Seen: N)
 ...
 ```
 
-This file is loaded by feature-execution at **session start** (Phase 1). Cost: ~7 lines of context. Benefit: accumulated wisdom applied immediately.
+Cost: max 10 lines of context per skill. Benefit: only relevant patterns loaded.
 
-**When to regenerate:** every time a universal pattern is promoted to Tier 2. Read all promoted universal patterns from skill SKILL.md files, pick top 7 by impact, rewrite quick-ref.md.
-
-### Pruning
-
-Pruning is executed by Step 3.5 (above) after every write. Trigger: triad-index exceeds 25 rows. Rules:
-
-1. Merge similar patterns (same insight, different wording).
-2. Remove `Seen: 1` entries older than 30 days — they didn't recur, noise.
-3. Remove patterns contradicted by later experience.
+**When to regenerate:** when a pattern is promoted to a specific skill, regenerate that skill's `quick-ref-{skill-name}.md`. Read all promoted patterns from the target skill's SKILL.md, pick top 10 sorted by Seen desc, rewrite the file.
 
 ## Self-Verification
 
@@ -257,5 +263,5 @@ Pruning is executed by Step 3.5 (above) after every write. Trigger: triad-index 
 - [ ] Scope correctly classified (universal vs situational)
 - [ ] No duplicates — existing patterns got Seen++ instead
 - [ ] Max 2 entries written
-- [ ] Promotions executed if any pattern reached Seen: 3
+- [ ] Promotions executed if any pattern reached Seen: 2
 - [ ] Summary shown to user
