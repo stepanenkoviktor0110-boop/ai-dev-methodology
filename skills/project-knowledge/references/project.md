@@ -32,16 +32,34 @@ Context is lost between AI sessions, spec discussions get skipped, and code qual
 ## Key Features
 
 - **Spec pipeline** — mandatory User Spec → Tech Spec → Tasks → Code hierarchy with 6 blocking gates; nothing proceeds without user approval
-- **40+ skills** — specialized AI agents for each pipeline stage (planning, coding, review, QA, documentation, retrospective)
+- **Sketch Mode** — lightweight path for prototyping: quick interview → sketch.md → code in one session, then decide: develop or discard
 - **Automated validators** — 2–5 parallel validators per pipeline stage (quality, adequacy, security, completeness, reality-check)
 - **Unified knowledge system** — triad-based `reasoning-patterns.md` buffer that accumulates lessons from each feature and feeds them back into skills
 - **Codex adaptation** — parallel version for OpenAI Codex with same methodology but different platform integration (`.agents/` paths, `spawn_agent` API)
 
 ---
 
+## Skill Classification
+
+The repo contains skills from multiple tracks. Only **core methodology** skills are actively maintained and synced to Codex:
+
+**Core methodology** (26 skills + sketch):
+- Planning: `user-spec-planning`, `tech-spec-planning`, `task-decomposition`, `project-planning`, `new-user-spec`, `new-tech-spec`, `decompose-tech-spec`
+- Execution: `code-writing`, `feature-execution`, `do-feature`, `do-task`, `done`, `write-code`
+- Quality: `code-reviewing`, `security-auditor`, `test-master`, `prompt-master`
+- QA/Deploy: `pre-deploy-qa`, `post-deploy-qa`, `deploy-pipeline`, `infrastructure-setup`
+- Meta: `methodology`, `retrospective`, `quick-learning`, `documentation-writing`, `skill-master`, `skill-test-designer`, `skill-tester`, `init-project`, `init-project-knowledge`
+- Sketch: `sketch` *(new — lightweight prototyping mode)*
+
+**Separate pipelines** (in this repo but maintained independently):
+- `design-*` (9 skills) — design pipeline, separate project track
+- `promoter` — promotional content generation pipeline
+- `skeleton-pipe` — custom pipeline generator
+
+---
+
 ## Out of Scope
 
-- Design pipeline (`design-*` skills) — maintained as a separate project track, not part of core methodology
 - Codex repo (`ai-dev-methodology-codex`) — a derived artifact; maintained separately, not the source of truth
 - Multi-user / team usage — methodology is designed for solo developer workflow
 - Web UI / dashboard — no interface planned; everything runs via Claude Code CLI
