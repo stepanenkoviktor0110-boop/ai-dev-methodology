@@ -155,3 +155,5 @@ After user approves task decomposition, calculate session grouping for predictab
 **Тест на стыке задач — добавить явно в spec/AC (Seen: 2):** Если при выполнении Task N обнаруживается тест, относящийся к scope Task M — добавить его явно в AC или TDD Anchor задачи M. Записи в decisions.md недостаточно: агент Task M decisions.md предыдущих задач не читает.
 
 **Wave поля Audit/Final Wave — числа, не метки (Seen: 2):** Если имплементационных волн N — audit = N+1, final = N+2. Передавать task-creator числа явно. Строки "audit"/"final" не проходят frontmatter schema-validation.
+
+**String-output assertions — ограничивай scope (Seen: 2):** Для тестов структурированного string-output (markdown, отчёты) недостаточно проверять наличие значения — добавь assertion на scope: извлекай нужную секцию (regex/split), затем проверяй значение внутри неё. Это отличает "значение есть" от "значение в нужном месте".

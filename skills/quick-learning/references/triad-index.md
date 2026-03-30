@@ -61,7 +61,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 54 | PROMOTED → feature-execution | явно описать processing logic во всех секциях/таблицах | — | — | 2 | — |
 | 55 | PROMOTED → task-decomposition | добавить тест явно в spec/AC той задачи, не только в notes | — | — | 2 | — |
 | 58 | user-spec содержит описательный блок с требованием не отражённым в AC | следовать только AC; зафиксировать разрыв decision-записью и обновить user-spec | не тащить неопределённость из описательного блока в реализацию | universal | 1 | Universal |
-| 59 | конструирование файловых путей из значений, десериализованных с диска | валидировать каждое значение против allowlist перед включением в path | предотвратить path traversal из данных, кажущихся доверенными | universal | 1 | Universal |
+| 59 | PROMOTED → code-writing | валидировать каждое значение (диск/user input) против allowlist перед path | — | — | 2 | — |
 | 56 | PROMOTED → task-decomposition | wave поля — числа, не метки (audit=N+1, final=N+2) | — | — | 2 | — |
 | 60 | TDD Anchor описывает тест для private метода класса | вызывать через инстанс объекта, не через прямой импорт | тесты не падают с ImportError до запуска реальной логики | situational | 1 | Situational |
 | 57 | написание агент-файла для multi-context (inline + spawn_agent) | давать нейтральный сигнал завершения, не back-reference на parent step | артефакт работает в обоих execution environments | universal | 1 | Universal |
@@ -73,9 +73,10 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 65 | Edit tool возвращает "File has been unexpectedly modified" на shared файле | переключиться на атомарный read-modify-write через скрипт, не повторять Edit | избежать накопления partial writes при параллельных сессиях | situational | 1 | Situational |
 | 66 | два шага процесса связаны по смыслу (A должен завершиться до показа B) | запускать A синхронно, ждать завершения, только потом выполнять B | гарантировать смысловой порядок — фоновый запуск A не означает A < B | universal | 1 | Universal |
 | 67 | конвертация пользовательского алгоритма в процедурный SKILL.md | добавить gate-вопрос в конце каждой фазы, даже если его нет в оригинале | удовлетворить структурные требования без повторного прогона валидатора | situational | 1 | Situational |
-| 68 | audit wave находит major finding в тесте с false-positive risk | создать ad-hoc fix task немедленно, не deferred | не допустить test suite с иллюзорным покрытием | universal | 1 | Universal |
-| 69 | тест проверяет маркер в string-output без привязки к секции | ограничить assertion срезом нужной секции (regex/slice) | тест падает при значении в неправильном месте | universal | 1 | Universal |
+| 68 | PROMOTED → feature-execution | немедленно создать ad-hoc fix при false-positive risk в тесте | — | — | 2 | — |
+| 69 | PROMOTED → task-decomposition | ограничить assertion срезом нужной секции для string-output | — | — | 2 | — |
 | 70 | пользователь добавляет нетривиальную фичу в mid-interview | задать scope-impact вопрос до обновления спека | не расширить v1 до архитектуры другого уровня | situational | 1 | Situational |
 | 71 | client-only storage + серверная автоматизация в одной фиче | проверить data-access совместимость до архитектурных решений | не получить конфликт storage-layer в середине спека | universal | 1 | Universal |
 | 72 | user-spec описывает delete/cleanup в системе с pipeline-статусами | ограничивать удаление терминальными статусами (enriched/done), не значением поля | не удалить записи ещё в обработке (pending/in-progress) | universal | 1 | Universal |
 | 73 | spec сужает критерий от обсуждённого в интервью (A or B → только A) | добавить в Технические решения "решили НЕ включать B, потому что..." | не тратить дополнительные раунды валидации на задокументирование очевидного для автора решения | universal | 1 | Universal |
+| 72 | многосессионная фича с session-plan и state-файлом | создавать/коммитить checkpoint.yml в конце каждой сессии | предотвратить отсутствующий state-файл при старте следующей сессии | situational | 1 | Situational |

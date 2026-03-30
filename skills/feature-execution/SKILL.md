@@ -222,6 +222,8 @@ When escalating:
 - **Субагент не завершил задачу — выполни напрямую:** Если субагент прерван (rejection, блокировка, ошибка записи) — lead немедленно выполняет задачу сам через Write/Edit, не ретраит субагент. Повторный spawn не поможет если причина — внешняя (права, permission-блок).
 - **Новый sentinel/marker в промте — описать во всех секциях:** При добавлении нового маркера в агентный промт — перечислить все секции и таблицы где маркер может появиться, прописать обработку в каждой. Частичное описание гарантирует major review findings.
 
+- **False-positive test finding — немедленный fix** (Seen: 2): Если audit wave нашла major finding с false-positive risk (тест зелёный, но покрытие иллюзорно) — создать ad-hoc fix task немедленно, не откладывать в deferred. Тест с false-positive risk ломает доверие ко всему test suite.
+
 ## Self-Verification
 
 - [ ] Execution plan created and approved

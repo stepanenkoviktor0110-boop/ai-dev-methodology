@@ -580,15 +580,7 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** scope-management
 
-### 2026-03-30 pipeline-report / techspec: Файловые пути из десериализованных данных — валидировать против allowlist
-
-**Seen:** 1
-**Triad:** конструирование файловых путей из значений, десериализованных с диска → валидировать каждое значение против известного allowlist перед включением в path → предотвратить path traversal из данных, кажущихся доверенными
-**Context:** pipeline-report: agent_id из stages_completed использовался в f"{agent_id}-output.json" без проверки. Скептик поймал CRITICAL — stages_completed читается с диска и может быть изменён между записью и чтением.
-**Pattern:** Данные, прочитанные с диска, не являются доверенными, даже если записаны самим приложением. Перед построением файлового пути из таких значений — проверить каждое значение против allowlist (список допустимых идентификаторов). Исправление — одна строка; цена игнорирования — path traversal.
-**Scope:** universal
-**Category:** tool-selection
-
+<!-- PROMOTED → code-writing (Seen: 2, 2026-03-30 pipeline-report retro — merged: session_id user-provided input added to trigger) -->
 ### 2026-03-30 methodology-sync-sketch / test-audit: grep в AVP чувствителен к регистру
 
 **Seen:** 1
@@ -618,24 +610,8 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Category:** sequencing
 
 
-### 2026-03-30 pipeline-report / session 2: major test finding с false-positive risk — немедленный fix, не deferred
-
-**Seen:** 1
-**Triad:** audit wave находит major finding в тесте с false-positive risk (тест зелёный при неверном поведении) → создать ad-hoc fix task немедленно, не откладывать в deferred → не допустить состояния "все тесты зелёные, но критическая логика не проверяется"
-**Context:** Test-auditor в audit wave 2 нашёл scenario 3: assert на маркер проходил, даже если маркер оказался в другой секции отчёта. Это было major, а не blocking — но немедленно превратилось в ad-hoc fix task вместо deferred.
-**Pattern:** При triage audit findings отдельно выделяй находки с false-positive risk: тест зелёный, но покрытие иллюзорное. Такие находки не становятся deferred даже при non-blocking статусе — они немедленно escalate к fix, потому что ломают доверие к test suite как safety net.
-**Scope:** universal
-**Category:** sequencing
-
-### 2026-03-30 pipeline-report / session 2: scope assertion для string-output тестов
-
-**Seen:** 1
-**Triad:** тест проверяет маркер/значение в string-output без привязки к конкретной секции → ограничить assertion срезом нужной секции (regex-extract или slice), не проверять по всему output → тест падает при значении в неправильной секции, а не только при полном отсутствии
-**Context:** assert "[ПРОПУЩЕНО ПОЛЬЗОВАТЕЛЕМ]" in report проходил даже если маркер оказался не в ### Детализация, а в другом месте отчёта. Fix: regex-extract секции, затем assert внутри среза.
-**Pattern:** Для тестов структурированного string-output (markdown, JSON-text, отчёты) assertion на наличие значения недостаточен — добавляй assertion на scope: извлекай нужную секцию regex/split, затем проверяй значение внутри неё. Это отличает "значение есть" от "значение в нужном месте".
-**Scope:** universal
-**Category:** problem-decomposition
-
+<!-- PROMOTED → feature-execution (Seen: 2, 2026-03-30 pipeline-report retro) -->
+<!-- PROMOTED → task-decomposition (Seen: 2, 2026-03-30 pipeline-report retro) -->
 ### 2026-03-30 freelance-dashboard / session 1: scope-impact check перед добавлением фичи в спек
 
 **Seen:** 1
@@ -682,3 +658,13 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Когда в спеке сужаешь фильтр/критерий относительно того, что обсуждалось — документируй не только то, что взяли, но и то, что явно отбросили и почему. Reviewers не знают что это осознанное решение, а не упущение.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-03-30 pipeline-report / session 2: checkpoint.yml не создан при старте второй сессии
+
+**Seen:** 1
+**Triad:** многосессионная фича с session-plan → создавать/коммитить checkpoint.yml в конце каждой сессии, не только читать его в начале следующей → предотвратить ситуацию «ожидаемый файл состояния отсутствует» при старте сессии 2+
+**Context:** При старте сессии 2 pipeline-report ожидался checkpoint.yml, но файл не был создан в конце сессии 1. Сессия 1 завершилась коммитом кода, но без явного шага создания state-файла — checkpoint.yml не входил в outputs сессии 1 по session-plan.
+**Pattern:** В session-plan для каждой сессии явно добавлять checkpoint.yml в список outputs. Если сессия 2 начинается с «читаем checkpoint.yml» — сессия 1 должна заканчиваться «создаём checkpoint.yml». Ожидать state-файл без его явного создания — молчаливая ошибка handoff.
+**Scope:** situational
+**Situation:** multi-session feature execution с явным session-plan и передачей состояния между сессиями
+**Category:** sequencing

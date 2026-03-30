@@ -182,6 +182,7 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
 
 **Checkpoint:** List post-work steps completed.
 
+- **Path traversal из любых внешних данных — allowlist** (Seen: 2): Перед построением файлового пути из любого внешнего значения (данные с диска, user input, API-параметры) — валидировать каждое значение против allowlist. Даже значения, записанные самим приложением, могут быть изменены между записью и чтением.
 ## Self-Verification
 
 Verify each item before marking complete. If any item fails, return to the relevant phase.
