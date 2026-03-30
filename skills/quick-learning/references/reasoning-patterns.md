@@ -13,6 +13,16 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
+### 2026-03-30 dashboard-v1 / session 1: Reviewer agents — спавнить после diff, не одновременно с тиммейтом
+
+**Seen:** 1
+**Triad:** запуск reviewer-агентов в feature-execution волне → спавнить ревьюеров ПОСЛЕ того как diff готов (после завершения тиммейта), передав diff прямо в промт → не получить ревьюеров что завершились до отправки diff
+**Context:** Все 6 ревьюеров (Tasks 1 и 2) были запущены параллельно с тиммейтами. Каждый инициализировался, прочитал контекст, написал "жду diff" — и завершился. Когда тиммейты закончили реализацию, SendMessage был недоступен, ревьюеры терминированы. Тиммейты перешли к self-review.
+**Pattern:** Reviewer agents — stateless, не умеют "ждать" в фоне после return. Спавнить их нужно только ПОСЛЕ завершения тиммейта, передавая готовый diff в промт напрямую. Либо — давать diff в промте изначально (если код написан lead-ом).
+**Scope:** situational
+**Situation:** feature-execution волна с reviewer workflow
+**Category:** sequencing
+
 ### 2026-03-30 dashboard-v1 / session 1: AC для deploy-задач — включать concurrency guards явно
 
 **Seen:** 1

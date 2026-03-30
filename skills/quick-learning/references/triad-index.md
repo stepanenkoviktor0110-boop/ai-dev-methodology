@@ -9,6 +9,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 2 | добавление auth flow к импортированным данным | проверить credentials + isActive | не обнаруживать missing auth на user verification | universal | 1 | Universal |
 | 3 | generic retry decorator оборачивает API-вызов | явно исключить non-retryable exceptions | не ретраить ошибки, которые повторятся всегда | universal | 1 | Universal |
 | 4 | написание AC для задачи создания CI/CD pipeline | явно включить concurrency/idempotency guards в AC | избежать предсказуемых deviation записей для best-practice additions | situational | 1 | Situational |
+| 75 | запуск reviewer-агентов в feature-execution волне | спавнить ревьюеров ПОСЛЕ завершения тиммейта, передав diff в промт | не получить ревьюеров завершившихся до отправки diff | situational | 1 | Situational |
 | 4 | PROMOTED → tech-spec-planning | verify values/methods against real docs | — | — | 3 | — |
 | 5 | PROMOTED → tech-spec-planning | перенести ВСЕ коды ответа И формат данных в спек | — | — | 3 | — |
 | 6 | post-deploy verification с пользователем | планировать 2-4 итерации UX-правок как норму | не считать UX-корректировки проблемой процесса | universal | 1 | Universal |
