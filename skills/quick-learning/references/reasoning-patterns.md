@@ -617,6 +617,25 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** sequencing
 
+
+### 2026-03-30 pipeline-report / session 2: major test finding с false-positive risk — немедленный fix, не deferred
+
+**Seen:** 1
+**Triad:** audit wave находит major finding в тесте с false-positive risk (тест зелёный при неверном поведении) → создать ad-hoc fix task немедленно, не откладывать в deferred → не допустить состояния "все тесты зелёные, но критическая логика не проверяется"
+**Context:** Test-auditor в audit wave 2 нашёл scenario 3: assert на маркер проходил, даже если маркер оказался в другой секции отчёта. Это было major, а не blocking — но немедленно превратилось в ad-hoc fix task вместо deferred.
+**Pattern:** При triage audit findings отдельно выделяй находки с false-positive risk: тест зелёный, но покрытие иллюзорное. Такие находки не становятся deferred даже при non-blocking статусе — они немедленно escalate к fix, потому что ломают доверие к test suite как safety net.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-03-30 pipeline-report / session 2: scope assertion для string-output тестов
+
+**Seen:** 1
+**Triad:** тест проверяет маркер/значение в string-output без привязки к конкретной секции → ограничить assertion срезом нужной секции (regex-extract или slice), не проверять по всему output → тест падает при значении в неправильной секции, а не только при полном отсутствии
+**Context:** assert "[ПРОПУЩЕНО ПОЛЬЗОВАТЕЛЕМ]" in report проходил даже если маркер оказался не в ### Детализация, а в другом месте отчёта. Fix: regex-extract секции, затем assert внутри среза.
+**Pattern:** Для тестов структурированного string-output (markdown, JSON-text, отчёты) assertion на наличие значения недостаточен — добавляй assertion на scope: извлекай нужную секцию regex/split, затем проверяй значение внутри неё. Это отличает "значение есть" от "значение в нужном месте".
+**Scope:** universal
+**Category:** problem-decomposition
+
 ### 2026-03-30 photo-crop / session 1: структурные gate-вопросы при конвертации алгоритма в процедурный скилл
 
 **Seen:** 1
