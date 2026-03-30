@@ -1,0 +1,44 @@
+{
+  "status": "approved_with_suggestions",
+  "summary": "Documentation is well-structured and accurately describes a non-standard project (a methodology framework, not an app). All four core files exist and are filled. Two major findings: architecture.md contains a structural diagram as a fenced code block, and deployment.md contains two bash install commands as fenced code blocks — both violate the no-code-in-docs principle.",
+  "filesReviewed": [
+    "project.md",
+    "architecture.md",
+    "patterns.md",
+    "deployment.md"
+  ],
+  "findings": [
+    {
+      "severity": "major",
+      "category": "code-in-docs",
+      "file": "architecture.md",
+      "section": "Project Structure",
+      "description": "Directory tree is rendered as a fenced code block (lines 24-53). This is a structural diagram, not code, but it still uses a code block and will drift as the repo evolves.",
+      "recommendation": "Replace the code block with a prose description of the top-level directories and their roles, or convert to a markdown table. Example: '`{skill-name}/SKILL.md` — skill instructions; `shared/` — scripts and templates; `work/` — per-feature working directories (gitignored or per-feature commit).' The directory names themselves can stay as inline code spans."
+    },
+    {
+      "severity": "major",
+      "category": "code-in-docs",
+      "file": "deployment.md",
+      "section": "Distribution and Codex Variant",
+      "description": "Two fenced bash blocks contain git clone and git pull commands (lines 22-25 and 28-30). These are exact shell commands embedded in documentation.",
+      "recommendation": "Convert to prose with inline code for the repo URL and target path. Example: 'Clone `https://github.com/stepanenkoviktor0110-boop/ai-dev-methodology` into `~/.claude/skills/`. Update via `git pull origin master` from that directory.' One-liner commands fit cleanly as inline code; multi-step sequences belong in a runbook file if needed."
+    },
+    {
+      "severity": "major",
+      "category": "duplication",
+      "file": "patterns.md",
+      "section": "Business Rules — Codex Adaptation Rule",
+      "description": "The Codex path-substitution rule (`.claude/` → `.agents/`, `Agent` tool → `spawn_agent`/`wait_agent`/`close_agent`) is stated in full in patterns.md and is also described in architecture.md under 'Platform Differences: Claude vs Codex' (table + prose). The technical facts appear in both files.",
+      "recommendation": "Keep the comparison table in architecture.md as the single source of platform differences. In patterns.md, replace the full rule with a cross-reference: 'See architecture.md — Platform Differences for path and API substitutions.'"
+    }
+  ],
+  "missingFiles": [],
+  "metrics": {
+    "totalFindings": 3,
+    "critical": 0,
+    "major": 3,
+    "minor": 0,
+    "totalSizeKB": 11.3
+  }
+}
