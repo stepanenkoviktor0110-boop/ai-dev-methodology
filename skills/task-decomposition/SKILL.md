@@ -152,4 +152,6 @@ After user approves task decomposition, calculate session grouping for predictab
 
 **Verify all cross-references after task generation (Seen: 2):** Check file paths via `test -e`, decision numbers by counting in tech-spec, depends_on by confirming the dependency actually produces the referenced artifact. Agents generate references by analogy/assumption, not by verification.
 
+**Тест на стыке задач — добавить явно в spec/AC (Seen: 2):** Если при выполнении Task N обнаруживается тест, относящийся к scope Task M — добавить его явно в AC или TDD Anchor задачи M. Записи в decisions.md недостаточно: агент Task M decisions.md предыдущих задач не читает.
+
 **Wave поля Audit/Final Wave — числа, не метки (Seen: 2):** Если имплементационных волн N — audit = N+1, final = N+2. Передавать task-creator числа явно. Строки "audit"/"final" не проходят frontmatter schema-validation.
