@@ -223,6 +223,7 @@ When escalating:
 - **Новый sentinel/marker в промте — описать во всех секциях:** При добавлении нового маркера в агентный промт — перечислить все секции и таблицы где маркер может появиться, прописать обработку в каждой. Частичное описание гарантирует major review findings.
 
 - **False-positive test finding — немедленный fix** (Seen: 2): Если audit wave нашла major finding с false-positive risk (тест зелёный, но покрытие иллюзорно) — создать ad-hoc fix task немедленно, не откладывать в deferred. Тест с false-positive risk ломает доверие ко всему test suite.
+- **Флаг-файл run-once — путь от якоря, не от CWD** (Seen: 2): Если задача создаёт state-файл (флаг, lock, checkpoint), привязывай его путь к стабильному anchor: `db_path.parent`, `Path(__file__).parent` или `settings.BASE_DIR`. Относительный `Path("data/...")` разрешается от CWD — а CWD у cron-процесса и dev-окружения разные. Перед approving AC задачи с флаг-файлом — проверь anchor.
 
 ## Self-Verification
 

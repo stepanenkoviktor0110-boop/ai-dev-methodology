@@ -16,3 +16,4 @@ Top patterns relevant to feature-execution. Max 10 entries, sorted by Seen (high
 9. **Ошибки повторяются между волнами** (Seen: 1) — Когда ревью находит паттерн ошибки, lead добавляет предупреждение в промт следующего teammate.
 10. **Язык пользователя, не профессиональный жаргон** (Seen: 1) — При обсуждении решений с пользователем — каждый термин расшифровывать при первом упоминании, объяснять последствия на примерах из его домена.
 10. **False-positive test finding — немедленный fix** (Seen: 2) — Если audit wave нашла major finding с false-positive risk — создать ad-hoc fix task немедленно, не deferred. Тест с иллюзорным покрытием ломает доверие ко всему test suite.
+11. **Флаг-файл run-once — путь от якоря, не от CWD** (Seen: 2) — Если задача создаёт state-файл (флаг, lock, checkpoint), привязывай путь к `db_path.parent` или `Path(__file__).parent`. CWD у cron и dev-окружения разные.
