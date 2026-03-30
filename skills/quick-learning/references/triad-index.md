@@ -55,3 +55,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 48 | задача "альтернативный дизайн" или "редизайн" | выбирать layout pattern независимо от существующей верстки | получить реальную альтернативу, а не ресайн | situational | 1 | Situational |
 | 49 | планирование синка файлов между двумя версиями репо | запустить code-research для классификации глубины diff до написания scope | не описывать механический sync который требует ручного ревью | universal | 1 | Universal |
 | 50 | репо содержит скиллы/модули из нескольких доменов | перечислить все домены и получить is_in_scope per domain до спека | не переписывать scope из-за итеративного уточнения границ | universal | 1 | Universal |
+| 51 | user-spec constraints называет конкретный файл или компонент | верифицировать через code-research что этот файл содержит нужный код | не пускать некорректный file-constraint в задачи | universal | 1 | Universal |

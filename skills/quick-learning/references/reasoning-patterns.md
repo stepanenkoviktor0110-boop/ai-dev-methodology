@@ -506,3 +506,12 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** При старте user-spec для проекта с несколькими доменами — сразу предъявить полный список всего что есть в репо и попросить пометить каждый домен: in/out/separate. Одним вопросом, а не серией уточнений.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-03-30 agent-research-prompt-fix / session 1: верифицировать файлы из constraints через code-research
+
+**Seen:** 1 (agent-research-prompt-fix)
+**Triad:** user-spec constraints называет конкретный файл или компонент → верифицировать через code-research что этот файл содержит нужный код → не пускать некорректный file-constraint в задачи
+**Context:** User-spec написал "одна строка в `runner.py`" и "счётчик уже есть для return-логики" — оба утверждения неточны (код в `pipeline.py`, счётчик служит другой цели). Поймано code-research, зафиксировано в Decisions.
+**Pattern:** Раздел Constraints в user-spec доверяется имплицитно ("пользователь знает свой код"), но даже автор может перепутать файл. Всегда прогонять конкретные файловые и компонентные ссылки из Constraints через code-research — до того как они войдут в tech-spec как данность.
+**Scope:** universal
+**Category:** information-gathering
