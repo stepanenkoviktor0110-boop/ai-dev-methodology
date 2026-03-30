@@ -184,6 +184,24 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** sequencing
 
+### 2026-03-30 design-pipeline-v2 / session 2: Off-by-one в bounded loops — тестировать граничное значение
+
+**Seen:** 1
+**Triad:** AC содержит числовую границу (max N iterations/attempts/rounds) → включить граничное значение N в smoke или AC как executable check → поймать off-by-one до code audit
+**Context:** design-session-execution Phase 3 Step 4 написан как `< 3` вместо `<= 3`, что даёт только 2 re-spawn вместо заявленных 3. Дефект обнаружен только на wave 3 code audit (Task 5), хотя фича была почти готова.
+**Pattern:** Если AC описывает "max N iterations/retries/rounds" — добавь в smoke-команду или в отдельный AC check условие с граничным значением N. Компилятор и unit-тесты не ловят off-by-one в условиях цикла агента; только явный тест на граничное значение даёт гарантию.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-03-30 design-pipeline-v2 / session 2: TRIZ-идеальность при выборе между эквивалентными фиксами
+
+**Seen:** 1
+**Triad:** два варианта фикса корректны, но один требует ручного обновления при эволюции артефакта → применить TRIZ-принцип идеальности — выбрать вариант с нулевой стоимостью обслуживания → не создавать технический долг при исправлении
+**Context:** design-done Step 6: зафиксировать ретроспективные артефакты через `git add <specific files>` (точность) vs `git add -A` (идеальность). При росте design-system выходные файлы ретроспективы меняются — `git add <files>` требовало бы ручного обновления скилла при каждом расширении.
+**Pattern:** При выборе между двумя корректными исправлениями — оцени стоимость обслуживания каждого через TRIZ-принцип идеальности: выбирай вариант, который не требует изменений при эволюции системы. "Идеальная" система делает своё дело сама, без вмешательства.
+**Scope:** universal
+**Category:** problem-decomposition
+
 ## Situational
 
 Patterns that apply only in specific contexts. Each has a `Situation` field describing when it's relevant.

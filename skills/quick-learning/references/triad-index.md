@@ -45,3 +45,5 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 38 | security audit находит medium-уязвимости в локальном CLI | классифицировать как non-blocking с условием "до service deployment" | не блокировать релиз по находкам нерелевантным текущей модели развёртывания | situational | 1 | Situational |
 | 39 | QA-критерий требует live-вызова внешнего сервиса недоступного в test-среде | отметить как deferred с явным условием, не как failed | получить чистый QA pass без блокировки | universal | 1 | Universal |
 | 40 | нетехнический пользователь выполняет команды на сервере | давать по одной команде с ожиданием результата | предотвратить вставку блока в неправильный контекст | situational | 1 | Situational |
+| 41 | AC содержит числовую границу (max N iterations/attempts) | включить граничное значение N в smoke или AC check | поймать off-by-one до code audit | universal | 1 | Universal |
+| 42 | два варианта фикса корректны, один требует ручного обновления | применить TRIZ-идеальность — выбрать вариант с нулевой стоимостью обслуживания | не создавать техдолг при исправлении | universal | 1 | Universal |
