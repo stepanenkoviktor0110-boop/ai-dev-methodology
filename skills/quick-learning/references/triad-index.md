@@ -58,9 +58,12 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 51 | PROMOTED → tech-spec-planning | верифицировать каждый целевой файл на наличие изменяемого элемента | — | — | 2 | — |
 | 52 | задача содержит тест с точной строкой-маркером определённой в другой задаче | объявить depends_on на задачу-источник даже если строка — литерал | не пропустить неявную зависимость через разделённый дизайн-маркер | situational | 1 | Situational |
 | 53 | написание Implementation Tasks в tech-spec | прочитать skills-and-reviewers.md перед Skill/Reviewers полями | не использовать неверные skill-имена | universal | 1 | Universal |
-| 54 | добавление нового sentinel/marker в агентный промт | явно описать processing logic во всех секциях/таблицах | не получить major review findings из-за неполного покрытия | universal | 2 | Universal |
-| 55 | тест упоминается в decisions.md как "относится к другой задаче" | добавить тест явно в spec/AC той задачи, не только в notes | не потерять тест через границу волн | situational | 2 | Situational |
-| 56 | task-creator назначает wave для audit/final волн | использовать числа (audit=N+1, final=N+2), не строки | пройти frontmatter schema-validation | situational | 1 | Situational |
+| 54 | PROMOTED → feature-execution | явно описать processing logic во всех секциях/таблицах | — | — | 2 | — |
+| 55 | PROMOTED → task-decomposition | добавить тест явно в spec/AC той задачи, не только в notes | — | — | 2 | — |
+| 58 | user-spec содержит описательный блок с требованием не отражённым в AC | следовать только AC; зафиксировать разрыв decision-записью и обновить user-spec | не тащить неопределённость из описательного блока в реализацию | universal | 1 | Universal |
+| 59 | конструирование файловых путей из значений, десериализованных с диска | валидировать каждое значение против allowlist перед включением в path | предотвратить path traversal из данных, кажущихся доверенными | universal | 1 | Universal |
+| 56 | PROMOTED → task-decomposition | wave поля — числа, не метки (audit=N+1, final=N+2) | — | — | 2 | — |
+| 60 | TDD Anchor описывает тест для private метода класса | вызывать через инстанс объекта, не через прямой импорт | тесты не падают с ImportError до запуска реальной логики | situational | 1 | Situational |
 | 57 | написание агент-файла для multi-context (inline + spawn_agent) | давать нейтральный сигнал завершения, не back-reference на parent step | артефакт работает в обоих execution environments | universal | 1 | Universal |
 | 58 | создание скилла с companion agent-file (SKILL.md + agents/{name}.md) | явно разграничить что делает SKILL.md (оркестрация) и что делает agent-file (протокол шага) | избежать дублирования одного действия в обоих файлах | situational | 1 | Situational |
 | 59 | написание grep-based smoke check для markdown-контента | проверить фактический регистр строки в файле, добавить -i если непредсказуем | предотвратить ложно-отрицательный AVP check при несовпадении регистра | universal | 1 | Universal |

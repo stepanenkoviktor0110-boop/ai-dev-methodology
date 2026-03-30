@@ -202,14 +202,7 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** problem-decomposition
 
-### 2026-03-30 agent-research-prompt-fix / session 1: Покрытие всех контекстов при добавлении нового sentinel в агентный промт
-
-**Seen:** 2
-**Triad:** добавление нового sentinel/marker в агентный промт → явно описать processing logic для маркера во всех секциях/таблицах, где он может появиться → не получить major review findings из-за неполного покрытия контекстов
-**Context:** Task 4: добавление `[ПРОПУЩЕНО ПОЛЬЗОВАТЕЛЕМ]` в auditor-промт. Round 1 вернул 1 major + 4 minor — reviewer нашёл, что маркер описан только в одном месте, но не покрыт в остальных таблицах/секциях промта.
-**Pattern:** При добавлении нового sentinel-маркера в агентный промт — перечислить все секции и таблицы где маркер может встретиться, и явно прописать обработку в каждой. Частичное описание создаёт ambiguity для агента и гарантирует major findings на ревью.
-**Scope:** universal
-**Category:** sequencing
+<!-- PROMOTED → feature-execution (Seen: 2, 2026-03-30) -->
 
 ### 2026-03-30 methodology-sync-sketch / session 1: агент-файл для multi-context — нейтральные сигналы завершения
 
@@ -415,15 +408,7 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Situation:** инструмент развёртывается как локальный CLI для одного пользователя; есть планы перейти на service-модель
 **Category:** scope-management
 
-### 2026-03-30 agent-research-prompt-fix / session-2: Тест теряется на границе задач
-
-**Seen:** 2
-**Triad:** тест явно помечен в decisions.md как "относится к другой задаче" → добавить тест в spec той задачи явно, не только в notes → не потерять тест через границу волн
-**Context:** Task 1 написала new tests for runner.py и оставила note в decisions.md "тест test_skip_marker_stored_in_context_accumulator относится к scope Task 2". Task 2 не включила его в свой spec. Test Audit (Task 7) нашёл пробел, потребовался ad-hoc fix-коммит.
-**Pattern:** Если при выполнении Task N обнаруживается тест, который "правильнее" написать в Task M — добавить его явно в acceptance criteria или TDD Anchor задачи M. Запись в decisions.md без обновления task spec — недостаточно: agent Task M не читает decisions.md предыдущих задач.
-**Scope:** situational
-**Situation:** фича декомпозирована на несколько задач в разных волнах; тест охватывает поведение на стыке двух задач
-**Category:** problem-decomposition
+<!-- PROMOTED → task-decomposition (Seen: 2, 2026-03-30) -->
 
 ### 2026-03-29 pipeline-stabilization / session-3: QA разделяет failed и deferred
 
@@ -555,14 +540,14 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** information-gathering
 
-### 2026-03-30 methodology-sync-sketch / decompose: Wave поля — числа, не метки
+### 2026-03-30 pipeline-report / decompose: TDD Anchor для private метода — вызов через инстанс
 
 **Seen:** 1
-**Triad:** task-creator назначает wave для audit/final волн → использовать числовые значения (audit=N+1, final=N+2), не строки ("audit", "final") → пройти frontmatter schema-validation
-**Context:** Задачи 6-9 получили `wave: audit` и `wave: final` (строки). Template-validator отклонил — шаблон ожидает число. Потребовался отдельный fix-раунд на замену 4 полей.
-**Pattern:** При декомпозиции tech-spec с Audit Wave и Final Wave — явно маппировать: если имплементационных волн N, то audit = N+1, final = N+2. Записывать в задачу число, а не метку. Шаблон определяет тип поля.
+**Triad:** TDD Anchor описывает тест для private метода класса → указывать вызов через инстанс объекта, не через прямой импорт → тесты не падают с ImportError до запуска реальной логики
+**Context:** task-creator написал TDD Anchor с инструкцией `import _generate_report from bp_pipeline.pipeline`. Private метод нельзя импортировать напрямую — reality-checker поймал как critical. Правка: `pipeline_instance._generate_report(session, session_dir)`.
+**Pattern:** В TDD Anchor для private/protected метода — явно указывать паттерн доступа: создать инстанс класса, вызвать `instance._method()`. Не писать `from module import _method` — это ImportError. Актуально для любого языка с private convention (Python `_`, JS `#`).
 **Scope:** situational
-**Situation:** task-decomposition с Audit Wave и/или Final Wave
+**Situation:** task-creator генерирует TDD Anchor для private метода класса
 **Category:** problem-decomposition
 
 ### 2026-03-30 design-v2-stylist / session 2: Совместимость фото с контейнером — проверять до CSS
@@ -593,6 +578,24 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** Новый скилл делегирует часть логики в отдельный agents/{name}.md файл
 **Category:** problem-decomposition
+
+### 2026-03-30 pipeline-report / techspec: AC — единственная верификационная рамка при противоречии с описательным блоком
+
+**Seen:** 1
+**Triad:** user-spec содержит описательный блок с требованием не отражённым в AC → следовать только AC как источнику истины; противоречие зафиксировать decision-записью и обновить user-spec → не тащить неопределённость из описательного блока в реализацию
+**Context:** pipeline-report: описательный блок говорил "стандартный запрос по шаблону поля" — AC этого не содержал. tech-spec принял AC за истину, оформил разрыв решением, обновил user-spec. Без этого разрыв дошёл бы до реализации как неоднозначность.
+**Pattern:** Если user-spec содержит описательный блок с требованием не отражённым в AC — AC является источником истины. Зафиксировать разрыв в tech-spec decisions и обновить user-spec, иначе следующий агент снова наткнётся на то же противоречие и будет вынужден решать его самостоятельно.
+**Scope:** universal
+**Category:** scope-management
+
+### 2026-03-30 pipeline-report / techspec: Файловые пути из десериализованных данных — валидировать против allowlist
+
+**Seen:** 1
+**Triad:** конструирование файловых путей из значений, десериализованных с диска → валидировать каждое значение против известного allowlist перед включением в path → предотвратить path traversal из данных, кажущихся доверенными
+**Context:** pipeline-report: agent_id из stages_completed использовался в f"{agent_id}-output.json" без проверки. Скептик поймал CRITICAL — stages_completed читается с диска и может быть изменён между записью и чтением.
+**Pattern:** Данные, прочитанные с диска, не являются доверенными, даже если записаны самим приложением. Перед построением файлового пути из таких значений — проверить каждое значение против allowlist (список допустимых идентификаторов). Исправление — одна строка; цена игнорирования — path traversal.
+**Scope:** universal
+**Category:** tool-selection
 
 ### 2026-03-30 methodology-sync-sketch / test-audit: grep в AVP чувствителен к регистру
 
