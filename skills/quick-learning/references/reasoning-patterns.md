@@ -217,15 +217,7 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 
 <!-- Append situational patterns below -->
 
-### 2026-03-24 payroll-full-calc: Audit agents — lead записывает за них
-
-**Seen:** 1
-**Triad:** audit-агенты сообщают о невозможности записи → lead сразу записывает результаты сам → не терять время на повторные попытки агента
-**Context:** Все 3 audit-агента (code, security, test) завершили аудит, но не смогли записать JSON-отчёты из-за ограничений прав. Team lead вручную записывал результаты.
-**Pattern:** После spawn audit-агентов, если агент сообщает о невозможности записать файлы — lead сразу записывает результаты сам, не ожидая повторных попыток от агента.
-**Scope:** situational
-**Situation:** multi-agent workflow с audit-субагентами
-**Category:** communication
+<!-- PROMOTED → feature-execution (Seen: 2, 2026-03-30) -->
 
 ### 2026-03-26 shift-confirmation: Ошибки повторяются между волнами
 
@@ -406,13 +398,23 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 
 ### 2026-03-29 pipeline-stabilization / session-3: Security severity привязывается к модели развёртывания
 
-**Seen:** 1
+**Seen:** 2
 **Triad:** security audit находит medium-уязвимости в локальном CLI-инструменте → классифицировать как non-blocking с явным условием "до перехода на service/multi-user деплой" → не блокировать релиз по находкам нерелевантным текущей модели развёртывания
 **Context:** Task 9 нашла 3 medium-находки (отсутствие hard-limit на --text, произвольный --data-dir, отсутствие size limits на validator fields). Все три реальны и требуют fix — но только перед service deployment. Для single-user CLI они не создают угрозы.
 **Pattern:** При аудите безопасности явно привязывать severity к модели развёртывания. Medium-находка в single-user CLI и medium-находка в multi-user service — разные приоритеты. Записывать условие перехода ("before service deployment") прямо в статус задачи, не только в comments.
 **Scope:** situational
 **Situation:** инструмент развёртывается как локальный CLI для одного пользователя; есть планы перейти на service-модель
 **Category:** scope-management
+
+### 2026-03-30 agent-research-prompt-fix / session-2: Тест теряется на границе задач
+
+**Seen:** 1
+**Triad:** тест явно помечен в decisions.md как "относится к другой задаче" → добавить тест в spec той задачи явно, не только в notes → не потерять тест через границу волн
+**Context:** Task 1 написала new tests for runner.py и оставила note в decisions.md "тест test_skip_marker_stored_in_context_accumulator относится к scope Task 2". Task 2 не включила его в свой spec. Test Audit (Task 7) нашёл пробел, потребовался ad-hoc fix-коммит.
+**Pattern:** Если при выполнении Task N обнаруживается тест, который "правильнее" написать в Task M — добавить его явно в acceptance criteria или TDD Anchor задачи M. Запись в decisions.md без обновления task spec — недостаточно: agent Task M не читает decisions.md предыдущих задач.
+**Scope:** situational
+**Situation:** фича декомпозирована на несколько задач в разных волнах; тест охватывает поведение на стыке двух задач
+**Category:** problem-decomposition
 
 ### 2026-03-29 pipeline-stabilization / session-3: QA разделяет failed и deferred
 

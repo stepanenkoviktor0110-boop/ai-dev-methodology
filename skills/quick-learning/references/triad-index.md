@@ -42,7 +42,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 35 | алгоритм распределяет записи по bucket-ам с max-cap | определить overflow-политику до реализации | не терять записи при заполнении bucket-а | universal | 1 | Universal |
 | 36 | адаптация шаблона задачи из одного домена в другой | проверить каждое поле frontmatter на совместимость с целевым доменом | не исправлять несовместимые defaults отдельной задачей после деплоя | universal | 1 | Universal |
 | 37 | массовая генерация задач по шаблону, применяемому к новому домену впервые | сначала 1 пилотная задача → проверить → масштабировать | не накапливать 30+ правок при первом прогоне | universal | 1 | Universal |
-| 38 | security audit находит medium-уязвимости в локальном CLI | классифицировать как non-blocking с условием "до service deployment" | не блокировать релиз по находкам нерелевантным текущей модели развёртывания | situational | 1 | Situational |
+| 38 | security audit находит medium-уязвимости в локальном CLI | классифицировать как non-blocking с условием "до service deployment" | не блокировать релиз по находкам нерелевантным текущей модели развёртывания | situational | 2 | Situational |
 | 39 | QA-критерий требует live-вызова внешнего сервиса недоступного в test-среде | отметить как deferred с явным условием, не как failed | получить чистый QA pass без блокировки | universal | 1 | Universal |
 | 40 | нетехнический пользователь выполняет команды на сервере | давать по одной команде с ожиданием результата | предотвратить вставку блока в неправильный контекст | situational | 1 | Situational |
 | 41 | AC содержит числовую границу (max N iterations/attempts) | включить граничное значение N в smoke или AC check | поймать off-by-one до code audit | universal | 1 | Universal |
@@ -59,3 +59,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 52 | задача содержит тест с точной строкой-маркером определённой в другой задаче | объявить depends_on на задачу-источник даже если строка — литерал | не пропустить неявную зависимость через разделённый дизайн-маркер | situational | 1 | Situational |
 | 53 | написание Implementation Tasks в tech-spec | прочитать skills-and-reviewers.md перед Skill/Reviewers полями | не использовать неверные skill-имена | universal | 1 | Universal |
 | 54 | добавление нового sentinel/marker в агентный промт | явно описать processing logic во всех секциях/таблицах | не получить major review findings из-за неполного покрытия | universal | 1 | Universal |
+| 55 | тест упоминается в decisions.md как "относится к другой задаче" | добавить тест явно в spec/AC той задачи, не только в notes | не потерять тест через границу волн | situational | 1 | Situational |
