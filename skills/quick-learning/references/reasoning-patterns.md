@@ -605,3 +605,13 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** При написании grep-смоков для markdown: открыть целевой файл и убедиться что искомая строка написана именно так. Если регистр не предсказуем (фаза, секция, метка) — добавить флаг -i. Правило: "сначала прочитай, потом grep".
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-03-30 methodology-sync-sketch / done: Атомарная запись в shared-файл при конкурентных сессиях
+
+**Seen:** 1
+**Triad:** Edit tool возвращает "File has been unexpectedly modified" на shared файле методологии → переключиться на атомарный read-modify-write через скрипт, не повторять Edit → избежать накопления partial writes и дублирующихся записей
+**Context:** При исправлении дублирующихся номеров в triad-index.md Edit tool 3 раза падал с "unexpectedly modified" — файл одновременно изменялся другими сессиями. Python-скрипт с прямой записью решил за 1 попытку.
+**Pattern:** Первое "File has been unexpectedly modified" — сигнал конкурентной записи, не случайная ошибка. Не повторяй Edit — переключайся сразу на atomic read-modify-write: прочитать файл целиком, преобразовать в памяти, записать атомарно через скрипт.
+**Scope:** situational
+**Situation:** Shared файлы методологии (triad-index.md, reasoning-patterns.md), редактируемые из нескольких сессий одновременно
+**Category:** recovery

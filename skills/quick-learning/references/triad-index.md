@@ -70,3 +70,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 
 | 63 | выбор лейаута с full-bleed фото | проверить ориентацию фото и кадрирование субъекта против формы контейнера | не тратить итерации на геометрически невозможный кроп | situational | 1 | Situational |
 | 64 | верстка секции из структурированных данных пользователя | маппировать каждое поле данных в UI-элемент напрямую | не изобретать структуру отображения расходящуюся с источником | universal | 1 | Universal |
+| 65 | Edit tool возвращает "File has been unexpectedly modified" на shared файле | переключиться на атомарный read-modify-write через скрипт, не повторять Edit | избежать накопления partial writes при параллельных сессиях | situational | 1 | Situational |
