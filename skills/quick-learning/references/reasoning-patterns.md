@@ -204,7 +204,7 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-03-30 agent-research-prompt-fix / session 1: Покрытие всех контекстов при добавлении нового sentinel в агентный промт
 
-**Seen:** 1
+**Seen:** 2
 **Triad:** добавление нового sentinel/marker в агентный промт → явно описать processing logic для маркера во всех секциях/таблицах, где он может появиться → не получить major review findings из-за неполного покрытия контекстов
 **Context:** Task 4: добавление `[ПРОПУЩЕНО ПОЛЬЗОВАТЕЛЕМ]` в auditor-промт. Round 1 вернул 1 major + 4 minor — reviewer нашёл, что маркер описан только в одном месте, но не покрыт в остальных таблицах/секциях промта.
 **Pattern:** При добавлении нового sentinel-маркера в агентный промт — перечислить все секции и таблицы где маркер может встретиться, и явно прописать обработку в каждой. Частичное описание создаёт ambiguity для агента и гарантирует major findings на ревью.
@@ -398,7 +398,7 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 
 ### 2026-03-29 pipeline-stabilization / session-3: Security severity привязывается к модели развёртывания
 
-**Seen:** 2
+**Seen:** 3 → PROMOTED to security-auditor
 **Triad:** security audit находит medium-уязвимости в локальном CLI-инструменте → классифицировать как non-blocking с явным условием "до перехода на service/multi-user деплой" → не блокировать релиз по находкам нерелевантным текущей модели развёртывания
 **Context:** Task 9 нашла 3 medium-находки (отсутствие hard-limit на --text, произвольный --data-dir, отсутствие size limits на validator fields). Все три реальны и требуют fix — но только перед service deployment. Для single-user CLI они не создают угрозы.
 **Pattern:** При аудите безопасности явно привязывать severity к модели развёртывания. Medium-находка в single-user CLI и medium-находка в multi-user service — разные приоритеты. Записывать условие перехода ("before service deployment") прямо в статус задачи, не только в comments.
@@ -408,7 +408,7 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 
 ### 2026-03-30 agent-research-prompt-fix / session-2: Тест теряется на границе задач
 
-**Seen:** 1
+**Seen:** 2
 **Triad:** тест явно помечен в decisions.md как "относится к другой задаче" → добавить тест в spec той задачи явно, не только в notes → не потерять тест через границу волн
 **Context:** Task 1 написала new tests for runner.py и оставила note в decisions.md "тест test_skip_marker_stored_in_context_accumulator относится к scope Task 2". Task 2 не включила его в свой spec. Test Audit (Task 7) нашёл пробел, потребовался ad-hoc fix-коммит.
 **Pattern:** Если при выполнении Task N обнаруживается тест, который "правильнее" написать в Task M — добавить его явно в acceptance criteria или TDD Anchor задачи M. Запись в decisions.md без обновления task spec — недостаточно: agent Task M не читает decisions.md предыдущих задач.

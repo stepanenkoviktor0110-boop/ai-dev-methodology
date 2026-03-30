@@ -89,3 +89,13 @@ Flag immediately:
 - Signs of existing compromise or malicious code
 - Systemic architecture issues requiring redesign
 - Compliance violations (GDPR, PCI-DSS)
+
+## Deployment-Aware Severity
+
+**Medium findings in local single-user CLI are non-blocking** when the deployment model makes exploitation self-targeting only:
+- Classify as `non-blocking: "before service deployment"` — not just a comment, but a status with an explicit condition
+- Record the accepted risk in decisions.md with the condition: "fix required before transitioning to service/multi-user deployment"
+- Do NOT block release on findings irrelevant to the current deployment model
+- When the project transitions to service/web/multi-user deployment, revisit all previously deferred Medium findings
+
+This rule applies only when ALL of these hold: (1) single-user local tool, (2) no network exposure, (3) user is the only actor who can trigger the vulnerability.
