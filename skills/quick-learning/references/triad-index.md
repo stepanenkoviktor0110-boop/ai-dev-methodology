@@ -75,3 +75,5 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 67 | конвертация пользовательского алгоритма в процедурный SKILL.md | добавить gate-вопрос в конце каждой фазы, даже если его нет в оригинале | удовлетворить структурные требования без повторного прогона валидатора | situational | 1 | Situational |
 | 68 | audit wave находит major finding в тесте с false-positive risk | создать ad-hoc fix task немедленно, не deferred | не допустить test suite с иллюзорным покрытием | universal | 1 | Universal |
 | 69 | тест проверяет маркер в string-output без привязки к секции | ограничить assertion срезом нужной секции (regex/slice) | тест падает при значении в неправильном месте | universal | 1 | Universal |
+| 70 | пользователь добавляет нетривиальную фичу в mid-interview | задать scope-impact вопрос до обновления спека | не расширить v1 до архитектуры другого уровня | situational | 1 | Situational |
+| 71 | client-only storage + серверная автоматизация в одной фиче | проверить data-access совместимость до архитектурных решений | не получить конфликт storage-layer в середине спека | universal | 1 | Universal |
