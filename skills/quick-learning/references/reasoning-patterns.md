@@ -495,3 +495,21 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** Задача создать v2, альтернативный вариант или редизайн существующей страницы
 **Category:** design-iteration
+
+### 2026-03-30 methodology-sync-sketch / session 1: Классификация глубины diff до написания sync scope
+
+**Seen:** 1
+**Triad:** планирование синка файлов между двумя версиями одного репо → запустить code-research для классификации глубины различий до написания scope → не описывать в AC механический синк который требует ручного ревью каждого файла
+**Context:** Планировали синк 26 скиллов в Codex через замену путей (.claude/→.agents/). Code-research показал что 24 из 26 имеют реальные content-различия (feature-execution переписан под spawn_agent API) — scope пришлось полностью переписать.
+**Pattern:** Перед тем как включить cross-repo sync в scope спека — запустить code-research с вопросом "path-only diff или content diff?". Если content diff > 50% файлов — это не механическая задача, это ручной ревью. Отдельная фича.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-03-30 methodology-sync-sketch / session 1: Итеративная классификация доменов в mono-repo
+
+**Seen:** 1
+**Triad:** репо содержит скиллы из нескольких доменов → явно перечислить каждый домен и получить is_in_scope per domain до написания спека → не переписывать scope в 3 итерации из-за постепенного уточнения границ
+**Context:** Один репо содержит методологию, дизайн-пайплайн, promoter, skeleton-pipe, sketch. Уточнения "это отдельный пайплайн" происходили трижды (design → promoter/skeleton → уточнение что sketch ВХОДИТ). Каждый раз — реакция на вопрос.
+**Pattern:** При старте user-spec для проекта с несколькими доменами — сразу предъявить полный список всего что есть в репо и попросить пометить каждый домен: in/out/separate. Одним вопросом, а не серией уточнений.
+**Scope:** universal
+**Category:** scope-management
