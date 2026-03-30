@@ -13,6 +13,16 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
+### 2026-03-30 dashboard-v1 / session 1: AC для deploy-задач — включать concurrency guards явно
+
+**Seen:** 1
+**Triad:** написание AC для deploy pipeline задачи → явно включить concurrency/idempotency guards (cancel-in-progress, prevent overlapping deploys) в AC → избежать предсказуемых "deviation" записей в decisions.md для best-practice additions
+**Context:** Task 2 добавил `concurrency: cancel-in-progress: true` как deviation — guard не был в AC, но стандартен для CI/CD. Агент добавил правильно, но это создало шум в decisions.md.
+**Pattern:** В AC задач деплоя явно перечисляй concurrency guards. Эти safeguards предсказуемо нужны для любого CI/CD — их отсутствие в AC означает агент либо забудет их, либо добавит как deviation.
+**Scope:** situational
+**Situation:** написание AC для задачи создания CI/CD pipeline
+**Category:** sequencing
+
 ### 2026-03-29 stylist-website / client-edits: Верифицируй результат, а не только изменение
 
 **Seen:** 2
