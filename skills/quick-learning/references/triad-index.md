@@ -51,3 +51,5 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 44 | скилл или агент делает commit и пишет файлы в несколько директорий | перечислить все write locations из тела скилла перед написанием git add | не потерять файлы вне основного дерева при коммите | universal | 1 | Universal |
 | 45 | описание skip-поведения агента при пустом user input | явно описать processing logic после пропуска, не только output marker | не допустить label-swap без изменения логики | universal | 1 | Universal |
 | 46 | user spec вырастает до 3+ последовательно зависимых deliverable | оставить первый active, остальные создать как planned stubs | видимость прогресса + контекст постфич сохранён | universal | 1 | Universal |
+| 47 | размещение текста/UI поверх full-bleed фото | определить зону субъекта в кропированном вьюпорте ДО расстановки | не перекрыть лицо/объект текстом | situational | 1 | Situational |
+| 48 | задача "альтернативный дизайн" или "редизайн" | выбирать layout pattern независимо от существующей верстки | получить реальную альтернативу, а не ресайн | situational | 1 | Situational |
