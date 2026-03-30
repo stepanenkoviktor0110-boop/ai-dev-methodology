@@ -323,12 +323,12 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** information-gathering
 
-### 2026-03-29 design-pipeline-v2 / v2.2: При адаптации скилла по аналогии — читай оригинал, не полагайся на память
+### 2026-03-30 methodology-sync-sketch / techspec: Файловые пути — верифицировать, не угадывать (PROMOTED)
 
-**Seen:** 1
-**Triad:** написание нового скилла по образцу существующего → прочитать оригинальный скилл и скопировать пути/форматы буквально → не воспроизводить пути по памяти-предположению
-**Context:** design-task-decompose (Task 3) написан по образцу task-decomposition. Путь к session-plan.md указан как `work/{feature}/logs/session-plan.md` — по аналогии с логами. Реальный путь в task-decomposition: `work/{feature}/session-plan.md`. Ошибка обнаружена только в round 1 review, потребовала fix-коммита.
-**Pattern:** При написании нового скилла по образцу существующего — открыть оригинальный SKILL.md и копировать пути к генерируемым артефактам буквально, не из памяти. Особенно: пути к session-plan.md, task-файлам, decisions.md — они не интуитивны и легко воспроизводятся неверно.
+**Seen:** 2 → PROMOTED → tech-spec-planning
+**Triad:** написание файловых путей в tech-spec или skill из памяти/docs → верифицировать через ls/glob или прочитать source-файл → не допустить неверных путей в artifacts
+**Context:** (1) design-task-decompose: путь к session-plan.md указан по аналогии, реальный путь отличался. (2) methodology-sync-sketch: tech-spec написал `~/.claude/skills/shared/work-templates/`, реальный — `~/.claude/shared/work-templates/`. Оба поймал mirage detector в validation round 1.
+**Pattern:** Перед написанием любого файлового пути в tech-spec — верифицировать ls/glob. Architecture docs описывают намерение, а не факт filesystem.
 **Scope:** universal
 **Category:** information-gathering
 
@@ -507,11 +507,30 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** scope-management
 
-### 2026-03-30 agent-research-prompt-fix / session 1: верифицировать файлы из constraints через code-research
+### 2026-03-30 agent-research-prompt-fix / session 2: верифицировать содержимое каждого целевого файла перед описанием операции
+
+**Seen:** 2 (agent-research-prompt-fix × 2)
+**Triad:** spec (user, tech, task) называет набор файлов и описывает трансформацию → верифицировать каждый файл на наличие изменяемого элемента → не допустить ошибочный тип операции (replace вместо add)
+**Context:** (1) User-spec назвал "runner.py" и "счётчик уже есть" — неточные утверждения, пойманы code-research. (2) Tech-spec описал "убрать [НЕТ ДАННЫХ] из всех 9 промптов" — agent-03 этой строки не содержит, нужна другая операция (add instruction). Поймано reality-checker при декомпозиции.
+**Pattern:** Любой spec-артефакт (user-spec/tech-spec/task) доверяет, что файлы содержат описываемый элемент. Перед тем как зафиксировать "удалить X" или "заменить X" — grep по каждому целевому файлу. Файлы без X требуют операции add, не replace. Ошибка типа операции обнаруживается только при выполнении.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-03-30 agent-research-prompt-fix / session 2: тест с точной строкой-маркером создаёт неявный depends_on
 
 **Seen:** 1 (agent-research-prompt-fix)
-**Triad:** user-spec constraints называет конкретный файл или компонент → верифицировать через code-research что этот файл содержит нужный код → не пускать некорректный file-constraint в задачи
-**Context:** User-spec написал "одна строка в `runner.py`" и "счётчик уже есть для return-логики" — оба утверждения неточны (код в `pipeline.py`, счётчик служит другой цели). Поймано code-research, зафиксировано в Decisions.
-**Pattern:** Раздел Constraints в user-spec доверяется имплицитно ("пользователь знает свой код"), но даже автор может перепутать файл. Всегда прогонять конкретные файловые и компонентные ссылки из Constraints через code-research — до того как они войдут в tech-spec как данность.
+**Triad:** задача содержит тест с точной строкой-маркером определённой в другой задаче → объявить depends_on на задачу-источник даже если строка — литерал → не пропустить неявную зависимость через разделённый дизайн-маркер
+**Context:** Task 4 содержала `test_propushcheno_not_pipeline_defect` ассертящий на `"[ПРОПУЩЕНО ПОЛЬЗОВАТЕЛЕМ]"`. Строка определяется в Task 2 (pipeline.py). Task 4 объявила only `depends_on: [1]`. Индивидуальные валидаторы пропустили — cross-task валидатор поймал.
+**Pattern:** Если задача содержит тест ассертящий на конкретную строку/константу/маркер — проверить: кто принял дизайн-решение об этой строке? Задача-источник должна быть в depends_on даже если строка используется как литерал а не импортируется.
+**Scope:** situational
+**Situation:** multi-task декомпозиция с sentinel strings / protocol markers общими между задачами
+**Category:** problem-decomposition
+
+### 2026-03-30 methodology-sync-sketch / techspec: Каталог скиллов — читай ДО написания задач
+
+**Seen:** 1
+**Triad:** написание секции Implementation Tasks в tech-spec → прочитать skills-and-reviewers.md перед заполнением Skill и Reviewers → не использовать несуществующие или неверные skill-имена
+**Context:** Tasks 1-5 использовали `write-code` (wrapper) вместо `skill-master`, `documentation-writing`. Template-validator поймал в validation round 1 — потребовал полный перезаголовок задач.
+**Pattern:** Перед написанием Implementation Tasks — открыть `tech-spec-planning/references/skills-and-reviewers.md`. Wrapper-skills (`write-code`, `new-tech-spec`) не являются execution skills. Всегда проверять: skill в tasks = строка из каталога, не интуитивный псевдоним.
 **Scope:** universal
 **Category:** information-gathering

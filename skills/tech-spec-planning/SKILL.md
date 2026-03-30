@@ -51,6 +51,8 @@ If during later phases a gap is discovered — launch `code-researcher` again wi
 
 **PROMOTED PATTERN:** При интеграции с внешним API — перенести в спек ВСЕ коды ответа, формат данных (JSON/XML/plain text), и edge cases. Перед включением response shapes из code-research — сделать live API call для проверки. Один вызов дешевле propagation миража через весь pipeline.
 
+**PROMOTED PATTERN:** Перед написанием файловых путей в tech-spec — верифицировать через ls/glob, не из памяти или architecture docs. Docs описывают намерение, а не реальность файловой системы. Особенно: пути к shared-ресурсам, шаблонам, скриптам — они часто лежат не там, где написано в docs.
+
 ## Phase 3: Clarification (Adaptive)
 
 Analyze if additional information is needed based on user-spec and code research.
@@ -182,3 +184,7 @@ If problems remain after 3 iterations — show user: "Validation didn't pass in 
 - [ ] Validation passed (5 validators)
 - [ ] User approved tech-spec
 - [ ] status = approved in frontmatter
+
+## Promoted Patterns
+
+**Верифицируй целевые файлы перед описанием операции (Seen: 2):** Когда spec описывает трансформацию "удалить X из N файлов" или "заменить Y" — grep по каждому файлу перед тем как зафиксировать тип операции. Файл без X требует add, не replace. Ошибка типа операции обнаруживается только при выполнении задачи.

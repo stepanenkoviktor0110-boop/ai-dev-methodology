@@ -4,7 +4,8 @@ Top patterns relevant to tech-spec-planning. Max 10 entries, sorted by Seen (hig
 
 <!-- Auto-generated from reasoning-patterns.md. Regenerated on each write/promotion by quick-learning. -->
 
-1. **Верифицируй API response shapes из code-research** (Seen: 2) — Перед включением API response shapes из code-research в tech-spec — сделай реальный API call и сверь с документацией.
+1. **Верифицируй целевые файлы перед описанием операции** (Seen: 2) — Когда spec описывает "удалить X из N файлов" — grep каждый файл. Без X → add, не replace. Ошибка типа операции видна только при выполнении.
+2. **Верифицируй API response shapes из code-research** (Seen: 2) — Перед включением API response shapes из code-research в tech-spec — сделай реальный API call и сверь с документацией.
 2. **Тесты на моках скрывают расхождение с реальным процессом** (Seen: 2) — Перед объявлением QA passed — сделать минимум 1 live прогон с реальным внешним процессом. Сохранить реальный ответ как golden fixture.
 3. **Кэш обработанных записей при работе с платным API** (Seen: 1) — При интеграции с любым платным API с лимитом запросов — сразу закладывай кэш обработанных записей в БД.
 4. **"Пусто" ≠ "данных нет" — проверь все каналы** (Seen: 1) — Когда запрос к внешней системе вернул пустой результат — перечисли все каналы/endpoints где данные могут храниться и проверь каждый.
