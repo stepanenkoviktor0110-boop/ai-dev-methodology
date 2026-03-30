@@ -13,7 +13,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 6 | post-deploy verification с пользователем | планировать 2-4 итерации UX-правок как норму | не считать UX-корректировки проблемой процесса | universal | 1 | Universal |
 | 7 | PROMOTED → task-decomposition | проверять все cross-references после генерации задач | — | — | 2 | — |
 | 8 | AC для markdown-only фич | формулировать через наличие конкретных артефактов | сделать AC автоматически проверяемыми | universal | 1 | Universal |
-| 9 | audit-агенты сообщают о невозможности записи | lead сразу записывает результаты сам | не терять время на повторные попытки агента | situational | 1 | Situational |
+| 9 | PROMOTED → feature-execution | субагент не завершает задачу → lead выполняет напрямую | — | — | 2 | — |
 | 10 | ревью нашло паттерн ошибки (не разовый баг) | добавить предупреждение в промт следующего teammate | предотвратить повторение ошибки в следующих задачах | situational | 1 | Situational |
 | 11 | написание тестов в multi-agent workflow | требовать assertion на результат функции, не только на mock | тесты ловят баги, а не проверяют форму вызова | situational | 1 | Situational |
 | 12 | security/code audit в multi-task feature | вести known-issues.md, аудитор читает перед ревью | не тратить время на повторный репорт известных проблем | situational | 1 | Situational |
@@ -60,3 +60,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 53 | написание Implementation Tasks в tech-spec | прочитать skills-and-reviewers.md перед Skill/Reviewers полями | не использовать неверные skill-имена | universal | 1 | Universal |
 | 54 | добавление нового sentinel/marker в агентный промт | явно описать processing logic во всех секциях/таблицах | не получить major review findings из-за неполного покрытия | universal | 1 | Universal |
 | 55 | тест упоминается в decisions.md как "относится к другой задаче" | добавить тест явно в spec/AC той задачи, не только в notes | не потерять тест через границу волн | situational | 1 | Situational |
+| 56 | task-creator назначает wave для audit/final волн | использовать числа (audit=N+1, final=N+2), не строки | пройти frontmatter schema-validation | situational | 1 | Situational |

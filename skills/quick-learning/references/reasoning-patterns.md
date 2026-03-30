@@ -545,3 +545,13 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Перед написанием Implementation Tasks — открыть `tech-spec-planning/references/skills-and-reviewers.md`. Wrapper-skills (`write-code`, `new-tech-spec`) не являются execution skills. Всегда проверять: skill в tasks = строка из каталога, не интуитивный псевдоним.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-03-30 methodology-sync-sketch / decompose: Wave поля — числа, не метки
+
+**Seen:** 1
+**Triad:** task-creator назначает wave для audit/final волн → использовать числовые значения (audit=N+1, final=N+2), не строки ("audit", "final") → пройти frontmatter schema-validation
+**Context:** Задачи 6-9 получили `wave: audit` и `wave: final` (строки). Template-validator отклонил — шаблон ожидает число. Потребовался отдельный fix-раунд на замену 4 полей.
+**Pattern:** При декомпозиции tech-spec с Audit Wave и Final Wave — явно маппировать: если имплементационных волн N, то audit = N+1, final = N+2. Записывать в задачу число, а не метку. Шаблон определяет тип поля.
+**Scope:** situational
+**Situation:** task-decomposition с Audit Wave и/или Final Wave
+**Category:** problem-decomposition
