@@ -58,3 +58,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 51 | PROMOTED → tech-spec-planning | верифицировать каждый целевой файл на наличие изменяемого элемента | — | — | 2 | — |
 | 52 | задача содержит тест с точной строкой-маркером определённой в другой задаче | объявить depends_on на задачу-источник даже если строка — литерал | не пропустить неявную зависимость через разделённый дизайн-маркер | situational | 1 | Situational |
 | 53 | написание Implementation Tasks в tech-spec | прочитать skills-and-reviewers.md перед Skill/Reviewers полями | не использовать неверные skill-имена | universal | 1 | Universal |
+| 54 | добавление нового sentinel/marker в агентный промт | явно описать processing logic во всех секциях/таблицах | не получить major review findings из-за неполного покрытия | universal | 1 | Universal |

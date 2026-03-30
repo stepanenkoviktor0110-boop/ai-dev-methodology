@@ -202,6 +202,15 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** problem-decomposition
 
+### 2026-03-30 agent-research-prompt-fix / session 1: Покрытие всех контекстов при добавлении нового sentinel в агентный промт
+
+**Seen:** 1
+**Triad:** добавление нового sentinel/marker в агентный промт → явно описать processing logic для маркера во всех секциях/таблицах, где он может появиться → не получить major review findings из-за неполного покрытия контекстов
+**Context:** Task 4: добавление `[ПРОПУЩЕНО ПОЛЬЗОВАТЕЛЕМ]` в auditor-промт. Round 1 вернул 1 major + 4 minor — reviewer нашёл, что маркер описан только в одном месте, но не покрыт в остальных таблицах/секциях промта.
+**Pattern:** При добавлении нового sentinel-маркера в агентный промт — перечислить все секции и таблицы где маркер может встретиться, и явно прописать обработку в каждой. Частичное описание создаёт ambiguity для агента и гарантирует major findings на ревью.
+**Scope:** universal
+**Category:** sequencing
+
 ## Situational
 
 Patterns that apply only in specific contexts. Each has a `Situation` field describing when it's relevant.
