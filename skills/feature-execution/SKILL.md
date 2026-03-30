@@ -216,6 +216,10 @@ When escalating:
 4. Git commit: `chore: escalate task {N} — unresolved after 3 fix rounds`
 5. Wait for user decision before continuing
 
+## Promoted Patterns
+
+- **Спорные решения ДО генерации:** Перед генерацией артефакта > 200 строк — выписать список решений с неоднозначностью, предложить варианты с пояснением последствий, генерировать ПОСЛЕ утверждения. Один раунд обсуждения вместо серии переделок.
+
 ## Self-Verification
 
 - [ ] Execution plan created and approved
