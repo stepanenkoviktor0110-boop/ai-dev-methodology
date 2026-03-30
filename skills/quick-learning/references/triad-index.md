@@ -34,7 +34,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 27 | PROMOTED → code-writing | маскировать секреты в команде до выполнения | — | — | 2 | — |
 | 28 | performance problem на low-traffic сервере | проверить дефолтные таймауты/лимиты connection pool и кэшей | найти root cause в конфигурации до оптимизации кода | universal | 1 | Universal |
 | 29 | визуальная задача с референс-скриншотами | сверить типографику с референсом ДО написания CSS | избежать серии fix-коммитов по визуальному несоответствию | universal | 1 | Universal |
-| 30 | написание нового скилла по образцу существующего | прочитать оригинальный SKILL.md и копировать пути буквально | не воспроизводить пути к артефактам по памяти-предположению | universal | 1 | Universal |
+| 30 | PROMOTED → tech-spec-planning | верифицировать файловые пути через ls/glob | — | — | 2 | — |
 | 31 | задача в одной волне ссылается на результат другой задачи | заменить зависимость на чтение общего source of truth | сохранить параллельность волны без рисков read-after-write | universal | 1 | Universal |
 | 32 | задача на удаление фичи/константы/поля | перед ревью проверить dead variables, stale comments, duplicate tests | не тратить review-раунд на предсказуемые артефакты удаления | universal | 1 | Universal |
 | 33 | редактирование/компрессия AI-промта | проверить prohibition/caps → заменить на motivation-framing | не тратить review-раунды на предсказуемую emphasis-ошибку | universal | 1 | Universal |
@@ -57,3 +57,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 50 | репо содержит скиллы/модули из нескольких доменов | перечислить все домены и получить is_in_scope per domain до спека | не переписывать scope из-за итеративного уточнения границ | universal | 1 | Universal |
 | 51 | PROMOTED → tech-spec-planning | верифицировать каждый целевой файл на наличие изменяемого элемента | — | — | 2 | — |
 | 52 | задача содержит тест с точной строкой-маркером определённой в другой задаче | объявить depends_on на задачу-источник даже если строка — литерал | не пропустить неявную зависимость через разделённый дизайн-маркер | situational | 1 | Situational |
+| 53 | написание Implementation Tasks в tech-spec | прочитать skills-and-reviewers.md перед Skill/Reviewers полями | не использовать неверные skill-имена | universal | 1 | Universal |
