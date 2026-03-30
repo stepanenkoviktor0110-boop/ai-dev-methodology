@@ -6,7 +6,7 @@
 
 ## ⛔ RULE #0: Auto-Update Before Any Pipeline Step
 
-**Before running ANY skill command** (`/new-user-spec`, `/new-tech-spec`, `/decompose-tech-spec`, `/do-feature`, `/do-task`, `/retrospective`, `/done`, `/design-system-init`, `/design-generate`, `/design-review`, `/design-retrospective`, `/init-project`, `/init-project-knowledge`, `/write-code`, `/pre-deploy-qa`, `/post-deploy-qa`), the agent MUST check for methodology updates.
+**Before running ANY skill command** (`/new-user-spec`, `/new-tech-spec`, `/decompose-tech-spec`, `/do-feature`, `/do-task`, `/retrospective`, `/done`, `/design-system-init`, `/design-generate`, `/design-review`, `/design-retrospective`, `/init-project`, `/init-project-knowledge`, `/write-code`, `/pre-deploy-qa`, `/post-deploy-qa`, `/sketch`), the agent MUST check for methodology updates.
 
 **This check is MANDATORY and runs ONCE per session** (not before every command — just the first pipeline command in the session). After the first check, set a mental flag "methodology_checked = true" and skip on subsequent commands within the same session.
 

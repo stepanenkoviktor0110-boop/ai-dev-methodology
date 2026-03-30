@@ -64,3 +64,6 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 57 | написание агент-файла для multi-context (inline + spawn_agent) | давать нейтральный сигнал завершения, не back-reference на parent step | артефакт работает в обоих execution environments | universal | 1 | Universal |
 | 58 | создание скилла с companion agent-file (SKILL.md + agents/{name}.md) | явно разграничить что делает SKILL.md (оркестрация) и что делает agent-file (протокол шага) | избежать дублирования одного действия в обоих файлах | situational | 1 | Situational |
 | 59 | написание grep-based smoke check для markdown-контента | проверить фактический регистр строки в файле, добавить -i если непредсказуем | предотвратить ложно-отрицательный AVP check при несовпадении регистра | universal | 1 | Universal |
+
+| 57 | выбор лейаута с full-bleed фото | проверить ориентацию фото и кадрирование субъекта против формы контейнера | не тратить итерации на геометрически невозможный кроп | situational | 1 | Situational |
+| 58 | верстка секции из структурированных данных пользователя | маппировать каждое поле данных в UI-элемент напрямую | не изобретать структуру отображения расходящуюся с источником | universal | 1 | Universal |
