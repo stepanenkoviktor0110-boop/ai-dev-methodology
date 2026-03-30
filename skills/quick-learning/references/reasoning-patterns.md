@@ -659,6 +659,15 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** scope-management
 
+### 2026-03-30 export-contacts-filter / session 2: Флаг-файл run-once — путь от якоря, не от CWD
+
+**Seen:** 1
+**Triad:** функция с run-once идемпотентностью создаёт флаг-файл + планируется запуск через cron/systemd → конструировать путь к флаг-файлу от якорного пути (db_path.parent, config.BASE_DIR, Path(__file__).parent), не от CWD → гарантировать идемпотентность независимо от рабочей директории процесса
+**Context:** cleanup_enriched_without_phone() использовала Path("data/.cleanup_done") — относительный путь. При запуске через cron из произвольной директории флаг оказался бы вне проекта — cleanup запускался бы на каждый старт, повторно удаляя данные.
+**Pattern:** Если функция создаёт state-файл (флаг, lock, checkpoint), привяжи его путь к стабильному anchor: db_path.parent, Path(__file__).parent или settings.BASE_DIR. Относительный Path("...") разрешается от CWD — а CWD у cron-процесса и dev-окружения обычно разные.
+**Scope:** universal
+**Category:** sequencing
+
 ### 2026-03-30 pipeline-report / session 2: checkpoint.yml не создан при старте второй сессии
 
 **Seen:** 1
