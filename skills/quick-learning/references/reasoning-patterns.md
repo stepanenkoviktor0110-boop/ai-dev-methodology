@@ -697,3 +697,13 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** multi-session feature execution с явным session-plan и передачей состояния между сессиями
 **Category:** sequencing
+
+### 2026-03-30 export-contacts-filter / session 2: Audit-волна ловит cross-task баги невидимые per-task ревьюеру
+
+**Seen:** 1
+**Triad:** завершение implementation-волн в multi-task фиче → запустить code + security + test аудиты параллельно в отдельной волне → поймать баги из взаимодействия задач, невидимые для ревьюера отдельного diff-а
+**Context:** Per-task ревьюеры одобрили Task 1 (флаг-файл создан). Audit-волна нашла major finding: путь к флаг-файлу CWD-relative — проблема возникает из контекста deployment, а не из diff отдельной задачи.
+**Pattern:** После implementation-волн добавляй audit-волну (code + security + test, параллельно). Каждый аудитор читает финальное состояние всех файлов фичи — ловит deployment-sensitive и cross-component проблемы, которые per-task ревьюер видит только в своём diff-е.
+**Scope:** situational
+**Situation:** multi-task feature с 3+ implementation задачами в разных файлах
+**Category:** sequencing
