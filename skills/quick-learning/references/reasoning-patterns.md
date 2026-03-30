@@ -211,6 +211,15 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** sequencing
 
+### 2026-03-30 methodology-sync-sketch / session 1: агент-файл для multi-context — нейтральные сигналы завершения
+
+**Seen:** 1 (methodology-sync-sketch / session 1)
+**Triad:** написание агент-файла, который используется и inline, и через spawn_agent → не использовать ссылки на родительский контекст ("return to Phase N"), давать нейтральный сигнал завершения ("task complete. [result]") → артефакт работает корректно в обоих execution environments
+**Context:** sketch-interviewer.md написан с `"return to SKILL.md Phase 5"` — это работает в Claude Code (inline load), но ломается в Codex spawn_agent где агент не знает про родителя.
+**Pattern:** Когда файл агента предназначен для нескольких execution environments (inline + spawned) — описывать завершение нейтрально: "task complete. [result description]". Вызывающая сторона сама решает что делать дальше. Back-reference на parent step — это coupling на конкретную среду.
+**Scope:** universal
+**Category:** sequencing
+
 ## Situational
 
 Patterns that apply only in specific contexts. Each has a `Situation` field describing when it's relevant.

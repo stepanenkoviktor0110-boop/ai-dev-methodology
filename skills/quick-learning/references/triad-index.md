@@ -61,3 +61,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 54 | добавление нового sentinel/marker в агентный промт | явно описать processing logic во всех секциях/таблицах | не получить major review findings из-за неполного покрытия | universal | 2 | Universal |
 | 55 | тест упоминается в decisions.md как "относится к другой задаче" | добавить тест явно в spec/AC той задачи, не только в notes | не потерять тест через границу волн | situational | 2 | Situational |
 | 56 | task-creator назначает wave для audit/final волн | использовать числа (audit=N+1, final=N+2), не строки | пройти frontmatter schema-validation | situational | 1 | Situational |
+| 57 | написание агент-файла для multi-context (inline + spawn_agent) | давать нейтральный сигнал завершения, не back-reference на parent step | артефакт работает в обоих execution environments | universal | 1 | Universal |
