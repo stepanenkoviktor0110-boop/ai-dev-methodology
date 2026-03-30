@@ -26,7 +26,7 @@ The repository root (`~/.claude/skills/`) contains:
 - `{skill-name}/SKILL.md` — one directory per skill with its instruction file
 - `shared/scripts/` — Bash utilities (e.g., `init-feature-folder.sh`)
 - `shared/templates/new-project/` — scaffold for bootstrapping new projects
-- `shared/work-templates/` — per-feature artifact templates (`user-spec.md.template`, `tech-spec.md.template`, `session-plan.md.template`, `tasks/`)
+- `shared/work-templates/` — per-feature artifact templates (`user-spec.md.template`, `tech-spec.md.template`, `session-plan.md.template`, `sketch.md`, `tasks/`)
 - `project-knowledge/references/` — this documentation
 - `quick-learning/references/` — knowledge buffer files: `reasoning-patterns.md`, `triad-index.md`, `quick-ref-{skill}.md`
 - `work/{feature-name}/` — per-feature working directory with `user-spec.md`, `tech-spec.md`, `tasks/`, `decisions.md`, `logs/userspec/interview.yml`
@@ -37,7 +37,7 @@ The repository root (`~/.claude/skills/`) contains:
 
 **Skills** — each is a directory with `SKILL.md` containing instructions Claude follows when the skill is invoked. Skills are loaded by Claude Code's skill system via the Skill tool.
 
-**Agents** — in the Codex version, `agents/` directory contains agent definitions. In the Claude version, validators are launched via the built-in Agent tool with `subagent_type` parameter.
+**Agents** — `agents/` directory contains agent definition files (e.g. `sketch-interviewer.md`). In Claude Code, the parent skill reads the agent file and follows its instructions inline. In Codex, agents are spawned directly via `spawn_agent`. Validators are separate: launched via Claude's built-in `Agent` tool with `subagent_type`.
 
 **Shared templates** — reusable scaffolds for work artifacts: user-spec, tech-spec, session-plan, tasks. Copied and edited per feature, never modified in place.
 
@@ -65,7 +65,7 @@ The repository root (`~/.claude/skills/`) contains:
 |--------|------------------------|-------|
 | Skills path | `~/.claude/skills/` | `~/.agents/skills/` |
 | Agent API | Built-in `Agent` tool | `spawn_agent` / `wait_agent` |
-| Agents dir | None (validators via Agent tool) | `agents/` directory |
+| Agents dir | `agents/` directory (interview agents, e.g. sketch-interviewer) | `agents/` directory (spawned via spawn_agent) |
 | Config | `~/.claude/settings.json` | `~/.codex/config.toml` |
 | Models | Claude (Opus/Sonnet/Haiku) | GPT-5.x tiers |
 

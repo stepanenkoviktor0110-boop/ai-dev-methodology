@@ -8,7 +8,7 @@ Coding conventions, development workflow, and project-specific practices.
 
 **Skill files:** Each skill lives in `{skill-name}/SKILL.md`. Name is kebab-case. Instructions are in Markdown, written for Claude to follow. No code — only prose instructions.
 
-**Agent files (Codex only):** `agents/{agent-name}.md`. In Claude version, agents are launched via the built-in `Agent` tool with `subagent_type`.
+**Agent files:** `agents/{agent-name}.md`. In Claude version, the parent skill reads the agent file inline and follows its instructions (e.g. `sketch-interviewer.md`). In Codex, agent files are spawned directly via `spawn_agent`.
 
 **Templates:** Files in `shared/work-templates/` end with `.template` suffix and contain placeholders in `{curly-braces}`. Never edit templates in place — always copy first.
 
@@ -54,7 +54,9 @@ No automated tests. The "tests" are functional: invoke a skill, observe Claude's
 
 ### Methodology Pipeline Order
 
-User Spec → Tech Spec → Tasks → Code. Each stage requires explicit user approval before proceeding. No skipping gates.
+**Full pipeline:** User Spec → Tech Spec → Tasks → Code. Each stage requires explicit user approval before proceeding. No skipping gates.
+
+**Sketch Mode (lightweight path):** `/sketch` → 3–5 question interview → `sketch.md` (confirmed by user) → code in one session (no validators) → decision gate: develop (`/new-user-spec`) or archive (`/done`). Used when idea needs prototyping before committing to full pipeline.
 
 ### Skill Promotion Rule
 
