@@ -430,3 +430,30 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** нетехнический пользователь выполняет команды на сервере (psql, bash, python repl)
 **Category:** communication
+
+### 2026-03-30 design-pipeline-v2 v2.3: Граничное условие счётчика — верифицируй против спецификации
+
+**Seen:** 1
+**Triad:** написание числовой логики с граничным условием (max N повторений, retry limit, iteration cap) → сразу подставить граничное значение и убедиться что условие выполняется ровно N раз → не пропустить off-by-one через code review
+**Context:** Wave-итерации в design-session-execution: counter=1, условие `< 3` — вместо 3 re-spawn получилось 2. Decision 9 требовал max 3 итерации. Code audit (HIGH finding) поймал; обычный review не заметил бы. Fix: `< 3` → `<= 3`.
+**Pattern:** При написании логики "повторять максимум N раз" — сразу подставить граничное значение и посчитать итерации вручную: если counter=1, то `<= N` даёт N итераций, `< N` даёт N-1. Off-by-one визуально неотличим от правильного кода — review ловит редко.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-03-30 design-pipeline-v2 v2.3: git add scope должен покрывать все write locations скилла
+
+**Seen:** 1
+**Triad:** скилл или агент делает commit и пишет файлы в несколько директорий → перечислить все write locations из тела скилла перед написанием git add → не потерять файлы вне основного дерева при коммите
+**Context:** design-done: `git add work/completed/{feature}/` не захватывал `.design-system/` файлы, которые design-retrospective пишет в корне проекта. Архивный коммит был неполным. HIGH finding на code audit; fix: `git add -A`.
+**Pattern:** При написании шага commit в скилле — просмотреть все фазы, которые пишут файлы, и составить список write locations. Если хотя бы одна запись происходит вне основной директории — использовать `git add -A`. Path-specific `git add` скрыто ломается при добавлении новых write locations в будущем.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-03-30 design-pipeline-v2 v2.3: TRIZ для выбора между равнозначными вариантами фикса
+
+**Seen:** 1
+**Triad:** два варианта фикса дают одинаковый результат но отличаются по устойчивости к будущим изменениям → применить tradeoff-анализ (minimal diff vs systemic robustness) → выбрать вариант с меньшим coupling к текущим деталям реализации
+**Context:** HIGH #1: `< 3` vs `counter=0` — оба дают 3 итерации, но `<= 3` семантически точнее и ближе к спецификации. HIGH #2: `git add work/completed/` vs `git add -A` — оба фиксируют текущие файлы, но `-A` устойчив к добавлению новых write locations. Оба выбора сделаны за один раунд без обсуждения.
+**Pattern:** Когда два варианта фикса технически корректны — проверить: (1) какой вариант продолжает работать при изменении смежного требования, (2) какой вариант создаёт меньше implicit coupling с деталями реализации. Выбрать более устойчивый даже если diff чуть больше.
+**Scope:** universal
+**Category:** tool-selection
