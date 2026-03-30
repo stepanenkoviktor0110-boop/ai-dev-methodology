@@ -15,7 +15,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 8 | AC для markdown-only фич | формулировать через наличие конкретных артефактов | сделать AC автоматически проверяемыми | universal | 1 | Universal |
 | 9 | PROMOTED → feature-execution | субагент не завершает задачу → lead выполняет напрямую | — | — | 2 | — |
 | 10 | ревью нашло паттерн ошибки (не разовый баг) | добавить предупреждение в промт следующего teammate | предотвратить повторение ошибки в следующих задачах | situational | 1 | Situational |
-| 11 | написание тестов в multi-agent workflow | требовать assertion на результат функции, не только на mock | тесты ловят баги, а не проверяют форму вызова | situational | 1 | Situational |
+| 11 | PROMOTED → code-writing | assertions на output-формат, не на input-атрибуты | — | — | 2 | — |
 | 12 | security/code audit в multi-task feature | вести known-issues.md, аудитор читает перед ревью | не тратить время на повторный репорт известных проблем | situational | 1 | Situational |
 | 13 | внешний сервис возвращает неожиданный результат | провести эскалирующую диагностику (параметры → curl → перечитать docs) | найти рабочий обходной путь через существующие API-параметры | universal | 1 | Universal |
 | 14 | unit-тесты с моками для внешнего процесса/API | провести минимум 1 live smoke-прогон перед объявлением QA passed | предотвратить ложное "all tests pass" при расхождении мока и реальности | universal | 2 | Universal |

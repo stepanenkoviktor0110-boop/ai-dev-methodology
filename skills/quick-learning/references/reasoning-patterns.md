@@ -231,15 +231,7 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Situation:** multi-agent feature execution с несколькими волнами
 **Category:** communication
 
-### 2026-03-26 shift-confirmation: Behavioral тесты вместо implementation
-
-**Seen:** 1
-**Triad:** написание тестов в multi-agent workflow → требовать assertion на результат функции, не только на mock → тесты ловят баги, а не проверяют форму вызова
-**Context:** В каждой задаче (1, 2, 4) test-reviewer находил тесты с `toHaveBeenCalledWith` как единственной проверкой. Агенты оптимизируют на "тест проходит", не на "тест ловит баг".
-**Pattern:** В промт teammate добавить: "Каждый тест ОБЯЗАН иметь assertion на результат функции (return value / output shape), а не только на аргументы вызова mock."
-**Scope:** situational
-**Situation:** multi-agent workflow, генерация тестов агентами
-**Category:** tool-selection
+<!-- PROMOTED → code-writing (Seen: 2, 2026-03-30) -->
 
 ### 2026-03-26 shift-confirmation: Known-issues реестр для аудитов
 
