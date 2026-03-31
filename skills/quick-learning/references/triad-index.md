@@ -5,7 +5,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 
 | # | Trigger | Action | Goal | Scope | Seen | Section |
 |---|---------|--------|------|-------|------|---------|
-| 1 | создание/изменение артефакта | верифицировать результат в реальной среде перед объявлением "готово" | не объявлять "готово" пока результат не подтверждён | universal | 2 | Universal |
+| 1 | PROMOTED → feature-execution | верифицировать результат в реальной среде перед объявлением "готово" | — | — | 3 | — |
 | 2 | добавление auth flow к импортированным данным | проверить credentials + isActive | не обнаруживать missing auth на user verification | universal | 1 | Universal |
 | 3 | generic retry decorator оборачивает API-вызов | явно исключить non-retryable exceptions | не ретраить ошибки, которые повторятся всегда | universal | 1 | Universal |
 | 4 | написание AC для задачи создания CI/CD pipeline | явно включить concurrency/idempotency guards в AC | избежать предсказуемых deviation записей для best-practice additions | situational | 1 | Situational |
@@ -87,3 +87,5 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 76 | добавление метрики в dashboard без явного требования | уточнить временной горизонт у пользователя (запуск / день / всё время) | не додумывать горизонт самостоятельно | universal | 1 | Universal |
 | 77 | вызов clear()/reset() на внешнем сервисе перед записью новых данных | явно сбрасывать ВСЕ слои состояния (контент + форматирование + кэш) | предотвратить проявление предыдущего состояния после "очистки" | universal | 1 | Universal |
 | 78 | production данные не соответствуют поведению текущего кода | сверить timestamp задеплоенного файла с временем запуска | не искать баг в коде который уже правильный | universal | 1 | Universal |
+| 79 | выполнение deploy-команды в проекте клиента | уточнить чей сервер и кто контролирует деплой-процесс ДО выполнения | не произвести несогласованное изменение на продакшене клиента | situational | 1 | Situational |
+| 79 | выполнение deploy-команды в проекте клиента | уточнить чей сервер и согласовать деплой-процесс ДО выполнения | не произвести несогласованное изменение на продакшене клиента | situational | 1 | Situational |
