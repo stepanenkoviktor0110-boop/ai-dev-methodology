@@ -241,6 +241,16 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 
 <!-- PROMOTED → feature-execution (Seen: 2, 2026-03-30) -->
 
+### 2026-03-31 dashboard-v1 / session 3: Local-first режим — уточнить среду деплоя до запуска deploy-pipeline
+
+**Seen:** 1
+**Triad:** pre-deploy QA завершён, пользователь в local-first / sketch режиме → уточнить желаемую среду верификации ДО запуска deploy wave → не готовить VPS-деплой для пользователя который не планирует его сейчас
+**Context:** Task 12 (Deploy) запустился по плану волны. Только после попытки настройки выяснилось: нет remote, нет GitHub, нет секретов — пользователь сказал "пока размещаем локально". Создан GitHub репо, код запушен, но VPS-деплой отложен. Волна 7-8 зафиксирована как deferred.
+**Pattern:** Перед запуском deploy wave уточнить у пользователя: "Деплоим сейчас на VPS или оставляем локально?" — особенно в sketch/local-first проектах. GitHub + deploy.yml можно настроить в любой момент; principal goal — working local result.
+**Scope:** situational
+**Situation:** sketch-mode или local-first фичи, где пользователь не заявил явного намерения деплоить
+**Category:** communication
+
 ### 2026-03-26 shift-confirmation: Ошибки повторяются между волнами
 
 **Seen:** 1
@@ -292,6 +302,15 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** При обсуждении решений с пользователем — каждый термин расшифровывать при первом упоминании, объяснять последствия на примерах из его домена. Если пользователь хоть раз спросил "что это?" — это сигнал переключиться на простой язык для ВСЕХ последующих обсуждений.
 **Scope:** universal
 **Category:** communication
+
+### 2026-03-31 dashboard-v1 / session 3: CSS position:fixed провалился на React inline style — зеркаль JS-паттерн соседнего компонента
+
+**Seen:** 1
+**Triad:** CSS `position: fixed` не применяется к компоненту с React inline `style={{ display: "none" }}` → использовать JS `isMobile` state с resize listener (зеркально существующему компоненту) → не тратить раунды на CSS, который не может надёжно переопределить React inline style
+**Context:** mobile-nav в App.jsx имел `style={{ display: "none" }}` с переопределением через `@media { .mobile-nav { display: flex !important; position: fixed; } }`. Пользователь подтвердил: вкладка находится не внизу viewport, нужно прокрутить страницу. При этом ProjectModal уже использовал `isMobile = useState(() => window.innerWidth <= 640)` + useEffect resize listener. Фикс: применить тот же паттерн к nav div, убрав CSS-подход.
+**Pattern:** Когда CSS медиа-запрос должен переопределить React inline style (особенно `position: fixed`) — не полагайся на CSS `!important`. Вместо этого используй JS state `isMobile` с `window.addEventListener("resize", ...)` и прямые inline styles. Этот паттерн уже реализован в модалках — зеркаль его.
+**Scope:** universal
+**Category:** recovery
 
 ### 2026-03-27 mvp-parser / live-test: Проверить стоимость retry до включения
 
