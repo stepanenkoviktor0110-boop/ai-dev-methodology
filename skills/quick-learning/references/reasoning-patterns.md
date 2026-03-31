@@ -877,3 +877,22 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** мобильный интернет российских операторов, сервис доступен только по IP
 **Category:** recovery
+
+### 2026-04-01 employee-cabinet / session decompose: depends_on + wave = ordering violation
+
+**Seen:** 1
+**Triad:** добавление depends_on к задаче в той же волне что и зависимость → проверить wave(задача) > max(wave(все depends_on)), сдвинуть если равны → не создавать wave ordering violation обнаруживаемый только при запуске feature-execution
+**Context:** Tasks 3, 4, 5 получили depends_on: [1] для TDD-цикла, но остались wave: 1. Task 1 тоже wave: 1. Нарушение поймано только cross-task validator — 3 раунда спустя.
+**Pattern:** После добавления depends_on к задаче — немедленно проверить что её волна выше волны всех зависимостей. Если задача A в wave N и зависит от задачи B в wave N → A переходит в wave N+1, все downstream задачи сдвигаются каскадом.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-04-01 employee-cabinet / session decompose: параллельные тесты — изолировать seed по email
+
+**Seen:** 1
+**Triad:** два параллельных теста пишут в общую тестовую БД через одного seed-пользователя → использовать разные email-константы для каждой тестовой задачи → избежать teardown race condition при параллельном выполнении
+**Context:** Tasks 9 (integration) и 10 (E2E) в одной волне оба пишут в TEST_DATABASE_URL. globalSetup Task 10 чистил timesheets seeded-user в момент когда integration-тесты Task 9 могли ещё работать.
+**Pattern:** Если несколько тестовых задач работают параллельно с общей БД — каждой задаче присвоить уникальный seed-email (integration-test@..., e2e-test@...). Уточнять это в Details задачи явно, не полагаться на transaction isolation.
+**Scope:** situational
+**Situation:** параллельное выполнение нескольких тестовых задач против одной тестовой БД
+**Category:** problem-decomposition
