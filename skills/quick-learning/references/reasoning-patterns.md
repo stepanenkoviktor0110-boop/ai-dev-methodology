@@ -224,6 +224,24 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- PROMOTED → feature-execution (Seen: 2, 2026-03-30) -->
 
+### 2026-03-31 dashboard-v1 / deploy: SSH key auth падает — проверь owner домашней директории
+
+**Seen:** 1
+**Triad:** SSH key auth падает несмотря на правильный authorized_keys и PubkeyAuthentication yes → проверить `ls -la ~` — домашняя директория должна принадлежать именно этому пользователю → устранить auth-блокер без изменения sshd_config
+**Context:** `authorized_keys` корректен, sshd_config правильный, но домашняя директория `/root/` принадлежала UID 1001. `chown root:root /root` — SSH заработал немедленно.
+**Pattern:** При диагностике SSH key auth — после проверки authorized_keys и sshd_config выполни `ls -la ~`. Домашняя директория обязана принадлежать тому пользователю под которым идёт вход. Неправильный owner — частая silent failure на VPS с нестандартной конфигурацией.
+**Scope:** universal
+**Category:** recovery
+
+### 2026-03-31 dashboard-v1 / deploy: Браузер молчит — смотри server access log до диагностики сети
+
+**Seen:** 1
+**Triad:** браузер показывает "не грузит" без ошибки → сразу проверить server access log → узнать реальный HTTP-статус до диагностики firewall/сети
+**Context:** Пользователь видел пустой браузер и думал что порт заблокирован. Nginx access log показал 4 запроса с 401 — сервер работал, проблема была в неверном пароле Basic Auth.
+**Pattern:** Когда браузер не отвечает — не диагностируй сеть вслепую. Первый шаг: `tail -f /var/log/nginx/access.log`. Если запросы доходят — проблема в приложении. Если запросов нет — проблема в сети.
+**Scope:** universal
+**Category:** recovery
+
 ### 2026-03-30 methodology-sync-sketch / session 1: агент-файл для multi-context — нейтральные сигналы завершения
 
 **Seen:** 1 (methodology-sync-sketch / session 1)
