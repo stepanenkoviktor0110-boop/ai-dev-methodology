@@ -9,3 +9,4 @@ Top patterns relevant to task-decomposition. Max 10 entries, sorted by Seen (hig
 3. **Заменяй межзадачную зависимость на общий source of truth** (Seen: 1) — При декомпозиции на параллельные задачи — если задача читает результат другой в той же волне, заменить зависимость на чтение общего документа. depends_on + same wave = гонка данных.
 3. **Wave поля Audit/Final Wave — числа, не метки** (Seen: 2) — Если имплементационных волн N — audit = N+1, final = N+2. Передавать task-creator числа явно. Строки "audit"/"final" не проходят frontmatter schema-validation.
 4. **String-output assertions — ограничивай scope** (Seen: 2) — Для тестов markdown/отчётов: assertion на наличие недостаточно — извлекай нужную секцию (regex/split), затем проверяй внутри неё.
+5. **Scope задач разных волн для одного файла** (Seen: 2) — Если задача A создаёт файл, задача B его расширяет — ограничить scope A нуждами её волны; в бриф B явно написать "файл уже существует с X, добавить Y".

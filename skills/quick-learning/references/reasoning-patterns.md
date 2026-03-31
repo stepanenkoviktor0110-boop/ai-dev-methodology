@@ -811,14 +811,14 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** problem-decomposition
 
-### 2026-03-31 dashboard-v1 / task-decomposition: scope split для задач разных волн расширяющих один файл
+### 2026-04-01 dashboard-v1 / deploy: SSH + sudo в GitHub Actions CI деплое
 
 **Seen:** 1
-**Triad:** задача A создаёт файл, задача B в позднейшей волне его расширяет → ограничить scope задачи A функциями нужными в её волне; в бриф задачи B явно написать "файл уже существует с [X], добавить [Y]" → избежать дублирования реализации при параллельной генерации task-creator'ами
-**Context:** Task 1 (wave 1) создала storage.js и включила в scope все 4 функции включая exportJSON/importJSON. Task 7 (wave 4) также добавляла exportJSON/importJSON в тот же файл. Cross-task check: если Task 1 выполнит всё по инструкции, Task 7 придёт добавлять уже существующие функции.
-**Pattern:** При декомпозиции feature где задача A создаёт файл а задача B его расширяет — явно ограничить scope A ("только save/load — нужны в wave 1"), и в бриф B включить: "этот файл уже существует с функциями X, Y. Добавить только Z." Параллельные task-creator'ы не общаются между собой — scope должен быть однозначен в каждом брифе.
+**Triad:** GitHub Actions SSH step выполняет `sudo service-name reload` от deploy-пользователя → убрать sudo из reload-команды (или настроить NOPASSWD в sudoers заранее), добавить `-o StrictHostKeyChecking=no` в SSH-команду → не получать permission denied на первом CI деплое
+**Context:** deploy.yml использовал `sudo nginx -s reload` — deploy user не имел sudo. Плюс StrictHostKeyChecking блокировал first-time connect в CI. Итого 8 fix-коммитов.
+**Pattern:** При написании GitHub Actions SSH deploy — сразу убрать sudo перед командой reload (nginx/pm2/etc), добавить `-o StrictHostKeyChecking=no` к ssh-команде, и проверить локально права deploy-user до первого push в CI.
 **Scope:** universal
-**Category:** problem-decomposition
+**Category:** sequencing
 
 ### 2026-03-31 employee-cabinet / session 1: уточнять регион и регуляторику ДО предложения стека
 

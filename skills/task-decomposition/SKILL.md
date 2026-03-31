@@ -157,3 +157,5 @@ After user approves task decomposition, calculate session grouping for predictab
 **Wave поля Audit/Final Wave — числа, не метки (Seen: 2):** Если имплементационных волн N — audit = N+1, final = N+2. Передавать task-creator числа явно. Строки "audit"/"final" не проходят frontmatter schema-validation.
 
 **String-output assertions — ограничивай scope (Seen: 2):** Для тестов структурированного string-output (markdown, отчёты) недостаточно проверять наличие значения — добавь assertion на scope: извлекай нужную секцию (regex/split), затем проверяй значение внутри неё. Это отличает "значение есть" от "значение в нужном месте".
+
+**Scope задач разных волн для одного файла (Seen: 2):** Если задача A создаёт файл а задача B в позднейшей волне его расширяет — явно ограничить scope A ("только save/load — нужны в wave 1"), и в бриф B включить: "файл уже существует с функциями X, Y. Добавить только Z." Параллельные task-creator'ы не общаются — scope должен быть однозначен в каждом брифе.
