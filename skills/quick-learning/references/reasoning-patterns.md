@@ -251,6 +251,24 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** sequencing
 
+### 2026-04-01 employee-cabinet / session 1: Проверять overlap файлов внутри волны перед финализацией tech-spec
+
+**Seen:** 1
+**Triad:** завершение секции Implementation Tasks в tech-spec → проверить "Files to modify" каждой задачи на пересечение внутри одной волны → предотвратить merge-конфликт при параллельном выполнении
+**Context:** Tasks 7 и 8 в Wave 3 оба изменяли `cabinet/timesheet/page.tsx`. При параллельном выполнении — гарантированный конфликт. Поймал только template-validator.
+**Pattern:** После написания всех задач в волне — прогнать мысленный (или grep-based) check: нет ли двух задач в одной волне с совпадающим файлом в "Files to modify". Если есть — объединить задачи или разнести по волнам.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-04-01 employee-cabinet / session 1: File upload в архитектуре требует явного описания file download
+
+**Seen:** 1
+**Triad:** проектирование фичи с загрузкой пользовательских файлов на диск → явно определить механизм доставки файлов (protected API endpoint с ownership check, не static) в Architecture секции → предотвратить IDOR через неавторизованный прямой доступ к файлам
+**Context:** Tech-spec описывал POST для загрузки PDF-сертификатов, но не описывал как файлы отдаются клиенту. Файлы попали бы в `/uploads/` без auth-защиты. Поймал security-auditor — добавлен новый Task 5.
+**Pattern:** Когда фича включает хранение файлов пользователя, upload и download — разные операции с разными требованиями безопасности. В Architecture явно описать оба direction: куда файл попадает при upload И через какой endpoint возвращается при download (с auth check). Статическая раздача файловой директории по умолчанию небезопасна.
+**Scope:** universal
+**Category:** information-gathering
+
 ## Situational
 
 Patterns that apply only in specific contexts. Each has a `Situation` field describing when it's relevant.

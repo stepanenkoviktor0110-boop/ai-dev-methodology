@@ -100,3 +100,5 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 87 | SSH key auth падает несмотря на правильный authorized_keys | проверить `ls -la ~` — домашняя директория должна принадлежать пользователю | устранить auth-блокер без изменения sshd_config | universal | 1 | Universal |
 | 88 | браузер показывает "не грузит" без ошибки | проверить server access log до диагностики сети | не диагностировать неверный слой (сеть vs приложение) | universal | 1 | Universal |
 | 89 | новая роль появляется в середине user-spec интервью | немедленно составить матрицу "роль × ключевые возможности" и согласовать | не тратить 3+ батча на выяснение пересечений между ролями | situational | 1 | Situational |
+| 90 | завершение секции Implementation Tasks в tech-spec | проверить overlap "Files to modify" внутри каждой волны | предотвратить merge-конфликт при параллельном выполнении | universal | 1 | Universal |
+| 91 | проектирование фичи с загрузкой пользовательских файлов на диск | явно описать механизм доставки файлов (protected API, не static) в Architecture | предотвратить IDOR через неавторизованный прямой доступ к файлам | universal | 1 | Universal |
