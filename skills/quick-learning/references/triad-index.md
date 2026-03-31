@@ -102,3 +102,5 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 89 | новая роль появляется в середине user-spec интервью | немедленно составить матрицу "роль × ключевые возможности" и согласовать | не тратить 3+ батча на выяснение пересечений между ролями | situational | 1 | Situational |
 | 90 | завершение секции Implementation Tasks в tech-spec | проверить overlap "Files to modify" внутри каждой волны | предотвратить merge-конфликт при параллельном выполнении | universal | 1 | Universal |
 | 91 | проектирование фичи с загрузкой пользовательских файлов на диск | явно описать механизм доставки файлов (protected API, не static) в Architecture | предотвратить IDOR через неавторизованный прямой доступ к файлам | universal | 1 | Universal |
+| 92 | диагностика недоступности nginx снаружи | запустить `nginx -T | grep server_name` | обнаружить конфликт server blocks за один шаг | universal | 1 | Universal |
+| 93 | сервис доступен через curl, мобильный браузер зависает | уточнить "домен или IP" до диагностики | не тратить время на network-диагностику | situational | 1 | Situational |

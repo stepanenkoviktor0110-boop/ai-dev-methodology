@@ -858,3 +858,22 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Если инфра-зависимость блокирует демо — замокировать её в компоненте за 2 минуты и показать UI. Исправлять инфра отдельно, не держать UX-демо заложником конфига.
 **Scope:** universal
 **Category:** recovery
+
+### 2026-04-01 dashboard-v1 / session post-deploy: nginx server_name conflict detection
+
+**Seen:** 1
+**Triad:** диагностика недоступности nginx снаружи → запустить `nginx -T | grep -B2 -A10 server_name` → обнаружить конфликт server blocks за один шаг
+**Context:** два server block претендовали на server_name 217.114.2.159 — dashboard и levelupme (certbot). Ручной просмотр каждого конфига занял бы несколько шагов.
+**Pattern:** При недоступности nginx-сервиса снаружи — первым шагом запускать `nginx -T` с grep по server_name. Конфликты server blocks часто невидимы при просмотре одного конфига.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-01 dashboard-v1 / session post-deploy: мобильный оператор блокирует HTTP по IP
+
+**Seen:** 1
+**Triad:** сервис доступен через curl с сервера (порт 80), но браузер на мобильном зависает → уточнить "по домену или по IP" до диагностики nginx/сети → не тратить время на network-диагностику
+**Context:** nginx отвечал 401 на curl, curl с ноутбука работал, а с телефона через 4G зависал без ошибки — причина в блокировке прямых HTTP-запросов по IP у мобильного оператора.
+**Pattern:** Если сервис работает через curl но зависает в мобильном браузере — сразу уточнить: домен или IP. Российские мобильные операторы блокируют прямые HTTP-запросы по IP; решение — домен + SSL.
+**Scope:** situational
+**Situation:** мобильный интернет российских операторов, сервис доступен только по IP
+**Category:** recovery
