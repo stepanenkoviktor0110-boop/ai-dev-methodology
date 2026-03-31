@@ -113,3 +113,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 100 | фича читает файлы методологии через GitHub Contents API | уточнить закоммичены ли эти файлы в репозиториях ДО написания AC | не получить "данные недоступны" для всех проектов из-за .gitignore | situational | 1 | Situational |
 | 101 | субагент сообщает о блокере как причине незавершённой задачи | запустить ту же команду самостоятельно | не принимать диагноз агента как факт без верификации | universal | 1 | Universal |
 | 102 | завершение задачи субагентом | явно обновить status: done в frontmatter task-файла | не накапливать задачи "planned" требующие ручного batch-обновления | universal | 1 | Universal |
+| 103 | curl-команда в AVP/user-spec для endpoint с auth | проверить наличие auth header + добавить тест "без ключа → 401" | не получить false QA pass при сломанной авторизации | universal | 1 | Universal |

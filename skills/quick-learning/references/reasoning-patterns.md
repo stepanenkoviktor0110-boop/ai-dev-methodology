@@ -957,3 +957,12 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** существующий React/Vue/Svelte проект с inline styles + пользователь одобрил текущую эстетику
 **Category:** design-process
+
+### 2026-04-01 dashboard-progress-sync / session 1: Верификационный curl без auth = ложный положительный
+
+**Seen:** 1 (this feature/session)
+**Triad:** curl-команда в AVP/user-spec для endpoint с auth → проверить что команда включает auth header + добавить отдельный тест без ключа → 401 → не получить false QA pass при сломанной авторизации
+**Context:** user-spec содержал curl POST без X-Api-Key; если бы auth middleware был сломан, команда вернула 200 — агент зафиксировал бы успех, не обнаружив проблему
+**Pattern:** Для каждой верификационной curl-команды к защищённому endpoint — убедиться что команда передаёт auth credential. Добавить рядом явный тест "без ключа → 401". Тест auth работает только если один из вариантов должен упасть.
+**Scope:** universal
+**Category:** information-gathering
