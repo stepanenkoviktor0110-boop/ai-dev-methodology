@@ -186,3 +186,7 @@ If understanding changes significantly during interview:
 - [ ] User approved, frontmatter status: approved
 - [ ] interview.yml metadata.status: completed
 - [ ] Suggested `/new-tech-spec` as next step
+
+## Promoted Patterns
+
+- **Генерируй все шаги deliverable целиком** (Seen: 3): Когда deliverable состоит из нескольких шагов (серия промптов, roadmap, план сессий, деплой-инструкция) — генерировать ВСЕ шаги сразу. Частичный deliverable заставляет пользователя ловить недостающие части и запрашивать доработку.
