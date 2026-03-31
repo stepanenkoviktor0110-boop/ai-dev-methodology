@@ -13,6 +13,22 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
+### 2026-04-01 employee-cabinet / session 2: Интеграционные тесты с pg pool — singleton teardown
+
+**Seen:** 1
+**Triad:** интеграционные тесты с pg connection pool (shared singleton) → объявить globalTeardown в vitest.config, вызывать pool.end() там один раз → не допустить зависание тест-процесса или "pool ended" при последовательных suite
+**Context:** Task 9 — каждый из 4 тест-файлов вызывал `testDb.end()` в своём afterAll. Это shared singleton из helpers/db.ts. При последовательном запуске suite в одном worker первый завершившийся закрывал пул; следующие suite падали с "Cannot use a pool after calling end". Исправление: убрать end() из всех afterAll, создать global-teardown.ts с единственным вызовом, подключить через vitest.config globalSetup.
+
+---
+
+### 2026-04-01 employee-cabinet / session 2: E2E тесты — детерминированный assertion вместо waitForTimeout
+
+**Seen:** 1
+**Triad:** E2E тест с async UI-операцией (upload, submit, save) → заменить waitForTimeout(N) на assertion конкретного data-testid элемента (toBeVisible/toBeDisabled) → избежать flaky test и false-positive из-за race с таймером
+**Context:** Task 10 — certificates.spec.ts использовал waitForTimeout(2000) после загрузки файла. Ревью поймало: тест мог пройти при медленном сервере (успел за 2с) или провалиться при быстром (сервер не вернул ошибку вовремя). Решение: добавить data-testid="upload-error" в production page.tsx, ждать через toBeVisible({ timeout: 10000 }).
+
+---
+
 ### 2026-03-30 dashboard-v1 / session 1: Reviewer agents — спавнить после diff, не одновременно с тиммейтом
 
 **Seen:** 1
