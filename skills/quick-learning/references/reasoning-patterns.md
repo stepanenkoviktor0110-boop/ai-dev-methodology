@@ -792,3 +792,23 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** При выборе хостинга и инфраструктуры — первым вопросом уточнить страну/регион развёртывания и наличие регуляторных требований (локализация данных, compliance). Только после этого предлагать конкретные сервисы.
 **Scope:** universal
 **Category:** information-gathering
+
+## Universal
+
+### 2026-03-31 employee-cabinet / session 1: проверять тип БД-объекта до init-кода адаптера
+
+**Seen:** 1 (employee-cabinet)
+**Triad:** подключение адаптера внешней библиотеки к БД → проверить ожидаемый тип объекта (raw driver vs query builder) в docs ДО написания init-кода → не получить runtime ошибку несовместимости адаптера на первом запросе
+**Context:** better-auth принимает Kysely-инстанс, мы передали pg.Pool → `db.selectFrom is not a function` при первом login
+**Pattern:** Когда библиотека принимает "database" параметр — найти в docs конкретный тип (Pool / Kysely / Prisma), не угадывать по названию. Разные обёртки над одной БД несовместимы на уровне интерфейса.
+**Scope:** universal
+**Category:** tool-selection
+
+### 2026-03-31 employee-cabinet / session 1: мокировать инфраструктурную зависимость чтобы разблокировать демо
+
+**Seen:** 1 (employee-cabinet)
+**Triad:** демонстрация UI застряла из-за нерабочей инфраструктурной зависимости (auth, БД, API) → замокировать зависимость локально в компоненте → не блокировать оценку UX из-за инфраструктурной проблемы
+**Context:** better-auth не работал локально, пользователь не мог увидеть кабинет → подставили mock-session прямо в компонент и убрали guard в middleware
+**Pattern:** Если инфра-зависимость блокирует демо — замокировать её в компоненте за 2 минуты и показать UI. Исправлять инфра отдельно, не держать UX-демо заложником конфига.
+**Scope:** universal
+**Category:** recovery
