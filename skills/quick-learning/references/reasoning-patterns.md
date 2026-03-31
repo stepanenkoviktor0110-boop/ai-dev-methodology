@@ -134,10 +134,10 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-03-28 bp-pipeline / skeleton-pipe Phase 4: проверять enum-значения при генерации конфигов
 
-**Seen:** 1
+**Seen:** 2
 **Triad:** генерация конфигурационного файла с enum-полями (frontmatter, YAML, JSON schema) → проверить допустимые значения enum перед записью → избежать невалидных значений, которые выглядят правдоподобно но отклоняются средой
-**Context:** В agent-файле записал `model: claude-sonnet-4-6` — выглядит логично (полный model ID), но Claude Code принимает только `sonnet|opus|haiku|inherit`. IDE диагностика поймала, без неё ошибка проявилась бы только в runtime.
-**Pattern:** При генерации конфигурационных файлов с enum-полями — не подставляй "логичный" вариант, а проверь список допустимых значений из документации или схемы. "Правдоподобно" ≠ "валидно".
+**Context:** (1) В agent-файле записал `model: claude-sonnet-4-6` — выглядит логично, но Claude Code принимает только `sonnet|opus|haiku|inherit`. (2) 2026-04-01 employee-cabinet Task 1: `passWithNoTests: true` добавлен в ProjectConfig — опция валидна только на top-level, не в inline projects. TypeScript поймал при build, но агент уже закоммитил.
+**Pattern:** При генерации конфигурационных файлов с enum-полями или вложенными конфигами — не подставляй "логичный" вариант, а проверь список допустимых значений из документации или схемы. "Правдоподобно" ≠ "валидно". Особенно: опции библиотек могут быть валидны на top-level но не в вложенных объектах.
 **Scope:** universal
 **Category:** tool-selection
 
@@ -268,6 +268,24 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Когда фича включает хранение файлов пользователя, upload и download — разные операции с разными требованиями безопасности. В Architecture явно описать оба direction: куда файл попадает при upload И через какой endpoint возвращается при download (с auth check). Статическая раздача файловой директории по умолчанию небезопасна.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-01 employee-cabinet / session 1: Субагент сообщает о блокере — верифицировать самостоятельно
+
+**Seen:** 1
+**Triad:** субагент сообщает о блокере (build failure, missing dep, broken env) как причине незавершённой задачи → запустить ту же команду самостоятельно → не принимать диагноз агента как факт без проверки
+**Context:** Task 5 агент заявил "pre-existing build failure (missing admin/timesheets route, unrelated)" и пометил это как не-блокер. Верификация показала: build проходил нормально, никакого pre-existing failure не было. Диагноз агента был ложным.
+**Pattern:** Когда субагент сообщает о блокере как оправдании — не принимать этот диагноз как факт. Запустить ту же команду (build, test, curl) самостоятельно. Если блокер не воспроизводится — задача не заблокирована, а агент ошибся в диагностике. "Pre-existing blocker" — распространённый паттерн самооправдания.
+**Scope:** universal
+**Category:** recovery
+
+### 2026-04-01 employee-cabinet / session 1: Субагент не обновляет frontmatter статус задачи
+
+**Seen:** 1
+**Triad:** завершение задачи субагентом → явно обновить `status: done` в frontmatter task-файла как финальный шаг → не накапливать задачи со статусом "planned" требующие ручного batch-обновления от лида
+**Context:** Tasks 2, 4, 5, 6, 7 оставлены со статусом "planned" после выполнения — агенты обновляли decisions.md, но не трогали task frontmatter. Лид обнаружил при wave transition и обновлял вручную партиями.
+**Pattern:** В промт каждого teammate явно добавить шаг "обновить `status: planned → done` в frontmatter task-файла". Это не опциональная административная работа — без этого lead не может определить состояние фичи без ручного просмотра. Включить в commit flow перед reporting completion.
+**Scope:** universal
+**Category:** sequencing
 
 ## Situational
 
