@@ -896,3 +896,46 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** параллельное выполнение нескольких тестовых задач против одной тестовой БД
 **Category:** problem-decomposition
+
+### 2026-04-01 dashboard-progress-sync / userspec: подтвердить порядок фич до инициализации папки
+
+**Seen:** 1
+**Triad:** пользователь описывает несколько взаимосвязанных фич для реализации → явно уточнить порядок реализации ДО инициализации папки первой фичи → не создавать и переименовывать артефакты под неправильную фичу
+**Context:** Сессия стартовала с `/new-user-spec dashboard-crm`, папка создана — но пользователь уточнил что первой фичей должен быть progress-sync, а не CRM. Папку пришлось переименовывать.
+**Pattern:** Когда пользователь показывает спеки для N взаимосвязанных фич — перед стартом спросить "в каком порядке реализуем?" и только после подтверждения запускать `init-feature-folder.sh`.
+**Scope:** situational
+**Situation:** пользователь приносит несколько готовых спеков или модулей в одной сессии
+**Category:** scope-management
+
+### 2026-04-01 dashboard-progress-sync / userspec: проверять наличие файлов в git до GitHub API в AC
+
+**Seen:** 1
+**Triad:** фича читает файлы методологии (work/, checkpoint.yml) через GitHub Contents API → уточнить у пользователя закоммичены ли эти файлы в репозитории ДО написания AC → не получить "прогресс не отслеживается" для всех проектов из-за .gitignore
+**Context:** В спеке предполагалось читать checkpoint.yml через GitHub API для % прогресса — но пользователь подтвердил что work/ нередко в .gitignore. Потребовалось добавить fallback-ветку "прогресс не отслеживается".
+**Pattern:** Если фича читает проектные файлы через GitHub Contents API — перед написанием AC проверить: "эти файлы вообще коммитятся в репо?" Особенно это касается папок вроде work/, .claude/, logs/ которые часто gitignore-ятся.
+**Scope:** situational
+**Situation:** планирование фичи с GitHub API доступом к файлам в репозиториях пользователя
+**Category:** information-gathering
+
+## Universal
+
+### 2026-04-01 freelance-dashboard / session design-refactor: JS viewport state — признак отсутствия CSS architecture
+
+**Seen:** 1
+**Triad:** JS state существует только для переключения CSS-значений по viewport → заменить state+listener на CSS media queries + className → убрать re-renders и сделать layout управляемым CSS
+**Context:** App.jsx и ProjectModal.jsx содержали `isMobile` state + resize listener только для выбора между двумя наборами inline styles
+**Pattern:** Если JS state имеет ровно два значения и оба соответствуют CSS-состояниям для breakpoint — это признак отсутствующей CSS-архитектуры. Удалить state, вынести логику в media queries, заменить inline styles на className. Это не рефакторинг ради чистоты — это устранение источника будущих багов при добавлении новых breakpoints.
+**Scope:** universal
+**Category:** tool-selection
+
+## Situational
+
+### 2026-04-01 freelance-dashboard / session design-refactor: дизайн-пайплайн на приложении с inline styles → CSS migration приоритет
+
+**Seen:** 1
+**Triad:** design-system-init запущен на существующем приложении с inline styles → пропустить interview, экстрактировать токены из кода, выполнить CSS migration → переключить source-of-truth стилей, а не задокументировать существующие значения
+**Context:** дизайн-пайплайн вызван для React-дашборда с 200+ inline styles; пользователь сказал "всё нравится, просто сделай как надо"
+**Pattern:** Когда design-system-init запускается на проекте с уже сложившимися стилями и пользователь одобрил существующую эстетику, interview-фаза не нужна. Экстрактировать токены напрямую из кода, создать CSS custom properties + классы, мигрировать компоненты. HTML-демо вторичны — ценность в миграции живого кода.
+**Scope:** situational
+**Situation:** существующий React/Vue/Svelte проект с inline styles + пользователь одобрил текущую эстетику
+**Category:** design-process
