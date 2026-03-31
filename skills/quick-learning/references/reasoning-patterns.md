@@ -746,3 +746,21 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Когда просят обновить конкретный компонент (статус, отчёт, вкладку) — идентифицировать минимальный вызов этого компонента и запустить его изолированно. Не запускать полную систему, если не попросили явно.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-03-31 dashboard-v1 / task-decomposition: stub-ownership gap при межзадачных placeholder-ах
+
+**Seen:** 1
+**Triad:** задача N создаёт no-op stubs "для следующих задач" → в бриф каждой заполняющей задачи явно добавить шаг "замени no-op stub на реализацию" → гарантировать что placeholder не останется no-op в рабочем коде
+**Context:** Task 4 создала 6 handler-стабов в App.jsx "для Wave 4". Tasks 5 и 6 описывали как вызывать хендлеры, но не содержали шага замены стаба реальной имплементацией. Cross-task ревьюер поймал это: verify-user провалился бы — reload → данные не сохраняются.
+**Pattern:** Когда задача N создаёт stubs/placeholders "для следующих задач" — task-creator заполняющих задач должен явно включать шаг "в App/Controller/родителе: заменить no-op stub [название] на реальную имплементацию". Не рассчитывать что агент выведет это из контекста.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-03-31 dashboard-v1 / task-decomposition: scope split для задач разных волн расширяющих один файл
+
+**Seen:** 1
+**Triad:** задача A создаёт файл, задача B в позднейшей волне его расширяет → ограничить scope задачи A функциями нужными в её волне; в бриф задачи B явно написать "файл уже существует с [X], добавить [Y]" → избежать дублирования реализации при параллельной генерации task-creator'ами
+**Context:** Task 1 (wave 1) создала storage.js и включила в scope все 4 функции включая exportJSON/importJSON. Task 7 (wave 4) также добавляла exportJSON/importJSON в тот же файл. Cross-task check: если Task 1 выполнит всё по инструкции, Task 7 придёт добавлять уже существующие функции.
+**Pattern:** При декомпозиции feature где задача A создаёт файл а задача B его расширяет — явно ограничить scope A ("только save/load — нужны в wave 1"), и в бриф B включить: "этот файл уже существует с функциями X, Y. Добавить только Z." Параллельные task-creator'ы не общаются между собой — scope должен быть однозначен в каждом брифе.
+**Scope:** universal
+**Category:** problem-decomposition
