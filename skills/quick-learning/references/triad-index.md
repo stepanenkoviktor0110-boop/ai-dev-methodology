@@ -85,3 +85,5 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 74 | PROMOTED → feature-execution | Флаг-файл run-once — путь от якоря, не от CWD | — | — | 2 | — |
 | 75 | завершение implementation-волн в multi-task фиче | запустить code + security + test аудиты параллельно в отдельной волне | поймать cross-task баги невидимые для per-task ревьюера | situational | 1 | Situational |
 | 76 | добавление метрики в dashboard без явного требования | уточнить временной горизонт у пользователя (запуск / день / всё время) | не додумывать горизонт самостоятельно | universal | 1 | Universal |
+| 77 | вызов clear()/reset() на внешнем сервисе перед записью новых данных | явно сбрасывать ВСЕ слои состояния (контент + форматирование + кэш) | предотвратить проявление предыдущего состояния после "очистки" | universal | 1 | Universal |
+| 78 | production данные не соответствуют поведению текущего кода | сверить timestamp задеплоенного файла с временем запуска | не искать баг в коде который уже правильный | universal | 1 | Universal |
