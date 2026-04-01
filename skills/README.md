@@ -1,4 +1,4 @@
-# AI-First Development Methodology v1.4 — Claude Code
+# AI-First Development Methodology v1.5 — Claude Code
 
 [Русская версия](README.ru.md)
 
@@ -217,6 +217,12 @@ This repo and [ai-dev-methodology-codex](https://github.com/stepanenkoviktor0110
 Evolved fork of [molyanov-ai-dev](https://github.com/pavel-molyanov/molyanov-ai-dev) by Pavel Molyanov (MIT License).
 
 ## Changelog
+
+### v1.5 — Skill Trainer: embedding triads into skills (2026-04-01)
+
+- **skill-trainer** — new skill for batch embedding of accumulated triads into target skills. Reads all triads with `Adapted: —` from triad-index.md, analyzes each skill, auto-applies rules where no conflict exists, pauses for user decision on ambiguous cases. `force-embed pattern N` command forces embedding of a specific triad.
+- **quick-learning** — responsibility refactor: skill no longer promotes patterns into skills at Seen ≥ 2. Collects triads only, notifies when unprocessed triads accumulate.
+- **Adapted field** — new tracking field in triad-index.md and reasoning-patterns.md. Values: `—` (not yet embedded), `{skill-name}` (embedded), `n/a` (no matching skill found).
 
 ### v1.4 — Unified Knowledge System + Design Pipeline (2026-03-27)
 

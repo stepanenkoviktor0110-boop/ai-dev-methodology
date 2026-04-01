@@ -1,4 +1,4 @@
-# AI-First Development Methodology v1.4 — Claude Code
+# AI-First Development Methodology v1.5 — Claude Code
 
 [English version](README.md)
 
@@ -216,6 +216,12 @@ Claude Code использует встроенный Agent tool со специ
 Эволюционный форк [molyanov-ai-dev](https://github.com/pavel-molyanov/molyanov-ai-dev) Павла Молянова (MIT License).
 
 ## Changelog
+
+### v1.5 — Skill Trainer: встраивание триад в скиллы (2026-04-01)
+
+- **skill-trainer** — новый скилл для пакетного встраивания накопленных триад в целевые скиллы. Читает все триады с `Adapted: —` из triad-index.md, анализирует каждый скилл, авто-применяет правила без спорных случаев, при конфликте предлагает формулировку и ждёт решения. Команда `force-embed pattern N` — принудительное встраивание конкретной триады.
+- **quick-learning** — рефакторинг ответственности: скилл больше не встраивает паттерны в скиллы при Seen ≥ 2. Только собирает триады и уведомляет при накоплении необработанных.
+- **Поле Adapted** — новое поле отслеживания в triad-index.md и reasoning-patterns.md. Значения: `—` (ещё не встроена), `{skill-name}` (встроена), `n/a` (нет подходящего скилла).
 
 ### v1.4 — Единая система знаний + дизайн-пайплайн (2026-03-27)
 
