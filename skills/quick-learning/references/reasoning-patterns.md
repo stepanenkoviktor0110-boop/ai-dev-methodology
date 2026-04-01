@@ -40,6 +40,29 @@ Patterns that apply to any project, any stack, any domain.
 
 ---
 
+### 2026-04-01 employee-cabinet / session 3: DB-соединение — проверить до запуска QA волны
+
+**Seen:** 1
+**Triad:** QA волна с integration/E2E тестами требующими БД → верифицировать DB-соединение одним ping-запросом ДО запуска тест-сьютов → не тратить QA волну на инфраструктурный блокер
+**Context:** Task 14 — все 28 integration-тестов и 12 E2E-тестов заблокированы 28P01 (неверный пароль PostgreSQL в .env). Юнит-тесты (20/20) прошли, но QA волна не могла верифицировать ни один integration AC. Проблема обнаружилась только при запуске тестов, не на этапе подготовки волны.
+**Pattern:** Перед запуском integration/E2E тестового сьюта добавь один preflight шаг: `psql $TEST_DATABASE_URL -c "SELECT 1"`. Если падает — остановить волну и устранить инфраструктурный блокер. Это экономит все ресурсы волны и даёт явный диагноз вместо размытого "28 тестов не прошли".
+**Scope:** universal
+**Category:** sequencing
+
+---
+
+### 2026-04-01 employee-cabinet / session 3: Ad-hoc fix без review — inline review лидом вместо пропуска
+
+**Seen:** 1
+**Triad:** ad-hoc fix задача когда инструмент спавнинга агентов недоступен → выполнить inline review лидом (прочитать diff самостоятельно по чек-листу ревьюера) вместо пропуска ревью → не оставлять hotfix в production-ветке без минимальной верификации
+**Context:** Task ad-hoc (audit-fixer) — 3 фикса применены корректно, но ревью пропущено целиком из-за недоступности SendMessage tool. В decisions.md зафиксировано "Skipped — SendMessage tool unavailable". Hotfix пошёл в master без ревью.
+**Pattern:** Когда spawning tool недоступен — не пропускай ревью, делай его inline: прочитай git diff самостоятельно, проверь по чек-листу code/security reviewer (IDOR, error paths, TypeScript). Это занимает 2-3 минуты и даёт минимальный gate. Запись в decisions.md: "Inline review by lead — SendMessage unavailable".
+**Scope:** situational
+**Situation:** ad-hoc fix или hotfix при недоступном инструменте спавнинга агентов
+**Category:** recovery
+
+---
+
 ### 2026-03-30 dashboard-v1 / session 1: Reviewer agents — спавнить после diff, не одновременно с тиммейтом
 
 **Seen:** 1
