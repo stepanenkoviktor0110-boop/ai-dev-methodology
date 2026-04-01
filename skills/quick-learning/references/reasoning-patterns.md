@@ -1101,3 +1101,13 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** уточнение UI-деталей в ходе user-spec или design-spec интервью
 **Category:** scope-management
+
+### 2026-04-01 employee-cabinet / techspec-update: Gap-анализ перед написанием задач на обновлённый спек
+
+**Seen:** 1 (employee-cabinet)
+**Triad:** обновление user-spec к уже реализованной фиче → запустить code-researcher для diff новых требований против существующего кода перед написанием задач → не создавать задачи для уже реализованного функционала
+**Context:** `/new-tech-spec` запустили после завершения реализации всех 15 задач. User-spec обновили с клиентским фидбеком. Без code-researcher gap-анализа риск — написать 5-7 задач из которых 3-4 уже реализованы.
+**Pattern:** Если `/new-tech-spec` вызван на уже реализованную фичу (есть decisions.md с completed-задачами), сначала запустить code-researcher с вопросом "что из новых требований ещё не в коде". Только после — писать задачи. Это предотвращает дублирование работы и "задачи-призраки".
+**Scope:** situational
+**Situation:** обновление tech-spec для фичи, реализация которой уже завершена (есть решённые задачи)
+**Category:** information-gathering
