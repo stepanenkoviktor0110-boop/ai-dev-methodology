@@ -1110,4 +1110,22 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Если `/new-tech-spec` вызван на уже реализованную фичу (есть decisions.md с completed-задачами), сначала запустить code-researcher с вопросом "что из новых требований ещё не в коде". Только после — писать задачи. Это предотвращает дублирование работы и "задачи-призраки".
 **Scope:** situational
 **Situation:** обновление tech-spec для фичи, реализация которой уже завершена (есть решённые задачи)
+
+### 2026-04-01 employee-cabinet / task-decomposition: Implementation hints должны отражать реальный код, а не идеальный
+
+**Seen:** 1 (employee-cabinet)
+**Triad:** task-creator пишет hints для файла, который уже реализован в кодовой базе → прочитать фактический код файла ДО написания hints → не создавать hints противоречащие существующей реализации
+**Context:** task-creator для Task 5 написал hint про `fs.createReadStream+Readable.toWeb()`, хотя реальный файл использовал `fs.readFile+NextResponse(buffer)`. Task 6 имел `authClient.forgetPassword()` вместо реального `authClient.requestPasswordReset()`. Reality-checker поймал оба в round 1.
+**Pattern:** Если task-creator получает файл с пометкой "already exists" или "уже реализован" — читать фактический код перед написанием hints, не реконструировать по описанию. Правило: hints описывают КАК ЕСТЬ, а не КАК ДОЛЖНО БЫТЬ.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-04-01 employee-cabinet / task-decomposition: TDD Anchor не должен называть файл, являющийся deliverable другой задачи
+
+**Seen:** 1 (employee-cabinet)
+**Triad:** TDD Anchor задачи A называет тестовый файл, который является primary deliverable задачи B → убрать тест из TDD Anchor A, добавить "интеграционное покрытие в задаче B" → один файл — один владелец, нет конфликта владения при параллельном выполнении
+**Context:** Task 5 имел TDD Anchor с двумя тестами в `tests/integration/certificates.test.ts`. Но этот файл — primary deliverable Task 9. Кросс-задачная проверка обнаружила конфликт: Task 9 мог перезаписать нуль файла при создании с нуля.
+**Pattern:** При написании TDD Anchor — проверить, не является ли названный тестовый файл основным deliverable другой задачи (по Files to modify в tech-spec). Если да — убрать якорные тесты из текущей задачи и сослаться на задачу-владельца. TDD Anchor задачи A не должен создавать зависимость write-after-write.
+**Scope:** situational
+**Situation:** multi-task фича с разделёнными задачами реализации и тестирования (задача X делает API, задача Y делает тесты для него)
 **Category:** information-gathering
