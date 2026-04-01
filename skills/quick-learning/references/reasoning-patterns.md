@@ -13,6 +13,17 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
+### 2026-04-01 employee-cabinet / session 1: Поведение конфиг-опций в новой major-версии библиотеки
+
+**Seen:** 1
+**Triad:** конфигурационная опция библиотеки молча игнорируется в новой major-версии → проверить поведение опции в config-file vs CLI через changelog/issues для текущей версии ДО написания конфига → не тратить fix-раунд на конфигурацию которую версия игнорирует
+**Context:** Task 1 — Vitest 4.x игнорирует `passWithNoTests` в inline project definitions, но flag работает в CLI. Конфиг был написан по документации предыдущих версий — потребовался Deviation-комментарий и добавление `--passWithNoTests` в npm scripts.
+**Pattern:** Если конфигурационная опция задокументирована, но приложение ведёт себя иначе — проверить changelog/issues для точной major-версии. Поведение может быть intentionally changed с workaround через другой слой (CLI flag вместо config key).
+**Scope:** universal
+**Category:** tool-selection
+
+---
+
 ### 2026-04-01 employee-cabinet / session 2: Интеграционные тесты с pg pool — singleton teardown
 
 **Seen:** 1
