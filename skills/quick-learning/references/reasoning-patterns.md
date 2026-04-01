@@ -1300,3 +1300,13 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** выполнение скриптов на удалённом VPS через paramiko/SSH
 **Category:** tool-selection
+
+### 2026-04-01 methodology-cleanup / session 1: разграничить "убрать из репо" и "удалить с диска"
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** запрос "удалить X из репозитория" для локального git-репо → уточнить: git untrack (git rm --cached + .gitignore) или физическое удаление с диска → не уничтожить локальные файлы при git-операции
+**Context:** Попросили убрать 4 скилла из репозитория; выполнил rm -rf вместо git rm --cached — пришлось восстанавливать из git-истории
+**Pattern:** При запросе "удалить X из репо/репозитория" — до выполнения уточнить: "физически удалить файлы или только убрать из git-трекинга (git rm --cached + .gitignore)?" Физическое удаление необратимо без git history, git untrack оставляет файлы на диске.
+**Scope:** universal
+**Category:** recovery
