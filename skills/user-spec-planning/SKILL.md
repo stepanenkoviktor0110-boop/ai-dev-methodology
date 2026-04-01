@@ -35,6 +35,7 @@ Conduct interview in Russian. Be thorough and opinionated — an engaged co-thin
 
 ### Phase 0: Init
 
+0. **Sketch offer.** Before starting the interview, ask once: "Хочешь начать со скетча? `/sketch` — быстрый прототип за 3-5 вопросов, без спеков и валидаторов. Подходит если идея ещё не оформлена или нужен быстрый proof-of-concept. После скетча можно перейти к полному пайплайну или оставить как есть." If user declines or says the idea is clear → proceed.
 1. Check for existing interview: look in `work/*/logs/userspec/interview.yml` for `metadata.status: in_progress`. If found — load, show discussed topics summary, resume. If multiple found — show list, let user choose.
 2. Get task description: "Опиши, что хочешь сделать."
 3. Determine work_type (feature / bug / refactoring) from description.

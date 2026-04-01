@@ -175,6 +175,7 @@ When lead spawns an agent outside the original execution plan (to fix audit find
    a. Increment `current_session` in checkpoint.yml.
    b. Generate next-session prompt from template `~/.claude/shared/work-templates/session-prompt.md.template`:
       - Fill: feature name, description (first line of tech-spec Description), completed sessions/waves, next session's waves and tasks, context files from session-plan.md.
+      - Apply prompt-master principles to the generated prompt before saving: make it concrete (specific files, wave numbers, task names), remove filler phrases, lead with the goal, not the context.
    c. Save prompt to `work/{feature}/logs/next-session-prompt.md` (overwrite each time).
    d. Present to user:
       ```

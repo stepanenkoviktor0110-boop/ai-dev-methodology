@@ -53,8 +53,6 @@ The repo contains skills from multiple tracks. Only **core methodology** skills 
 
 **Separate pipelines** (in this repo but maintained independently):
 - `design-*` (9 skills) — design pipeline, separate project track
-- `promoter` — promotional content generation pipeline
-- `skeleton-pipe` — custom pipeline generator
 
 ---
 

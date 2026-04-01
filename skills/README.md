@@ -105,7 +105,10 @@ Each step has validators and **blocking gates** — no step proceeds without exp
 
 ```
 /design-system-init            # Create design system: tokens.json + components
+/design-spec                   # Design specification through adaptive interview
+/design-plan                   # Design plan with layout decisions
 /design-generate               # Generate HTML/CSS pages from text descriptions
+/photo-crop                    # Calculate object-position for photos in layouts
 /design-review                 # Review UI code against design tokens
 /design-retrospective          # Extract aesthetic lessons, build taste profile
 ```
@@ -189,9 +192,9 @@ Claude Code uses the built-in Agent tool with specialized subagent types for par
 |----------|--------|
 | Planning | user-spec-planning, tech-spec-planning, task-decomposition, project-planning |
 | Execution | code-writing, feature-execution, pre-deploy-qa, post-deploy-qa |
-| Quality | code-reviewing, security-auditor, test-master, prompt-master |
-| Design | design-system-init, design-generate, design-review, design-retrospective |
-| Meta | methodology, retrospective, quick-learning, documentation-writing, skill-master |
+| Quality | code-reviewing, security-auditor, test-master |
+| Design | design-system-init, design-spec, design-plan, design-generate, design-review, design-retrospective, photo-crop |
+| Meta | methodology, retrospective, quick-learning, documentation-writing, skill-master, prompt-master |
 
 For full details on any skill:
 ```

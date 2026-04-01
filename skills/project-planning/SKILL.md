@@ -12,6 +12,8 @@ description: |
 
 # Project Planning
 
+**Before starting:** ask once — "Хочешь начать со скетча? `/sketch` — быстрый прототип за 3-5 вопросов, без спеков и валидаторов. Подходит если идея ещё не оформлена или нужен быстрый proof-of-concept. После скетча можно перейти к полному пайплайну или оставить как есть." If user declines → proceed with full interview below.
+
 Conduct adaptive interview → make tech decisions → fill all project documentation in one session.
 
 ## Output Files

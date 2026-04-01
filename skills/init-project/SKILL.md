@@ -1,13 +1,15 @@
 ---
+name: init-project
 description: Initialize project with template, git, and GitHub
-allowed-tools:
-  - Bash(*)
-  - Read
-  - Edit
-  - TodoWrite
 ---
 
 # Init Project
+
+## 0. Sketch Offer
+
+Before starting: ask the user once — "Хочешь начать со скетча? `/sketch` — быстрый прототип за 3-5 вопросов, без спеков и валидаторов. Подходит если идея ещё не оформлена или нужен быстрый proof-of-concept. После скетча можно перейти к полному пайплайну или оставить как есть."
+
+If user declines or says the idea is already clear → proceed to step 1.
 
 ## 1. Check Uncommitted Changes
 

@@ -105,7 +105,10 @@ ls ~/.claude/skills/methodology/SKILL.md
 
 ```
 /design-system-init            # Создать дизайн-систему: tokens.json + компоненты
+/design-spec                   # Дизайн-спецификация через адаптивное интервью
+/design-plan                   # Дизайн-план с решениями по лейаутам
 /design-generate               # Генерация HTML/CSS страниц из текстовых описаний
+/photo-crop                    # Расчёт object-position для фото в лейаутах
 /design-review                 # Ревью UI-кода против дизайн-токенов
 /design-retrospective          # Извлечь эстетические уроки, построить профиль вкуса
 ```
@@ -189,9 +192,9 @@ Claude Code использует встроенный Agent tool со специ
 |-----------|--------|
 | Планирование | user-spec-planning, tech-spec-planning, task-decomposition, project-planning |
 | Выполнение | code-writing, feature-execution, pre-deploy-qa, post-deploy-qa |
-| Качество | code-reviewing, security-auditor, test-master, prompt-master |
-| Дизайн | design-system-init, design-generate, design-review, design-retrospective |
-| Мета | methodology, retrospective, quick-learning, documentation-writing, skill-master |
+| Качество | code-reviewing, security-auditor, test-master |
+| Дизайн | design-system-init, design-spec, design-plan, design-generate, design-review, design-retrospective, photo-crop |
+| Мета | methodology, retrospective, quick-learning, documentation-writing, skill-master, prompt-master |
 
 Полные детали любого скилла:
 ```
