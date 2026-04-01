@@ -21,6 +21,17 @@ Patterns that apply to any project, any stack, any domain.
 
 ---
 
+### 2026-04-01 dashboard-progress-sync / session decompose: именованные экспорты для cross-wave тестов
+
+**Seen:** 1
+**Triad:** Task B тестирует функции из файла, созданного Task A → добавить сигнатуры этих функций в What to do Task A (не только в TDD Anchor Task B) → гарантировать ownership экспортов — ни одна функция не остаётся без явного владельца
+**Context:** Task 5 ожидала unit-тестировать `validateProgressBody` и `formatProgressDays` из server/index.js (Task 1), но Task 1 не упоминала их создание. Нарушение поймано cross-task reality checker на этапе валидации. Task 5 получила recovery-путь "добавь сам если нет", но это означает молчаливое изменение чужого файла без декларации.
+**Pattern:** При написании TDD Anchor для задачи B — если тестируются функции из файла задачи A — проверить What to do задачи A и явно добавить туда создание и экспорт этих функций. Функция без объявленного владельца рискует быть пропущена или дублирована.
+**Scope:** universal
+**Category:** problem-decomposition
+
+---
+
 ### 2026-04-01 employee-cabinet / session 2: E2E тесты — детерминированный assertion вместо waitForTimeout
 
 **Seen:** 1
@@ -912,14 +923,6 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Situation:** мобильный интернет российских операторов, сервис доступен только по IP
 **Category:** recovery
 
-### 2026-04-01 employee-cabinet / session decompose: depends_on + wave = ordering violation
-
-**Seen:** 1
-**Triad:** добавление depends_on к задаче в той же волне что и зависимость → проверить wave(задача) > max(wave(все depends_on)), сдвинуть если равны → не создавать wave ordering violation обнаруживаемый только при запуске feature-execution
-**Context:** Tasks 3, 4, 5 получили depends_on: [1] для TDD-цикла, но остались wave: 1. Task 1 тоже wave: 1. Нарушение поймано только cross-task validator — 3 раунда спустя.
-**Pattern:** После добавления depends_on к задаче — немедленно проверить что её волна выше волны всех зависимостей. Если задача A в wave N и зависит от задачи B в wave N → A переходит в wave N+1, все downstream задачи сдвигаются каскадом.
-**Scope:** universal
-**Category:** problem-decomposition
 
 ### 2026-04-01 employee-cabinet / session decompose: параллельные тесты — изолировать seed по email
 
@@ -982,3 +985,12 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Для каждой верификационной curl-команды к защищённому endpoint — убедиться что команда передаёт auth credential. Добавить рядом явный тест "без ключа → 401". Тест auth работает только если один из вариантов должен упасть.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-01 juridical-parser / ops: изменение расписания «с завтрашнего дня»
+
+**Seen:** 1
+**Triad:** пользователь просит изменить расписание «с завтрашнего дня» при наличии ближайшего запуска → проверить время ближайшего запуска и применить изменение ПОСЛЕ него → не потерять плановый прогон из-за немедленного переключения
+**Context:** Крон стоял на 00:30 UTC, пользователь попросил переключить на 21:30 UTC «с завтрашнего дня» — изменение применили немедленно, ближайший запуск через 13 минут был пропущен.
+**Pattern:** Перед применением изменения расписания проверить время следующего запуска. Если он ближе 30 минут — дождаться его завершения, только потом менять конфиг.
+**Scope:** universal
+**Category:** sequencing
