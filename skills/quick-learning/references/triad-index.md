@@ -117,3 +117,6 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 104 | интеграционные тесты с pg connection pool (shared singleton) | объявить globalTeardown в vitest.config, вызывать pool.end() там один раз | не допустить зависание тест-процесса или "pool ended" при последовательных suite | universal | 1 | Universal |
 | 105 | E2E тест с async UI-операцией (upload, submit, save) | заменить waitForTimeout(N) на assertion конкретного data-testid элемента (toBeVisible/toBeDisabled) | избежать flaky test и false-positive из-за race с таймером | universal | 1 | Universal |
 | 106 | пользователь просит изменить расписание «с завтрашнего дня» при наличии ближайшего запуска | проверить время ближайшего запуска и применить изменение ПОСЛЕ него | не потерять плановый прогон из-за немедленного переключения | universal | 1 | Universal |
+
+| 107 | реализация HTTP-сервера с API key auth | включить timing-safe comparison и явный body size limit в первоначальную реализацию | не тратить review-раунд на предсказуемые security must-have | situational | 1 | Situational |
+| 108 | helper-функция принимает значение из внешнего источника (API-ответ, env var, user input) | вручную проверить edge cases (null, undefined, пустая строка, 0) перед первым review | не получать post-review fix на предсказуемые null/boundary guards | universal | 1 | Universal |

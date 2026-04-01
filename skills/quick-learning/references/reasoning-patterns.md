@@ -994,3 +994,22 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Перед применением изменения расписания проверить время следующего запуска. Если он ближе 30 минут — дождаться его завершения, только потом менять конфиг.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-01 dashboard-progress-sync / session 1: HTTP-сервер с API key auth — security must-have в первой реализации
+
+**Seen:** 1
+**Triad:** реализация HTTP-сервера с API key auth → включить timing-safe comparison (`crypto.timingSafeEqual`) и явный body size limit в первоначальную реализацию → не тратить review-раунд на предсказуемые security best practices
+**Context:** Task 1 — первая реализация server/index.js сравнивала API key через `===`. Review round 1 нашла timing attack и отсутствие body limit. Пришлось коммитить fix-раунд. Обе находки предсказуемы для любого auth middleware.
+**Pattern:** При реализации API key auth — сразу используй `crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b))` и добавляй `express.json({ limit: '10kb' })`. Эти две детали находит любой security reviewer с первого взгляда — добавив их сразу, ты экономишь review-раунд.
+**Scope:** situational
+**Situation:** реализация HTTP-сервера с токен/key-based auth
+**Category:** sequencing
+
+### 2026-04-01 dashboard-progress-sync / session 1: Helper с null/undefined — верифицируй граничные значения до review
+
+**Seen:** 1
+**Triad:** helper-функция принимает значение из внешнего источника (API-ответ, env var, user input) → вручную проверить edge cases (null, undefined, пустая строка, 0) перед первым review → не получать post-review fix на предсказуемые null/boundary guards
+**Context:** Task 4 — `calcCommitDays(isoDateString, now)` принимала значение из GitHub API. Review нашло: при `null` передаётся в `new Date(null)`, что возвращает epoch (0 ms). Исправление: добавить `typeof isoDateString !== 'string'` guard. Предсказуемый граничный случай для любой функции, работающей с внешними данными.
+**Pattern:** Перед первым review helper-функции, работающей с внешними данными — пройти по списку: null, undefined, пустая строка, 0, NaN. Добавить guard/return-null для каждого неожиданного значения. Reviewer найдёт эти кейсы в первом же раунде — лучше закрыть их заранее.
+**Scope:** universal
+**Category:** sequencing
