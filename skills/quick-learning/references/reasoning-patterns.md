@@ -1279,3 +1279,24 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** E2E-тесты с pre-seeded users для auth-библиотек с собственным password hashing
 **Category:** tool-selection
+
+### 2026-04-01 juridical-parser / diagnostic session: Смена параметра API меняет nullable fields ответа
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** добавление нового параметра к существующему API-запросу → проверить nullable поля ответа при новом параметре на реальных данных → не получить TypeError на production-прогоне
+**Context:** После добавления `Court=` фильтра в поиск parser-api.com ответ стал возвращать `Respondents: null` вместо `[]` — мок-тесты не покрывали этот кейс, `TypeError` проявился только на production.
+**Pattern:** При добавлении нового параметра к существующему API-запросу — проверить nullable fields в ответе: при другом filter-режиме сервис может возвращать null там где раньше был пустой массив. Использовать `or []` guard вместо `get("field", [])`.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-01 juridical-parser / diagnostic session: Многострочный скрипт на удалённом VPS — записать в файл, не инлайн
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** выполнение нетривиального Python-скрипта на удалённом сервере через SSH → записать скрипт в локальный файл, залить по SFTP, выполнить через `python3 -u` → избежать ошибок экранирования и буферизации вывода
+**Context:** 3 попытки запустить Python через inline heredoc/параметры shell — каждый раз ошибки экранирования кавычек или пустой output из-за буферизации. Фикс: Write tool в локальный файл → sftp.put() → запуск с `-u`.
+**Pattern:** Для нетривиальных (>5 строк) Python-скриптов на удалённом VPS — записывать через Write tool в локальный файл, загружать по SFTP, запускать с флагом `-u` (unbuffered). Inline heredoc через SSH не масштабируется на кириллицу и вложенные кавычки.
+**Scope:** situational
+**Situation:** выполнение скриптов на удалённом VPS через paramiko/SSH
+**Category:** tool-selection
