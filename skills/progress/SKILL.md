@@ -85,7 +85,7 @@ Example tone: "Реализован бэкенд API с тремя эндпои�
 
 2. Check the HTTP status code in the response:
    - **2xx** — report success. Show the summary that was sent.
-   - **Non-2xx** — show the HTTP status code and response body. Do not silently ignore errors.
+   - **Non-2xx** — show the HTTP status code and response body so the user can diagnose the issue.
 
 **Checkpoint:** POST sent. Response status shown to user (success or error with details).
 
