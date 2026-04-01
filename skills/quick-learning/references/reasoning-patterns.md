@@ -1013,3 +1013,12 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Перед первым review helper-функции, работающей с внешними данными — пройти по списку: null, undefined, пустая строка, 0, NaN. Добавить guard/return-null для каждого неожиданного значения. Reviewer найдёт эти кейсы в первом же раунде — лучше закрыть их заранее.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-01 dashboard-progress-sync / session 2: вынести числовые threshold в константы до review
+
+**Seen:** 1
+**Triad:** задача с числовым threshold в коде → вынести magic numbers в именованные константы до первого review → не тратить review-раунд на предсказуемые hardcoded value замечания
+**Context:** Task 3 (Frontend Progress column) — reviewer нашёл magic number `3` (stale days threshold). Понадобился дополнительный fix-коммит и второй review-раунд.
+**Pattern:** Перед отправкой на review кода с числовыми границами (дни, лимиты, таймауты, размеры) — вынести каждый threshold в именованную константу с говорящим именем. Это предсказуемое замечание reviewer-а, которое дешевле закрыть до ревью.
+**Scope:** universal
+**Category:** sequencing

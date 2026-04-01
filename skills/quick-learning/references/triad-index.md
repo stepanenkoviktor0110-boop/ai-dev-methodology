@@ -121,3 +121,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 
 | 107 | реализация HTTP-сервера с API key auth | включить timing-safe comparison и явный body size limit в первоначальную реализацию | не тратить review-раунд на предсказуемые security must-have | situational | 1 | Situational |
 | 108 | helper-функция принимает значение из внешнего источника (API-ответ, env var, user input) | вручную проверить edge cases (null, undefined, пустая строка, 0) перед первым review | не получать post-review fix на предсказуемые null/boundary guards | universal | 1 | Universal |
+| 109 | задача с числовым threshold в коде | вынести magic numbers в именованные константы до первого review | не тратить review-раунд на предсказуемые hardcoded value замечания | universal | 1 | Universal |
