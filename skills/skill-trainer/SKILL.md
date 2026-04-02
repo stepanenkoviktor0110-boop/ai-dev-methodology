@@ -47,33 +47,52 @@ Embeds accumulated quick-learning triads into target skills. Two outcomes per tr
 
 Secondary mapping: if the triad's Pattern field explicitly describes a workflow step present in another skill — add that skill to the list (max 2 target skills per triad).
 
-## Phase 3: Analyze Coverage
+## Phase 3+4: Analyze and Apply (delegated to Agents)
 
-For each (triad, target_skill) pair:
+For each target skill that has ≥1 triad assigned — spawn one Agent in parallel.
 
-1. Read `$AGENTS_HOME/skills/{target_skill}/SKILL.md`
-2. Search for existing logic that handles the same trigger or addresses the same goal
-3. Classify:
+Agent prompt template:
+```
+You are processing skill-trainer triads for skill: {skill-name}
+SKILL.md path: $AGENTS_HOME/skills/{skill-name}/SKILL.md
 
-| Result | Condition | Action |
-|--------|-----------|--------|
-| **Auto-apply** | No step/rule addresses this trigger or goal | Add new rule in Phase 4 |
-| **Dispute** | A step exists that partially covers this, but misses the specific case | Queue for Phase 5 |
-| **Skip** | Logic already covers this fully | Mark Adapted, no changes |
+Triads to process (id | trigger | action | goal | scope):
+{paste each triad row as-is from triad-index.md}
 
-> Checkpoint: all unprocessed triads classified (auto-apply / dispute / skip). Proceed to applying changes.
+Task:
+1. Read SKILL.md
+2. For each triad, search for existing logic covering the same trigger or goal
+3. Classify each triad:
+   - auto-apply: no coverage → add rule to Learned Patterns section:
+     "When {trigger} → {action}, to {goal}"
+     (create ## Learned Patterns section at end of file if not exists)
+   - dispute: partial coverage exists → do NOT edit file, return existing rule + proposed refinement
+   - skip: already fully covered → no changes
 
-## Phase 4: Auto-Apply
+4. Apply all auto-apply edits to SKILL.md (Edit tool)
+5. Do NOT touch triad-index.md — main context will update it
 
-For each triad classified as auto-apply:
+Return ONLY this JSON (no extra text):
+{
+  "skill": "{skill-name}",
+  "applied": [{"id": N, "rule": "one-line rule added"}],
+  "disputes": [{"id": N, "existing": "...", "proposed": "..."}],
+  "skipped": [N, N]
+}
+```
 
-1. Find the most relevant section in the target skill's SKILL.md (match by phase topic or category)
-2. If no section fits — add to a `## Learned Patterns` section at the end (create if not exists)
-3. Add 1-3 lines in imperative mood: "When {trigger} → {action} ({goal})"
-4. Update `Adapted` in triad-index.md: set to `{skill-name}`
-5. Collect the entry title for removal (do not delete yet — removals happen in Phase 5 after disputes)
+Run all skill agents **in parallel**. Collect all JSON results before proceeding.
 
-> Checkpoint: all auto-apply triads written into target skill files and Adapted updated in triad-index.md. Proceed to disputes.
+> Checkpoint: all agents completed. Main context now holds applied/disputes/skipped lists for all skills.
+
+### Update triad-index.md (single pass)
+
+After collecting all agent results — update `Adapted` in triad-index.md in one edit:
+- applied triads → set `Adapted` to `{skill-name}`
+- skipped triads → set `Adapted` to `{skill-name}`
+- disputed triads → leave `Adapted: —` (will be resolved in Phase 5)
+
+> Checkpoint: triad-index.md updated. Proceed to disputes.
 
 ## Phase 5: Disputes
 
@@ -146,10 +165,11 @@ Skill Trainer: обработано {N} триад.
 ## Self-Verification
 
 - [ ] Only triads with Adapted=— processed
-- [ ] Coverage analysis done per skill (not just category match)
+- [ ] One Agent spawned per skill, all run in parallel
+- [ ] Agents do NOT touch triad-index.md — only main context writes it
+- [ ] triad-index.md updated in a single pass after all agents complete
 - [ ] Auto-applies written before disputes presented
 - [ ] Disputes shown one at a time, not as a batch
-- [ ] Adapted field updated in triad-index.md for all processed triads
 - [ ] reasoning-patterns.md entries removed in a single pass after all decisions, count verified
 - [ ] Quick-ref cards regenerated for modified skills
 - [ ] Final report shown
