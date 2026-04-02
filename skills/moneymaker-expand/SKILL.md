@@ -4,10 +4,10 @@ description: |
   Analyzes accumulated project context and generates a full potential quote
   in two blocks: "Договорились" (agreed positions with margin) and
   "Можно предложить" (LLM-generated upsells matched against catalog).
-  Caches result in expand-output.md for moneymaker-finalize.
 
   Use when: "/moneymaker-expand", "сформируй КП", "анализ контекста проекта",
-  "expand moneymaker", "покажи потенциальное КП", "moneymaker expand"
+  "expand moneymaker", "покажи потенциальное КП", "moneymaker expand",
+  "сгенерируй смету", "построй кп", "покажи смету", "рассчитай кп"
 argument-hint: "{project-name}"
 ---
 
@@ -61,17 +61,20 @@ upsells matched to catalog entries. Saves result to `expand-output.md`.
    test -f ~/.moneymaker/projects/{project}/expand-output.md && echo "EXISTS" || echo "MISSING"
    ```
 
-3. If `expand-output.md` EXISTS — compare its mtime with the newest material:
+3. If `expand-output.md` EXISTS — compare its mtime with the newest material using two commands:
 
    ```bash
-   find ~/.moneymaker/projects/{project}/expand-output.md -newer \
-     "$(find ~/.moneymaker/projects/{project}/materials -type f -printf "%T@ %p\n" | sort -rn | head -1 | cut -d' ' -f2-)" \
-     | grep -q . && echo "FRESH" || echo "STALE"
+   # Step 1: get the path of the newest material file
+   newest=$(find ~/.moneymaker/projects/{project}/materials -type f -printf "%T@ %p\n" | sort -rn | head -1 | cut -d' ' -f2-)
+   echo "NEWEST_MATERIAL: $newest"
+
+   # Step 2: check if expand-output.md is newer than that file
+   find ~/.moneymaker/projects/{project}/expand-output.md -newer "$newest" | grep -q . && echo "FRESH" || echo "STALE"
    ```
 
    If FRESH (output is newer than all materials):
    - Tell the user: "КП актуально — новых материалов не добавлялось. Добавьте материалы через `/moneymaker-add {project}` или перейдите к `/moneymaker-finalize {project}`."
-   - Stop here. Do not regenerate.
+   - Output the freshness message and stop. Phase 3–6 are skipped.
 
 **Checkpoint:** Either `expand-output.md` is absent/stale, or user was notified. Proceed to context reading.
 
@@ -138,8 +141,8 @@ Ask LLM to generate upsell suggestions based on full project context:
 ```
 You are analyzing a freelance project to suggest relevant add-ons the developer
 could offer the client. Based on the project context below, generate 3–6 specific
-suggestions that would genuinely benefit this project. Do not produce a generic
-checklist — make suggestions relevant to what this project actually needs.
+suggestions relevant to what this project actually needs — its stack, requirements,
+and open questions. Tailor each suggestion to this specific project.
 
 <project_context>
 {full content of context.md}
@@ -158,9 +161,9 @@ Return each suggestion as:
 ```
 
 For each returned suggestion, calculate price and margin:
-- If `catalog_key` found and `hours` present: `price = hours × hourly_rate`, `margin = price - (hours × hourly_rate)` → margin = 0 for straight hourly; adjust if catalog has a separate cost entry.
+- If `catalog_key` found and `hours` present: `price = hours × hourly_rate`. Margin depends on actual time spent vs catalog norm — show as "по факту".
 - If `catalog_key` found and `price_fixed` present: `price = price_fixed`, `margin = price_fixed - cost_fixed` (or "не определена" if `cost_fixed: null`).
-- If `catalog_key` is null: show "цена не определена". Do not block generation.
+- If `catalog_key` is null: show "цена не определена". Include the item in the output regardless.
 
 Format the block:
 
