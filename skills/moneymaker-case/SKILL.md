@@ -1,13 +1,18 @@
 ---
 name: moneymaker-case
 description: |
-  Records a successful upsell case from a real project into the precedent base
+  Records a successful upsell case or hypothesis into the precedent base
   ~/.moneymaker/cases/, which moneymaker-expand uses when generating upsell suggestions.
   Cases link to progression chain patterns (pattern_key + chain_position) so
   moneymaker-expand can reason about where a project sits in a chain and what comes next.
 
+  record_type: "case" — real sold upsell. "hypothesis" — upsell idea worth offering,
+  not yet sold. Both types are used by moneymaker-expand; hypotheses are shown with a
+  "(гипотеза)" marker in expand output.
+
   Use when: "/moneymaker-case", "запиши кейс", "сохрани успешный апселл",
-  "добавь прецедент", "moneymaker case", "зафиксируй кейс проекта"
+  "добавь прецедент", "moneymaker case", "зафиксируй кейс проекта",
+  "запиши гипотезу апселла", "добавь идею апселла"
 argument-hint: "{project-name}"
 ---
 
@@ -26,11 +31,12 @@ so expand can reason about the natural next step in a project's evolution.
 ---
 project: {project-name}
 date: {YYYY-MM-DD}
+record_type: case | hypothesis
 task_type: {2–3 word label, e.g. "личный кабинет"}
 pattern_key: {key from ~/.moneymaker/patterns/, or null}
 chain_position: {named step key from the pattern, or "cross-cutting" if applies at any step, or null}
 upsell_name: {short name of the upsell}
-upsell_price: {integer RUB, or null}
+upsell_price: {integer RUB, price formula string (e.g. "20% от проекта"), or null}
 pricing_rationale: {user's explanation of pricing logic — why this price, checked for coherence}
 ---
 
@@ -80,13 +86,20 @@ pricing_rationale: {user's explanation of pricing logic — why this price, chec
 
 Tell the user:
 
-> Опишите кейс в свободной форме — что за проект, что сделали базово,
-> что предложили дополнительно, за сколько договорились и почему именно такая цена.
-> Если цена ниже или выше обычного — объясните логику.
+> Опишите кейс или идею в свободной форме — что за проект, что сделали базово,
+> что предложили (или хотите предлагать) дополнительно, за сколько и почему именно такая цена.
+> Если цена ниже или выше обычного, или это формула (например, "20% от проекта") — объясните логику.
 
 Wait for the user's freeform text. Store it as `{raw_description}`.
 
-**Checkpoint:** Raw description received. Proceed to structured extraction.
+Then ask:
+
+> Это реальный проданный апселл или гипотеза — идея, которую стоит предлагать?
+> (кейс / гипотеза)
+
+Store answer as `{record_type}`: `"case"` or `"hypothesis"`.
+
+**Checkpoint:** Raw description and record_type received. Proceed to structured extraction.
 
 ---
 
@@ -105,15 +118,16 @@ Extract structured information from the case description below.
 
 Return the following fields:
 - project_name: use "{project-name}" exactly
+- record_type: use "{record_type}" exactly (either "case" or "hypothesis")
 - upsell_name: short name of the upsell offered (2–5 words, Russian)
 - upsell_slug: kebab-case version of upsell_name for filenames (Latin, 2–5 words)
 - task_type: 2–3 word label for the base project type (e.g. "личный кабинет", "парсер", "лендинг") — normalize to a reusable category
-- base_work: 1–2 sentences describing the base order
+- base_work: 1–2 sentences describing the base order (for hypothesis: the type of project this applies to)
 - upsell_work: 1–2 sentences describing the upsell
 - base_price: integer RUB for the base order, or null
-- upsell_price: integer RUB for the upsell, or null
-- trigger: 1 sentence — why the client agreed
-- result: 1 sentence — outcome or client benefit
+- upsell_price: integer RUB, or price formula string (e.g. "20% от проекта"), or null
+- trigger: 1 sentence — why the client agreed (for hypothesis: what conditions make this worth offering)
+- result: 1 sentence — outcome or client benefit (for hypothesis: expected benefit, or null)
 - pricing_rationale: the user's stated reasoning for this price (quote or paraphrase from description)
 
 Return as field: value pairs. No extra commentary.
@@ -144,6 +158,11 @@ Examples of contradictions:
 - "цена рыночная" but rationale mentions concessions made
 - price seems very low for the described scope with no explanation
 
+For record_type=hypothesis: price may be a formula or psychological anchor
+(e.g. "20% от проекта" or "цена якорная, занижена для входа"). This is COHERENT
+as long as the rationale explains the formula or the psychological intent.
+Do NOT flag hypothesis prices as contradictions just because no absolute value is given.
+
 If the rationale is coherent and self-consistent → return: COHERENT
 If there is a contradiction or gap in logic → return: QUESTION: {one specific clarifying question}
 ```
@@ -163,14 +182,15 @@ Show the extracted structure:
 Извлечённый кейс:
 
 Проект:        {project_name}
+Тип записи:    {record_type}  ("кейс" или "гипотеза")
 Апселл:        {upsell_name}
 Тип задачи:    {task_type}
 Базовый заказ: {base_work}
 Апселл:        {upsell_work}
 Цена базовая:  {base_price} руб  (или "не указана")
-Цена апселла:  {upsell_price} руб  (или "не указана")
+Цена апселла:  {upsell_price}  (или "не указана")
 Триггер:       {trigger}
-Результат:     {result}
+Результат:     {result}  (или "не указан" для гипотезы)
 Логика цены:   {pricing_rationale}
 ```
 
@@ -250,6 +270,7 @@ Set `pattern_key: null`, `chain_position: null`.
    ---
    project: {project_name}
    date: {today}
+   record_type: {record_type}
    task_type: {task_type}
    pattern_key: {pattern_key}
    chain_position: {chain_position}
@@ -292,8 +313,10 @@ Set `pattern_key: null`, `chain_position: null`.
 - [ ] ~/.moneymaker/cases/ created if absent
 - [ ] Raw description collected from user (not invented)
 - [ ] LLM extraction uses XML tags to sandbox user input
+- [ ] record_type collected from user (case / hypothesis) before extraction
 - [ ] Pricing coherence check runs: COHERENT → proceed, QUESTION → one clarifying round only
-- [ ] Full extracted structure shown to user and confirmed before writing
+- [ ] For hypothesis: price formula or psychological anchor accepted as COHERENT without clarification
+- [ ] Full extracted structure shown to user with record_type visible, confirmed before writing
 - [ ] Pattern linking: existing patterns listed; user picks or skips
 - [ ] chain_position collected only when pattern_key is set
 - [ ] File existence check before write; overwrite requires explicit "да"
