@@ -414,6 +414,12 @@ skill-checker is defined in `~/.claude/agents/skill-checker.md` and has skill-ma
 - [ ] Decision frameworks present (YES if / NO if) where applicable
 - [ ] No forced sequential structure
 
+**Context Appetite (procedural skills that read/write files):**
+- [ ] Skill reads files in a loop over N objects? → delegate to one Agent per object, run in parallel
+- [ ] Multiple agents write to the same shared file? → agents return data only; main context writes once after collecting all results
+- [ ] Skill is triggered automatically (background)? → verify it spawns as subagent, not inline
+- [ ] Any read targets a file that grows over time? → note current size; if >300 lines consider pagination or references split
+
 **Functional (all skills):**
 - [ ] Run skill-checker and fix all issues
 
@@ -428,3 +434,4 @@ skill-checker is defined in `~/.claude/agents/skill-checker.md` and has skill-ma
 - When creating a new skill or personal artifact in a local repo -> ask the user if it goes to the public repo or personal repo BEFORE git add, to prevent personal tools from leaking into a public repository (triad #140)
 - When designing a knowledge store and the user provides the first real example -> ask "what logical category does this example represent?" before finalizing the schema fields, to build a data model that captures transferable structure rather than just instance data
 - When integrating an optional sub-skill into a parent skill -> set the trigger on a content characteristic (does this content need the sub-skill's capability), not on the presence of input, to avoid invoking the sub-skill where it adds no value
+- When designing a procedural skill that iterates over multiple objects (files, triads, tasks) -> evaluate context appetite upfront: files read in a loop → delegate to parallel Agents returning JSON summary; shared-file writes → collect data first, write once in main context; growing files read on every run → add size warning threshold
