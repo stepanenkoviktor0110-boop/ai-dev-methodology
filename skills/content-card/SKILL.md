@@ -53,16 +53,29 @@ Ask in one message:
 1. Apply techniques from [personal-brand.md](references/personal-brand.md)
    or [marketplace.md](references/marketplace.md)
 
-2. Generate self-contained HTML file:
+2. If photo is provided — invoke **photo-crop** skill before writing HTML.
+   Pass the photo path and the container size for the chosen format:
+
+   | Формат | Размер блока под фото |
+   |---|---|
+   | B2, B3 — фото на весь холст | 1080 × 1350 px |
+   | B1 — фото в нижней части | 1080 × 810 px |
+   | B4 — фоновое фото | 1080 × 1350 px |
+   | Marketplace — фото товара в центре | 1080 × 900 px |
+
+   Explain container size in plain terms: "фото займёт нижние 60% карточки".
+   Use the `object-position` value returned by photo-crop in the generated HTML.
+
+3. Generate self-contained HTML file:
    - Size: `1080px × 1350px`, fixed
    - All CSS in `<style>` block
-   - Photo via `<img src="{path}">` with `object-fit: cover`
+   - Photo via `<img src="{path}">` with `object-fit: cover` and calculated `object-position`
    - Fonts via Google Fonts CDN (default: Inter / Playfair Display)
    - No external dependencies except fonts
 
-3. Ask user where to save the file before writing.
+4. Ask user where to save the file before writing.
 
-4. После генерации — назвать 2–3 спорных дизайн-решения, объяснить кратко.
+5. После генерации — назвать 2–3 спорных дизайн-решения, объяснить кратко.
    Ждать фидбэка.
 
 **Checkpoint:** HTML создан, пользователь посмотрел.
@@ -71,6 +84,5 @@ Ask in one message:
 
 Принять фидбэк, применить правки. Типичные итерации:
 - Размер/вес шрифта
-- Позиция кадрирования фото (`object-position`)
 - Цветовые тона
 - Расположение текста
