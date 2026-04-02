@@ -226,3 +226,8 @@ Verify each item before marking complete. If any item fails, return to the relev
 - When E2E global-setup requires a seeded verified user -> use direct INSERT with hashPassword instead of sign-up API + SQL UPDATE, to remove seed phase dependency on a running server
 - When adding a new parameter to an existing API request -> check nullable response fields with the new parameter on real data, to prevent TypeError in production
 - When executing a non-trivial Python script on a remote server via SSH -> write to a local file, upload via SFTP, execute with python3 -u, to avoid escaping errors and output buffering
+- When a bash command passes $(find ... | cut ...) as a path to a flag accepting a file path -> extract the substitution to a named variable in a separate quoted command, to avoid silent false results when paths contain spaces
+- When a better-auth handler returns 404 for a correct path -> check BETTER_AUTH_URL for an extra path prefix, to avoid hours debugging webpack and routing
+- When a Next.js API route returns 404 with RSC headers and console.error does not fire -> check compiled route.js for import("dependency") and async factory pattern, to diagnose silent module initialization failure
+- When Next.js dev server returns 500 Cannot-find-module vendor-chunks/X -> delete .next and restart the server before diagnosing dependency issues, to avoid time spent on a non-existent problem
+- When a backlog task describes adding a guard/validation to a file modified in earlier waves -> read the actual file before coding to check whether the guard already exists, to avoid duplicating implementation added as a byproduct of another task

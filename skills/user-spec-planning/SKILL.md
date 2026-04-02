@@ -205,3 +205,5 @@ If understanding changes significantly during interview:
 - When a client sends amendments to an approved user-spec -> run a focused mini-interview on changed points only and update spec directly, to avoid restarting the full interview cycle
 - When clarifying UI element placement during a spec interview -> choose a standard UX pattern without asking, to avoid blocking the interview on details the user does not formulate
 - When updating user-spec for an already-implemented feature -> launch code-researcher to diff new requirements against existing code, to avoid creating tasks for already-implemented functionality
+- When a feature generates a list of items where each item has a numeric attribute (price, score, rating) -> explicitly ask during interview who/what sets that value (LLM estimate, user catalog, or manual input) before writing AC, to prevent a critical architectural gap discovered only at validation
+- When a user rejects a proposed simplification during interview -> ask "what distinction is lost by simplifying?" before continuing, to surface a missing key abstraction before the spec is finalized

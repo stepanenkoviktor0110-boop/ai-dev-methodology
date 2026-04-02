@@ -208,3 +208,6 @@ If problems remain after 3 iterations — show user: "Validation didn't pass in 
 - When writing curl commands in AVP for authenticated endpoints -> include auth header AND add a test without-key -> 401 to avoid false QA pass with broken authorization
 - When config contains a whitelist/filter for limiting processing -> clarify at which pipeline stage the filter is applied and move it before the resource-intensive operation
 - When asked to remove X from repository -> clarify: git untrack only (git rm --cached + .gitignore) or physical deletion from disk, to avoid destroying local files with a git operation
+- When needing to obtain configuration from a provider (DNS, settings) -> ask the client first whether they have access to the provider's control panel, to avoid waiting for support response when the client can get the data themselves
+- When a tech-spec decision narrows or defers a requirement from user-spec -> check whether that requirement appears in the user-spec AC BEFORE writing the Decision, to avoid introducing scope reduction without explicit user agreement
+- When a user rejects a proposed architectural simplification -> ask 'what distinction is lost by the simplification?' before continuing, to surface the missing key abstraction before implementation (triad #137)
