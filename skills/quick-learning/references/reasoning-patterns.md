@@ -1384,3 +1384,13 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** Next.js 14 App Router, серверный route handler использует библиотеку (better-auth, prisma и др.) с внутренними dynamic ESM imports
 **Category:** recovery
+
+### 2026-04-02 geologist-cabinet / certificates-ui: директории для файлов не создаются при деплое автоматически
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** фича пишет файлы на диск в директорию которой нет -> явно включить mkdir директории в деплой-чеклист -> не получить ENOENT на первом upload после деплоя
+**Context:** API загрузки PDF-сертификатов писал файлы в uploads/. Директория не существовала на сервере — git-клон не создаёт пустые директории. Первый upload упал с ENOENT, пришлось создавать вручную через SSH.
+**Pattern:** Любая фича, пишущая файлы на диск, требует explicit mkdir -p в деплой-процедуре. Добавлять в deploy-checklist при проектировании — не ждать ENOENT на проде.
+**Scope:** universal
+**Category:** sequencing
