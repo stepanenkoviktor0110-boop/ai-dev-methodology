@@ -1,5 +1,6 @@
 ---
 name: skill-trainer
+disable-model-invocation: true
 description: |
   Embeds accumulated triads from quick-learning into target skills as permanent instructions.
   Reads triads with Adapted=— from triad-index.md, analyzes each skill's existing logic,

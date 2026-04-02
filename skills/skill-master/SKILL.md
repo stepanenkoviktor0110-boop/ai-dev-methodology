@@ -1,5 +1,6 @@
 ---
 name: skill-master
+disable-model-invocation: true
 description: |
   Guide for creating/updating skills with specialized knowledge and workflows.
 

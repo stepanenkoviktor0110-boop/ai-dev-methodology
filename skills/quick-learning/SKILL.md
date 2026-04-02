@@ -1,5 +1,6 @@
 ---
 name: quick-learning
+disable-model-invocation: true
 description: |
   Owner of the unified methodology knowledge system: format, triad structure,
   similarity check, Seen counters, and Adapted tracking.

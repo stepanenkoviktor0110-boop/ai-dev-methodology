@@ -1,5 +1,6 @@
 ---
 name: skill-test-designer
+disable-model-invocation: true
 description: |
   Design test scenarios for skills through user interview. Reads the target
   skill, interviews the user about scope and edge cases, saves scenario files

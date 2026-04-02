@@ -1585,3 +1585,49 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Перед автоматическими SSH-командами из Claude Code — убедиться что пользователь успешно зашёл на VPS вручную с тем же ключом. Только после подтверждения пробовать из Claude Code. Серия failed attempts из одного IP = бан.
 **Scope:** situational
 **Situation:** Claude Code выполняет команды на VPS через SSH
+
+### 2026-04-02 content-card neidealnoiok / session 1: Approved text is immutable — design adapts, not the text
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** design constraint (wrap/overflow) conflicts with approved text → reduce font-size, widen column, or rethink layout to fit original text → preserve content integrity agreed in planning phase
+**Context:** При вёрстке К3 "РАДИ ЛАЙКОВ." не влезало в колонку при 104px — сократил заголовок без разрешения, пользователь остановил как жёсткий косяк.
+**Pattern:** Когда дизайн-ограничение конфликтует с согласованным текстом — адаптируй шрифт, колонку или лейаут. Никогда не изменяй текст ради дизайна без явного разрешения. Текст заблокирован после Phase 2.
+**Scope:** universal
+**Category:** design-process
+
+---
+
+### 2026-04-02 content-card neidealnoiok / session 1: Cyrillic uppercase char width ≈ 0.72em for font-fit calculations
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** вычисление font-size fit для кириллического uppercase → использовать 0.72em на символ (не 0.62em для латиницы); проверять самое длинное слово при выбранном размере → предотвратить неожиданный перенос строки
+**Context:** "РАДИ ЛАЙКОВ." при 104px рассчитан как 748px < 800px (по 0.62em), но в браузере отрендерился >800px и перенёсся — реальная ширина кириллических glyphs ≈ 0.72em.
+**Pattern:** Для кириллического uppercase Inter применяй коэффициент 0.72em (не 0.62em). Проверяй самое длинное слово заголовка: word_width = chars × font_size × 0.72. Если > container — уменьши font_size до ближайшего кратного 8px.
+**Scope:** situational
+**Situation:** uppercase Cyrillic text fit calculations in HTML/CSS cards
+**Category:** design-process
+
+### 2026-04-02 content-card neidealnoiok / session 2: Размер как инструмент контраста на busy-фоне
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** текст на busy/текстурном фоне с недостаточным контрастом → увеличить font_size на 1 шаг сетки (8px) → буква физически перекрывает детали текстуры, контраст через размер
+**Context:** К4 на фольге: белый текст 48px конкурировал с металлическими бликами — увеличение до 64-96px устранило конкуренцию без overlay.
+**Pattern:** На busy/текстурном фоне (металл, трава, узор) увеличивай шрифт пока буква не станет крупнее деталей текстуры. Это контраст через размер, а не через цвет или затемнение.
+**Scope:** situational
+**Situation:** текст поверх фото с высокой текстурной насыщенностью (металл, фольга, трава, цветы, паттерны)
+**Category:** design-process
+
+---
+
+### 2026-04-02 content-card neidealnoiok / session 2: Перебор всех вариантов цвета перед выбором
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** выбор цвета текстового элемента в дизайне → перечислить ВСЕ доступные цвета (бренд-цвета + white + dark grey), оценить каждый против фона зоны и серийного использования → не выбирать цвет автоматически
+**Context:** В К4 оранжевый появился автоматически, потому что «главный цвет бренда». Пользователь остановил: «навязчивое использование оранжевого». Перебор вариантов дал белый как единственно обоснованный.
+**Pattern:** Перед выбором цвета текста перечисли все варианты явно. Для каждого ответь: (1) сливается с фоном? (2) уже перегружен в серии? Только после этого выбирай — не от привычки к «главному» цвету.
+**Scope:** universal
+**Category:** design-process

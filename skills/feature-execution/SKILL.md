@@ -247,6 +247,8 @@ When escalating:
 - When writing smoke commands that check file size -> use [ $(wc -l < FILE) -lt N ] instead of awk conditions, to prevent a false-passing size guard
 - When a QA criterion requires a live call to a service unavailable in the test environment -> mark as deferred with an explicit condition, not as failed, to get a clean QA pass without blocking
 - When a non-technical user is executing server commands -> give one command at a time and wait for the result before proceeding, to prevent pasting a block into the wrong context
+- When deploying a new backend service on VPS -> run `ss -tlnp` before first start to see all listening ports, to avoid EADDRINUSE from an unexpected port conflict
+- When Claude Code needs to run SSH commands on a VPS -> first ask the user to confirm SSH works manually (`ssh user@host echo ok`), only then attempt from Claude Code; rapid failed attempts can trigger fail2ban and block the IP
 - When two fix variants are both correct -> apply TRIZ-ideality: choose the variant with zero maintenance cost and lower coupling, to avoid creating tech debt while fixing
 - When an agent writes files to multiple directories before committing -> enumerate all write locations from the skill body before running git add, to avoid losing files outside the main tree
 - When writing agent files for multi-context use (inline + spawn_agent) -> use a neutral completion signal, not a back-reference to the parent step, so the artifact works in both execution environments

@@ -1,5 +1,6 @@
 ---
 name: pause
+disable-model-invocation: true
 description: |
   Stops current work on user request, captures full session state to project docs,
   and generates a resume prompt so the next session can continue without loss.

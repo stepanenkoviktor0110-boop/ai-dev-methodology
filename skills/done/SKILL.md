@@ -1,4 +1,6 @@
 ---
+name: done
+disable-model-invocation: true
 description: |
   Finalize a completed feature: read specs and decisions, update project knowledge files,
   archive feature directory to work/completed/.

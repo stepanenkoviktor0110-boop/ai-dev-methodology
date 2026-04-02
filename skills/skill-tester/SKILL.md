@@ -1,5 +1,6 @@
 ---
 name: skill-tester
+disable-model-invocation: true
 description: |
   Execute test scenarios prepared by skill-test-designer. Spawns parallel
   runners with and without the skill, interacts as user persona, grades

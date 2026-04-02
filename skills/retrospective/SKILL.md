@@ -1,5 +1,6 @@
 ---
 name: retrospective
+disable-model-invocation: true
 description: |
   Evaluate completed stage for process problems, extract lessons learned,
   and write them as triad entries into the unified knowledge buffer.
