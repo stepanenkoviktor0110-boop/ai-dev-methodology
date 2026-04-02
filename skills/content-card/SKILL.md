@@ -53,7 +53,8 @@ Ask in one message:
 1. Apply techniques from [personal-brand.md](references/personal-brand.md)
    or [marketplace.md](references/marketplace.md)
 
-2. If photo is provided — invoke **photo-crop** skill before writing HTML.
+2. If photo is provided and has a subject that needs precise framing
+   (person, face, product detail) — invoke **photo-crop** skill before writing HTML.
    Pass the photo path and the container size for the chosen format:
 
    | Формат | Размер блока под фото |
