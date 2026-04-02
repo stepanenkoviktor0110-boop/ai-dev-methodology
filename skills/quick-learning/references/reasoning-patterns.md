@@ -1405,17 +1405,7 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** communication
 
-### 2026-04-02 moneymaker / session 1: checkpoint completeness self-check before SKILL.md submission
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** написан multi-phase SKILL.md → перед первым skill-checker прогоном явно пройтись по каждой фазе и проверить наличие Checkpoint-метки → не тратить review-раунд на предсказуемые пропуски checkpoints
-**Context:** Все 3 SKILL.md файлов сессии 1 moneymaker получили fix-раунд из-за отсутствующих checkpoint-меток в финальных фазах (Phase 6, Update Mode, normal extraction path).
-**Pattern:** При написании SKILL.md с N фазами — до сабмита явно проверить: каждая фаза заканчивается Checkpoint-блоком. Финальные фазы и альтернативные ветки (Update Mode, edge-case paths) пропускаются чаще всего.
-**Scope:** situational
-**Situation:** задача — создание или рефакторинг SKILL.md файла с несколькими фазами
-**Category:** sequencing
-**Category:** communication
+### PROMOTED → skill-master: pre-submission SKILL.md structural checks
 
 ### 2026-04-02 employee-cabinet / session Wave5-deploy: Next.js build cache маскирует "module not found"
 
@@ -1457,4 +1447,15 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Правило "positive over negative" из skill-master применяется ко всему тексту SKILL.md включая inline LLM-промты. Перед первым skill-checker прогоном — пройти по всем блокам с текстом промтов и заменить "do not X" / "не делай X" на позитивный эквивалент.
 **Scope:** situational
 **Situation:** Написание SKILL.md содержащего встроенные LLM-промты как часть фаз
+**Category:** sequencing
+
+### 2026-04-02 moneymaker / session 3: OPEN security risk в audit wave → fix before QA
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** audit wave находит OPEN security risk в продукте работающем с чувствительными данными → создать ad-hoc fix task и починить ДО запуска QA волны → не деплоить с известной утечкой чувствительных данных и не тратить QA на устранимый fail
+**Context:** Security audit moneymaker нашёл 2 OPEN риска: billing exposure (INN/банк в чат-истории при setup) и отсутствие chmod на config.yml. Встал выбор: deferred known issues или fix перед QA. QA шаг 2 (`cat config.yml`) показал бы INN в чате — QA упал бы на устранимом риске.
+**Pattern:** Когда audit wave находит OPEN security risk связанный с чувствительными данными (billing, credentials, PII) — создать ad-hoc fix task немедленно, выполнить до QA. Deferred acceptable только для рисков которые QA физически не может воспроизвести (недоступная инфра, production-only данные).
+**Scope:** situational
+**Situation:** audit wave завершена, найдены OPEN security risks, следующий шаг — QA волна
 **Category:** sequencing

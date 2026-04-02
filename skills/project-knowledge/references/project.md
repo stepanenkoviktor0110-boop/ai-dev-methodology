@@ -53,7 +53,7 @@ The repo contains skills from multiple tracks. Only **core methodology** skills 
 
 **Separate pipelines** (in this repo but maintained independently):
 - `design-*` (9 skills) — design pipeline, separate project track
-- `moneymaker-*` (5 skills, in progress) — freelance project management pipeline: setup → new → add → expand → finalize. Stores data at `~/.moneymaker/`, independent of methodology storage.
+- `moneymaker-*` (5 skills) — freelance project management pipeline: setup → new → add → expand → finalize. Stores data at `~/.moneymaker/`, independent of methodology storage. Security: billing fields masked in output, `chmod 600 config.yml`, project name validated `^[a-zA-Z0-9_-]+$`, LLM inputs wrapped in isolation tags.
 
 ---
 
