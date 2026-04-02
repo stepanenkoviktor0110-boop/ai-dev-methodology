@@ -178,3 +178,4 @@ After user approves task decomposition, calculate session grouping for predictab
 - When Task B tests functions from Task A file -> add those function signatures explicitly to Task A What-to-do section, so every exported function has a clear owner
 - When task-creator writes hints for a file already implemented in the codebase -> read the actual code of that file BEFORE writing hints, to avoid hints that contradict existing implementation
 - When Task A TDD Anchor names a test file that is the primary deliverable of Task B -> remove the test from Task A TDD Anchor and add a reference to the owning task, one file one owner
+- When a task's deliverable is a SKILL.md file -> assign skill: skill-master and reviewers: skill-checker, to avoid wrong skill/reviewer values caught only by validators

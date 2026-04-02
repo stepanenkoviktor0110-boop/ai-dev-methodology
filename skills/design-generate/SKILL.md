@@ -241,3 +241,5 @@ Before finishing, verify:
 - When asked for alternative design or redesign -> select the layout pattern independently from existing markup to produce a real alternative, not a restyle
 - When selecting a layout with full-bleed photo -> check photo orientation and subject crop feasibility against the container shape, to avoid iterations on a geometrically impossible crop
 - When laying out a section from the user structured data -> map each data field directly to a UI element, to avoid inventing a display structure that diverges from the data source
+- When placing multiple text blocks at different positions on a card -> check visual weight (font-size × font-weight) of each block to verify it supports the intended reading order, to control reading flow through weight hierarchy rather than position alone
+- When placing a text block on a full-bleed photo with an uneven background -> align the text to the side with the least busy background zone rather than the conventional position, to preserve readability without strengthening the overlay
