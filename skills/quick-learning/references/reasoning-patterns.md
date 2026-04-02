@@ -1416,3 +1416,24 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Situation:** задача — создание или рефакторинг SKILL.md файла с несколькими фазами
 **Category:** sequencing
 **Category:** communication
+
+### 2026-04-02 employee-cabinet / session Wave5-deploy: Next.js build cache маскирует "module not found"
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** Next.js dev-сервер возвращает 500 "Cannot find module vendor-chunks/X" → удалить .next и перезапустить сервер → не тратить время на диагностику зависимостей которых нет
+**Context:** Интеграционные тесты упали с 500 на всех auth-эндпоинтах. Ошибка выглядела как отсутствующая зависимость better-auth. Реальная причина — сталый .next кеш от предыдущего билда другой ветки.
+**Pattern:** Когда Next.js/Webpack возвращает "Cannot find module vendor-chunks/X" — первый шаг rm -rf .next, не npm install. Vendor-chunks создаются при билде и привязаны к конкретной версии сборки; при смене ветки или обновлении зависимостей кеш устаревает.
+**Scope:** situational
+**Situation:** Next.js проект, dev-сервер запущен без предварительного rm -rf .next после смены ветки или обновления зависимостей
+**Category:** recovery
+
+### 2026-04-02 employee-cabinet / session Wave5-tasks: Проверять реализацию до кодирования задачи
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** задача бэклога описывает добавление guard/validation в существующий файл → прочитать целевой файл до написания кода → не дублировать уже существующую реализацию
+**Context:** Task 17 (client-side валидация PDF) значилась как "to implement". Чтение cabinet/page.tsx показало что оба гарда (type + size) уже присутствовали — добавлены как byproduct предыдущей волны. Задача свелась только к написанию теста.
+**Pattern:** Перед реализацией любой задачи читать целевой файл и проверять нет ли уже функции/блока с нужной логикой. Особенно вероятно если задача — добавить guard/validation в файл который правился в предыдущих волнах.
+**Scope:** universal
+**Category:** information-gathering
