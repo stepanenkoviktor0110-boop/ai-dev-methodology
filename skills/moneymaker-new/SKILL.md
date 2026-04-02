@@ -22,7 +22,7 @@ Creates a new Moneymaker project directory with empty context scaffold.
    test -f ~/.moneymaker/config.yml && echo "EXISTS" || echo "MISSING"
    ```
 
-   If MISSING → tell the user: "Конфиг не найден. Сначала запустите `/moneymaker-setup`." Stop here — do not create any files.
+   If MISSING → tell the user: "Конфиг не найден. Запустите `/moneymaker-setup`." Stop here — do not create any files.
 
 2. Validate the project name against pattern `^[a-zA-Z0-9_-]+$`.
 

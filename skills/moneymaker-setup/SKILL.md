@@ -151,7 +151,12 @@ Wait for confirmation before proceeding.
        cost_fixed: {value_or_null}
    ```
 
-2. Show the assembled YAML to the user: "Вот итоговый config.yml:"
+2. Show a summary to the user (do NOT display billing section contents — inn, bank, name — in chat):
+   - "hourly_rate: {value}"
+   - "hosting: {tiers summary}"
+   - "catalog: {N} позиций"
+   - "billing: [данные сохранены]"
+   - "agent_costs: claude_api: {value}"
 3. Wait for explicit approval: "Записать этот файл в `~/.moneymaker/config.yml`?"
 
 **Checkpoint:** YAML reviewed and approved by user. Proceed to write.
@@ -159,8 +164,12 @@ Wait for confirmation before proceeding.
 4. On approval:
    - Create `~/.moneymaker/` directory if it does not exist (use Bash: `mkdir -p`).
    - Write the file using Write tool to `~/.moneymaker/config.yml`.
-5. Confirm: "Файл записан."
-6. Show tip: "Готово. Следующий шаг: `/moneymaker-new {project-name}`"
+5. Set file permissions:
+   ```bash
+   chmod 600 ~/.moneymaker/config.yml && chmod 700 ~/.moneymaker/
+   ```
+6. Confirm: "Файл записан."
+7. Show tip: "Готово. Следующий шаг: `/moneymaker-new {project-name}`"
 
 ---
 
@@ -169,11 +178,11 @@ Wait for confirmation before proceeding.
 Triggered from Phase 0 when `~/.moneymaker/config.yml` already exists.
 
 1. Read existing `config.yml` via Read tool.
-2. Parse and display current values grouped by section:
+2. Parse and display current values grouped by section (do NOT display billing section contents — inn, bank, name — in chat):
    - Ставка: `hourly_rate`
    - Хостинг: list of tiers with cost/markup
    - Агенты: `claude_api`
-   - Реквизиты: name, inn, bank
+   - Реквизиты: "[данные сохранены]"
    - Каталог: list of blocks
 3. Ask: "Какие разделы хотите обновить? (ставка, хостинг, агенты, реквизиты, каталог — или 'всё')"
 4. For each section the user wants to change:
@@ -184,14 +193,18 @@ Triggered from Phase 0 when `~/.moneymaker/config.yml` already exists.
    - Wait for explicit "да" before accepting the change.
    - If the user says "нет" → keep the old value for that field.
 5. After all changes confirmed:
-   - Show the full updated YAML.
+   - Show a summary of the updated config (do NOT display billing section contents in chat; show "billing: [данные сохранены]" instead).
    - Wait for final approval: "Перезаписать config.yml?"
 
    **Checkpoint:** Updated YAML reviewed and approved. Proceed to write.
 
    - On approval → write via Write tool.
-6. Confirm: "Config обновлён."
-7. Show tip: "Готово. Следующий шаг: `/moneymaker-new {project-name}`"
+6. Set file permissions:
+   ```bash
+   chmod 600 ~/.moneymaker/config.yml && chmod 700 ~/.moneymaker/
+   ```
+7. Confirm: "Config обновлён."
+8. Show tip: "Готово. Следующий шаг: `/moneymaker-new {project-name}`"
 
 ---
 

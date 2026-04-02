@@ -27,7 +27,9 @@ margins, and writes the final `kp-{timestamp}.md` file.
 
    If MISSING → "Конфиг не найден. Запустите `/moneymaker-setup`." Stop.
 
-2. Check that `expand-output.md` exists for this project:
+2. Validate project name matches `^[a-zA-Z0-9_-]+$`. If invalid → "Недопустимое имя проекта. Используйте только буквы, цифры, дефис и подчёркивание." Stop.
+
+3. Check that `expand-output.md` exists for this project:
 
    ```bash
    test -f ~/.moneymaker/projects/{project}/expand-output.md && echo "EXISTS" || echo "MISSING"
@@ -35,7 +37,7 @@ margins, and writes the final `kp-{timestamp}.md` file.
 
    If MISSING → "Файл expand-output.md не найден. Запустите `/moneymaker-expand {project}` сначала." Stop.
 
-3. Check that `expand-output.md` is not empty and contains both section markers:
+4. Check that `expand-output.md` is not empty and contains both section markers:
 
    Read the file. If it lacks both `[Договорились]` and `[Можно предложить]` → "Файл expand-output.md повреждён или пуст. Перезапустите `/moneymaker-expand {project}`." Stop.
 
@@ -45,23 +47,26 @@ margins, and writes the final `kp-{timestamp}.md` file.
 
 ## Phase 2: Display & Rate Override
 
-1. Read `~/.moneymaker/config.yml` — extract `hourly_rate` and `catalog`.
+1. Read `~/.moneymaker/config.yml` — extract `hourly_rate` and `catalog`. Do NOT display or reference `billing` section contents.
 
-2. Check if `~/.moneymaker/projects/{project}/overrides.yml` exists. If yes, read it and use its `hourly_rate` as the active rate for this project.
+2. Check if `~/.moneymaker/projects/{project}/overrides.yml` exists.
+   - If yes → read it, show current override value: "Текущая ставка для проекта: {override_rate} руб/час (переопределение глобальной ставки {hourly_rate})."
+   - If no → show: "Глобальная ставка: {hourly_rate} руб/час."
 
-3. Show both blocks from `expand-output.md` to the user.
+3. Ask: "Хотите задать (или обновить) ставку для '{project}'? (введите число или нажмите Enter чтобы продолжить с текущей)"
 
-4. Ask: "Используем ставку {active_rate} руб/час для этого проекта. Хотите задать другую ставку для '{project}'? (введите число или нажмите Enter чтобы продолжить)"
-
-5. If the user enters a number:
+4. If the user enters a number:
    - Show: "Установить ставку {new_rate} руб/час для проекта '{project}'? (да / нет)"
-   - Wait for confirmation.
-   - On confirmation: write `~/.moneymaker/projects/{project}/overrides.yml` with content:
+   - Wait for explicit confirmation.
+   - On "да": write `~/.moneymaker/projects/{project}/overrides.yml` with content:
      ```yaml
      hourly_rate: {new_rate}   # Overrides global rate for this project only
      ```
    - Update active rate to `new_rate`.
+   - On "нет": keep current rate unchanged.
    - Note: `config.yml` is not modified.
+
+5. Show both blocks from `expand-output.md` to the user.
 
 **Checkpoint:** Active rate confirmed, override written if requested. Proceed to position selection.
 
@@ -166,8 +171,8 @@ If any position has negative margin:
 
 - [ ] Validation stops with specific error + hint command when config.yml or expand-output.md missing
 - [ ] Damaged expand-output.md (missing section markers) → error, not crash
-- [ ] overrides.yml written on rate override; config.yml left unchanged
-- [ ] overrides.yml already exists → show current value, ask to update
+- [ ] overrides.yml: if exists → show current override value, ask to update; if not → show global rate, ask to set
+- [ ] overrides.yml written ONLY after explicit user confirmation; config.yml left unchanged
 - [ ] Договорились positions included automatically; user selects from Можно предложить only
 - [ ] Negative margin → ⚠️ warning with breakeven price in RUB, user chooses before proceeding
 - [ ] price_fixed with cost_fixed: null → margin "не определена", generation continues
@@ -175,3 +180,9 @@ If any position has negative margin:
 - [ ] Group итого margin shows "—" if any item in the group has undefined margin
 - [ ] kp-{timestamp}.md written in YYYY-MM-DD-HHmmss format, not appended
 - [ ] Tip shown after save
+
+---
+
+## Next Steps
+
+Next: archive project or start new project with `/moneymaker-new {project-name}`
