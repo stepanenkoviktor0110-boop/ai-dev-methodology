@@ -190,3 +190,8 @@ How to improve a prompt that isn't working well:
 | Filler ("please", "make sure", "I want you to") | Direct instruction | Fewer tokens = less noise |
 | Paragraphs describing format | 1-3 examples of desired output | Models generalize from examples faster than from rules |
 | Step-by-step micro-instructions | Constraints + success criteria | Model's own reasoning exceeds prescriptive procedures |
+
+
+## Learned Patterns
+
+- When editing or compressing an AI prompt -> check for prohibition/caps (NEVER, ALWAYS, CRITICAL) and replace with motivation-framing, to avoid a predictable review round on emphasis-heavy prompts

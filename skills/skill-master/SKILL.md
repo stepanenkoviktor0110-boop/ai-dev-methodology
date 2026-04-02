@@ -417,3 +417,9 @@ skill-checker is defined in `~/.claude/agents/skill-checker.md` and has skill-ma
 **Functional (all skills):**
 - [ ] Run skill-checker and fix all issues
 
+
+
+## Learned Patterns
+
+- When creating a skill with a companion agent-file (SKILL.md + agents/{name}.md) -> explicitly separate what SKILL.md does (orchestration) from what the agent-file does (step protocol), to avoid duplicating the same action in both files
+- When converting a user algorithm into a procedural SKILL.md -> add a gate-question at the end of each phase even if the original has none, to satisfy structural requirements without a re-run of the validator
