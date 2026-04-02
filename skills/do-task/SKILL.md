@@ -68,6 +68,7 @@ Before starting, read [quick-ref-do-task.md](../quick-learning/references/quick-
      ---
      ```
    - If tasks remain in current session: inform user which tasks are left in this session.
+   - If `session-plan.md` does not exist and all tasks in `work/{feature}/tasks/` are `done` → prompt user: "Все задачи выполнены. Запусти `/done` для архивации, затем `/retrospective` для фиксации уроков."
 
 ## Self-Verification
 

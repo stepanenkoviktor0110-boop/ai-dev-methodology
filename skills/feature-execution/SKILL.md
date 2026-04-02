@@ -203,6 +203,7 @@ All waves done including Final Wave (QA, deploy if applicable, post-deploy verif
 2. Describe what to check manually (from execution plan "user checks" section)
 3. Issues found → fix → review → commit (max 3 rounds). If unresolved → escalate (see Escalation).
 4. All ok → finalize, shutdown team, delete `work/{feature}/logs/checkpoint.yml`
+5. Prompt user: "Фича завершена. Запусти `/done` для архивации и обновления документации, затем `/retrospective` для фиксации уроков сессии."
 
 ## Escalation
 
