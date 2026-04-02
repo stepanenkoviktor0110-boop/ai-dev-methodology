@@ -1653,3 +1653,13 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Когда промт вызова и task file содержат расходящиеся конкретные значения (enum, константы, имена полей) — task file является authoritative источником. Зафиксируй конфликт в decisions.md до начала реализации, чтобы ревьюер видел осознанный выбор, а не ошибку.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-03 management-panel / session 1: CRUD-форма для single-entity не покрывает multi-entity action workflow
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** spec описывает CRUD-форму для одной сущности → задать вопрос "один или группа?" до реализации → не переписывать готовый UI из-за fundamental UX-mismatch
+**Context:** Task 4 — Flask panel реализован как per-court settings sidebar (один суд = одна форма). После завершения полностью переписан на two-column layout с multi-court selection, потому что реальный use case — "запустить несколько судов с одними настройками" — требует bulk-action UI, а не CRUD.
+**Pattern:** Когда spec описывает форму настроек для одной записи, а целевой workflow — это action над набором записей — уточнить кардинальность до написания кода. Признак mismatch: в spec есть "настройки" и "запустить", но нет явного выбора набора сущностей.
+**Scope:** universal
+**Category:** scope-management

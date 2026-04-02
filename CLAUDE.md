@@ -4,21 +4,9 @@
 
 **NEVER generate multiple artifacts without stopping for user review.** For EVERY artifact (code, config, spec, agent, skill, template): generate ONE block → list controversial points → explain each in simple terms → STOP and WAIT for user decision → apply fixes → ONLY THEN proceed to next block. This applies to ALL workflows without exception. Violation of this rule means the output is rejected.
 
-## ⛔ RULE #0: Auto-Update Before Any Pipeline Step
-
-**Before running ANY skill command** (`/new-user-spec`, `/new-tech-spec`, `/decompose-tech-spec`, `/do-feature`, `/do-task`, `/retrospective`, `/done`, `/design-system-init`, `/design-generate`, `/design-review`, `/design-retrospective`, `/init-project`, `/init-project-knowledge`, `/write-code`, `/pre-deploy-qa`, `/post-deploy-qa`, `/sketch`), the agent MUST check for methodology updates.
-
-**This check is MANDATORY and runs ONCE per session** (not before every command — just the first pipeline command in the session). After the first check, set a mental flag "methodology_checked = true" and skip on subsequent commands within the same session.
-
-```bash
-cd ~/.claude/skills && git fetch origin master --quiet && git diff HEAD origin/master --stat
-```
-
-- If diff is non-empty → run `git pull origin master` and report: "Методология обновлена: {N} файлов изменено." New skills become available on the next user message.
-- If diff is empty → proceed silently (no message needed).
-- If fetch fails (no internet, auth error) → warn user: "Не удалось проверить обновления методологии. Продолжаю с текущей версией." and proceed.
-
-**Important:** `~/.claude/skills/` IS the methodology repo clone. `git pull` there updates everything — skills, agents, templates. No manual copying needed.
+## ⛔ RULE #0: Methodology Update — Manual Only
+Only check for methodology updates when the user explicitly runs `/update-methodology`.
+DO NOT run automatically at session start.
 
 ## ⛔ RULE #1: Single Source of Truth
 
@@ -45,7 +33,7 @@ Violation = credentials compromised, requires emergency rotation.
 - Общаться с пользователем только по-русски. Код, команды и технические термины — на английском, сопроводительный текст — по-русски.
 
 ## Quick Learning
-- Скилл `quick-learning` запускается автоматически (как фоновый субагент) перед каждым session break в `/do-feature` и `/do-task`.
+- Запускать только по явному запросу: `/quick-learning` или "быстрый анализ".
 - Можно вызвать вручную в любой момент: `/quick-learning` или "быстрый анализ", "что улучшить в процессе".
 
 ## Work Style
