@@ -746,13 +746,13 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Situation:** multi-task декомпозиция с sentinel strings / protocol markers общими между задачами
 **Category:** problem-decomposition
 
-### 2026-03-30 methodology-sync-sketch / techspec: Каталог скиллов — читай ДО написания задач
+### 2026-04-02 moneymaker / techspec: Каталог скиллов — читай ДО написания задач И при исправлении
 
-**Seen:** 1
-**Adapted:** —
-**Triad:** написание секции Implementation Tasks в tech-spec → прочитать skills-and-reviewers.md перед заполнением Skill и Reviewers → не использовать несуществующие или неверные skill-имена
-**Context:** Tasks 1-5 использовали `write-code` (wrapper) вместо `skill-master`, `documentation-writing`. Template-validator поймал в validation round 1 — потребовал полный перезаголовок задач.
-**Pattern:** Перед написанием Implementation Tasks — открыть `tech-spec-planning/references/skills-and-reviewers.md`. Wrapper-skills (`write-code`, `new-tech-spec`) не являются execution skills. Всегда проверять: skill в tasks = строка из каталога, не интуитивный псевдоним.
+**Seen:** 2
+**Adapted:** n/a
+**Triad:** написание ИЛИ исправление полей Skill/Reviewers в Implementation Tasks → сверить ВСЕ значения в списке с `skills-and-reviewers.md`, не только сообщённый → не вносить новые миражи при починке известных
+**Context:** Tasks 1-5 использовали `write-code` (wrapper) — поймано в round 1. При исправлении был введён `test-reviewer` (не существует) — поймано skeptic в round 2. Оба раза ошибка = интуитивный псевдоним вместо проверки каталога.
+**Pattern:** При написании ИЛИ исправлении reviewer/skill имён — открыть `skills-and-reviewers.md` и проверить ВСЕ значения в списке одновременно. При замене одного неверного имени соседние могут быть такими же неверными. Wrapper-skills и интуитивные псевдонимы (`test-reviewer`, `write-code`) — самые частые ошибки.
 **Scope:** universal
 **Category:** information-gathering
 
@@ -1362,3 +1362,25 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** tech-spec для фичи, deliverable которой является набор Claude Code skills (SKILL.md файлы)
 **Category:** tool-selection
+
+### 2026-04-02 geologist-cabinet / deploy session: better-auth 404 при неверном BETTER_AUTH_URL prefix
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** better-auth handler возвращает 404 для корректного пути → проверить BETTER_AUTH_URL на наличие лишнего path prefix → не тратить часы на отладку webpack и маршрутизации
+**Context:** BETTER_AUTH_URL был установлен как `http://host/cabinet` в прошлой сессии; better-auth добавлял `/cabinet` к своему basePath и не находил `/api/auth/sign-in/email`.
+**Pattern:** Когда better-auth handler возвращает 404 для заведомо существующего эндпоинта — первым делом проверить что BETTER_AUTH_URL не содержит path после домена. BETTER_AUTH_URL должен быть `http://host` без trailing path.
+**Scope:** situational
+**Situation:** деплой приложения с better-auth за nginx reverse proxy с subpath (например `/cabinet`)
+**Category:** recovery
+
+### 2026-04-02 geologist-cabinet / deploy session: Next.js API route молча возвращает 404 из-за async webpack модуля
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** Next.js API route возвращает 404 с RSC headers, console.error не срабатывает → проверить compiled route.js на `import("dependency")` и `t.a(e,` async factory → диагностировать silent module initialization failure
+**Context:** better-auth внутри использует `import("pg")` (dynamic ESM import); webpack компилировал это как async module factory; Next.js 14 не мог загрузить route handler и возвращал App Router 404 без каких-либо логов.
+**Pattern:** Если Next.js API route (App Router) возвращает 404 с заголовками `vary: RSC, Next-Router-State-Tree` и нет console.error — это не routing проблема, а silent module failure. Проверить `.next/server/app/api/.../route.js`: если есть `t.a(e,async` или `e.exports=import("pkg")` — серверная CJS-библиотека бандлится с ESM dynamic import. Фикс: заменить `import { X } from 'pkg'` на `const { X } = require('pkg')` в файле, где pkg используется внутри ESM-зависимости.
+**Scope:** situational
+**Situation:** Next.js 14 App Router, серверный route handler использует библиотеку (better-auth, prisma и др.) с внутренними dynamic ESM imports
+**Category:** recovery
