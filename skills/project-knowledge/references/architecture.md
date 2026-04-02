@@ -83,3 +83,26 @@ No database. All state is in files:
 - `work/{feature}/` — ephemeral per-feature working data
 - `quick-learning/references/` — persistent knowledge accumulation
 - `project-knowledge/references/` — stable project documentation
+
+### Moneymaker Data Storage (`~/.moneymaker/`)
+
+Separate storage tree for the moneymaker pipeline (not inside the methodology repo):
+
+```
+~/.moneymaker/
+  config.yml                          # Global config: hourly_rate, hosting tiers, agent_costs, billing, catalog
+  projects/
+    {project-name}/
+      context.md                      # Accumulated project context: Требования / Договорённости / Открытые вопросы
+      materials/
+        {timestamp}.md                # Raw ingested material (transcript, chat, etc.)
+      expand-output.md                # Cached output of /moneymaker-expand (overwritten on each run)
+      overrides.yml                   # Per-project rate override (optional, created only after explicit confirmation)
+      kp-{timestamp}.md               # Final quote (KP) as markdown table
+```
+
+Key invariants:
+- `config.yml` is never written by any skill except `moneymaker-setup`
+- `overrides.yml` is never written without explicit user confirmation
+- `context.md` is only written after all conflicts resolved (never partial writes)
+- `expand-output.md` is always overwritten, never appended

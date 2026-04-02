@@ -8,6 +8,8 @@ Coding conventions, development workflow, and project-specific practices.
 
 **Skill files:** Each skill lives in `{skill-name}/SKILL.md`. Name is kebab-case. Instructions are in Markdown, written for Claude to follow. No code — only prose instructions.
 
+**Multi-phase procedural skills (moneymaker pattern):** Skills with file I/O and multi-step user interaction are structured as numbered Phases (Phase 1: Validation → Phase 2: ... → Phase N: ...). Each phase ends with a gate before proceeding. The skill ends with a `## Self-Verification` checklist and a "Next: /{skill-name}" chaining hint. Max 500 lines per SKILL.md.
+
 **Agent files:** `agents/{agent-name}.md`. In Claude version, the parent skill reads the agent file inline and follows its instructions (e.g. `sketch-interviewer.md`). In Codex, agent files are spawned directly via `spawn_agent`.
 
 **Templates:** Files in `shared/work-templates/` end with `.template` suffix and contain placeholders in `{curly-braces}`. Never edit templates in place — always copy first.
