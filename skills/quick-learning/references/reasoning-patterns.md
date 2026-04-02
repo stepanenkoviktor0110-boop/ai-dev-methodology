@@ -1565,3 +1565,23 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** текст поверх full-bleed фото с неравномерной фоновой текстурой (люстры, архитектура, природные объекты)
 **Category:** design-process
+
+### 2026-04-02 dashboard-progress-sync / session 3: Проверить занятые порты до деплоя нового сервиса
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** деплой нового backend-сервиса на VPS → запустить `ss -tlnp | grep node` до первого старта → не получить EADDRINUSE от неожиданного конкурента на том же порту
+**Context:** `dashboard-api` не смог стартовать на порту 3001 — его занимал `masha` (другой проект). Обнаружилось только через pm2 errored лог, потребовало диагностики и смены порта.
+**Pattern:** Перед деплоем нового сервиса на VPS — проверить занятые порты (`ss -tlnp`). Если нужный порт занят — сразу назначить альтернативный в .env и обновить nginx, не пытаться освободить чужой процесс.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-04-02 dashboard-progress-sync / session 3: Не пробовать SSH из Claude Code до подтверждения с машины пользователя
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** Claude Code пробует SSH на VPS при неверном или несинхронизированном ключе → сначала попросить пользователя подтвердить `ssh root@host echo OK` вручную → не спровоцировать fail2ban блокировкой IP при серии неудачных попыток
+**Context:** Многократные SSH-попытки из Claude Code с неверным ключом заблокировали IP пользователя через fail2ban дважды. Разблокировка требовала VPN или консоли провайдера.
+**Pattern:** Перед автоматическими SSH-командами из Claude Code — убедиться что пользователь успешно зашёл на VPS вручную с тем же ключом. Только после подтверждения пробовать из Claude Code. Серия failed attempts из одного IP = бан.
+**Scope:** situational
+**Situation:** Claude Code выполняет команды на VPS через SSH
