@@ -243,3 +243,7 @@ Before finishing, verify:
 - When laying out a section from the user structured data -> map each data field directly to a UI element, to avoid inventing a display structure that diverges from the data source
 - When placing multiple text blocks at different positions on a card -> check visual weight (font-size × font-weight) of each block to verify it supports the intended reading order, to control reading flow through weight hierarchy rather than position alone
 - When placing a text block on a full-bleed photo with an uneven background -> align the text to the side with the least busy background zone rather than the conventional position, to preserve readability without strengthening the overlay
+- When text on a busy/textured background (metal, foil, grass, patterns) has insufficient contrast -> increase font_size by one grid step (8px) until the letter physically covers the texture details; contrast through size, not overlay
+- When a layout constraint (wrap/overflow) conflicts with text agreed in Phase 2 -> adapt font-size / column width / layout to fit the original text, to preserve content integrity agreed in Phase 2
+- When computing font-size fit for a Cyrillic uppercase string -> use 0.72em per character (not 0.62em for Latin) and verify against the longest word, to prevent unexpected line breaks in render
+- When selecting color for a text element -> enumerate ALL options (brand colors + white + dark grey) and evaluate each against background and serial-use context, to avoid auto-selecting by habit rather than by fit
