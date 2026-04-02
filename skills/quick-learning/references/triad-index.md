@@ -59,7 +59,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 50 | репо содержит скиллы/модули из нескольких доменов | перечислить все домены и получить is_in_scope per domain до спека | не переписывать scope из-за итеративного уточнения границ | universal | 1 | Universal | user-spec-planning |
 | 51 | PROMOTED → tech-spec-planning | верифицировать каждый целевой файл на наличие изменяемого элемента | — | — | 2 | — | tech-spec-planning |
 | 52 | задача содержит тест с точной строкой-маркером определённой в другой задаче | объявить depends_on на задачу-источник даже если строка — литерал | не пропустить неявную зависимость через разделённый дизайн-маркер | situational | 1 | Situational | task-decomposition |
-| 53 | написание Implementation Tasks в tech-spec | прочитать skills-and-reviewers.md перед Skill/Reviewers полями | не использовать неверные skill-имена | universal | 1 | Universal | n/a |
+| 53 | написание ИЛИ исправление полей Skill/Reviewers в Implementation Tasks | сверить ВСЕ значения в списке с skills-and-reviewers.md, не только сообщённый | не вносить новые миражи при починке известных | universal | 2 | Universal | n/a |
 | 54 | PROMOTED → feature-execution | явно описать processing logic во всех секциях/таблицах | — | — | 2 | — | feature-execution |
 | 55 | PROMOTED → task-decomposition | добавить тест явно в spec/AC той задачи, не только в notes | — | — | 2 | — | task-decomposition |
 | 58 | user-spec содержит описательный блок с требованием не отражённым в AC | следовать только AC; зафиксировать разрыв decision-записью и обновить user-spec | не тащить неопределённость из описательного блока в реализацию | universal | 1 | Universal | user-spec-planning |
