@@ -1643,3 +1643,13 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Когда оптимизируешь context overhead путём сужения scope ресурса — сначала спроси "этот ресурс нужен только в одном проекте или во всех?" Если универсальный — project-scope миграция не решение, ищи другой механизм.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-04-03 crm-lead-funnel / session 1: промт и task file расходятся — task file побеждает
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** промт и task file содержат разные значения для одного enum/константы → читать task file как authoritative, зафиксировать deviation до реализации → не переписывать реализацию после обнаружения конфликта на ревью
+**Context:** Task 1 CRM API: stage enum в промте имел значения new/contacted, в task 1.md — seen/responded/talking/agreed/in_progress/closed. Агент выбрал task 1.md и задокументировал deviation.
+**Pattern:** Когда промт вызова и task file содержат расходящиеся конкретные значения (enum, константы, имена полей) — task file является authoritative источником. Зафиксируй конфликт в decisions.md до начала реализации, чтобы ревьюер видел осознанный выбор, а не ошибку.
+**Scope:** universal
+**Category:** sequencing
