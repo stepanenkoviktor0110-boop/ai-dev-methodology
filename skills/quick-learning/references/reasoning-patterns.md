@@ -1437,3 +1437,24 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Перед реализацией любой задачи читать целевой файл и проверять нет ли уже функции/блока с нужной логикой. Особенно вероятно если задача — добавить guard/validation в файл который правился в предыдущих волнах.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-02 moneymaker / session 2: Bash path-substitution в аргументе флага — вынести в переменную
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** bash команда передаёт `$(find ... | cut ...)` как путь в флаг принимающий файловый путь (-newer, -nt, аналогичные) → вынести подстановку в именованную переменную отдельной командой → избежать молчаливого false-result при путях с пробелами
+**Context:** В moneymaker-expand SKILL.md staleness check сравнивал mtime через `find -newer "$(find ... | cut ...)"`. skill-checker поймал: если путь материала содержит пробел, вложенная подстановка обрезается и флаг -newer получает неверный путь — всегда возвращая STALE без ошибки.
+**Pattern:** Когда bash команда использует `$(...)` как значение флага принимающего путь — разбить на две команды: сначала `newest=$(...)`, затем использовать `"$newest"` с кавычками. Однострочные вложенные подстановки путей ломаются при пробелах, причём молча.
+**Scope:** universal
+**Category:** tool-selection
+
+### 2026-04-02 moneymaker / session 2: Embedded LLM prompts в SKILL.md подпадают под правило positive instructions
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** SKILL.md содержит inline LLM-промт (блок текста как инструкция для LLM внутри фазы) → проверить весь текст промта на "do not / don't / не делай" и переформулировать позитивно → не тратить review-раунд на нарушение skill-master правила внутри вложенного промта
+**Context:** moneymaker-expand Phase 5 содержал LLM-промт с "Do not produce a generic checklist". skill-checker поймал три места с негативными формулировками внутри промтов. Авторы воспринимают вложенный промт как "данные", а не инструкции, и не применяют к нему skill-master правило.
+**Pattern:** Правило "positive over negative" из skill-master применяется ко всему тексту SKILL.md включая inline LLM-промты. Перед первым skill-checker прогоном — пройти по всем блокам с текстом промтов и заменить "do not X" / "не делай X" на позитивный эквивалент.
+**Scope:** situational
+**Situation:** Написание SKILL.md содержащего встроенные LLM-промты как часть фаз
+**Category:** sequencing
