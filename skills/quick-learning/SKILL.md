@@ -129,7 +129,7 @@ When merging: keep the most general trigger and most actionable wording. Update 
 
 ### Step 4: Summary (5 sec)
 
-Count entries with `Adapted: —` in `triad-index.md`.
+Count rows where the **last column** (`Adapted`) is exactly `—`. Use pattern `| — |$` (line ends with `| — |`). Do NOT count rows where `—` appears only in other columns (Goal, Section, etc.).
 
 Show user ONE line:
 ```
@@ -187,4 +187,4 @@ When a guard (smoke test, reviewer, self-verification) catches an error matching
 - [ ] No duplicates — existing patterns got Seen++ instead
 - [ ] Max 2 entries written
 - [ ] Adapted: — field set on all new entries in both reasoning-patterns.md and triad-index.md
-- [ ] Summary shown; if ≥25 Adapted=— entries — user notified about /skill-trainer
+- [ ] Summary shown; count by pattern `| — |$` (last column only); if ≥25 — user notified about /skill-trainer
