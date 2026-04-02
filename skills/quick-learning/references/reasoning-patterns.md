@@ -1404,3 +1404,15 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Когда пользователь даёт оценочный feedback о данных в UI ("кривое", "неверно", "не то") без конкретики — сначала уточни "что именно ожидаешь увидеть". Не начинай диагностировать предположение.
 **Scope:** universal
 **Category:** communication
+
+### 2026-04-02 moneymaker / session 1: checkpoint completeness self-check before SKILL.md submission
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** написан multi-phase SKILL.md → перед первым skill-checker прогоном явно пройтись по каждой фазе и проверить наличие Checkpoint-метки → не тратить review-раунд на предсказуемые пропуски checkpoints
+**Context:** Все 3 SKILL.md файлов сессии 1 moneymaker получили fix-раунд из-за отсутствующих checkpoint-меток в финальных фазах (Phase 6, Update Mode, normal extraction path).
+**Pattern:** При написании SKILL.md с N фазами — до сабмита явно проверить: каждая фаза заканчивается Checkpoint-блоком. Финальные фазы и альтернативные ветки (Update Mode, edge-case paths) пропускаются чаще всего.
+**Scope:** situational
+**Situation:** задача — создание или рефакторинг SKILL.md файла с несколькими фазами
+**Category:** sequencing
+**Category:** communication
