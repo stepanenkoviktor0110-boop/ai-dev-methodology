@@ -1663,3 +1663,23 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Когда spec описывает форму настроек для одной записи, а целевой workflow — это action над набором записей — уточнить кардинальность до написания кода. Признак mismatch: в spec есть "настройки" и "запустить", но нет явного выбора набора сущностей.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-04-03 freelance-dashboard / crm session 2: useMemo зависимость от промежуточного массива
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** зависимость useMemo ссылается на промежуточный массив созданный в render (leads ?? []) → вынести нормализацию за пределы render или переместить null-guard внутрь вычисляющей функции → гарантировать стабильность референса и реальную работу мемоизации
+**Context:** `const safeLeads = leads ?? []` в теле компонента создаёт новый массив при каждом render. `useMemo(() => compute(safeLeads), [safeLeads])` срабатывает на каждый render, не только при изменении leads. Мемоизация работала визуально, но не по факту. Исправление: переместить `leads = leads ?? []` внутрь `computeAnalytics()`, dependency в useMemo — `[leads]`.
+**Pattern:** Если dependency useMemo — промежуточная переменная (let/const в теле компонента), а не prop/state напрямую — это red flag. Нормализацию (null-guard, .filter, .map) выносить ВНУТРЬ вычисляющей функции, dependency array должен ссылаться на исходный prop/state.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-04-03 freelance-dashboard / crm session 2: CJS cron-скрипт в ESM проекте
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** проект с "type":"module" в package.json, нужен CommonJS cron-скрипт с require() → называть файл .cjs и применять dependency injection для тестируемости → избежать runtime ошибки модульной системы и vi.mock-хаков при тестировании
+**Context:** `scripts/crm-check.js` в проекте с `"type":"module"` даёт `require is not defined` при запуске. Решение: переименовать в `.cjs`. Дополнительная проблема: vi.mock не перехватывает require() при module load time — axios загружается до мока. Решение: `main(_axios)` — dependency injection, тесты передают mock-axios явно.
+**Pattern:** В ESM проектах CommonJS скрипты именовать `.cjs`. Для тестируемости CJS-модулей с require-зависимостями использовать DI: `function main(_dep = require('dep'))` — тест передаёт mock, продакшн использует дефолт. Это надёжнее vi.mock для CJS.
+**Scope:** situational
+**Category:** tool-selection
