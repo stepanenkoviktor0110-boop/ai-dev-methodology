@@ -1341,3 +1341,24 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Перед первым деплоем на VPS или после смены домена/ключей — запустить SSH smoke локально. Если smoke падает — не пушить. Так все инфраструктурные блокеры видны за один шаг вместо N CI-прогонов.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-02 moneymaker / session 2 (tech-spec): Решение, сужающее утверждённый AC — проверить до написания
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** tech-spec decision сужает или откладывает требование из user-spec → перед написанием Decision проверить наличие этого требования в AC user-spec → не вводить scope reduction без явного согласования с пользователем
+**Context:** Tech-spec Decision 6 отложил "free-form rate update" в Phase 2, мотивируя тем что это "не в AC". Completeness-validator вернул CRITICAL: AC в user-spec явно есть ("Изменение тарифа в чате показывает подтверждение"). Пришлось переделывать decision и обсуждать с пользователем.
+**Pattern:** Перед написанием Decision, который сужает или откладывает часть функционала — прочитать раздел AC user-spec и убедиться что этот функционал там не перечислен. Если перечислен — либо реализовать, либо явно согласовать исключение с пользователем до фиксации в спеке.
+**Scope:** universal
+**Category:** scope-management
+
+### 2026-04-02 moneymaker / session 2 (tech-spec): Задача создаёт SKILL.md — skill-master, не code-writing
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** deliverable задачи — SKILL.md файл(ы) → назначить skill: skill-master и reviewers: skill-checker → не получить неверный skill/reviewer замеченный только валидаторами
+**Context:** Первый черновик tech-spec для moneymaker назначил `write-code` (затем `code-writing`) для задач 1–5, создающих SKILL.md. Skeptic и template-validator поймали: для создания скиллов в skills-and-reviewers каталоге прописан `skill-master` + `skill-checker`.
+**Pattern:** Когда задача создаёт или существенно изменяет SKILL.md файлы — это skill-master задача, не code-writing. Проверить skills-and-reviewers.md каталог: `skill-master` → reviewers: `skill-checker`. Если задача создаёт и код, и скиллы — разбить на отдельные задачи с правильным skill каждой.
+**Scope:** situational
+**Situation:** tech-spec для фичи, deliverable которой является набор Claude Code skills (SKILL.md файлы)
+**Category:** tool-selection
