@@ -1,16 +1,12 @@
 # Quick Reference — Tech Spec Planning
 
-Top patterns relevant to tech-spec-planning. Max 10 entries, sorted by Seen (highest first).
-
-<!-- Auto-generated from reasoning-patterns.md. Regenerated on each write/promotion by quick-learning. -->
-
-1. **Верифицируй целевые файлы перед описанием операции** (Seen: 2) — Когда spec описывает "удалить X из N файлов" — grep каждый файл. Без X → add, не replace. Ошибка типа операции видна только при выполнении.
-2. **Верифицируй API response shapes из code-research** (Seen: 2) — Перед включением API response shapes из code-research в tech-spec — сделай реальный API call и сверь с документацией.
-3. **Тесты на моках скрывают расхождение с реальным процессом** (Seen: 2) — Перед объявлением QA passed — сделать минимум 1 live прогон с реальным внешним процессом. Сохранить реальный ответ как golden fixture.
-4. **Файловые пути — верифицировать через ls, не по памяти** (Seen: 2) — Перед написанием любого файлового пути в tech-spec — верифицировать ls/glob. Architecture docs описывают намерение, а не факт filesystem.
-5. **Кэш обработанных записей при работе с платным API** (Seen: 1) — При интеграции с любым платным API с лимитом запросов — сразу закладывай кэш обработанных записей в БД.
-6. **"Пусто" ≠ "данных нет" — проверь все каналы** (Seen: 1) — Когда запрос к внешней системе вернул пустой результат — перечисли все каналы/endpoints где данные могут храниться и проверь каждый.
-7. **Known-issues реестр для аудитов** (Seen: 1) — Завести known-issues.md на уровне проекта. Перед ревью агент читает его и пропускает задокументированные проблемы.
-8. **Проверяй дефолты библиотек до оптимизации кода** (Seen: 1) — При performance-проблемах на low-traffic серверах — первым делом проверять дефолтные таймауты и лимиты библиотек.
-9. **Сверяй типографику с референсом ДО реализации** (Seen: 1) — Перед реализацией визуальной задачи с референсами — открыть скриншот и составить чеклист: шрифт, размеры, вес, отступы, цвет акцентов.
-10. **Читай skills-and-reviewers.md ДО написания задач** (Seen: 1) — Перед заполнением Skill и Reviewers в Implementation Tasks — открыть каталог. Wrapper-skills не являются execution skills.
+1. When adding auth flow to imported data (Seen: 1)
+2. When an external service returns an unexpected result during research -> run esc (Seen: 1)
+3. When output format requirements arrive iteratively (Seen: 1)
+4. When an external system returns empty results (Seen: 1)
+5. When speccing a complex project with server-side actions (Seen: 1)
+6. When diagnosing performance problems on a low-traffic server (Seen: 1)
+7. When planning file sync between two repo versions (Seen: 1)
+8. When a feature combines client-only storage with server-side automation -> verif (Seen: 1)
+9. When spec narrows a criterion discussed in the interview (A or B (Seen: 1)
+10. When adding a metric to a dashboard without explicit time horizon (Seen: 1)

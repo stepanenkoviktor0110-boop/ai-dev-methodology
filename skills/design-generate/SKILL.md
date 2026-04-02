@@ -233,3 +233,11 @@ Before finishing, verify:
 - [ ] Intermediate artifacts (SVGs, draft HTMLs) cleaned up — only final HTML + collage remain
 - [ ] Taste-profile прочитан (если `.design-system/taste-profile.md` существует) и предпочтения применены в Phase 2 и Phase 3
 - [ ] Two-layer description сгенерировано и сохранено в `.design-system/pages/{name}.description.md`
+
+## Learned Patterns
+
+- When working on a visual task with reference screenshots -> verify typography against the reference BEFORE writing CSS, to avoid a series of fix commits for visual mismatch
+- When placing text/UI over a full-bleed photo -> identify the subject zone in the cropped viewport BEFORE positioning elements, to avoid covering a face/object with text
+- When asked for alternative design or redesign -> select the layout pattern independently from existing markup to produce a real alternative, not a restyle
+- When selecting a layout with full-bleed photo -> check photo orientation and subject crop feasibility against the container shape, to avoid iterations on a geometrically impossible crop
+- When laying out a section from the user structured data -> map each data field directly to a UI element, to avoid inventing a display structure that diverges from the data source

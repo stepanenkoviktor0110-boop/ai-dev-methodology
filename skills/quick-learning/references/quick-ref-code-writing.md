@@ -1,15 +1,13 @@
 # Quick Reference — Code Writing
 
-Top patterns relevant to code-writing. Max 10 entries, sorted by Seen (highest first).
-
-<!-- Auto-generated from reasoning-patterns.md. Regenerated on each write/promotion by quick-learning. -->
-
-1. **Retry-декоратор должен знать, что НЕ ретраить** (Seen: 1) — При проектировании retry-обёртки сразу определи список non-retryable исключений. Retryable = транспортные ошибки + 5xx. Non-retryable = 4xx.
-2. **HTTP timeout — обязательный параметр** (Seen: 1) — При любом вызове к внешнему сервису — устанавливай явный timeout. Отсутствие timeout превращает stale соединение в бесконечное зависание.
-3. **Проверять enum-значения при генерации конфигов** (Seen: 1) — При генерации конфигурационных файлов с enum-полями — не подставляй "логичный" вариант, а проверь список допустимых значений из документации.
-4. **Маскируй секреты ДО выполнения команды** (Seen: 1) — При любом чтении конфигов — встраивать маскировку прямо в команду. Никогда не выводить .env, credentials, secrets целиком.
-5. **Assertions на output-формат, не на input-атрибуты** (Seen: 2) — Перед assertions прочитать реальный пример вывода функции. Для format-conversion (JSON→MD и т.п.) assertions должны соответствовать output-формату, не input-layer атрибутам.
-6. **Программное создание документа — зачищай дефолтные артефакты** (Seen: 1) — При программном создании документа через API — проверить какие дефолтные элементы создаются автоматически и зачистить их.
-7. **Проверить стоимость retry до включения** (Seen: 1) — Перед добавлением retry на API с жёстким лимитом — сделать тестовые запросы и сверить счётчик. Если failed считаются — retry убрать или ограничить.
-8. **Verify-smoke для markdown — проверяй структуру, не ключевые слова** (Seen: 1) — Для markdown-only артефактов verify-smoke должен проверять структурные элементы: фазы, ссылки на файлы, guard-ы для edge cases.
-9. **Path traversal — allowlist для любых внешних значений** (Seen: 2) — Перед построением файлового пути из любого внешнего значения (диск, user input, API) — валидировать против allowlist. Даже свои данные могут быть изменены между записью и чтением.
+1. **Маскируй секреты ДО выполнения команды** — (Seen: 2) (Seen: 2)
+2. **@/'`) или проверять наличие переменной через `grep -c`. Никогда не выводить `.env` целиком.
+-** — Assertions на output-формат, не на input-атрибуты** (Seen: 2) (Seen: 2)
+3. When wrapping API calls with a generic retry decorator (Seen: 1)
+4. When unit tests use mocks for external processes/APIs (Seen: 1)
+5. When using a retry decorator with a rate-limited API (Seen: 1)
+6. When generating config files with enum fields or nested configs (Seen: 1)
+7. When writing deploy scripts that create named resources (Seen: 1)
+8. When TDD Anchor describes a test for a private class method (Seen: 1)
+9. When calling clear/reset on an external service before writing new data -> expli (Seen: 1)
+10. When CSS position:fixed fails on a React component with inline style display:non (Seen: 1)

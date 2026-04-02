@@ -1,19 +1,14 @@
 # Quick Reference — Feature Execution
 
-Top patterns relevant to feature-execution. Max 10 entries, sorted by Seen (highest first).
+1. **Верифицируй результат, а не только изменение** — (Seen: 3) (Seen: 3)
+2. **При добавлении нового маркера в агентный промт — перечислить все секции и таблицы где маркер может появиться, прописать обработку в каждой. Частичное описание гарантирует major review findings.
 
-<!-- Auto-generated from reasoning-patterns.md. Regenerated on each write/promotion by quick-learning. -->
-
-1. **Верифицируй результат, а не только изменение** (Seen: 3) — После любого деплоя или изменения — проверь что результат работает в реальной среде. Для cron: проверь лог через 5 минут после первого срабатывания. Изменить код ≠ получить результат.
-2. **Выделить спорные решения ДО генерации большого артефакта** (Seen: 2) — Перед генерацией артефакта > 200 строк — выписать список решений с неоднозначностью и утвердить с пользователем до генерации.
-3. **Auth credentials для импортированных данных** (Seen: 1) — При добавлении auth flow — проверять не только наличие credential records, но и их isActive status.
-4. **Чисти ресурс по identity, не по management context** (Seen: 1) — Если deploy/teardown скрипт управляет именованным ресурсом — чисти его напрямую по имени, а не только через management tool.
-5. **Timing с первого дня в комплексных проектах** (Seen: 1) — В комплексных проектах включать server action timing в MVP scope наравне с audit log.
-6. **Эскалирующая диагностика перед гипотезой "сервис сломан"** (Seen: 1) — Когда внешний сервис ведёт себя неожиданно — не объявляй "сервис сломан" без исчерпывающей диагностики: измени параметры, протестируй curl, перечитай документацию.
-7. **Фильтр по модели знаний читателя при написании документации** (Seen: 1) — При написании клиентской документации делать «reader filter» проход по каждому абзацу: читатель уже знает? видит откуда данные? понимает ПОЧЕМУ?
-8. **Субагент не завершил — выполни напрямую** (Seen: 2) — Если субагент прерван (rejection, блокировка, ошибка записи) — lead немедленно выполняет задачу сам через Write/Edit, не ретраит субагент.
-9. **Новый sentinel/marker в промте — описать во всех секциях** (Seen: 2) — При добавлении маркера в агентный промт — найти все секции/таблицы где он может появиться, описать обработку в каждой. Частичное описание = major review finding.
-9. **Ошибки повторяются между волнами** (Seen: 1) — Когда ревью находит паттерн ошибки, lead добавляет предупреждение в промт следующего teammate.
-10. **Язык пользователя, не профессиональный жаргон** (Seen: 1) — При обсуждении решений с пользователем — каждый термин расшифровывать при первом упоминании, объяснять последствия на примерах из его домена.
-10. **False-positive test finding — немедленный fix** (Seen: 2) — Если audit wave нашла major finding с false-positive risk — создать ad-hoc fix task немедленно, не deferred. Тест с иллюзорным покрытием ломает доверие ко всему test suite.
-11. **Флаг-файл run-once — путь от якоря, не от CWD** (Seen: 2) — Если задача создаёт state-файл (флаг, lock, checkpoint), привязывай путь к `db_path.parent` или `Path(__file__).parent`. CWD у cron и dev-окружения разные.
+-** — False-positive test finding — немедленный fix** (Seen: 2) (Seen: 2)
+3. **Флаг-файл run-once — путь от якоря, не от CWD** — (Seen: 2) (Seen: 2)
+4. **Off-by-one в позиционном форматировании — верифицируй на конкретном примере** — (Seen: 2) (Seen: 2)
+5. When spawning reviewer agents (Seen: 1)
+6. When entering post-deploy user review (Seen: 1)
+7. When code review identifies an error pattern (not a one-off bug) (Seen: 1)
+8. When running code/security audit in a multi-task feature (Seen: 1)
+9. When discussing architectural decisions with a non-technical user (Seen: 1)
+10. When writing smoke verification for a markdown artifact (Seen: 1)

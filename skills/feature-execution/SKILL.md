@@ -169,6 +169,7 @@ When lead spawns an agent outside the original execution plan (to fix audit find
 3. Update task frontmatter: `status: in_progress` → `status: done` (or `done_with_concerns` if teammate reported concerns — preserve the `concerns:` field from decisions.md entry into task frontmatter)
 4. Git commit: `chore: complete wave {N} — update task statuses and decisions`. Code is already committed by teammates.
 5. Update `work/{feature}/logs/checkpoint.yml`: set `last_completed_wave`, update task statuses, set `next_wave`.
+   At session boundary: explicitly commit checkpoint.yml even if no code changed in the last wave — next session must start with accurate state.
 6. **Session boundary check** (skip if session-plan.md does not exist):
    Read session-plan.md. If current wave is the **last wave of current_session**:
    a0. **Quick Learning (subagent, background).** Spawn a subagent to run [quick-learning](../quick-learning/SKILL.md). Pass it: feature path, current session number, path to decisions.md. The subagent runs in the **background** while you proceed with the session report. When it finishes, show the user its one-line summary. Do NOT read the quick-learning SKILL.md yourself — the subagent loads it independently in its own context.
@@ -234,3 +235,38 @@ When escalating:
 - [ ] All tasks executed, reviewed where applicable (max 3 iterations each), decisions.md filled
 - [ ] All waves committed (including Final Wave)
 - [ ] User reviewed and approved
+
+## Learned Patterns
+
+- When spawning reviewer agents -> spawn AFTER the teammate's diff is ready, passing the diff directly in the prompt; spawning before diff exists causes reviewers to complete before there is anything to review
+- When entering post-deploy user review -> plan 2-4 UX correction iterations as the norm; UX adjustments are not process failures
+- When code review identifies an error pattern (not a one-off bug) -> add an explicit warning to the next teammate's prompt to prevent recurrence in subsequent tasks
+- When running code/security audit in a multi-task feature -> maintain a known-issues.md that auditors read before reviewing, to avoid re-reporting already-known issues
+- When discussing architectural decisions with a non-technical user -> use the user's own language and decode each technical term, to accelerate decision-making
+- When writing smoke verification for a markdown artifact -> check structural elements (phases, links, guards present), not keywords, to confirm the artifact is complete rather than a stub
+- When writing smoke commands that check file size -> use [ $(wc -l < FILE) -lt N ] instead of awk conditions, to prevent a false-passing size guard
+- When a QA criterion requires a live call to a service unavailable in the test environment -> mark as deferred with an explicit condition, not as failed, to get a clean QA pass without blocking
+- When a non-technical user is executing server commands -> give one command at a time and wait for the result before proceeding, to prevent pasting a block into the wrong context
+- When two fix variants are both correct -> apply TRIZ-ideality: choose the variant with zero maintenance cost and lower coupling, to avoid creating tech debt while fixing
+- When an agent writes files to multiple directories before committing -> enumerate all write locations from the skill body before running git add, to avoid losing files outside the main tree
+- When writing agent files for multi-context use (inline + spawn_agent) -> use a neutral completion signal, not a back-reference to the parent step, so the artifact works in both execution environments
+- When writing grep-based smoke checks for markdown content -> verify the actual case of the target string in the file; add -i if case is unpredictable, to prevent false-negative AVP checks
+- When Edit tool returns File-has-been-unexpectedly-modified on a shared file -> switch to atomic read-modify-write via script instead of retrying Edit, to avoid accumulating partial writes
+- When two process steps are semantically linked (A must complete before B is shown) -> run A synchronously and wait for completion before executing B; background launch of A does not guarantee A completes first
+- When production behavior does not match current code -> verify timestamp of deployed file against server process start time, to avoid debugging code that is already correct
+- When executing deploy commands in a client project -> clarify server ownership and agree on deploy process BEFORE executing, to avoid unauthorized production changes
+- When asked to update a single system component -> invoke only that component in isolation through a minimal script, to avoid triggering side effects from the full pipeline
+- When pre-deploy QA is complete and the user is in local-first or sketch mode -> clarify the desired deploy environment BEFORE launching deploy wave, to avoid preparing VPS deploy for a user who is not ready for it
+- When UI demonstration is blocked by a non-working infrastructure dependency -> mock the dependency locally in the component, to unblock UX evaluation
+- When SSH key auth fails despite correct authorized_keys -> check ls -la ~ to verify home directory ownership belongs to the user, to resolve auth blocker without touching sshd_config
+- When browser shows not-loading without an error -> check server access log before diagnosing the network layer, to avoid diagnosing the wrong layer
+- When diagnosing nginx external inaccessibility -> run nginx -T | grep server_name to detect conflicting server blocks in one step
+- When a service is accessible via curl but mobile browser hangs -> clarify domain-or-IP before network diagnostics, to avoid diagnosing the wrong layer
+- When a subagent reports a blocker as the reason for an incomplete task -> run the same command independently before accepting the agent's diagnosis as fact
+- When a subagent completes a task -> explicitly update status: done in the task file frontmatter to avoid accumulating planned tasks that require manual batch updates
+- When user asks to change a schedule from-tomorrow and a run is imminent -> check the next scheduled run time and apply the change AFTER it, to preserve the planned run
+- When QA wave includes integration/E2E tests requiring a DB -> verify DB connection with a single ping query BEFORE launching test suites, to avoid wasting the QA wave on an infrastructure blocker
+- When an ad-hoc fix task is needed but agent spawning tools are unavailable -> perform inline review by the lead using the reviewer checklist instead of skipping review
+- When a metric shows a logically impossible value (A < B where A should be >= B) -> establish the semantic definition of each metric BEFORE tracing code, to find the structural bug instead of masking the symptom
+- When a DB field contains a value in the wrong format -> find ALL write paths to that field including legacy code and schema defaults before creating cleanup scripts
+- When formulating residual problems in the session-end prompt -> verify each problem against what the user sees in UI/output, not against internal code state, to avoid directing the next session at a misidentified problem

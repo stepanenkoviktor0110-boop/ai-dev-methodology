@@ -191,3 +191,17 @@ If understanding changes significantly during interview:
 ## Promoted Patterns
 
 - **Генерируй все шаги deliverable целиком** (Seen: 3): Когда deliverable состоит из нескольких шагов (серия промптов, roadmap, план сессий, деплой-инструкция) — генерировать ВСЕ шаги сразу. Частичный deliverable заставляет пользователя ловить недостающие части и запрашивать доработку.
+
+## Learned Patterns
+
+- When writing client-facing documentation on behalf of the user -> filter every paragraph through the reader's knowledge model to avoid iterative corrections
+- When user spec grows to 3+ sequentially-dependent deliverables -> keep the first active, create the rest as planned stubs with visible progress and preserved post-feature context
+- When the repo contains skills/modules from multiple domains -> enumerate all domains and get is_in_scope per domain before writing spec, to avoid rewriting scope from iterative boundary clarification
+- When user-spec has a descriptive block with a requirement not reflected in AC -> follow only the AC; document the gap with a decision record and update user-spec
+- When user adds a non-trivial feature mid-interview -> ask a scope-impact question before updating the spec, to prevent expanding v1 to an architecture of a different complexity level
+- When user-spec describes delete/cleanup in a system with pipeline statuses -> restrict deletion to terminal statuses (enriched/done), not field values, to avoid deleting records still in processing
+- When a new role appears mid-interview -> immediately build a role x capabilities matrix and validate with the user, to avoid 3+ batches clarifying role intersections
+- When user describes several interrelated features to implement -> explicitly clarify implementation order BEFORE initializing the first feature folder
+- When a client sends amendments to an approved user-spec -> run a focused mini-interview on changed points only and update spec directly, to avoid restarting the full interview cycle
+- When clarifying UI element placement during a spec interview -> choose a standard UX pattern without asking, to avoid blocking the interview on details the user does not formulate
+- When updating user-spec for an already-implemented feature -> launch code-researcher to diff new requirements against existing code, to avoid creating tasks for already-implemented functionality

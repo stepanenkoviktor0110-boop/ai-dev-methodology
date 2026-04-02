@@ -1,10 +1,12 @@
 # Quick Reference — User Spec Planning
 
-Top patterns relevant to user-spec-planning. Max 10 entries, sorted by Seen (highest first).
-
-<!-- Auto-generated from reasoning-patterns.md. Regenerated on each write/promotion by quick-learning. -->
-
-1. **Генерируй все шаги deliverable целиком, не только ближайший** (Seen: 2) — Когда deliverable состоит из нескольких шагов — генерировать ВСЕ шаги сразу, даже если пользователь явно просил только следующий.
-2. **Post-deploy UX-правки — это норма** (Seen: 1) — При post-deploy verification — планировать 2-4 итерации UX-правок. Пользователь видит реальный UI впервые и уточняет требования.
-3. **AC через артефакты, не через поведение** (Seen: 1) — При написании AC для markdown-only фич формулировать критерии через наличие конкретных артефактов: "файл X содержит Y".
-4. **Согласуй структуру выходного артефакта до реализации** (Seen: 1) — Когда фича генерирует выходной артефакт для заказчика — показать пример на 2-3 строках и получить подтверждение структуры ДО реализации.
+1. **Генерируй все шаги deliverable целиком** — (Seen: 3) (Seen: 3)
+2. When writing client-facing documentation on behalf of the user (Seen: 1)
+3. When user spec grows to 3+ sequentially-dependent deliverables (Seen: 1)
+4. When the repo contains skills/modules from multiple domains (Seen: 1)
+5. When user-spec has a descriptive block with a requirement not reflected in AC -> (Seen: 1)
+6. When user adds a non-trivial feature mid-interview (Seen: 1)
+7. When user-spec describes delete/cleanup in a system with pipeline statuses -> re (Seen: 1)
+8. When a new role appears mid-interview (Seen: 1)
+9. When user describes several interrelated features to implement (Seen: 1)
+10. When a client sends amendments to an approved user-spec (Seen: 1)

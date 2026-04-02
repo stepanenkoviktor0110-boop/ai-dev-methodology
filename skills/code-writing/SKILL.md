@@ -137,6 +137,7 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
    **Check 3 — Missing cache/dedup on rate-limited API calls:**
    Check external API calls that may be rate-limited for cache or dedup logic.
    If repeated calls to the same endpoint without caching → add caching or dedup.
+   If using a paid API with quota limits and data that can overlap between runs → cache processed records in DB with explicit skip-known logic across runs (not just per-session dedup), to avoid spending quota on already-processed data.
 
    **Fix-and-reinforce:** if any violation is found, fix the code before proceeding.
    After fixing, check whether the violation matches a trigger in
@@ -200,3 +201,28 @@ Verify each item before marking complete. If any item fails, return to the relev
 
 - **Маскируй секреты ДО выполнения команды** (Seen: 2): при любом чтении конфигов удалённой машины — встраивать маскировку в команду (`sed 's/:[^@]*@/:***@/'`) или проверять наличие переменной через `grep -c`. Никогда не выводить `.env` целиком.
 - **Assertions на output-формат, не на input-атрибуты** (Seen: 2): перед написанием assertions прочитать реальный пример вывода функции. Для format-conversion функций (JSON→MD, dict→текст) assertions должны соответствовать output-формату — иначе тест проверяет input surface и не ловит баги конвертации.
+
+## Learned Patterns
+
+- When wrapping API calls with a generic retry decorator -> explicitly exclude non-retryable exceptions (auth errors, validation failures) to avoid retrying errors that will always recur
+- When unit tests use mocks for external processes/APIs -> run at minimum 1 live smoke run before declaring QA passed, to prevent false all-tests-pass when mock diverges from reality
+- When using a retry decorator with a rate-limited API -> verify whether failed requests count toward the quota before enabling retry, to avoid burning quota on pointless retries
+- When generating config files with enum fields or nested configs -> verify all allowed values from the official schema/docs including nested objects to avoid invalid-but-plausible values
+- When writing deploy scripts that create named resources -> clean up by identity (name/ID), not through management tool, to prevent failure from orphaned resources
+- When TDD Anchor describes a test for a private class method -> invoke through an object instance, not through direct import, so tests do not fail with ImportError before running real logic
+- When calling clear/reset on an external service before writing new data -> explicitly reset ALL state layers (content + formatting + cache) to prevent previous state from surfacing after cleanup
+- When CSS position:fixed fails on a React component with inline style display:none -> use JS isMobile state + resize listener mirroring existing components, not CSS overrides
+- When connecting an external library adapter to a DB -> verify the expected object type (raw driver vs query builder) in docs BEFORE writing init code, to avoid runtime adapter incompatibility on first query
+- When writing a GitHub Actions SSH deploy step that reloads a service -> remove sudo from the reload command and add StrictHostKeyChecking=no in the SSH command, to prevent permission denied on first CI deploy
+- When parallel tests write to a shared test DB through a single seed user -> use different email constants per test task to avoid teardown race conditions during parallel execution
+- When JS state exists only to toggle CSS values by viewport -> replace state+listener with CSS media queries + className to eliminate re-renders and make layout CSS-controlled
+- When writing integration tests with a shared pg connection pool singleton -> declare globalTeardown in vitest.config calling pool.end() once, to prevent hanging test process or pool-ended errors across suites
+- When writing E2E tests for async UI operations (upload, submit, save) -> replace waitForTimeout(N) with assertion on a specific data-testid element to avoid flaky tests
+- When implementing an HTTP server with API key auth -> include timing-safe comparison and explicit body size limit in the initial implementation, to avoid a predictable security review round
+- When a helper function accepts a value from an external source (API response, env var, user input) -> manually check edge cases (null, undefined, empty string, 0) before first review
+- When task has numeric thresholds in code -> extract magic numbers to named constants before first review, to avoid a predictable hardcoded-value review finding
+- When a library config option is silently ignored in a new major version -> check option behavior in config-file vs CLI through changelog/issues for the current version BEFORE writing config
+- When an integration test checks duplicate/error flow in an auth library -> verify through DB side effect, not HTTP status, to avoid false-negative when library returns 200 with a resend flow
+- When E2E global-setup requires a seeded verified user -> use direct INSERT with hashPassword instead of sign-up API + SQL UPDATE, to remove seed phase dependency on a running server
+- When adding a new parameter to an existing API request -> check nullable response fields with the new parameter on real data, to prevent TypeError in production
+- When executing a non-trivial Python script on a remote server via SSH -> write to a local file, upload via SFTP, execute with python3 -u, to avoid escaping errors and output buffering
