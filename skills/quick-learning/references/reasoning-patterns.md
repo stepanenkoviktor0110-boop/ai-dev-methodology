@@ -346,10 +346,10 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-04-01 employee-cabinet / session 1: Проверять overlap файлов внутри волны перед финализацией tech-spec
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Triad:** завершение секции Implementation Tasks в tech-spec → проверить "Files to modify" каждой задачи на пересечение внутри одной волны → предотвратить merge-конфликт при параллельном выполнении
-**Context:** Tasks 7 и 8 в Wave 3 оба изменяли `cabinet/timesheet/page.tsx`. При параллельном выполнении — гарантированный конфликт. Поймал только template-validator.
+**Context:** Tasks 7 и 8 в Wave 3 оба изменяли `cabinet/timesheet/page.tsx`. При параллельном выполнении — гарантированный конфликт. Поймал только template-validator. (Seen 2: panel-next-run — Tasks 3/4/5 все меняли `index.html`, поймал template-validator.)
 **Pattern:** После написания всех задач в волне — прогнать мысленный (или grep-based) check: нет ли двух задач в одной волне с совпадающим файлом в "Files to modify". Если есть — объединить задачи или разнести по волнам.
 **Scope:** universal
 **Category:** sequencing
@@ -1366,11 +1366,11 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 
 ### 2026-04-02 moneymaker / session 2 (tech-spec): Решение, сужающее утверждённый AC — проверить до написания
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
-**Triad:** tech-spec decision сужает или откладывает требование из user-spec → перед написанием Decision проверить наличие этого требования в AC user-spec → не вводить scope reduction без явного согласования с пользователем
-**Context:** Tech-spec Decision 6 отложил "free-form rate update" в Phase 2, мотивируя тем что это "не в AC". Completeness-validator вернул CRITICAL: AC в user-spec явно есть ("Изменение тарифа в чате показывает подтверждение"). Пришлось переделывать decision и обсуждать с пользователем.
-**Pattern:** Перед написанием Decision, который сужает или откладывает часть функционала — прочитать раздел AC user-spec и убедиться что этот функционал там не перечислен. Если перечислен — либо реализовать, либо явно согласовать исключение с пользователем до фиксации в спеке.
+**Triad:** tech-spec decision сужает или откладывает требование из user-spec → перед написанием Decision проверить наличие этого требования в AC и таблице проверки user-spec → не вводить scope reduction без явного согласования с пользователем
+**Context:** Tech-spec Decision 6 отложил "free-form rate update" в Phase 2, мотивируя тем что это "не в AC". Completeness-validator вернул CRITICAL: AC явно есть. (Seen 2: panel-next-run — Decision 4 изменил код ответа batch с 409 на 200+skipped; таблица проверки в user-spec указывала 409. Поймал skeptic.)
+**Pattern:** Перед написанием Decision, который меняет поведение или сужает функционал — проверить ОБА раздела user-spec: AC и таблицу проверки («Как проверить»). Таблица содержит конкретные HTTP-коды и curl-команды — это требования, не просто примеры. Если требование там есть — реализовать или явно согласовать изменение с пользователем.
 **Scope:** universal
 **Category:** scope-management
 
@@ -1735,3 +1735,24 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Когда задача меняет сигнатуру функции (добавляет/убирает обязательный параметр) — явно включить новую сигнатуру в промт КАЖДОЙ downstream-задачи, которая эту функцию вызывает. Изолированные unit-тесты этот gap не ловят.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-03 panel-next-run / session 1: разделение UI-области скрывает замену, а не добавление
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** пользователь описывает "разделить экран/область на X и Y" → уточнить явно выживают ли существующие interaction-элементы (чекбоксы, кнопки) в новой раскладке → не принять additive-изменение за replacement и не переписывать spec после уточнения
+**Context:** Запрос "разделить панель судов на 2 секции" был интерпретирован как additive (добавить правую панель, оставить чекбоксы). Уточняющий вопрос о ручном запуске вскрыл противоположное: чекбоксы убираются полностью, суды перемещаются между панелями через +/−.
+**Pattern:** Когда пользователь говорит "разделить [UI-область] на части" — задать явный вопрос: "существующие элементы взаимодействия выживают или заменяются?". Слово "разделить" чаще означает реорганизацию, а не добавление.
+**Scope:** situational
+**Situation:** интервью для фичи, затрагивающей существующую интерактивную UI-область
+**Category:** information-gathering
+
+### 2026-04-03 panel-next-run / session 1: instant-save операции требуют явных rollback AC
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** user-spec описывает instant-save (каждый клик немедленно пишет в DB/сервер) → явно добавить AC для ошибки сети и визуального rollback до валидации → не получить critical missing negative scenarios в round 1
+**Context:** Spec для panel-next-run описывал instant-save через +/− кнопки без секции обработки ошибок. Quality validator нашёл это как critical в round 1. Паттерн: instant-save без rollback — систематически пропускаемый happy-path bias.
+**Pattern:** Для любой instant-save операции (клик → запись в DB без подтверждающей кнопки) сразу добавить в spec: секцию "Обработка ошибок" с rollback-поведением и AC для негативного сценария. Validator найдёт их как critical в любом случае.
+**Scope:** universal
+**Category:** scope-management
