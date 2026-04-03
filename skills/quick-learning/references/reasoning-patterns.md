@@ -1656,7 +1656,7 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 
 ### 2026-04-03 management-panel / session 1: CRUD-форма для single-entity не покрывает multi-entity action workflow
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Triad:** spec описывает CRUD-форму для одной сущности → задать вопрос "один или группа?" до реализации → не переписывать готовый UI из-за fundamental UX-mismatch
 **Context:** Task 4 — Flask panel реализован как per-court settings sidebar (один суд = одна форма). После завершения полностью переписан на two-column layout с multi-court selection, потому что реальный use case — "запустить несколько судов с одними настройками" — требует bulk-action UI, а не CRUD.
@@ -1686,7 +1686,7 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 
 ### 2026-04-03 management-panel / session 2: finally-блок требует BaseException в тесте
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Triad:** написание теста для finally-блока с `except Exception` → использовать BaseException (KeyboardInterrupt) как trigger в тесте → гарантировать что finally реально выполняется при любом исходе
 **Context:** Task 5 (APScheduler) прошёл 3 раунда ревью: test-reviewer дважды дал `needs_changes` — сначала за repr-assert вместо assert_called_once_with, затем за отсутствие BaseException-литмуса. `except Exception` не ловит `KeyboardInterrupt` — finally без BaseException-теста остаётся непроверенным.
@@ -1696,7 +1696,7 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 
 ### 2026-04-03 management-panel / session 2: дорогостоящий init объекта — выносить за цикл явно в spec
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Triad:** скрипт с дорогостоящей инициализацией (OAuth, DB connection) создаёт объект внутри цикла → вынести создание объекта за пределы цикла и указать это явно в spec/What-to-do → предотвратить дублирование auth flow и N лишних round-trips
 **Context:** Task 7 (Drive migration) получил critical finding: `SheetsClient` создавался внутри цикла в `main()`, дублируя OAuth-поток для каждого суда. Исправлено в review round 1 — SheetsClient создаётся один раз и передаётся параметром. TDD Anchors не покрыли этот сценарий.
