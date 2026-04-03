@@ -1756,3 +1756,14 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Для любой instant-save операции (клик → запись в DB без подтверждающей кнопки) сразу добавить в spec: секцию "Обработка ошибок" с rollback-поведением и AC для негативного сценария. Validator найдёт их как critical в любом случае.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-04-03 panel-next-run / session 1: проверять data-flow при параллельной генерации задач
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** tech-spec группирует задачи в одну волну / task B потребляет output task A той же волны → при валидации проверить: wave(B) > wave(A) для каждой пары (A→output, B→consumer) → избежать каскадного переноса волн в fix-раунде
+**Context:** Tech-spec поставил Tasks 1 и 2 в Wave 1; task-creators скопировали это буквально. Task 2 использует `set_court_active` из Task 1 — конфликт обнаружен только в validation round 1. Исправление потребовало каскадного переноса ВСЕХ последующих волн (1→2 cascade: Tasks 3→3, 4→4... 11→9).
+**Pattern:** После параллельной генерации задач, до draft-commit, проверить граф data-flow: для каждого упоминания функции/класса из Task A в коде Task B — убедиться, что wave(B) > wave(A) и A ∈ depends_on(B). Tech-spec может группировать задачи по смыслу, игнорируя порядок выполнения.
+**Scope:** situational
+**Situation:** task-decomposition — параллельная генерация задач из tech-spec
+**Category:** sequencing
