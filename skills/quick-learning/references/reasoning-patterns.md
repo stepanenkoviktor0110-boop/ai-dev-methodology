@@ -1703,3 +1703,34 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Для скриптов с дорогостоящей инициализацией (OAuth, DB, сетевые сессии) явно указывать в spec/What-to-do: "создать объект один раз перед циклом, передавать параметром". Иначе агент-разработчик создаёт объект там где он нужен — логично локально, но критично по стоимости.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-03 management-panel / session 3: out-of-plan изменение файла создаёт audit gap
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** файл изменён вне task-плана фичи (hotfix, дополнение вне scope) → явно добавить файл в file lists следующей audit wave → предотвратить ship неаудированного кода
+**Context:** `src/parser/client.py` получил ReadTimeout-изменения вне плана management-panel. Файл не попал ни в один audit task file list. Gap обнаружен только в session 3 при сверке session-prompt с выполненными задачами — потребовал ad-hoc ревью.
+**Pattern:** Когда файл изменяется вне плана текущей фичи — немедленно добавить его в file lists audit wave (или создать ad-hoc audit entry). Audit agents читают именно file lists из task.md; файлы не в списке — не проверяются, независимо от реальных изменений в коде.
+**Scope:** situational
+**Situation:** feature с audit wave, где файлы задаются явным списком в task.md
+**Category:** scope-management
+
+### 2026-04-03 management-panel / session 3: production-дефолт из spec без верификации с пользователем
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** tech-spec или task содержит production-дефолт (время запуска, порт, лимит) → явно верифицировать значение с пользователем на этапе spec/task → избежать поздней коррекции, каскадирующей на несколько файлов
+**Context:** `run_time_msk` дефолт был "10:00" с task 2. Обнаружен как неверный только в session 3 при обсуждении cron. Исправление прошло через 3 файла: DDL, save_court_settings(), тест. Пользователь подтвердил "05:30 MSK" — очевидная информация, которую можно было получить в начале.
+**Pattern:** Production-дефолты (время, порт, лимит запросов, retention) — не технические решения, а бизнес-данные. Фиксировать явно в spec как вопрос к пользователю, не заполнять placeholder-значением. Поздняя коррекция дефолта в реляционной схеме каскадирует: DDL + код + тесты.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-03 management-panel / session 2-3: Сигнатура функции изменилась в одной задаче — вызывающий код в другой задаче не обновлён
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** задача меняет обязательный параметр публичной функции → в промте downstream-задачи явно указать новую сигнатуру → не допустить silent TypeError в рантайме из-за cross-task wiring gap
+**Context:** Task 3 добавила `court_name: str` как обязательный параметр `write_status_tab()`. Task 6 обновила прямые вызовы, но вызов в `main.py` остался без параметра — TypeError обнаружен только в Task 9 (code audit), после того как функция прошла 2 волны ревью.
+**Pattern:** Когда задача меняет сигнатуру функции (добавляет/убирает обязательный параметр) — явно включить новую сигнатуру в промт КАЖДОЙ downstream-задачи, которая эту функцию вызывает. Изолированные unit-тесты этот gap не ловят.
+**Scope:** universal
+**Category:** sequencing
