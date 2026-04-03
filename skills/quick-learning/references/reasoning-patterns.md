@@ -1417,6 +1417,7 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** sequencing
 
+
 ### 2026-04-02 employee-cabinet / session certificates-ux: Уточнять ожидание перед диагностикой UI-feedback
 
 **Seen:** 1
