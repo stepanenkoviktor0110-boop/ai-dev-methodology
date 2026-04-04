@@ -1757,6 +1757,16 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** scope-management
 
+### 2026-04-04 juridical-parser / ops: молчаливый сбой экспорта — успех pipeline ≠ успех доставки
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** pipeline завершается успешно (парсинг, обогащение) но внешний экспорт падает с auth-ошибкой → добавить отдельный алерт на N подряд `exported=0` независимо от типа ошибки → обнаружить молчаливый сбой до жалобы пользователя
+**Context:** Google OAuth токен истёк/отозван. Парсер 2 дня сохранял данные в SQLite с `Pipeline complete: N saved, 0 exported, 1 errors` — без алерта. Клиент не видел данных в Sheets, но парсер формально "работал".
+**Pattern:** Когда pipeline сохраняет данные локально и экспортирует во внешний сервис — мониторить не только успех pipeline, но и `exported > 0` как отдельную метрику. Auth-ошибки внешних сервисов (OAuth, API key) молчаливы: код 0, данные целы, но доставка не произошла. Добавить алерт при N≥2 подряд экспортах с `exported=0`.
+**Scope:** universal
+**Category:** recovery
+
 ### 2026-04-03 panel-next-run / session 1: проверять data-flow при параллельной генерации задач
 
 **Seen:** 1
@@ -1767,3 +1777,45 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** task-decomposition — параллельная генерация задач из tech-spec
 **Category:** sequencing
+
+### 2026-04-04 juridical-parser / ops: SCP заблокирован — файл передаётся через SSH pipe
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** SCP даёт Connection closed, SSH-команды проходят → использовать `cat file | ssh host "cat > /remote/path"` → загрузить файл без смены порта или auth
+**Context:** На сервере заказчика SCP стабильно давал Connection closed из-за MaxStartups/конфига, тогда как `ssh host "echo ok"` и команды через SSH работали. SSH pipe (`cat | ssh "cat >"`) прошёл с первой попытки.
+**Pattern:** Когда SCP заблокирован, а SSH работает — передавать файл через stdin: `cat file | ssh host "cat > /remote/path"`. SCP и SSH используют один порт и auth, но сервер может отклонять SCP-subsystem отдельно. Stdin-pipe обходит этот ограничитель.
+**Scope:** situational
+**Situation:** удалённый сервер отклоняет SCP но принимает SSH-команды
+**Category:** recovery
+
+### 2026-04-04 juridical-parser / ops: restart сервиса не освобождает connection slots — нужно убивать зависшие процессы
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** systemctl restart ssh выполнен, но Connection closed продолжается → убить зависшие клиентские процессы (`pkill -f "sshd: user@"`) до или после restart → реально освободить MaxStartups-слоты
+**Context:** После инцидента с параллельными SSH-командами (~8 зависших grep-процессов), `systemctl restart ssh` не помог — зависшие sshd-процессы пережили restart и продолжали занимать слоты. Только явное убийство процессов освобождает соединения.
+**Pattern:** Когда сервис перезапущен но лимит соединений не снялся — сервис-рестарт не завершает уже установленные клиентские сессии. Нужно явно убить зависшие процессы: `pkill -f "sshd: username@"` для SSH, аналогично для других сервисов с per-connection процессами.
+**Scope:** universal
+**Category:** recovery
+
+### 2026-04-04 panel-next-run / session 1: Visible disabled stubs trigger reactive scope decisions during user verification
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** UI-задача добавляет visible disabled-кнопки как placeholder для будущей задачи → не добавлять видимые disabled placeholders если будущая задача ещё не подтверждена → предотвратить неожиданную отмену фичи из user verification
+**Context:** Task 3 добавила disabled-заглушки "+ группу" / "− группу" в header каждой ФО-группы (с title "Будет реализовано в Task 5"). При user verification пользователь увидел кнопки, решил что групповой перенос не нужен — Task 5 была отменена.
+**Pattern:** Disabled UI placeholders для будущих задач отображают пользователю ещё не согласованный UX — он оценивает фичу раньше чем она была явно подтверждена. Если будущая задача в плане, но явно не согласована с пользователем — либо не добавлять visible стабы, либо убирать их перед user verification. HTML-комментарии безопасны; disabled DOM-элементы — нет.
+**Scope:** situational
+**Situation:** UI-задача в multi-task фиче создаёт placeholder-элементы для следующих задач
+**Category:** scope-management
+
+### 2026-04-04 panel-next-run / session 1: Optimistic UI fetch chains need .catch() to restore mutated state
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** JS-функция устанавливает button.disabled = true в начале fetch-цепочки (оптимистичный UI) → добавить .catch() на каждую fetch-цепочку которая мутирует UI state → предотвратить permanently disabled controls при сетевой ошибке
+**Context:** Task 3: btnRun, btnSchedule и polling-fetch все устанавливали button.disabled=true до запроса. Без .catch() любая сетевая ошибка (timeout, CORS, offline) оставляла кнопки заблокированными навсегда — .then() обрабатывал HTTP-ошибки, но не network rejection.
+**Pattern:** В оптимистичном UI: если fetch-цепочка мутирует UI-состояние в начале (disabled, spinner, state = 'loading') — добавить .catch() который восстанавливает состояние и показывает ошибку. Обработка HTTP-ошибок в .then() не защищает от network rejection. Правило: каждая fetch-цепочка с side-effectами должна иметь .catch().
+**Scope:** universal
+**Category:** problem-decomposition
