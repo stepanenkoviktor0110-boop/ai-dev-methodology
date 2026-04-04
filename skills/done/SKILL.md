@@ -31,15 +31,16 @@ If `decisions.md` is missing or sparse, use `git log --oneline` for feature-rela
 
 **Completeness check:** If the feature looks incomplete (tasks not marked done in tech-spec, missing implementation, failing tests) — warn the user: "Feature appears incomplete: {reason}. Continue with finalization anyway?"
 
-## Step 4: Retrospective
+## Step 4: Quick Learning
 
-Run retrospective skill to extract lessons learned from the feature process:
+Run quick-learning to extract any remaining lessons from the feature:
 
-1. Use Skill tool: `retrospective`
-2. Pass feature path to the skill
-3. Wait for completion — lessons will be written to `~/.claude/skills/quick-learning/references/reasoning-patterns.md`
+Check Signal Gate on `work/{feature}/decisions.md`:
+- Fix rounds, scope change, recovery events, context waste signals
+- If all signals = 0 → "Clean session, no new patterns."
+- If signals present → analyze and write triads per quick-learning/SKILL.md procedure
 
-Note: `/done` runs retrospective (WHAT went wrong), not quick-learning (HOW decisions were made). Quick-learning runs at session breaks during feature execution — it has already been called by that point.
+Output goes to `quick-learning/references/reasoning-patterns.md`.
 
 ## Step 5: Update Project Knowledge
 
@@ -74,7 +75,7 @@ Move `work/{feature}/` → `work/completed/{feature}/` (create `work/completed/`
 - [ ] Documentation-writing skill loaded
 - [ ] Feature artifacts read and understood
 - [ ] Completeness assessed (user warned if incomplete)
-- [ ] Retrospective completed (lessons extracted)
+- [ ] Quick-learning completed (lessons extracted or clean session confirmed)
 - [ ] PK files updated (only affected ones)
 - [ ] Feature archived to work/completed/
 - [ ] Changes committed

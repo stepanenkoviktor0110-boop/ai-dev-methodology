@@ -203,7 +203,7 @@ All waves done including Final Wave (QA, deploy if applicable, post-deploy verif
 2. Describe what to check manually (from execution plan "user checks" section)
 3. Issues found → fix → review → commit (max 3 rounds). If unresolved → escalate (see Escalation).
 4. All ok → finalize, shutdown team, delete `work/{feature}/logs/checkpoint.yml`
-5. Prompt user: "Фича завершена. Запусти `/done` для архивации и обновления документации, затем `/retrospective` для фиксации уроков сессии."
+5. Prompt user: "Фича завершена. Запусти `/done` для архивации и обновления документации."
 
 ## Escalation
 
@@ -240,7 +240,7 @@ When escalating:
 ## Learned Patterns
 
 Full pattern history: [references/learned-patterns.md](references/learned-patterns.md)
-Load only for audit wave and retrospective — not during feature execution.
+Load only for audit wave — not during feature execution.
 
 - When деплой нового backend-сервиса на VPS → запустить `ss -tlnp` до первого старта, to не получить EADDRINUSE от неожиданного конкурента на том же порту.
 - When Claude Code выполняет SSH-команды на VPS → сначала попросить пользователя подтвердить SSH вручную → только потом пробовать из Claude Code; при блокировке — переключить VPN для немедленного восстановления доступа, to не спровоцировать fail2ban IP-блокировку серией неудачных попыток.
