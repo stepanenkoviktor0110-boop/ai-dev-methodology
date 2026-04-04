@@ -1647,3 +1647,14 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** Проект с project-knowledge директорией; сессия изменила архитектуру, роли или бизнес-правила
 **Category:** sequencing
+
+### 2026-04-04 admin-panel / session 1: аудировать реализации существующих API при spec для скетча
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** spec для завершения скетча → в phase code-scanning прочитать реализации всех существующих API (role checks, filtering) → включить баги как explicit AC fix-требования
+**Context:** При написании user-spec для завершения скетча admin-panel — валидаторы нашли два бага в существующем API-коде (role check в /api/export блокирует superadmin; /api/admin/employees фильтрует только на клиенте). Баги были видны в коде на фазе исследования, но не попали в AC как явные требования.
+**Pattern:** Когда user-spec описывает завершение скетча/стаба с реальными API-маршрутами — в фазе code scanning явно проверить role checks и data filtering в каждом существующем route handler. Найденные баги включить в AC как "X возвращает Y для роли Z" (не только happy path).
+**Scope:** situational
+**Situation:** User-spec для фичи типа "довести скетч до prod-состояния"; существующие API-маршруты написаны быстро и могут содержать упрощения (только admin вместо admin|superadmin, клиентская фильтрация вместо серверной).
+**Category:** information-gathering
