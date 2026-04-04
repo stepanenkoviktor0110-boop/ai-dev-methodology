@@ -107,7 +107,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 93 | сервис доступен через curl, мобильный браузер зависает | уточнить "домен или IP" до диагностики | не тратить время на network-диагностику | situational | 1 | Situational | feature-execution |
 | 94 | GitHub Actions SSH step выполняет `sudo service-name reload` от deploy-пользователя | убрать sudo из reload-команды, добавить StrictHostKeyChecking=no в SSH-команду | не получать permission denied на первом CI деплое | universal | 1 | Universal | code-writing |
 | 95 | запрос «проверь соответствие первоисточнику» | сначала fetch источника, потом правки | не изобретать данные | universal | 1 | Universal | — |
-| 96 | структурное изменение одного элемента из sibling-группы | применить симметрично всем братьям | консистентный UI | universal | 1 | Universal | — |
+| 96 | изменение/фикс одного элемента из sibling-группы (UI, DB-запрос, route-guard) | явно проверить/применить к каждому брату | не оставить соседей в рассинхронизированном состоянии | universal | 2 | Universal | — |
 | 95 | PROMOTED → task-decomposition | wave ordering: последовательные задачи внутри одной "названной волны" | — | — | 3 | — | task-decomposition |
 | 106 | Task B тестирует функции из файла Task A | добавить сигнатуры функций в What to do Task A, не только в TDD Anchor Task B | гарантировать ownership экспортов — ни одна функция без явного владельца | universal | 1 | Universal | task-decomposition |
 | 107 | нужно получить конфигурацию у провайдера (DNS, настройки) | сначала спросить клиента — есть ли доступ к панели управления провайдера | избежать ожидания support-ответа если клиент может получить данные сам | situational | 1 | Situational | tech-spec-planning |
