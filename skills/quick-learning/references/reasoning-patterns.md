@@ -11,7 +11,7 @@ Single transit buffer for ALL methodology knowledge — both reasoning patterns 
 
 Patterns that apply to any project, any stack, any domain.
 
-<!-- Append universal patterns below -->
+<!-- Append universal patterns below -->
 
 ### 2026-04-04 juridical-parser / deploy: SSH fail2ban — фоновая задача + новое соединение = бан
 
@@ -1658,3 +1658,13 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** User-spec для фичи типа "довести скетч до prod-состояния"; существующие API-маршруты написаны быстро и могут содержать упрощения (только admin вместо admin|superadmin, клиентская фильтрация вместо серверной).
 **Category:** information-gathering
+
+### 2026-04-04 ql-context-waste / session 2: Повторное чтение неизменного файла — читать один раз в начале
+
+**Seen:** 2
+**Adapted:** —
+**Triad:** задача требует повторного чтения одного файла на нескольких шагах, файл не менялся между шагами → прочитать файл один раз в начале, кэшировать нужные данные локально, не читать повторно → не расходовать токены контекстного окна на повторное чтение неизменного файла
+**Context:** QA-проверка сигнала context waste — агент читал reasoning-patterns.md в каждом из 3 шагов, хотя файл не менялся; однократного чтения в начале было достаточно.
+**Pattern:** Если задача включает несколько шагов с обращением к одному файлу — прочитать его один раз в начале, извлечь нужные данные, на следующих шагах использовать уже прочитанное. Повторное чтение неизменного файла увеличивает расход контекста без информационного выигрыша.
+**Scope:** universal
+**Category:** tool-selection
