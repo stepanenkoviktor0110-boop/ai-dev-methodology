@@ -11,7 +11,33 @@ Single transit buffer for ALL methodology knowledge — both reasoning patterns 
 
 Patterns that apply to any project, any stack, any domain.
 
-<!-- Append universal patterns below -->
+<!-- Append universal patterns below -->
+
+### 2026-04-04 juridical-parser / deploy: SSH fail2ban — фоновая задача + новое соединение = бан
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** деплой на сервер с fail2ban → выполнить все SSH-операции в ОДНОМ сеансе (base64-файлы + команды через &&) → не запускать background SSH задачи пока открыт деплой-цикл
+**Context:** Deploy — запущена background SSH задача "проверить статус", следом deploy.sh. Два параллельных соединения = бан IP. После смены IP повторилось: tar-upload (сеанс 1) + отдельный ssh для restart (сеанс 2) = снова бан. Итого: 2 смены VPN у пользователя, 20 минут потери.
+**Pattern:** Перед деплоем убедиться в отсутствии открытых background SSH задач. Файлы + команды — в ONE сеанс: `echo $B64 | ssh host "base64 -d > file && pip install -e . && systemctl restart svc"`. Никогда не чередовать несколько отдельных ssh-вызовов подряд на серверы с fail2ban.
+**Scope:** situational
+**Situation:** деплой на VPS с агрессивным fail2ban (серверы клиентов)
+
+---
+
+### 2026-04-04 juridical-parser / deploy: Targeted update вместо full deploy при обновлении кода
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** обновление кода на сервере где проект уже развёрнут → проверить наличие сервиса/venv → загрузить только изменённый src/ + restart, не запускать полный deploy.sh с apt-get/pip с нуля
+**Context:** deploy.sh делал apt-get update + python install + полный pip install при каждом деплое. Проект уже был на сервере с работающим venv. Полный деплой создавал лишние соединения и занял бы 5+ минут.
+**Pattern:** Начало деплой-сессии: одной ssh-командой проверить `ls /opt/project/venv && systemctl is-active service`. Если сервис есть — tar+ssh для src/, base64 для изменённых файлов конфига, одна команда pip+restart. Полный deploy.sh — только для первого деплоя или пересоздания сервера.
+**Scope:** universal
+**Category:** sequencing
+
+---
+
+
 
 ### 2026-04-01 employee-cabinet / session 1: Поведение конфиг-опций в новой major-версии библиотеки
 
