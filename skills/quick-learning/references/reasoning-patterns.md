@@ -1898,3 +1898,13 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** React компонент с несколькими режимами/вкладками где каждый режим получает данные разного типа через useEffect и async fetch.
 **Category:** sequencing
+
+### 2026-04-05 fix-xlsx-export-headers / session 1: чувствительность данных определяет reviewers, а не сложность изменения
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** задача изменяет API-роут экспортирующий PII-поля → включить security-auditor в reviewers независимо от сложности изменения → не упустить security-покрытие из-за кажущейся тривиальности фикса
+**Context:** В tech-spec для S-размерного фикса XLSX-заголовков задачи 1 и 2 были написаны только с code-reviewer. Валидатор поймал: оба роута экспортируют ПДн (телефоны, группа крови, экстренные контакты) — security-auditor обязателен.
+**Pattern:** При написании reviewers для задачи смотреть на чувствительность данных, которые роут обрабатывает, а не на сложность изменения. Если роут касается PII/sensitive данных — security-auditor в reviewers обязателен вне зависимости от того, насколько изменение кажется «простым».
+**Scope:** universal
+**Category:** sequencing
