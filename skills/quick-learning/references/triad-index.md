@@ -203,3 +203,5 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 173 | несколько git репо в одной bash сессии | всегда указывать `git -C /path/repo` вместо надежды на рабочую директорию | избежать silent failures от команд из неправильного репо | universal | 1 | Universal | — |
 | 174 | синхронизация набора файлов или папок | после синхронизации проверить все index-файлы (README, MEMORY.md, CLAUDE.md) | не оставить устаревший индекс с неверным составом | universal | 1 | Universal | — |
 | 175 | confirm-кнопка в destructive-action flow делает async-запрос | добавить disabled+loading state на confirm до первого review | не тратить fix-раунд на предсказуемый UX concurrency guard | universal | 1 | Universal | — |
+| 176 | клиент просит визуальное демо без конкретных референсов | запросить 1-2 сайта-референса + "что раздражает в текущем" ДО начала вёрстки | сократить итерации с 3+ до 1-2 | situational | 1 | Situational | — |
+| 177 | нужно изучить внешнее репо (GitHub) или прочитать >5 файлов подряд в главной сессии | делегировать сканирование Explore subagent'у одним вызовом | не исчерпать контекст главной сессии | universal | 1 | Universal | — |
