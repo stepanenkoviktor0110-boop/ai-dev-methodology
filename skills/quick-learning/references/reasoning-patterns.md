@@ -1908,3 +1908,23 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** При написании reviewers для задачи смотреть на чувствительность данных, которые роут обрабатывает, а не на сложность изменения. Если роут касается PII/sensitive данных — security-auditor в reviewers обязателен вне зависимости от того, насколько изменение кажется «простым».
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-05 cert-report / session 1: Верифицировать URL и метод endpoint в AVP user-spec до аппрува
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** user-spec AVP содержит URL эндпоинтов, написанные из памяти → grep/verify каждый URL+метод в кодовой базе до аппрува user-spec → не дать URL-миражу из user-spec дойти до skeptic-прохода в tech-spec
+**Context:** User-spec AVP содержал `PATCH /api/superadmin/settings` — несуществующий путь и неверный метод. Реальный endpoint: `PUT /api/admin/settings`. Мираж обнаружил только skeptic-валидатор на этапе tech-spec.
+**Pattern:** Перед аппрувом user-spec проверить каждый URL в таблице «Агент проверяет»: grep по маршрутам (`route.ts`), убедиться метод совпадает. AVP писать не из памяти, а из кода.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-05 cert-report / session 1: Явно называть guard-функцию при смене ролей на endpoint
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** spec определяет GET=admin+manager и PUT=manager-only на endpoint где существующий guard пропускает обе роли → явно описать в задаче создание нового guard для PUT → не получить auth-пробел обнаруженный только на security audit
+**Context:** Tech-spec требовал 403 для admin на PUT `/api/admin/settings`, но Task 4 не упоминал смену guard-функции. Skeptic и security-validator поймали: существующий `requireAdmin()` пропускает обе роли — разработчик не получил инструкции создать `requireManager()`.
+**Pattern:** Когда GET и PUT одного endpoint требуют разных ролей — явно прописать в описании задачи: «создать/использовать `requireManager()` вместо `requireAdmin()`». Не оставлять смену guard на усмотрение разработчика.
+**Scope:** universal
+**Category:** sequencing
