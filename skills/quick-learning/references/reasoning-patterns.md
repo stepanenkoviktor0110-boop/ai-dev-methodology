@@ -1928,3 +1928,14 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Когда GET и PUT одного endpoint требуют разных ролей — явно прописать в описании задачи: «создать/использовать `requireManager()` вместо `requireAdmin()`». Не оставлять смену guard на усмотрение разработчика.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-05 fix-xlsx-export-headers / session 2: Передавать полные пути от корня репо в брифы task-creator
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** tech-spec задаёт пути в app-relative формате (`src/app/...`), приложение вложено в поддиректорию репо → в брифе task-creator передавать полный путь от корня репо (`work/app-name/src/app/...`) → предотвратить нерабочие Context File links во всех сгенерированных задачах
+**Context:** При декомпозиции fix-xlsx-export-headers task-creator'ы получили пути в формате `src/app/api/...` из tech-spec. Приложение находится в `work/employee-cabinet/`. Все задачи получили неверные Context File links — ни один из путей не резолвился. Reality-checker поймал это в validation round 1.
+**Pattern:** Перед запуском task-creator'ов проверить: есть ли разрыв между путями в tech-spec и реальным расположением файлов в репо. Если приложение вложено в поддиректорию — трансформировать все пути из `src/...` в `work/app-dir/src/...` ДО передачи в брифы.
+**Scope:** situational
+**Situation:** Проект где приложение (Next.js, Django и т.д.) расположено не в корне репо, а в поддиректории.
+**Category:** problem-decomposition
