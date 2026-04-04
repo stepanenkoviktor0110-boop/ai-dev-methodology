@@ -26,7 +26,12 @@ Before creating tasks, present the user a structural plan:
 1. Read tech-spec Implementation Tasks section.
 2. Estimate total lines of code for the feature.
 3. **Break down into blocks of ~1200 lines (±300)**, each block into **steps of ~300 lines (±100)**.
-4. Present the plan as a table: blocks → steps with line estimates.
+4. Present the plan as a table: blocks → steps with line estimates. Add a **Complexity** column:
+   - **L1** (trivial) — estimated_loc < 50 AND task description contains none of: auth, login, password, token, session, input validation, upload, file input, database query, SQL, API endpoint, CORS, RBAC, permission
+   - **Standard** — everything else
+
+   L1 tasks get `reviewers: [code-reviewer]` only (security-auditor and test-reviewer skipped). Audit Wave covers security holistically at feature level regardless.
+
 5. Get user confirmation before proceeding to task creation.
 
 This ensures predictable scope, manageable task sizes, and clear progress tracking. Each "step" typically maps to one task file. Each "block" maps to a wave or a group of related tasks.
@@ -51,7 +56,8 @@ This ensures predictable scope, manageable task sizes, and clear progress tracki
    - feature_path, task_number, task_name
    - template_path: `~/.claude/shared/work-templates/tasks/task.md.template`
    - files_to_modify, files_to_read (from tech-spec)
-   - depends_on, wave, skills, reviewers, verify (from tech-spec)
+   - depends_on, wave, skills, verify (from tech-spec)
+   - reviewers: if task was classified **L1** in Phase 0 → pass `[code-reviewer]`; otherwise pass reviewers from tech-spec
    - teammate_name (if specified in tech-spec, optional)
    Each task-creator copies the template to `tasks/{N}.md` first, then edits each section in place. This ensures no sections are skipped.
 
@@ -164,18 +170,5 @@ After user approves task decomposition, calculate session grouping for predictab
 
 ## Learned Patterns
 
-- When writing AC for CI/CD pipeline tasks -> explicitly include concurrency/idempotency guards (cancel-in-progress, prevent duplicate runs) in AC, to avoid predictable best-practice additions as deviation findings
-- When writing AC for markdown-only features -> formulate criteria through presence of specific structural artifacts (sections, links, guard blocks), not keywords, to make AC automatically checkable
-- When a task in a wave references another task result -> replace the inter-task dependency with reading from a shared source of truth, to preserve wave parallelism without read-after-write risks
-- When creating a deletion task (remove feature/constant/field) -> add explicit AC to check dead variables, stale comments, and duplicate tests before review
-- When designing algorithms that distribute records into capacity-capped buckets -> define the overflow policy before implementing, to avoid silently losing records when a bucket fills
-- When adapting a task template from one domain to another -> verify each frontmatter field for compatibility with the target domain, to avoid fixing incompatible defaults in a separate post-deploy task
-- When mass-generating tasks from a template applied to a new domain for the first time -> generate 1 pilot task, validate, then scale, to avoid accumulating 30+ fixes on the first run
-- When AC contains a numeric boundary (max N iterations/attempts) -> include the boundary value N in smoke or AC check to catch off-by-one before code audit
-- When describing an agent skip behavior on empty input -> explicitly describe the processing logic that runs after the skip, not only the output marker, to prevent label-swap without logic change
-- When a task contains a test using an exact marker string defined in another task -> declare depends_on on the source task even if the string is a literal, to avoid missing implicit dependencies
-- When task N creates no-op stubs for future tasks -> add an explicit step in each dependent task brief: replace the no-op stub with implementation, to guarantee no placeholder remains in working code
-- When Task B tests functions from Task A file -> add those function signatures explicitly to Task A What-to-do section, so every exported function has a clear owner
-- When task-creator writes hints for a file already implemented in the codebase -> read the actual code of that file BEFORE writing hints, to avoid hints that contradict existing implementation
-- When Task A TDD Anchor names a test file that is the primary deliverable of Task B -> remove the test from Task A TDD Anchor and add a reference to the owning task, one file one owner
-- When a task's deliverable is a SKILL.md file -> assign skill: skill-master and reviewers: skill-checker, to avoid wrong skill/reviewer values caught only by validators
+Full pattern history: [references/learned-patterns.md](references/learned-patterns.md)
+Load only for audit wave and retrospective — not during task decomposition.

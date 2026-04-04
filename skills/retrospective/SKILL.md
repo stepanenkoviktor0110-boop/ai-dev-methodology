@@ -96,6 +96,8 @@ Read `$AGENTS_HOME/skills/quick-learning/references/triad-index.md`. For each ex
 | **Near** | Same goal, different action (or same action, different goal) | **Merge**: keep the more actionable wording, combine triggers, increment `Seen`. |
 | **Distinct** | Different goal | Add as new entry. |
 
+**Updating reasoning-patterns.md (Exact / Near):** Use Grep to locate the entry by pattern title or unique trigger phrase — do NOT read the full 235 KB file. Then use Edit to update only that entry (increment Seen, update trigger/wording if merging).
+
 ### Step 3.3: Write Entry
 
 If distinct — append to the appropriate section of `$AGENTS_HOME/skills/quick-learning/references/reasoning-patterns.md`:

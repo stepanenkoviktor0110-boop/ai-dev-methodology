@@ -100,6 +100,8 @@ Decompose insight into a **trigger → action → goal** triad. Two patterns are
 
 When merging: keep the most general trigger and most actionable wording. Update date.
 
+**Updating reasoning-patterns.md (Exact / Near):** Use Grep to locate the entry by pattern title or unique trigger phrase — do NOT read the full 235 KB file. Then use Edit to update only that entry (increment Seen, update trigger/wording if merging).
+
 #### Entry format
 
 ```markdown
