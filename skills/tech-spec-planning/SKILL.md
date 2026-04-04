@@ -196,3 +196,7 @@ Load only for audit wave and retrospective — not during spec planning.
 
 - When a proposal involves project-scope migration to reduce global overhead → first clarify whether the resource is universal or domain-specific, to avoid breaking universal-access requirements.
 - When tech-spec contains a production default (run time, port, limit) → explicitly verify the value with the user during spec/task phase, to avoid late correction cascading across multiple files.
+- When user requests «проверь соответствие первоисточнику» → fetch the source first, then apply corrections, to avoid inventing data.
+- When spec contains explicit permission matrix for one destructive operation (delete) → verify ALL analogous destructive operations (deactivate, activate, reset, role change) against the same matrix, to find authorization gaps before implementation.
+- When user-spec AVP contains URLs/endpoints written from memory → grep/verify each URL+method in the codebase before approving user-spec, to prevent URL mirage from propagating into tech-spec skeptic pass.
+- When spec defines GET=admin+manager and PUT=manager-only on an endpoint where existing guard allows both roles → explicitly describe creation of a new guard for PUT in the task, to prevent auth gap discovered only at security audit.

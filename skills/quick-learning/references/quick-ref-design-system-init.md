@@ -1,3 +1,4 @@
 # Quick Reference — Design System Init
 
-1. When design-system-init is run on an existing app with inline styles that the us (Seen: 1)
+1. Design-system-init запущен на существующем приложении с inline styles, которые пользователь уже одобрил эстетически — пропустить interview, экстрактировать токены из кода, выполнить CSS migration как переключение source of truth (Seen: 1)
+2. Редизайн существующего бренда с референс-сайтами — сначала распарсить реальные шрифты и цвета с live-сайта клиента, затем вдохновляться референсами, чтобы не навязать чужой brand stack (Seen: 1)

@@ -211,5 +211,9 @@ Load only for audit wave and retrospective — not during code writing.
 - When проект с "type":"module" и нужен CommonJS cron-скрипт с require() → именовать .cjs и использовать DI: main(_dep = require('dep')), to избежать runtime ошибки ESM и vi.mock-хаков при тестировании
 - When написание теста для finally-блока с except Exception → использовать BaseException (например KeyboardInterrupt) как trigger, to гарантировать что finally реально выполняется при любом исходе
 - When скрипт с дорогостоящей инициализацией (auth flow, DB connection) создаёт объект внутри цикла → вынести init за цикл и указать явно в spec, to предотвратить дублирование auth flow и N лишних round-trips
-- When JS-функция устанавливает button.disabled = true в начале fetch-цепочки (оптимистичный UI) → добавить .catch() на каждую fetch-цепочку которая мутирует UI state, to предотвратить permanently disabled controls при сетевой ошибке
+- When кнопка делает async-запрос (destructive action или оптимистичный UI) → добавить disabled+loading state на время запроса AND .catch() восстанавливающий state при ошибке — до первого review, to предотвратить fix-раунд на предсказуемый UX concurrency guard
 - When расширение API-ответа новым полем → grep тесты на exact-equality assertions для этого endpoint, to не допустить отложенного тест-фейла в следующей сессии
+- When задача требует повторного чтения файла, файл не менялся → прочитать файл один раз в начале, не читать повторно, to не расходовать токены на повторное чтение неизменного файла
+- When несколько git репо в одной bash сессии → всегда указывать `git -C /path/repo` вместо надежды на рабочую директорию, to избежать silent failures от команд из неправильного репо
+- When нужно изучить внешнее репо (GitHub) или прочитать >5 файлов подряд в главной сессии → делегировать сканирование Explore subagent'у одним вызовом, to не исчерпать контекст главной сессии
+- When React компонент хранит typed async данные, UI переключает режим/таб → сбросить data в [] в начале useEffect + type guard перед рендером типизированных полей, to предотвратить TypeError из промежуточного рендера со stale typed данными

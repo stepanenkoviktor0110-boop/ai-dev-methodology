@@ -172,6 +172,7 @@ When lead spawns an agent outside the original execution plan (to fix audit find
    At session boundary: explicitly commit checkpoint.yml even if no code changed in the last wave — next session must start with accurate state.
 6. **Session boundary check** (skip if session-plan.md does not exist):
    Read session-plan.md. If current wave is the **last wave of current_session**:
+   a00. **Update project-knowledge** (before generating the next-session prompt): check if roles, architecture, or business rules changed during this session — update the relevant `.claude/skills/project-knowledge/` docs so the next session does not re-ask what was already discussed.
    a0. **Quick Learning (subagent, background).** Spawn a subagent to run [quick-learning](../quick-learning/SKILL.md). Pass it: feature path, current session number, path to decisions.md. The subagent runs in the **background** while you proceed with the session report. When it finishes, show the user its one-line summary. Do NOT read the quick-learning SKILL.md yourself — the subagent loads it independently in its own context.
    a. Increment `current_session` in checkpoint.yml.
    b. Generate next-session prompt from template `~/.claude/shared/work-templates/session-prompt.md.template`:
@@ -252,3 +253,11 @@ Load only for audit wave — not during feature execution.
 - When пользователь задаёт диагностический вопрос про настройку (не просит её менять) → отвечать текстом без вызова скилла-конфигуратора, to не тратить тысячи токенов на загрузку полной документации скилла ради ответа на вопрос.
 - When файл изменён, сервер перезапущен, но response не изменился → проверить netstat на количество процессов на порту ДО диагностики кеша, to не тратить итерации на «кеш браузера» при конфликте процессов.
 - When UI экспонирует конфигурируемое поле, пользователь спрашивает «а это работает?» → grep поля в pipeline-коде до ответа, to не подтверждать работу фичи которую pipeline молча игнорирует.
+- When изменяется один элемент из sibling-группы (UI-компонент, DB-запрос, route-guard) → явно проверить и применить изменение к каждому «брату» в группе, to не оставить соседей в рассинхронизированном состоянии.
+- When данные пропали из ожидаемой таблицы/хранилища после планового деплоя → проверить git log деплоя на коммиты, меняющие логику write-routing (куда пишется), to не тратить время на диагностику данных когда проблема в маршрутизации записи.
+- When выполняется синхронизация набора файлов или папок → после синхронизации проверить все index-файлы (README, MEMORY.md, CLAUDE.md) на актуальность состава, to не оставить устаревший индекс с неверным списком файлов.
+- When задача называет раздел одним словом и на целевом сайте/кодовой базе несколько вариантов под этим словом → показать найденные варианты и спросить какой нужен до реализации, to не переделывать уже написанный блок.
+- When тест-раны сообщают одинаковые «pre-existing failures» в N задачах → проверить working tree (git stash) перед принятием метки как факта, to не передавать ложный диагностический сигнал в следующие задачи.
+- When code-reviewer флагует одно DRY-нарушение в N задачах как «out of scope» → добавить extraction-задачу в аудит-волну, to не дать tech debt накапливаться незаметно при multi-task фиче.
+- When пользователь говорит «X должно быть [здесь], а не [там]» → добавить в новое место и убрать только из названного неверного, to не потерять контент трактуя «убери отсюда» как «убери везде».
+- When runtime краш на деплое/тесте даёт только «Application error» без деталей → добавить error boundary показывающий стек перед итерациями отладки, to получить точный стек ошибки с первой попытки.

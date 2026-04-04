@@ -27,7 +27,7 @@ Before creating tasks, present the user a structural plan:
 2. Estimate total lines of code for the feature.
 3. **Break down into blocks of ~1200 lines (±300)**, each block into **steps of ~300 lines (±100)**.
 4. Present the plan as a table: blocks → steps with line estimates. Add a **Complexity** column:
-   - **L1** (trivial) — estimated_loc < 50 AND task description contains none of: auth, login, password, token, session, input validation, upload, file input, database query, SQL, API endpoint, CORS, RBAC, permission
+   - **L1** (trivial) — estimated_loc < 50 AND task description contains none of: auth, login, password, token, session, input validation, upload, file input, database query, SQL, API endpoint, CORS, RBAC, permission, PII, personal data, export fields
    - **Standard** — everything else
 
    L1 tasks get `reviewers: [code-reviewer]` only (security-auditor and test-reviewer skipped). Audit Wave covers security holistically at feature level regardless.
@@ -174,3 +174,9 @@ Full pattern history: [references/learned-patterns.md](references/learned-patter
 Load only for audit wave and retrospective — not during task decomposition.
 
 When a task changes a mandatory parameter of a public function and a downstream task calls the old signature → explicitly state the new signature in the downstream task's brief, to avoid silent TypeError from cross-task wiring gap.
+
+When a task-creator writes a curl command or HTTP call for a QA step → search the real endpoint path in integration test helpers or route definitions, not guessing by REST convention, to avoid a non-working QA script from a non-existent endpoint.
+
+When two task-creators create new files that share similar code patterns → check real import dependencies between those files (not thematic similarity) before assigning wave and depends_on, to avoid artificial serialization or incorrect parallel placement.
+
+When a tech-spec specifies paths in app-relative format and the app lives in a subdirectory of the repo → pass the full path from the repo root in each task-creator brief, to prevent broken Context File links across all tasks.

@@ -189,3 +189,4 @@ Before finishing, verify:
 ## Learned Patterns
 
 - When design-system-init is run on an existing app with inline styles that the user has already approved aesthetically -> skip the interview, extract tokens from existing code, and perform CSS migration to switch the source of truth rather than documenting existing values
+- When redesigning an existing brand using reference sites → first parse real fonts and colors from the client's live site (via WebFetch or browser tools), then draw inspiration from references, to avoid imposing a foreign brand stack on the client

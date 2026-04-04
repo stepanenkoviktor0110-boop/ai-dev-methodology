@@ -247,3 +247,5 @@ Before finishing, verify:
 - When a layout constraint (wrap/overflow) conflicts with text agreed in Phase 2 -> adapt font-size / column width / layout to fit the original text, to preserve content integrity agreed in Phase 2
 - When computing font-size fit for a Cyrillic uppercase string -> use 0.72em per character (not 0.62em for Latin) and verify against the longest word, to prevent unexpected line breaks in render
 - When selecting color for a text element -> enumerate ALL options (brand colors + white + dark grey) and evaluate each against background and serial-use context, to avoid auto-selecting by habit rather than by fit
+- When a client requests a visual demo without specific references -> ask for 1-2 reference sites + "what annoys you about the current design" BEFORE starting layout, to reduce iterations from 3+ to 1-2
+- When a UI element is positioned at the boundary of a dark and light background -> use a solid opaque background instead of rgba with low opacity, so the element is readable on both backgrounds without additional CSS variations
