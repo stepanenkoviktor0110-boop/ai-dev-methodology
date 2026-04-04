@@ -13,6 +13,30 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
+### 2026-04-04 juridical-parser / session 3: Проверить git history перед реализацией задач из session prompt
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** получен session prompt с задачами «реализовать X» → прочитать код + `git log --oneline --follow -- <file>` для каждого затронутого файла → убедиться что задача не была выполнена в предыдущей сессии до начала реализации
+**Context:** Session prompt описывал 2 задачи как предстоящие. Обе оказались уже реализованы: `collect_workdays` — в calendar.py/main.py (сессия 2), «Московские суды» — коммит e30179b. Backlog содержал «Подтверждено не реализовано — 2026-04-04» но это была отметка начала сессии 2, а не результата.
+**Pattern:** Перед реализацией любой задачи: `git log --oneline --follow -- src/<file>.py` + прочитать текущий код. Если функция уже присутствует — сообщить что задача выполнена, перейти к верификации тестами.
+**Scope:** universal
+**Category:** orientation
+
+---
+
+### 2026-04-04 juridical-parser / session 3: Staged/unstaged изменения = потенциально сломанные тесты
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** обнаружены staged/unstaged изменения → запустить pytest ДО любой новой работы → найти тесты ссылающиеся на удалённые методы/изменённые сигнатуры
+**Context:** 3 файла с незакоммиченными изменениями. Миграция удалила `_get_or_create_court_folder` и изменила сигнатуру `_get_or_create_spreadsheet`. test_sheets_folders.py и test_status.py вызывали старый API — 8 тестов упали.
+**Pattern:** При обнаружении незакоммиченных изменений — первым делом запустить pytest целиком. Падающие тесты — разрыв между кодом и тестами от предыдущей сессии. Исправить до начала новой работы.
+**Scope:** universal
+**Category:** code-quality
+
+---
+
 ### 2026-04-04 juridical-parser / deploy: SSH fail2ban — фоновая задача + новое соединение = бан
 
 **Seen:** 1
@@ -1687,4 +1711,31 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Если user-spec явно описывает матрицу разрешений для одной деструктивной операции (delete, terminate, purge) — при составлении tech-spec немедленно проверить все операции схожей «деструктивности» (deactivate, suspend, reset, demote). Они обычно разделяют ту же логику, но попадают в spec случайно только одна из них.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-04 admin-panel / session 3: Путь auth-эндпоинта — смотреть в integration tests, не угадывать
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** task-creator пишет curl-команду для авторизации в QA-задаче → искать реальный путь в integration test helpers, не угадывать по REST-конвенции → не получить нерабочий QA-скрипт из-за несуществующего endpoint
+
+**Context:** task-creator написал `/api/auth/sign-in` в Tasks 11 и 13. Реальный путь — `/api/auth/sign-in/email` (better-auth). Reality-checker обнаружил по integration test helper. Без фикса весь AVP-прогон вернул бы 404.
+
+**Pattern:** Когда task-creator генерирует curl-команды для авторизации — не предполагать путь по REST-конвенции. Читать `tests/integration/helpers/auth.ts` (или аналог) — именно там вызывается реальный signin-endpoint. Auth-библиотеки часто используют нестандартные пути.
+
+**Scope:** situational
+**Situation:** task-creator или агент пишет curl-скрипты для получения сессионной куки в QA/pre-deploy/post-deploy задачах
+**Category:** information-gathering
+
+### 2026-04-04 admin-panel / session 3: Тематическая близость ≠ код-зависимость при выборе wave
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** два task-creator создают новые файлы, использующие одинаковые паттерны кода → проверить реальные import-зависимости между файлами, не тематическую близость → назначить правильный wave и depends_on без искусственной сериализации
+
+**Context:** Task 5 (`/api/admin/reports/export`) получила `depends_on: [4]` потому что "использует те же SQL-паттерны что и Task 4". Но Task 5 не импортирует ничего из Task 4 — обе создают независимые новые файлы с общим источником паттернов (db, auth, XLSX). Исправление: `depends_on: [1,2,3]`, wave 2 — параллельно с Task 4.
+
+**Pattern:** При назначении depends_on: проверять реальные code imports, не тематическую схожесть. Если два task-creator создают независимые файлы с одинаковыми паттернами из общей кодовой базы — они параллельны. Зависимость = "файл A импортирует из файла B", не "файл A вдохновлён паттернами файла B".
+
+**Scope:** universal
+**Category:** sequencing
 **Category:** recovery
