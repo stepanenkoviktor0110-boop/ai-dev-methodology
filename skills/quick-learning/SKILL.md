@@ -7,8 +7,7 @@ description: |
 
   Signal-gated: skips clean sessions automatically (zero cost).
 
-  Automatic trigger: called by feature-execution, do-task, design-generate (context exhaustion),
-  and design-retrospective (before next-session prompt).
+  Automatic trigger: called by feature-execution, do-task, and design-generate (context exhaustion).
 
   Use when: "quick learning", "быстрый анализ", "что улучшить в процессе",
   "извлеки паттерн", "запиши урок сессии", "analyze session patterns"
@@ -48,7 +47,7 @@ Check 4 binary signals. If ALL are zero — **skip entirely** with "Clean sessio
 | Recovery event | `git log` — rollbacks, retries, blocked→unblocked | A non-obvious recovery path was found |
 | Context waste | `decisions.md` — Concerns field contains description of repeated reads of unchanged file | Inefficient tool use, not a logic error |
 
-**For design sessions** (called from design-generate or design-retrospective):
+**For design sessions** (called from design-generate):
 
 | Signal | How to check | Meaning |
 |--------|-------------|---------|

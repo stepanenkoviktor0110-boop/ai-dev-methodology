@@ -32,7 +32,7 @@ Embeds accumulated quick-learning triads into target skills. Two outcomes per tr
 | tool-selection | code-writing |
 | design-taste | design-system-init |
 | design-process | design-generate |
-| design-iteration | design-retrospective |
+| design-iteration | quick-learning |
 
 ## Phase 1: Check
 
