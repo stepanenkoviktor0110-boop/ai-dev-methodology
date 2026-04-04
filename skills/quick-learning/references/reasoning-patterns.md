@@ -1610,3 +1610,14 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Category:** design-process
 
 ---
+
+### 2026-04-04 geolog-admin-panel / sketch session: обновлять project-knowledge перед хэндофф-промтом
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** конец сессии + подготовка промта для следующей → сначала обновить project-knowledge (роли, архитектура, бизнес-правила) → не переспрашивать в новой сессии то, что уже обсуждалось
+**Context:** После скетч-сессии с изменением ролей (добавлен superadmin), навигации и правил уведомлений — отдал next-session промт без обновления документации. Новая сессия задавала те же вопросы.
+**Pattern:** Когда пользователь просит промт для следующей сессии — сначала проверить и обновить project-knowledge/references/*.md, потом давать промт. Порядок: docs → prompt, не наоборот.
+**Scope:** situational
+**Situation:** Проект с project-knowledge директорией; сессия изменила архитектуру, роли или бизнес-правила
+**Category:** sequencing
