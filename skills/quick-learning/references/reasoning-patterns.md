@@ -1859,3 +1859,13 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Перед подтверждением работы конфигурируемого параметра — grep его имени в pipeline-коде. Если находится только в dataclass/DB-схеме, но не в логике вычислений — фича не реализована, даже если UI показывает поле.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-04 panel-next-run / session 3: расширение API-ответа ломает exact-equality тест без немедленного сигнала
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** расширение API-ответа новым полем → grep тест-файлы на exact-equality assertions (`== {`) для этого endpoint → не допустить отложенного тест-фейла обнаруживаемого только в следующей сессии
+**Context:** Предыдущая сессия добавила `run_time_msk` в ответ `/api/courts/active`, тест `assert data == {"courts": []}` не обновили — фейл обнаружен только при следующем запуске full suite.
+**Pattern:** При добавлении поля к существующему API-ответу — grep тест-файлы на `== {` и `== [` для этого endpoint. Найденные exact-equality assertions либо дополнить новым полем, либо ослабить до subset check.
+**Scope:** universal
+**Category:** sequencing
