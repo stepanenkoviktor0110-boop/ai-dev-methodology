@@ -1677,4 +1677,14 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Context:** Парсер работал, данные записывались — но в другое место (70 per-court Drive папок вместо одной корневой таблицы). Commit 414dc1b изменил export routing незаметно. Диагностика началась с "почему данных нет", а нужно было с "куда деплой перенаправил запись".
 **Pattern:** Когда данные исчезли из ожидаемой таблицы/хранилища после деплоя — первый шаг: `git log --oneline` последнего деплоя, фильтровать коммиты затрагивающие write/export/routing логику. Pipeline может работать без ошибок, записывая в правильное место с точки зрения нового кода, но неожиданное с точки зрения пользователя.
 **Scope:** universal
+
+### 2026-04-04 admin-panel / session 2: Одна деструктивная операция ограничена — проверить все аналогичные
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** spec содержит явную матрицу разрешений для одной деструктивной операции (delete) → при написании tech-spec проверить ВСЕ аналогичные деструктивные операции (deactivate, activate, reset, role change) на ту же матрицу → найти authorization gap до имплементации
+**Context:** user-spec явно ограничивал удаление по роли (admin не может удалить admin/superadmin), но ничего не говорил про деактивацию. Security auditor поймал: admin мог деактивировать superadmin — та же уязвимость, только мягче. Gap добавили как scope change в Task 3.
+**Pattern:** Если user-spec явно описывает матрицу разрешений для одной деструктивной операции (delete, terminate, purge) — при составлении tech-spec немедленно проверить все операции схожей «деструктивности» (deactivate, suspend, reset, demote). Они обычно разделяют ту же логику, но попадают в spec случайно только одна из них.
+**Scope:** universal
+**Category:** information-gathering
 **Category:** recovery
