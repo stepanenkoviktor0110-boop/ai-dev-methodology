@@ -1759,3 +1759,16 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Синхронизация содержимого (файлы, папки, скиллы) неполна без обновления индексных файлов. После любой синхронизации явно проверять README, MEMORY.md и подобные файлы которые описывают структуру или список.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-04-04 admin-panel / session 1: disabled+loading state на confirm кнопке деструктивного действия
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** confirm-кнопка в destructive-action flow делает async-запрос → добавить disabled+loading state на confirm до первого review → не тратить fix-раунд на предсказуемый UX concurrency guard
+
+**Context:** Task 7 (delete employee): reviewer round 1 поймал отсутствие double-click protection на confirm кнопке. Это стандартный UX-паттерн для любого async mutation — без disabled state пользователь может отправить несколько одинаковых запросов.
+
+**Pattern:** Любая confirm/submit кнопка инициирующая async-запрос (fetch, mutation, delete) требует disabled+loading state во время запроса. Добавлять до первого review, не ждать замечания — это обязательный concurrency guard.
+
+**Scope:** universal
+**Category:** scope-management
