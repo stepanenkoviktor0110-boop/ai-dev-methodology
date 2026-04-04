@@ -126,7 +126,9 @@ When merging: keep the most general trigger and most actionable wording. Update 
 
 ### Step 4: Summary (5 sec)
 
-Count rows where the **last column** (`Adapted`) is exactly `—`. Use pattern `| — |$` (line ends with `| — |`). Do NOT count rows where `—` appears only in other columns (Goal, Section, etc.).
+Count rows where the **last column** (`Adapted`) is exactly `—`. Use pattern `| — |$` (line ends with `| — |`).
+
+**WARNING:** many rows contain `| — |` in middle columns (Goal, Section). Do NOT count those. Only rows where the ENTIRE line ends with `| — |` qualify. Using `| — |` without `$` anchor will produce ~2× overcounts.
 
 Show user ONE line:
 ```
@@ -185,4 +187,4 @@ When a guard (smoke test, reviewer, self-verification) catches an error matching
 - [ ] No duplicates — existing patterns got Seen++ instead
 - [ ] Max 2 entries written
 - [ ] Adapted: — field set on all new entries in both reasoning-patterns.md and triad-index.md
-- [ ] Summary shown; count by pattern `| — |$` (last column only); if ≥25 — user notified about /skill-trainer
+- [ ] Summary shown; count by pattern `| — |$` (last column only — NOT `| — |` without anchor); if ≥25 — user notified about /skill-trainer
