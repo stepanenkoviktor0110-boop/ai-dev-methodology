@@ -47,13 +47,14 @@ description: |
 
 ### Step 1: Signal Gate (5 sec)
 
-Check 3 binary signals. If ALL are zero — **skip entirely** with "Clean session, no new patterns."
+Check 4 binary signals. If ALL are zero — **skip entirely** with "Clean session, no new patterns."
 
 | Signal | How to check | Meaning |
 |--------|-------------|---------|
 | Fix rounds | `git log --oneline -20` — count `fix:` commits | Something went wrong and was corrected |
 | Scope change | `decisions.md` — any deviation, unplanned work, changed approach | Plan didn't survive contact with reality |
 | Recovery event | `git log` — rollbacks, retries, blocked→unblocked | A non-obvious recovery path was found |
+| Context waste | `decisions.md` — Concerns field contains description of repeated reads of unchanged file | Inefficient tool use, not a logic error |
 
 **For design sessions** (called from design-generate or design-retrospective):
 
@@ -68,6 +69,8 @@ Check 3 binary signals. If ALL are zero — **skip entirely** with "Clean sessio
 > Checkpoint: at least one signal confirmed. If all signals are zero — exit with "Clean session."
 
 ### Step 2: Analyze (15 sec)
+
+> **Scope change vs Context waste:** scope change = *what* was done changed (plan didn't hold); context waste = *how* it was done was inefficient (tool used suboptimally). Both may appear in the same session — analyze independently.
 
 For each detected signal, ask:
 
@@ -185,6 +188,7 @@ When a guard (smoke test, reviewer, self-verification) catches an error matching
 ## Self-Verification
 
 - [ ] Signal gate checked — clean sessions skipped
+- [ ] Context waste signal checked separately from scope change
 - [ ] Patterns capture reasoning LOGIC, not specific technical decisions
 - [ ] Scope correctly classified (universal vs situational)
 - [ ] No duplicates — existing patterns got Seen++ instead
