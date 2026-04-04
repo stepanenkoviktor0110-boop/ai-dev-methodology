@@ -1793,3 +1793,24 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Pattern:** Когда нужно изучить удалённый репозиторий — использовать один вызов Explore subagent с полным заданием вместо серии bash/api вызовов в главной сессии. Главная сессия получает только итоговый результат.
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-04-04 admin-panel / session 2: «pre-existing failures» требуют проверки working tree
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** тест-раны во всех задачах сообщают одинаковое количество падений с меткой «pre-existing» → проверить working tree (`git stash` или `git status`) перед принятием метки как факта → не передавать ложный диагностический сигнал в следующие задачи
+**Context:** Все 7 задач сессии репортовали «2 pre-existing cron.test.ts failures, unrelated». Аудит (task 10) показал: на чистом коммите 32 теста проходят, 0 падений — провалы существовали только из-за uncommitted изменений в working tree за пределами scope фичи.
+**Pattern:** Когда тест-ран выдаёт «постоянные» падения через несколько задач — запустить тесты после `git stash` uncommitted changes. Метка «pre-existing» верна только если падения воспроизводятся на чистом committed состоянии.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-04 admin-panel / session 2: DRY helper, копируемый per-task, нужна extraction-задача в финальной волне
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** code-reviewer флагует одно и то же DRY нарушение в N задачах как «out of scope» → добавить extraction-задачу в аудит-волну (или волну после реализации) → не дать tech debt накапливаться незаметно при multi-task фиче
+**Context:** `requireAdmin()` скопирован verbatim в 8 файлах. В задачах 2, 3, 4, 5 ревьюер отмечал «DRY — out of scope». Code audit (task 8) зафиксировал это как major finding M2. Рефакторинг отложен на следующую сессию.
+**Pattern:** Если один и тот же helper дублируется более чем в 3 файлах и per-task reviewer не может его вынести — добавить extraction-задачу явно в аудит-волну. Иначе «out of scope» превращается в перманентный tech debt.
+**Scope:** situational
+**Situation:** Multi-task фича с ≥3 задачами, реализующими один общий паттерн (auth guard, error handler, utility function) в разных файлах.
+**Category:** scope-management
