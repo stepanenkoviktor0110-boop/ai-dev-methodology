@@ -166,9 +166,11 @@ After user approves task decomposition, calculate session grouping for predictab
 
 **Scope задач разных волн для одного файла (Seen: 2):** Если задача A создаёт файл а задача B в позднейшей волне его расширяет — явно ограничить scope A ("только save/load — нужны в wave 1"), и в бриф B включить: "файл уже существует с функциями X, Y. Добавить только Z." Параллельные task-creator'ы не общаются — scope должен быть однозначен в каждом брифе.
 
-**Wave ordering: последовательные задачи внутри одной "названной волны" (Seen: 2):** Если tech-spec называет группу "Final Wave" — это семантическая метка, не число. Если задачи внутри группы зависят друг от друга (A→B→C) — каждая получает своё число: A=N, B=N+1, C=N+2. Проверять после генерации: wave(задача) > max(wave(depends_on)).
+**Wave ordering: последовательные задачи внутри одной "названной волны" (Seen: 3):** Если tech-spec называет группу "Final Wave" — это семантическая метка, не число. Если задачи внутри группы зависят друг от друга (A→B→C) — каждая получает своё число: A=N, B=N+1, C=N+2. При валидации проверять wave(B) > wave(A) для КАЖДОЙ пары (A→output, B→consumer) — не только для named/semantic волн, но и для любых задач в одной волне где B потребляет output A. Проверять после генерации: wave(задача) > max(wave(depends_on)).
 
 ## Learned Patterns
 
 Full pattern history: [references/learned-patterns.md](references/learned-patterns.md)
 Load only for audit wave and retrospective — not during task decomposition.
+
+When a task changes a mandatory parameter of a public function and a downstream task calls the old signature → explicitly state the new signature in the downstream task's brief, to avoid silent TypeError from cross-task wiring gap.

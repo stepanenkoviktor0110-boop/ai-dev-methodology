@@ -1,14 +1,12 @@
 # Quick Reference — Feature Execution
 
-1. **Верифицируй результат, а не только изменение** — (Seen: 3) (Seen: 3)
-2. **При добавлении нового маркера в агентный промт — перечислить все секции и таблицы где маркер может появиться, прописать обработку в каждой. Частичное описание гарантирует major review findings.
-
--** — False-positive test finding — немедленный fix** (Seen: 2) (Seen: 2)
-3. **Флаг-файл run-once — путь от якоря, не от CWD** — (Seen: 2) (Seen: 2)
-4. **Off-by-one в позиционном форматировании — верифицируй на конкретном примере** — (Seen: 2) (Seen: 2)
-5. When spawning reviewer agents (Seen: 1)
-6. When entering post-deploy user review (Seen: 1)
-7. When code review identifies an error pattern (not a one-off bug) (Seen: 1)
-8. When running code/security audit in a multi-task feature (Seen: 1)
-9. When discussing architectural decisions with a non-technical user (Seen: 1)
-10. When writing smoke verification for a markdown artifact (Seen: 1)
+1. Верифицируй результат, а не только изменение: после любого деплоя проверяй реальный лог/среду, не только факт применения изменения (Seen: 3)
+2. False-positive test finding — немедленный fix: если audit wave нашла major finding с false-positive risk — создать ad-hoc fix task сразу, не откладывать в deferred (Seen: 2)
+3. Флаг-файл run-once — путь от якоря, не от CWD: привязывай к `db_path.parent`, `Path(__file__).parent` или `settings.BASE_DIR`, не к относительному пути (Seen: 2)
+4. Off-by-one в позиционном форматировании — верифицируй на конкретном примере: подставить числа и проверить вручную до записи (Seen: 2)
+5. Спорные решения ДО генерации: перед артефактом > 200 строк — выписать решения с неоднозначностью, генерировать ПОСЛЕ утверждения (Seen: 1)
+6. Субагент не завершил задачу — выполни напрямую: если субагент прерван — lead выполняет задачу сам через Write/Edit, не ретраит субагент (Seen: 1)
+7. Новый sentinel/marker в промте — описать во всех секциях: при добавлении нового маркера перечислить все секции где он может появиться, прописать обработку в каждой (Seen: 1)
+8. Деплой нового backend на VPS — запустить `ss -tlnp` до первого старта, чтобы не получить EADDRINUSE от конкурента на порту (Seen: 1)
+9. Промт и task file содержат разные значения для одного enum — читать task file как authoritative, зафиксировать deviation до реализации (Seen: 1)
+10. Pipeline завершается успешно но внешний экспорт падает с auth-ошибкой — добавить алерт на N подряд exported=0 независимо от типа ошибки (Seen: 1)

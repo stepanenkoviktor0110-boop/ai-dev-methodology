@@ -206,3 +206,10 @@ Verify each item before marking complete. If any item fails, return to the relev
 
 Full pattern history: [references/learned-patterns.md](references/learned-patterns.md)
 Load only for audit wave and retrospective — not during code writing.
+
+- When useMemo dependency ссылается на промежуточный массив созданный в render → вынести null-guard/нормализацию внутрь вычисляющей функции, dependency — исходный prop/state, to гарантировать стабильность референса и реальную работу мемоизации
+- When проект с "type":"module" и нужен CommonJS cron-скрипт с require() → именовать .cjs и использовать DI: main(_dep = require('dep')), to избежать runtime ошибки ESM и vi.mock-хаков при тестировании
+- When написание теста для finally-блока с except Exception → использовать BaseException (например KeyboardInterrupt) как trigger, to гарантировать что finally реально выполняется при любом исходе
+- When скрипт с дорогостоящей инициализацией (auth flow, DB connection) создаёт объект внутри цикла → вынести init за цикл и указать явно в spec, to предотвратить дублирование auth flow и N лишних round-trips
+- When JS-функция устанавливает button.disabled = true в начале fetch-цепочки (оптимистичный UI) → добавить .catch() на каждую fetch-цепочку которая мутирует UI state, to предотвратить permanently disabled controls при сетевой ошибке
+- When расширение API-ответа новым полем → grep тесты на exact-equality assertions для этого endpoint, to не допустить отложенного тест-фейла в следующей сессии

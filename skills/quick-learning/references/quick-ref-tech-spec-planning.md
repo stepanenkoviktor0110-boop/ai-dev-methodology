@@ -1,12 +1,7 @@
 # Quick Reference — Tech Spec Planning
 
-1. When adding auth flow to imported data (Seen: 1)
-2. When an external service returns an unexpected result during research -> run esc (Seen: 1)
-3. When output format requirements arrive iteratively (Seen: 1)
-4. When an external system returns empty results (Seen: 1)
-5. When speccing a complex project with server-side actions (Seen: 1)
-6. When diagnosing performance problems on a low-traffic server (Seen: 1)
-7. When planning file sync between two repo versions (Seen: 1)
-8. When a feature combines client-only storage with server-side automation -> verif (Seen: 1)
-9. When spec narrows a criterion discussed in the interview (A or B (Seen: 1)
-10. When adding a metric to a dashboard without explicit time horizon (Seen: 1)
+1. Верифицируй целевые файлы перед описанием операции: когда spec описывает "удалить X из N файлов" — grep по каждому файлу перед фиксацией типа операции; файл без X требует add, не replace (Seen: 2)
+2. При интеграции с внешним API — перенести в спек ВСЕ коды ответа, формат данных, edge cases; перед включением response shapes из code-research — сделать live API call для проверки (Seen: 1)
+3. Перед написанием файловых путей в tech-spec — верифицировать через ls/glob, не из памяти или architecture docs; docs описывают намерение, а не реальность файловой системы (Seen: 1)
+4. Когда proposal включает project-scope миграцию для снижения overhead — сначала уточнить universal-access requirements, чтобы не сломать универсальный доступ к ресурсу (Seen: 1)
+5. Когда tech-spec содержит production default (время запуска, порт, лимит) — явно верифицировать значение с пользователем во время spec/task фазы, чтобы избежать каскадных правок по файлам (Seen: 1)

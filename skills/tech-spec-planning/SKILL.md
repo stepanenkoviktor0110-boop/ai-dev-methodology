@@ -193,3 +193,6 @@ If problems remain after 3 iterations — show user: "Validation didn't pass in 
 
 Full pattern history: [references/learned-patterns.md](references/learned-patterns.md)
 Load only for audit wave and retrospective — not during spec planning.
+
+- When a proposal involves project-scope migration to reduce global overhead → first clarify whether the resource is universal or domain-specific, to avoid breaking universal-access requirements.
+- When tech-spec contains a production default (run time, port, limit) → explicitly verify the value with the user during spec/task phase, to avoid late correction cascading across multiple files.

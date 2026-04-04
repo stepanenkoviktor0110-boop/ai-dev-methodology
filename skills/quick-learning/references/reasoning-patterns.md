@@ -447,7 +447,6 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** tool-selection
 
-
 <!-- PROMOTED → feature-execution SKILL.md (2026-03-30, Seen: 2) -->
 
 ### 2026-03-28 bp-pipeline / skeleton-pipe: Язык пользователя, не профессиональный жаргон
@@ -841,7 +840,6 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** sequencing
 
-
 <!-- PROMOTED → feature-execution (Seen: 2, 2026-03-30 pipeline-report retro) -->
 <!-- PROMOTED → task-decomposition (Seen: 2, 2026-03-30 pipeline-report retro) -->
 ### 2026-04-02 content-card / marketplace: Вырезать фон товара ДО генерации карточки
@@ -1076,7 +1074,6 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** situational
 **Situation:** мобильный интернет российских операторов, сервис доступен только по IP
 **Category:** recovery
-
 
 ### 2026-04-01 employee-cabinet / session decompose: параллельные тесты — изолировать seed по email
 
@@ -1417,7 +1414,6 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Scope:** universal
 **Category:** sequencing
 
-
 ### 2026-04-02 employee-cabinet / session certificates-ux: Уточнять ожидание перед диагностикой UI-feedback
 
 **Seen:** 1
@@ -1567,26 +1563,6 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Situation:** текст поверх full-bleed фото с неравномерной фоновой текстурой (люстры, архитектура, природные объекты)
 **Category:** design-process
 
-### 2026-04-02 dashboard-progress-sync / session 3: Проверить занятые порты до деплоя нового сервиса
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** деплой нового backend-сервиса на VPS → запустить `ss -tlnp | grep node` до первого старта → не получить EADDRINUSE от неожиданного конкурента на том же порту
-**Context:** `dashboard-api` не смог стартовать на порту 3001 — его занимал `masha` (другой проект). Обнаружилось только через pm2 errored лог, потребовало диагностики и смены порта.
-**Pattern:** Перед деплоем нового сервиса на VPS — проверить занятые порты (`ss -tlnp`). Если нужный порт занят — сразу назначить альтернативный в .env и обновить nginx, не пытаться освободить чужой процесс.
-**Scope:** universal
-**Category:** sequencing
-
-### 2026-04-02 dashboard-progress-sync / session 3: Не пробовать SSH из Claude Code до подтверждения с машины пользователя
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** Claude Code пробует SSH на VPS при неверном или несинхронизированном ключе → сначала попросить пользователя подтвердить `ssh root@host echo OK` вручную → не спровоцировать fail2ban блокировкой IP при серии неудачных попыток
-**Context:** Многократные SSH-попытки из Claude Code с неверным ключом заблокировали IP пользователя через fail2ban дважды. Разблокировка требовала VPN или консоли провайдера.
-**Pattern:** Перед автоматическими SSH-командами из Claude Code — убедиться что пользователь успешно зашёл на VPS вручную с тем же ключом. Только после подтверждения пробовать из Claude Code. Серия failed attempts из одного IP = бан.
-**Scope:** situational
-**Situation:** Claude Code выполняет команды на VPS через SSH
-
 ### 2026-04-02 content-card neidealnoiok / session 1: Approved text is immutable — design adapts, not the text
 
 **Seen:** 1
@@ -1634,238 +1610,3 @@ Patterns that apply only in specific contexts. Each has a `Situation` field desc
 **Category:** design-process
 
 ---
-
-### 2026-04-03 context-optimization / session 1: Уточни паттерн доступа до project-scope миграции
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** предложение project-scope миграции для снижения глобального overhead → сначала уточнить является ли ресурс универсальным (нужен во всех проектах) или доменным → не предлагать решение разрушающее требование универсального доступа
-**Context:** Предложил перенести дизайн- и moneymaker-скиллы в project-level для уменьшения context overhead — пользователь отклонил: скиллы нужны во всех проектах под запрос.
-**Pattern:** Когда оптимизируешь context overhead путём сужения scope ресурса — сначала спроси "этот ресурс нужен только в одном проекте или во всех?" Если универсальный — project-scope миграция не решение, ищи другой механизм.
-**Scope:** universal
-**Category:** scope-management
-
-### 2026-04-03 crm-lead-funnel / session 1: промт и task file расходятся — task file побеждает
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** промт и task file содержат разные значения для одного enum/константы → читать task file как authoritative, зафиксировать deviation до реализации → не переписывать реализацию после обнаружения конфликта на ревью
-**Context:** Task 1 CRM API: stage enum в промте имел значения new/contacted, в task 1.md — seen/responded/talking/agreed/in_progress/closed. Агент выбрал task 1.md и задокументировал deviation.
-**Pattern:** Когда промт вызова и task file содержат расходящиеся конкретные значения (enum, константы, имена полей) — task file является authoritative источником. Зафиксируй конфликт в decisions.md до начала реализации, чтобы ревьюер видел осознанный выбор, а не ошибку.
-**Scope:** universal
-**Category:** sequencing
-
-### 2026-04-03 management-panel / session 1: CRUD-форма для single-entity не покрывает multi-entity action workflow
-
-**Seen:** 2
-**Adapted:** —
-**Triad:** spec описывает CRUD-форму для одной сущности → задать вопрос "один или группа?" до реализации → не переписывать готовый UI из-за fundamental UX-mismatch
-**Context:** Task 4 — Flask panel реализован как per-court settings sidebar (один суд = одна форма). После завершения полностью переписан на two-column layout с multi-court selection, потому что реальный use case — "запустить несколько судов с одними настройками" — требует bulk-action UI, а не CRUD.
-**Pattern:** Когда spec описывает форму настроек для одной записи, а целевой workflow — это action над набором записей — уточнить кардинальность до написания кода. Признак mismatch: в spec есть "настройки" и "запустить", но нет явного выбора набора сущностей.
-**Scope:** universal
-**Category:** scope-management
-
-### 2026-04-03 freelance-dashboard / crm session 2: useMemo зависимость от промежуточного массива
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** зависимость useMemo ссылается на промежуточный массив созданный в render (leads ?? []) → вынести нормализацию за пределы render или переместить null-guard внутрь вычисляющей функции → гарантировать стабильность референса и реальную работу мемоизации
-**Context:** `const safeLeads = leads ?? []` в теле компонента создаёт новый массив при каждом render. `useMemo(() => compute(safeLeads), [safeLeads])` срабатывает на каждый render, не только при изменении leads. Мемоизация работала визуально, но не по факту. Исправление: переместить `leads = leads ?? []` внутрь `computeAnalytics()`, dependency в useMemo — `[leads]`.
-**Pattern:** Если dependency useMemo — промежуточная переменная (let/const в теле компонента), а не prop/state напрямую — это red flag. Нормализацию (null-guard, .filter, .map) выносить ВНУТРЬ вычисляющей функции, dependency array должен ссылаться на исходный prop/state.
-**Scope:** universal
-**Category:** problem-decomposition
-
-### 2026-04-03 freelance-dashboard / crm session 2: CJS cron-скрипт в ESM проекте
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** проект с "type":"module" в package.json, нужен CommonJS cron-скрипт с require() → называть файл .cjs и применять dependency injection для тестируемости → избежать runtime ошибки модульной системы и vi.mock-хаков при тестировании
-**Context:** `scripts/crm-check.js` в проекте с `"type":"module"` даёт `require is not defined` при запуске. Решение: переименовать в `.cjs`. Дополнительная проблема: vi.mock не перехватывает require() при module load time — axios загружается до мока. Решение: `main(_axios)` — dependency injection, тесты передают mock-axios явно.
-**Pattern:** В ESM проектах CommonJS скрипты именовать `.cjs`. Для тестируемости CJS-модулей с require-зависимостями использовать DI: `function main(_dep = require('dep'))` — тест передаёт mock, продакшн использует дефолт. Это надёжнее vi.mock для CJS.
-**Scope:** situational
-**Category:** tool-selection
-
-### 2026-04-03 management-panel / session 2: finally-блок требует BaseException в тесте
-
-**Seen:** 2
-**Adapted:** —
-**Triad:** написание теста для finally-блока с `except Exception` → использовать BaseException (KeyboardInterrupt) как trigger в тесте → гарантировать что finally реально выполняется при любом исходе
-**Context:** Task 5 (APScheduler) прошёл 3 раунда ревью: test-reviewer дважды дал `needs_changes` — сначала за repr-assert вместо assert_called_once_with, затем за отсутствие BaseException-литмуса. `except Exception` не ловит `KeyboardInterrupt` — finally без BaseException-теста остаётся непроверенным.
-**Pattern:** При тестировании `finally`-блока явно использовать `BaseException` (например, `KeyboardInterrupt`) как вброс — `except Exception` его не перехватит, что доказывает безусловную гарантию finally. Тест через `Exception` покрывает только happy path finally, не его гарантию.
-**Scope:** universal
-**Category:** problem-decomposition
-
-### 2026-04-03 management-panel / session 2: дорогостоящий init объекта — выносить за цикл явно в spec
-
-**Seen:** 2
-**Adapted:** —
-**Triad:** скрипт с дорогостоящей инициализацией (OAuth, DB connection) создаёт объект внутри цикла → вынести создание объекта за пределы цикла и указать это явно в spec/What-to-do → предотвратить дублирование auth flow и N лишних round-trips
-**Context:** Task 7 (Drive migration) получил critical finding: `SheetsClient` создавался внутри цикла в `main()`, дублируя OAuth-поток для каждого суда. Исправлено в review round 1 — SheetsClient создаётся один раз и передаётся параметром. TDD Anchors не покрыли этот сценарий.
-**Pattern:** Для скриптов с дорогостоящей инициализацией (OAuth, DB, сетевые сессии) явно указывать в spec/What-to-do: "создать объект один раз перед циклом, передавать параметром". Иначе агент-разработчик создаёт объект там где он нужен — логично локально, но критично по стоимости.
-**Scope:** universal
-**Category:** sequencing
-
-### 2026-04-03 management-panel / session 3: out-of-plan изменение файла создаёт audit gap
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** файл изменён вне task-плана фичи (hotfix, дополнение вне scope) → явно добавить файл в file lists следующей audit wave → предотвратить ship неаудированного кода
-**Context:** `src/parser/client.py` получил ReadTimeout-изменения вне плана management-panel. Файл не попал ни в один audit task file list. Gap обнаружен только в session 3 при сверке session-prompt с выполненными задачами — потребовал ad-hoc ревью.
-**Pattern:** Когда файл изменяется вне плана текущей фичи — немедленно добавить его в file lists audit wave (или создать ad-hoc audit entry). Audit agents читают именно file lists из task.md; файлы не в списке — не проверяются, независимо от реальных изменений в коде.
-**Scope:** situational
-**Situation:** feature с audit wave, где файлы задаются явным списком в task.md
-**Category:** scope-management
-
-### 2026-04-03 management-panel / session 3: production-дефолт из spec без верификации с пользователем
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** tech-spec или task содержит production-дефолт (время запуска, порт, лимит) → явно верифицировать значение с пользователем на этапе spec/task → избежать поздней коррекции, каскадирующей на несколько файлов
-**Context:** `run_time_msk` дефолт был "10:00" с task 2. Обнаружен как неверный только в session 3 при обсуждении cron. Исправление прошло через 3 файла: DDL, save_court_settings(), тест. Пользователь подтвердил "05:30 MSK" — очевидная информация, которую можно было получить в начале.
-**Pattern:** Production-дефолты (время, порт, лимит запросов, retention) — не технические решения, а бизнес-данные. Фиксировать явно в spec как вопрос к пользователю, не заполнять placeholder-значением. Поздняя коррекция дефолта в реляционной схеме каскадирует: DDL + код + тесты.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-03 management-panel / session 2-3: Сигнатура функции изменилась в одной задаче — вызывающий код в другой задаче не обновлён
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** задача меняет обязательный параметр публичной функции → в промте downstream-задачи явно указать новую сигнатуру → не допустить silent TypeError в рантайме из-за cross-task wiring gap
-**Context:** Task 3 добавила `court_name: str` как обязательный параметр `write_status_tab()`. Task 6 обновила прямые вызовы, но вызов в `main.py` остался без параметра — TypeError обнаружен только в Task 9 (code audit), после того как функция прошла 2 волны ревью.
-**Pattern:** Когда задача меняет сигнатуру функции (добавляет/убирает обязательный параметр) — явно включить новую сигнатуру в промт КАЖДОЙ downstream-задачи, которая эту функцию вызывает. Изолированные unit-тесты этот gap не ловят.
-**Scope:** universal
-**Category:** sequencing
-
-### 2026-04-03 panel-next-run / session 1: разделение UI-области скрывает замену, а не добавление
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** пользователь описывает "разделить экран/область на X и Y" → уточнить явно выживают ли существующие interaction-элементы (чекбоксы, кнопки) в новой раскладке → не принять additive-изменение за replacement и не переписывать spec после уточнения
-**Context:** Запрос "разделить панель судов на 2 секции" был интерпретирован как additive (добавить правую панель, оставить чекбоксы). Уточняющий вопрос о ручном запуске вскрыл противоположное: чекбоксы убираются полностью, суды перемещаются между панелями через +/−.
-**Pattern:** Когда пользователь говорит "разделить [UI-область] на части" — задать явный вопрос: "существующие элементы взаимодействия выживают или заменяются?". Слово "разделить" чаще означает реорганизацию, а не добавление.
-**Scope:** situational
-**Situation:** интервью для фичи, затрагивающей существующую интерактивную UI-область
-**Category:** information-gathering
-
-### 2026-04-03 panel-next-run / session 1: instant-save операции требуют явных rollback AC
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** user-spec описывает instant-save (каждый клик немедленно пишет в DB/сервер) → явно добавить AC для ошибки сети и визуального rollback до валидации → не получить critical missing negative scenarios в round 1
-**Context:** Spec для panel-next-run описывал instant-save через +/− кнопки без секции обработки ошибок. Quality validator нашёл это как critical в round 1. Паттерн: instant-save без rollback — систематически пропускаемый happy-path bias.
-**Pattern:** Для любой instant-save операции (клик → запись в DB без подтверждающей кнопки) сразу добавить в spec: секцию "Обработка ошибок" с rollback-поведением и AC для негативного сценария. Validator найдёт их как critical в любом случае.
-**Scope:** universal
-**Category:** scope-management
-
-### 2026-04-04 juridical-parser / ops: молчаливый сбой экспорта — успех pipeline ≠ успех доставки
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** pipeline завершается успешно (парсинг, обогащение) но внешний экспорт падает с auth-ошибкой → добавить отдельный алерт на N подряд `exported=0` независимо от типа ошибки → обнаружить молчаливый сбой до жалобы пользователя
-**Context:** Google OAuth токен истёк/отозван. Парсер 2 дня сохранял данные в SQLite с `Pipeline complete: N saved, 0 exported, 1 errors` — без алерта. Клиент не видел данных в Sheets, но парсер формально "работал".
-**Pattern:** Когда pipeline сохраняет данные локально и экспортирует во внешний сервис — мониторить не только успех pipeline, но и `exported > 0` как отдельную метрику. Auth-ошибки внешних сервисов (OAuth, API key) молчаливы: код 0, данные целы, но доставка не произошла. Добавить алерт при N≥2 подряд экспортах с `exported=0`.
-**Scope:** universal
-**Category:** recovery
-
-### 2026-04-03 panel-next-run / session 1: проверять data-flow при параллельной генерации задач
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** tech-spec группирует задачи в одну волну / task B потребляет output task A той же волны → при валидации проверить: wave(B) > wave(A) для каждой пары (A→output, B→consumer) → избежать каскадного переноса волн в fix-раунде
-**Context:** Tech-spec поставил Tasks 1 и 2 в Wave 1; task-creators скопировали это буквально. Task 2 использует `set_court_active` из Task 1 — конфликт обнаружен только в validation round 1. Исправление потребовало каскадного переноса ВСЕХ последующих волн (1→2 cascade: Tasks 3→3, 4→4... 11→9).
-**Pattern:** После параллельной генерации задач, до draft-commit, проверить граф data-flow: для каждого упоминания функции/класса из Task A в коде Task B — убедиться, что wave(B) > wave(A) и A ∈ depends_on(B). Tech-spec может группировать задачи по смыслу, игнорируя порядок выполнения.
-**Scope:** situational
-**Situation:** task-decomposition — параллельная генерация задач из tech-spec
-**Category:** sequencing
-
-### 2026-04-04 juridical-parser / ops: SCP/heredoc заблокированы — файл передаётся через SSH pipe
-
-**Seen:** 2
-**Adapted:** —
-**Triad:** SCP или heredoc внутри SSH даёт Connection closed, простые SSH-команды проходят → использовать `cat file | ssh host "cat > /remote/path"` → загрузить файл без смены порта или auth
-**Context:** На сервере заказчика SCP стабильно давал Connection closed; heredoc (`ssh "cat > /etc/... << 'EOF'"`) тоже падал. SSH pipe (`cat | ssh "cat >"`) прошёл с первой попытки в обоих случаях.
-**Pattern:** Когда SCP или heredoc внутри SSH падают с Connection closed — писать файл локально и передавать через stdin: `cat file | ssh host "cat > /remote/path"`. Сервер может отклонять SCP-subsystem и обрывать длинные inline-команды, но stdin-pipe остаётся рабочим.
-**Scope:** situational
-**Situation:** удалённый сервер отклоняет SCP или heredoc, но принимает короткие SSH-команды
-**Category:** recovery
-
-### 2026-04-04 juridical-parser / ops: restart сервиса не освобождает connection slots — нужно убивать зависшие процессы
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** systemctl restart ssh выполнен, но Connection closed продолжается → убить зависшие клиентские процессы (`pkill -f "sshd: user@"`) до или после restart → реально освободить MaxStartups-слоты
-**Context:** После инцидента с параллельными SSH-командами (~8 зависших grep-процессов), `systemctl restart ssh` не помог — зависшие sshd-процессы пережили restart и продолжали занимать слоты. Только явное убийство процессов освобождает соединения.
-**Pattern:** Когда сервис перезапущен но лимит соединений не снялся — сервис-рестарт не завершает уже установленные клиентские сессии. Нужно явно убить зависшие процессы: `pkill -f "sshd: username@"` для SSH, аналогично для других сервисов с per-connection процессами.
-**Scope:** universal
-**Category:** recovery
-
-### 2026-04-04 panel-next-run / session 1: Visible disabled stubs trigger reactive scope decisions during user verification
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** UI-задача добавляет visible disabled-кнопки как placeholder для будущей задачи → не добавлять видимые disabled placeholders если будущая задача ещё не подтверждена → предотвратить неожиданную отмену фичи из user verification
-**Context:** Task 3 добавила disabled-заглушки "+ группу" / "− группу" в header каждой ФО-группы (с title "Будет реализовано в Task 5"). При user verification пользователь увидел кнопки, решил что групповой перенос не нужен — Task 5 была отменена.
-**Pattern:** Disabled UI placeholders для будущих задач отображают пользователю ещё не согласованный UX — он оценивает фичу раньше чем она была явно подтверждена. Если будущая задача в плане, но явно не согласована с пользователем — либо не добавлять visible стабы, либо убирать их перед user verification. HTML-комментарии безопасны; disabled DOM-элементы — нет.
-**Scope:** situational
-**Situation:** UI-задача в multi-task фиче создаёт placeholder-элементы для следующих задач
-**Category:** scope-management
-
-### 2026-04-04 panel-next-run / session 1: Optimistic UI fetch chains need .catch() to restore mutated state
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** JS-функция устанавливает button.disabled = true в начале fetch-цепочки (оптимистичный UI) → добавить .catch() на каждую fetch-цепочку которая мутирует UI state → предотвратить permanently disabled controls при сетевой ошибке
-**Context:** Task 3: btnRun, btnSchedule и polling-fetch все устанавливали button.disabled=true до запроса. Без .catch() любая сетевая ошибка (timeout, CORS, offline) оставляла кнопки заблокированными навсегда — .then() обрабатывал HTTP-ошибки, но не network rejection.
-**Pattern:** В оптимистичном UI: если fetch-цепочка мутирует UI-состояние в начале (disabled, spinner, state = 'loading') — добавить .catch() который восстанавливает состояние и показывает ошибку. Обработка HTTP-ошибок в .then() не защищает от network rejection. Правило: каждая fetch-цепочка с side-effectами должна иметь .catch().
-**Scope:** universal
-**Category:** problem-decomposition
-
-### 2026-04-04 panel-next-run / session 1: Уточнять границы отмены задачи — UI или вся функциональность
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** пользователь отменяет задачу формулировкой «не нужен» без уточнения границ → уточнить: отменяется UI-слой или вся функциональность (API, DB) → не удалить инфраструктуру которая понадобится при передумывании
-**Context:** Task 5 (групповые кнопки) была отменена фразой «не нужен групповой перенос». Batch API (Task 2) был сохранён. В следующей сессии пользователь передумал — групповой перенос понадобился, и batch API позволил реализовать его без переработки.
-**Pattern:** Когда пользователь отменяет задачу, уточни сразу: "отменяется только UI или вся функциональность?" Если отменяется только UI — сохранить API/DB-слой и пометить его как "без UI-кнопок, endpoint доступен". Это предотвращает удаление инфраструктуры, которую придётся воссоздавать при передумывании.
-**Scope:** universal
-**Category:** scope-management
-
-### 2026-04-04 panel-next-run / session 1: Не вызывать скилл-конфигуратор ради диагностического вопроса
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** пользователь задаёт диагностический вопрос про настройку (не просит её менять) → отвечать текстом без вызова скилла-конфигуратора → не тратить тысячи токенов на загрузку полной документации скилла ради ответа на вопрос
-**Context:** Пользователь спросил "почему каждый раз приходится вручную включать соннет?". Вместо текстового ответа был вызван скилл update-config, который загрузил полную JSON-схему settings.json (~44K токенов). В итоге весь остаток сессии работал с раздутым контекстом.
-**Pattern:** Перед вызовом скилла проверь: пользователь хочет ИЗМЕНИТЬ конфигурацию или просто ПОНЯТЬ как что-то работает? Если это вопрос — ответь текстом. Скилл вызывать только когда есть явный запрос на действие: "сделай X", "настрой Y", "добавь Z".
-**Scope:** universal
-**Category:** tool-selection
-
-### 2026-04-04 panel-next-run / session 2: несколько процессов на порту маскируются под кеш браузера
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** файл изменён, сервер перезапущен, но response не изменился → проверить `netstat` на количество процессов на порту ДО диагностики кеша → не тратить итерации на "кеш браузера" при конфликте процессов
-**Context:** Flask-сервер запускался через background-команды несколько раз — три процесса слушали один порт, старый отвечал на запросы.
-**Pattern:** Если dev-сервер отдаёт устаревший контент после перезапуска — сначала `netstat -ano | grep :PORT` и считай процессы. Один процесс → диагностируй кеш. Несколько → убей все, запусти один.
-**Scope:** universal
-**Category:** recovery
-
-### 2026-04-04 panel-next-run / session 2: settings-поле существует в DB/dataclass, но молча не используется в pipeline
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** UI экспонирует конфигурируемое поле, пользователь спрашивает "а это работает?" → grep поля в pipeline-коде до ответа → не подтверждать работу фичи которую pipeline молча игнорирует
-**Context:** `days_count` хранился в `CourtSettings` и БД, но `main.py` жёстко использовал `yesterday` — обнаружилось только при прямом вопросе.
-**Pattern:** Перед подтверждением работы конфигурируемого параметра — grep его имени в pipeline-коде. Если находится только в dataclass/DB-схеме, но не в логике вычислений — фича не реализована, даже если UI показывает поле.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-04 panel-next-run / session 3: расширение API-ответа ломает exact-equality тест без немедленного сигнала
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** расширение API-ответа новым полем → grep тест-файлы на exact-equality assertions (`== {`) для этого endpoint → не допустить отложенного тест-фейла обнаруживаемого только в следующей сессии
-**Context:** Предыдущая сессия добавила `run_time_msk` в ответ `/api/courts/active`, тест `assert data == {"courts": []}` не обновили — фейл обнаружен только при следующем запуске full suite.
-**Pattern:** При добавлении поля к существующему API-ответу — grep тест-файлы на `== {` и `== [` для этого endpoint. Найденные exact-equality assertions либо дополнить новым полем, либо ослабить до subset check.
-**Scope:** universal
-**Category:** sequencing
