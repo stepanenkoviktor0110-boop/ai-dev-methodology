@@ -1,4 +1,4 @@
-# AI-First Development Methodology v1.5 — Claude Code
+# AI-First Development Methodology v1.6 — Claude Code
 
 [English version](README.md)
 
@@ -74,8 +74,7 @@ ls ~/.claude/skills/methodology/SKILL.md
 /do-feature                    # Шаг 4: Выполнение задач по волнам
                                #   ⛔ GATE 3: пользователь подтверждает скоуп сессии + LOC
                                #   ⛔ GATE 4: конец сессии → отчёт + промт + СТОП
-/retrospective                 # Шаг 5: Извлечь уроки → обновить скиллы
-/done                          # Шаг 6: Обновить документацию проекта → архивировать фичу
+/done                          # Шаг 5: Обновить документацию проекта → архивировать фичу
 ```
 
 Каждый шаг имеет валидаторы и **блокирующие гейты** — ни один шаг не продолжается без явного одобрения пользователя:
@@ -99,6 +98,14 @@ ls ~/.claude/skills/methodology/SKILL.md
 
 ```
 /write-code                    # TDD-цикл: план → тесты → код → ревью
+/sketch                        # Быстрый прототип: 3–5 вопросов → код → решение развивать или архивировать
+```
+
+### Управление сессией
+
+```
+/pause                         # Сохранить состояние сессии → сгенерировать промт для возобновления
+/quick-learning                # Извлечь уроки из текущей сессии → обновить reasoning patterns
 ```
 
 ### Дизайн-пайплайн
@@ -107,6 +114,7 @@ ls ~/.claude/skills/methodology/SKILL.md
 /design-system-init            # Создать дизайн-систему: tokens.json + компоненты
 /design-spec                   # Дизайн-спецификация через адаптивное интервью
 /design-plan                   # Дизайн-план с решениями по лейаутам
+/design-task-decompose         # Декомпозиция дизайн-плана на атомарные задачи
 /design-generate               # Генерация HTML/CSS страниц из текстовых описаний
 /photo-crop                    # Расчёт object-position для фото в лейаутах
 /design-review                 # Ревью UI-кода против дизайн-токенов
@@ -117,8 +125,9 @@ ls ~/.claude/skills/methodology/SKILL.md
 
 | Команда | Назначение |
 |---------|-----------|
-| `/init-project-knowledge` | Заполнить документацию проекта через интервью |
-| `/retrospective` | Извлечь уроки, обновить скиллы |
+| `/infrastructure-setup` | Dev-инфраструктура: Docker, pre-commit хуки, настройка тестирования |
+| `/deploy-pipeline` | CI/CD пайплайн и конфигурация деплоя |
+| `/documentation-writing` | Аудит и обновление базы знаний проекта |
 | `/done` | Финализировать фичу, обновить документацию, архивировать |
 
 ## Как это работает
@@ -152,7 +161,7 @@ your-project/
 
 ```
 ~/.claude/skills/                   # Этот репозиторий
-├── skills/                        # 25+ скиллов (методология, выполнение, качество, дизайн)
+├── skills/                        # 39+ скиллов (методология, выполнение, качество, дизайн)
 ├── shared/
 │   ├── work-templates/            # Шаблоны для спеков, задач, сессий
 │   └── design-references/         # Кросс-проектный дизайн-опыт
@@ -168,7 +177,7 @@ your-project/
 - **Handoff сессий** — структурированный отчёт + промт для следующей сессии на каждом стопе
 - **Just-In-Time Context** — агенты читают только то, что нужно для текущей задачи
 - **Единая система знаний** — triad-based буфер reasoning-patterns.md, pruning, промоушен паттернов в скиллы
-- **Ретроспектива** — уроки встраиваются обратно в скиллы после каждой фичи
+- **Непрерывное обучение** — quick-learning запускается автоматически в конце сессии, skill-trainer встраивает накопленные триады в скиллы
 
 ### Архитектура агентов
 
@@ -190,11 +199,13 @@ Claude Code использует встроенный Agent tool со специ
 
 | Категория | Скиллы |
 |-----------|--------|
-| Планирование | user-spec-planning, tech-spec-planning, task-decomposition, project-planning |
-| Выполнение | code-writing, feature-execution, pre-deploy-qa, post-deploy-qa |
-| Качество | code-reviewing, security-auditor, test-master |
-| Дизайн | design-system-init, design-spec, design-plan, design-generate, design-review, design-retrospective, photo-crop |
-| Мета | methodology, retrospective, quick-learning, documentation-writing, skill-master, prompt-master |
+| Планирование | `user-spec-planning`, `tech-spec-planning`, `task-decomposition`, `project-planning` |
+| Выполнение | `feature-execution`, `code-writing`, `do-task`, `pre-deploy-qa`, `post-deploy-qa`, `deploy-pipeline` |
+| Качество | `code-reviewing`, `security-auditor`, `test-master` |
+| Дизайн | `design-system-init`, `design-spec`, `design-plan`, `design-plan-planning`, `design-task-decompose`, `design-generate`, `design-review`, `design-retrospective`, `photo-crop` |
+| Инфраструктура | `init-project`, `init-project-knowledge`, `infrastructure-setup` |
+| Мета | `methodology`, `quick-learning`, `skill-trainer`, `documentation-writing`, `prompt-master` |
+| Утилиты | `sketch`, `pause`, `done` |
 
 Полные детали любого скилла:
 ```
@@ -211,7 +222,7 @@ Claude Code использует встроенный Agent tool со специ
 | Конфиг | `~/.claude/settings.json` | `~/.codex/config.toml` |
 | Расположение скиллов | `~/.claude/skills/` | `~/.agents/` |
 | Модели | Claude (Opus/Sonnet/Haiku) | GPT-5.x тиры |
-| Дизайн-пайплайн | Полный (4 скилла) | Полный (4 скилла) |
+| Дизайн-пайплайн | Полный (9 скиллов) | Полный (4 скилла) |
 | Директория agents/ | Нет (валидаторы через Agent tool) | Да (`agents/`) |
 
 ## Основано на
@@ -219,6 +230,13 @@ Claude Code использует встроенный Agent tool со специ
 Эволюционный форк [molyanov-ai-dev](https://github.com/pavel-molyanov/molyanov-ai-dev) Павла Молянова (MIT License).
 
 ## Changelog
+
+### v1.6 — Инструменты сессий + расширенный дизайн-пайплайн (2026-04-04)
+
+- **sketch** — режим быстрого прототипирования: 3–5 вопросов → код → решение развивать или архивировать. Закрывает зазор между "ничего" и "полный пайплайн"
+- **pause** — управление состоянием сессии: сохраняет чекпоинт, статусы задач, decisions.md, git status → генерирует промт для возобновления с полным контекстом
+- **дизайн-пайплайн расширен** — добавлены `design-spec`, `design-plan`, `design-plan-planning`, `design-task-decompose`. Полная 9-скилл дизайн-система от спецификации до реализации
+- **quick-learning** запускается автоматически в конце сессии через хуки `feature-execution` и `do-task`; `/quick-learning` также доступен как ручная команда
 
 ### v1.5 — Skill Trainer: встраивание триад в скиллы (2026-04-01)
 
@@ -232,4 +250,4 @@ Claude Code использует встроенный Agent tool со специ
 - **Pruning trigger** — автоматическая очистка при >25 записей
 - **Mechanical pre-filter** — 3+ content words в Goal = Near match candidate
 - **Design categories** — design-taste, design-process, design-iteration
-- **Design pipeline** — 4 скилла для UI/UX: design-system-init, design-generate, design-review, design-retrospective
+- **Дизайн-пайплайн** — 4 скилла для UI/UX: design-system-init, design-generate, design-review, design-retrospective

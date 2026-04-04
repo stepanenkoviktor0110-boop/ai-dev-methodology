@@ -1,4 +1,4 @@
-# AI-First Development Methodology v1.5 — Claude Code
+# AI-First Development Methodology v1.6 — Claude Code
 
 [Русская версия](README.ru.md)
 
@@ -74,8 +74,7 @@ ls ~/.claude/skills/methodology/SKILL.md
 /do-feature                    # Step 4: Execute tasks by waves
                                #   ⛔ GATE 3: user confirms session scope + LOC before start
                                #   ⛔ GATE 4: session end → report + handoff prompt + STOP
-/retrospective                 # Step 5: Extract lessons → update skills
-/done                          # Step 6: Update project docs → archive feature
+/done                          # Step 5: Update project docs → archive feature
 ```
 
 Each step has validators and **blocking gates** — no step proceeds without explicit user approval:
@@ -99,6 +98,14 @@ Each step has validators and **blocking gates** — no step proceeds without exp
 
 ```
 /write-code                    # TDD cycle: plan → tests → code → review
+/sketch                        # Quick prototype: 3–5 questions → code → decide to develop or archive
+```
+
+### Session Management
+
+```
+/pause                         # Save session state → generate resume prompt
+/quick-learning                # Extract lessons from current session → update reasoning patterns
 ```
 
 ### Design Pipeline
@@ -107,6 +114,7 @@ Each step has validators and **blocking gates** — no step proceeds without exp
 /design-system-init            # Create design system: tokens.json + components
 /design-spec                   # Design specification through adaptive interview
 /design-plan                   # Design plan with layout decisions
+/design-task-decompose         # Decompose design plan into atomic task files
 /design-generate               # Generate HTML/CSS pages from text descriptions
 /photo-crop                    # Calculate object-position for photos in layouts
 /design-review                 # Review UI code against design tokens
@@ -117,8 +125,9 @@ Each step has validators and **blocking gates** — no step proceeds without exp
 
 | Command | Purpose |
 |---------|---------|
-| `/init-project-knowledge` | Fill project documentation via interview |
-| `/retrospective` | Extract lessons learned, update skills |
+| `/infrastructure-setup` | Dev infrastructure: Docker, pre-commit hooks, testing setup |
+| `/deploy-pipeline` | CI/CD pipeline and deployment configuration |
+| `/documentation-writing` | Audit and update project knowledge base |
 | `/done` | Finalize feature, update docs, archive |
 
 ## How It Works
@@ -152,7 +161,7 @@ your-project/
 
 ```
 ~/.claude/skills/                   # This repository
-├── skills/                        # 25+ skills (methodology, execution, quality, design)
+├── skills/                        # 39+ skills (methodology, execution, quality, design)
 ├── shared/
 │   ├── work-templates/            # Templates for specs, tasks, sessions
 │   └── design-references/         # Cross-project design experience
@@ -168,7 +177,7 @@ your-project/
 - **Session Handoff** — structured report + generated prompt for next session at each stop
 - **Just-In-Time Context** — agents read only what's needed for current task
 - **Unified Knowledge System** — triad-based reasoning-patterns.md buffer, pruning, promotion of patterns into skills
-- **Retrospective** — lessons embedded back into skills after each feature
+- **Continuous Learning** — quick-learning runs automatically at session end, skill-trainer embeds accumulated triads into skills
 
 ### Agent Architecture
 
@@ -190,15 +199,16 @@ Claude Code uses the built-in Agent tool with specialized subagent types for par
 
 | Category | Skills |
 |----------|--------|
-| Planning | user-spec-planning, tech-spec-planning, task-decomposition, project-planning |
-| Execution | code-writing, feature-execution, pre-deploy-qa, post-deploy-qa |
-| Quality | code-reviewing, security-auditor, test-master |
-| Design | design-system-init, design-spec, design-plan, design-generate, design-review, design-retrospective, photo-crop |
-| Meta | methodology, retrospective, quick-learning, documentation-writing, skill-master, prompt-master |
+| Planning | `user-spec-planning`, `tech-spec-planning`, `task-decomposition`, `project-planning` |
+| Execution | `feature-execution`, `code-writing`, `do-task`, `pre-deploy-qa`, `post-deploy-qa`, `deploy-pipeline` |
+| Quality | `code-reviewing`, `security-auditor`, `test-master` |
+| Design | `design-system-init`, `design-spec`, `design-plan`, `design-plan-planning`, `design-task-decompose`, `design-generate`, `design-review`, `design-retrospective`, `photo-crop` |
+| Setup | `init-project`, `init-project-knowledge`, `infrastructure-setup` |
+| Meta | `methodology`, `quick-learning`, `skill-trainer`, `documentation-writing`, `prompt-master` |
+| Utilities | `sketch`, `pause`, `done` |
 
 For full details on any skill:
 ```
-# Read the skill's SKILL.md
 ~/.claude/skills/{skill-name}/SKILL.md
 ```
 
@@ -212,7 +222,7 @@ This repo and [ai-dev-methodology-codex](https://github.com/stepanenkoviktor0110
 | Config location | `~/.claude/settings.json` | `~/.codex/config.toml` |
 | Skills location | `~/.claude/skills/` | `~/.agents/` |
 | Models | Claude (Opus/Sonnet/Haiku) | GPT-5.x tiers |
-| Design pipeline | Full (4 skills) | Full (4 skills) |
+| Design pipeline | Full (9 skills) | Full (4 skills) |
 | Agents directory | No (validators via Agent tool) | Yes (`agents/`) |
 
 ## Based on
@@ -220,6 +230,13 @@ This repo and [ai-dev-methodology-codex](https://github.com/stepanenkoviktor0110
 Evolved fork of [molyanov-ai-dev](https://github.com/pavel-molyanov/molyanov-ai-dev) by Pavel Molyanov (MIT License).
 
 ## Changelog
+
+### v1.6 — Session tools + expanded design pipeline (2026-04-04)
+
+- **sketch** — lightweight prototyping mode: 3–5 questions → code → decide to develop or archive. Closes the gap between "nothing" and "full pipeline"
+- **pause** — session state management: saves checkpoint, task statuses, decisions.md, git status → generates resume prompt with full context
+- **design pipeline expanded** — `design-spec`, `design-plan`, `design-plan-planning`, `design-task-decompose` added. Full 9-skill design system from specification to implementation
+- **quick-learning** runs automatically at session end via `feature-execution` and `do-task` hooks; `/quick-learning` also available as manual command
 
 ### v1.5 — Skill Trainer: embedding triads into skills (2026-04-01)
 
