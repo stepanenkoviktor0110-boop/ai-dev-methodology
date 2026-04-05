@@ -1649,3 +1649,27 @@ Patterns that apply to any project, any stack, any domain.
 **Category:** design-process
 
 ---
+### 2026-04-05 cert-report / session 1: depends_on внутри одной волны — логическая зависимость ≠ wave-зависимость
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** task-creator ставит depends_on=[N] задаче в той же wave, что и задача N → в Phase 0 явно проверять wave(зависимости) < wave(текущей задачи) для каждой пары → предотвратить противоречие "параллельная волна + зависимость от соседней задачи"
+**Context:** Задачи 2, 3, 4 получили depends_on: [1] и wave: 1 — task-creator добавил логическую зависимость (нужна миграция для тестов), но не проверил что зависимость и зависящая задача в одной волне.
+**Pattern:** Логическая зависимость (нужно X для тестов) ≠ wave-зависимость (нужно X для написания кода). Если задача N и зависимость от N в одной wave — убрать depends_on, перенести тест-зависимость в Details. При генерации задач явно сверять: wave(depends_on) < wave(задачи) для каждой пары.
+**Scope:** universal
+**Category:** sequencing
+
+---
+
+### 2026-04-05 cert-report / session 1: SQL сниппет в tech-spec может не включать существующие поля таблицы
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** tech-spec Data Models содержит UPDATE SQL для существующей таблицы → reality-checker сверяет SQL сниппет против реального route.ts (не только против migration) — ищет параметры в текущем UPDATE которых нет в сниппете → предотвратить тихую потерю данных при буквальном следовании техспеку
+**Context:** Tech-spec показал UPDATE с 4 параметрами (только новые threshold поля), реальный route.ts имел 3 параметра включая cert_recipients. Реализатор по сниппету техспека написал бы UPDATE без cert_recipients и уничтожил данные.
+**Pattern:** При UPDATE существующей таблицы tech-spec описывает только новые поля, но реальный SQL должен включать ВСЕ поля. Для любого UPDATE SQL в tech-spec — сверяй параметры со списком полей в реальном маршруте, не только с migration и новыми колонками.
+**Scope:** situational
+**Situation:** Tech-spec Data Models section содержит UPDATE SQL для таблицы с уже существующими полями
+**Category:** information-gathering
+
+---
