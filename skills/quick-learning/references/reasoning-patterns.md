@@ -1676,7 +1676,7 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-04-05 fix-xlsx-export-headers / session 2: верифицировать git push перед deploy на VPS
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Triad:** deploy-волна начинается с git pull на VPS → перед SSH на сервер выполнить `git log origin/branch..HEAD` локально → не получить блокер "нечего тянуть" из-за незапушенных коммитов
 **Context:** При деплое на VPS оказалось, что коммиты сессий 1–2 не были запушены в origin — git pull на сервере ничего не подтянул, потребовался лишний шаг git push.
@@ -1695,5 +1695,17 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** При генерации XLSX через SheetJS/json_to_sheet: числовые ключи всегда идут первыми. Всегда передавай явный массив заголовков через опцию `header` или используй `aoa_to_sheet` для контроля порядка колонок.
 **Scope:** universal
 **Category:** tool-selection
+
+---
+
+### 2026-04-05 cert-report / session 2: SQL UPDATE с опциональным NOT NULL полем — использовать COALESCE
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** SQL UPDATE обновляет подмножество полей таблицы, часть полей имеет NOT NULL → использовать `COALESCE($N, column_name)` для полей не переданных в запросе → предотвратить constraint violation при частичном обновлении
+**Context:** Интеграционный тест PUT /api/admin/settings отправлял только cert-threshold поля без cert_recipients — handler передавал null в SQL UPDATE, нарушая NOT NULL constraint.
+**Pattern:** Если SQL UPDATE охватывает не все NOT NULL колонки таблицы, используй `COALESCE($param, existing_column)` в SET-части — это сохраняет текущее значение когда параметр не передан. Альтернатива: читать существующие значения перед UPDATE и подставлять как fallback.
+**Scope:** universal
+**Category:** problem-decomposition
 
 ---
