@@ -12,6 +12,17 @@ Single transit buffer for ALL methodology knowledge — both reasoning patterns 
 Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
+
+### 2026-04-05 mbc-site / demo: Проверить platform перед Unix-путями в bash
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** bash-команда с `/tmp` или `/dev/null` в Windows-окружении → читать `Platform` из environment context перед написанием → не получать FileNotFoundError на следующем шаге
+**Context:** Скачал PNG через curl в `/tmp`, потом Read упал — файл не существует, потому что на Windows `/tmp` не монтируется; нужно было использовать `C:/tmp` или `d:/tmp`.
+**Pattern:** Перед любой bash-командой с хардкодным Unix-путём (`/tmp`, `/dev/null`, `~`) — проверить Platform в environment. На `win32` заменить на `C:/tmp` или использовать `$TEMP`. Подсказка в system-контексте всегда есть.
+**Scope:** situational
+**Situation:** окружение win32, bash-команды с Unix-путями к временным файлам
+**Category:** tool-selection
 ### 2026-04-04 juridical-parser / session 3: Проверить git history перед реализацией задач из session prompt
 
 **Seen:** 1
@@ -1709,3 +1720,43 @@ Patterns that apply to any project, any stack, any domain.
 **Category:** problem-decomposition
 
 ---
+
+### 2026-04-05 juridical-parser / session 4: Slow response = check startup network calls
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** web app отвечает 20+ сек несмотря на простые route handlers → проверить весь module-level код и background threads на блокирующие сетевые вызовы при старте → найти root cause без профилирования
+**Context:** Flask/gunicorn приложение отвечало 25 секунд на статический route. Маршрут не делал ничего — проблема была в background thread на module-level, вызывающем `get_credentials()`, который зависал при попытке OAuth refresh.
+**Pattern:** При медленном response в web app — первым делом проверь module-level код (выполняется при импорте) и background threads, запускаемые при старте: именно там бывают блокирующие сетевые вызовы (auth token refresh, API ping). Route handlers — последнее место где искать.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-04-05 juridical-parser / session 4: Migration helpers — удалять сразу или помечать с датой
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** migration helper / detection banner остался в коде после завершения или отката миграции → удалить migration helper сразу после завершения; если нет — пометить TODO с датой → не получить ложные срабатывания и блокировки при следующем изменении архитектуры
+**Context:** Баннер `_check_old_format_banner` проверял наличие таблиц в рутовой папке Drive и предупреждал о "старом формате". Когда архитектура вернулась к рутовой папке — баннер начал ложно срабатывать на текущие данные и блокировать воркеры.
+**Pattern:** Migration helpers (detection banners, one-time scripts, format checks) теряют смысл после завершения или отката миграции. Удаляй их сразу по завершению задачи. Если нет времени — добавь `# TODO: remove after YYYY-MM-DD migration complete`. Оставленный навсегда — станет logic bug при следующем изменении структуры.
+**Scope:** universal
+**Category:** scope-management
+
+### 2026-04-06 employee-cabinet-updates / session 1: wave file-overlap check before finalizing
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** при составлении параллельной волны в tech-spec → проверить Files to modify всех задач волны попарно на пересечения файлов → предотвратить merge conflict до того, как его поймает validator
+**Context:** Tasks 1 и 2 Wave 1 оба модифицировали `admin/reports/page.tsx` — обнаружил template validator в phase 5, потребовалось объединить задачи.
+**Pattern:** Перед утверждением состава волны пройтись по Files to modify всех задач попарно. Пересечение файлов → объединить задачи или перенести одну в следующую волну. Делать ДО запуска валидаторов, не после.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-04-06 employee-cabinet-updates / session 1: resource-ID endpoint requires target-user role check
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** новый endpoint получает только resource_id без user_id → явно добавить проверку роли target-пользователя ресурса относительно прав вызывающего → предотвратить IDOR через косвенный доступ к данным другого пользователя
+**Context:** `POST /api/admin/timesheet-requests/[id]/approve` мог позволить любому admin разблокировать табель другого admin — IDOR поймал security validator.
+**Pattern:** Когда endpoint получает только resource_id (без user_id), явно проверить роль target-пользователя ресурса: ownership через resource_id ≠ permission на target_user. Выносить это в Decisions tech-spec, не оставлять имплементатору.
+**Scope:** universal
+**Category:** problem-decomposition
