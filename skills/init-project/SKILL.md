@@ -5,12 +5,6 @@ description: Initialize project with template, git, and GitHub
 
 # Init Project
 
-## 0. Sketch Offer
-
-Before starting: ask the user once — "Хочешь начать со скетча? `/sketch` — быстрый прототип за 3-5 вопросов, без спеков и валидаторов. Подходит если идея ещё не оформлена или нужен быстрый proof-of-concept. После скетча можно перейти к полному пайплайну или оставить как есть."
-
-If user declines or says the idea is already clear → proceed to step 1.
-
 ## 1. Check Uncommitted Changes
 
 If inside a git repo with uncommitted changes — ask user whether to commit first, continue without commit, or stop.
@@ -46,10 +40,21 @@ After copy:
 5. Initial commit and push to current branch
 6. Create `dev` branch, push it
 
-## 4. Final Report
+## 4. Init Project Knowledge
+
+Run `init-project-knowledge` skill to fill project documentation from existing files in the repo.
+
+## 5. Sketch Offer
+
+After project knowledge is initialized, ask the user once — "Хочешь начать со скетча? `/sketch` — быстрый прототип за 3-5 вопросов, без спеков и валидаторов. Подходит если идея ещё не оформлена или нужен быстрый proof-of-concept. После скетча можно перейти к полному пайплайну или оставить как есть."
+
+If user declines or says the idea is already clear → suggest `project-planning` skill.
+
+## 6. Final Report
 
 Show user:
 - GitHub URL
 - Branches created
 - Old files location (`old/`) if any existed
-- Next step: run `project-planning` skill to fill project documentation
+- Project knowledge filled: list docs created
+- Next step: `/sketch` or `project-planning`
