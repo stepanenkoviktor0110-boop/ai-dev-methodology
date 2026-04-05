@@ -105,11 +105,11 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-04-01 employee-cabinet / session 3: DB-соединение — проверить до запуска QA волны
 
-**Seen:** 1
+**Seen:** 2 (employee-cabinet/session 3, cert-report/session 1)
 **Adapted:** —
-**Triad:** QA волна с integration/E2E тестами требующими БД → верифицировать DB-соединение одним ping-запросом ДО запуска тест-сьютов → не тратить QA волну на инфраструктурный блокер
-**Context:** Task 14 — все 28 integration-тестов и 12 E2E-тестов заблокированы 28P01 (неверный пароль PostgreSQL в .env). Юнит-тесты (20/20) прошли, но QA волна не могла верифицировать ни один integration AC. Проблема обнаружилась только при запуске тестов, не на этапе подготовки волны.
-**Pattern:** Перед запуском integration/E2E тестового сьюта добавь один preflight шаг: `psql $TEST_DATABASE_URL -c "SELECT 1"`. Если падает — остановить волну и устранить инфраструктурный блокер. Это экономит все ресурсы волны и даёт явный диагноз вместо размытого "28 тестов не прошли".
+**Triad:** QA волна с integration/E2E тестами требующими БД и dev-сервера → верифицировать DB-соединение и health dev-сервера ДО запуска тест-сьютов → не тратить QA волну на инфраструктурный блокер
+**Context:** Task 14 — все 28 integration-тестов и 12 E2E-тестов заблокированы 28P01 (неверный пароль PostgreSQL в .env). cert-report/Task 8 — тесты написаны но не прогнаны: dev-сервер был в corrupted webpack state. Юнит-тесты прошли в обоих случаях, но integration-слой не верифицирован.
+**Pattern:** Перед запуском integration/E2E тестового сьюта — двойной preflight: (1) `psql $TEST_DATABASE_URL -c "SELECT 1"` — проверить DB; (2) `curl -s http://localhost:3000/api/health || curl -s http://localhost:3000` — проверить dev-сервер. Если любой падает — остановить волну и устранить блокер. Экономит все ресурсы волны и даёт явный диагноз.
 **Scope:** universal
 **Category:** sequencing
 
@@ -1328,13 +1328,13 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-04-01 employee-cabinet / session 2: E2E global-setup — прямой INSERT вместо sign-up через API
 
-**Seen:** 1 (employee-cabinet/session 2)
+**Seen:** 2 (employee-cabinet/session 2, cert-report/session 1)
 **Adapted:** —
-**Triad:** E2E global-setup требует seeded verified user → прямой INSERT с hashPassword через crypto вместо sign-up API + SQL UPDATE → устранить зависимость seed-фазы от работающего сервера
-**Context:** Task 10 global-setup делал POST /api/auth/sign-up + SQL UPDATE. После round 1 переписан на прямой INSERT с `hashPassword` из better-auth/crypto — setup стал детерминированным, без зависимости от dev-сервера.
-**Pattern:** Для E2E seed users — не использовать HTTP API. Найти функцию хеширования пароля в auth-библиотеке (типа `hashPassword`) и сделать прямой INSERT. Это отвязывает seed от application layer.
+**Triad:** integration/E2E setup требует seeded users → прямой INSERT в DB вместо sign-up API → устранить зависимость от application layer и избежать rate-limit (4+ signup за сессию бьёт better-auth 429)
+**Context:** employee-cabinet/session 2: Task 10 global-setup делал POST /api/auth/sign-up + SQL UPDATE — переписан на прямой INSERT. cert-report/session 1: Task 8 — 4 тестовых пользователя через seedUser + getSessionCookies хитили better-auth rate-limit; no-cert user добавлен прямым DB INSERT как обходной путь.
+**Pattern:** Для integration/E2E seed users — не использовать HTTP auth API если нужно 3+ пользователей. Прямой INSERT через testDb с явным role. Если auth-библиотека требует hashed password — найти её `hashPassword` функцию. Это отвязывает seed от application layer и не бьёт rate-limit.
 **Scope:** situational
-**Situation:** E2E-тесты с pre-seeded users для auth-библиотек с собственным password hashing
+**Situation:** integration/E2E-тесты с 3+ pre-seeded users при auth-библиотеке с rate-limiting
 **Category:** tool-selection
 
 ### 2026-04-01 juridical-parser / diagnostic session: Смена параметра API меняет nullable fields ответа
