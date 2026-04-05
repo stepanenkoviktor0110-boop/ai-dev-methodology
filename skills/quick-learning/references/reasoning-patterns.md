@@ -1816,3 +1816,24 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Audit wave задача зависит от ВСЕХ задач, которые создают или изменяют файлы из её списка аудита. Проверить: для каждого файла в "Files to audit" — в какой задаче он создаётся? Та задача должна быть в depends_on.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-06 portfolio-horizontal / session 1: GSAP pin конфликтует с Next.js App Router — используй sticky+spacer
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** выбор GSAP pin/ScrollSmoother для SSR-фреймворка → использовать CSS sticky+spacer вместо JS-pin → избежать архитектурного рефакторинга горизонтального скролла
+**Context:** ScrollSmoother + `pin: true` использовались для горизонтального скролла в Next.js 14 App Router — оба сломали layout, потребовался полный переход на другой паттерн.
+**Pattern:** В SSR-фреймворках (Next.js App Router, Remix) не используй GSAP `pin: true` и ScrollSmoother для горизонтального скролла — они конфликтуют с layout-моделью. Используй: tall spacer div → sticky viewport (overflow: hidden) → GSAP scrub по scroll-прогрессу spacer-а.
+**Scope:** situational
+**Situation:** Горизонтальный scroll-driven layout в React SSR-фреймворке (Next.js App Router и аналогах).
+**Category:** tool-selection
+
+### 2026-04-06 portfolio-horizontal / session 1: обновляй документацию сразу при изменении архитектуры
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** архитектурное решение изменилось в ходе реализации → обновить architecture.md/patterns.md немедленно → не передать следующей сессии устаревшую документацию
+**Context:** ScrollSmoother убрали в середине скетча, документация обновилась только в конце — промт для следующей сессии был написан раньше обновления доков и содержал неактуальный стек.
+**Pattern:** Любое изменение стека или паттерна — обновляй соответствующий docs-файл до следующего коммита, не откладывай на конец сессии. Handoff-промт пишется только после актуализации документации.
+**Scope:** universal
+**Category:** sequencing
