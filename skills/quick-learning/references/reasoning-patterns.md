@@ -297,6 +297,16 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** tool-selection
 
+### 2026-04-06 employee-cabinet-updates / session 2: DB-вызовы в API route — try/catch до первого review
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** написание нового API route с одним или более `await db.query()` → обернуть каждый `db.query()` в try/catch + 500 response ДО первого code review → не получить HIGH finding в cross-task аудите на предсказуемом инфраструктурном паттерне
+**Context:** Два route-файла прошли per-task code-reviewer (round 1 OK), но cross-task аудит нашёл 2 HIGH: unhandled DB errors → stack trace в ответе. Per-task reviewer не видит infrastructure consistency как паттерн — он смотрит на бизнес-логику задачи.
+**Pattern:** При написании любого API route, который вызывает `db.query()` — обернуть все вызовы в try/catch + `return NextResponse.json({error:...}, {status:500})` ДО первого review. Это инфраструктурный must-have, не бизнес-логика — per-task reviewer его предсказуемо пропускает.
+**Scope:** universal
+**Category:** problem-decomposition
+
 ### 2026-03-26 mvp-parser / session 2: Эскалирующая диагностика перед гипотезой "сервис сломан"
 
 **Seen:** 1
