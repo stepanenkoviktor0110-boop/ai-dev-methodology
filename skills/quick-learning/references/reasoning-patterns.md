@@ -1760,3 +1760,23 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Когда endpoint получает только resource_id (без user_id), явно проверить роль target-пользователя ресурса: ownership через resource_id ≠ permission на target_user. Выносить это в Decisions tech-spec, не оставлять имплементатору.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-04-06 employee-cabinet-updates / session 1: передавать конфиг тест-фреймворка в бриф task-creator
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** запуск task-creator агентов без указания тест-фреймворка проекта → проверить реальный runner (jest/vitest/pytest) и структуру тест-директорий, передать явно в каждый бриф → предотвратить генерацию неработающих TDD Anchor путей во всех задачах
+**Context:** 6 из 13 задач получили пути `src/__tests__/` и команды `npx jest`, хотя проект использует vitest с `tests/unit/`. Потребовалось 2 раунда исправлений.
+**Pattern:** Перед запуском task-creator агентов прочитать `package.json` или `vitest.config.ts`/`jest.config.*` и явно указать в каждом брифе: runner (npx vitest run / npx jest), паттерн тест-директорий (tests/unit/, tests/integration/, src/__tests__/). Это критическая инфраструктурная деталь — агент не угадает.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-06 employee-cabinet-updates / session 1: depends_on аудитных задач — все имплементационные, не только последняя волна
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** написание depends_on для audit wave задач → перечислить ВСЕ задачи, которые создают аудируемые файлы (не только последнюю волну) → гарантировать существование всех файлов к моменту аудита
+**Context:** Tasks 8-9 получили depends_on: [6,7], хотя аудируют файлы от Tasks 1-5 тоже. Reality-checker поймал — файлы могли не существовать при запуске аудита.
+**Pattern:** Audit wave задача зависит от ВСЕХ задач, которые создают или изменяют файлы из её списка аудита. Проверить: для каждого файла в "Files to audit" — в какой задаче он создаётся? Та задача должна быть в depends_on.
+**Scope:** universal
+**Category:** sequencing
