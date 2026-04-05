@@ -1673,3 +1673,27 @@ Patterns that apply to any project, any stack, any domain.
 **Category:** information-gathering
 
 ---
+
+### 2026-04-05 fix-xlsx-export-headers / session 2: верифицировать git push перед deploy на VPS
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** deploy-волна начинается с git pull на VPS → перед SSH на сервер выполнить `git log origin/branch..HEAD` локально → не получить блокер "нечего тянуть" из-за незапушенных коммитов
+**Context:** При деплое на VPS оказалось, что коммиты сессий 1–2 не были запушены в origin — git pull на сервере ничего не подтянул, потребовался лишний шаг git push.
+**Pattern:** Перед git pull на удалённом сервере всегда проверяй, что локальная ветка опережает origin: `git log origin/master..HEAD`. Если есть коммиты — сначала git push, потом SSH и git pull на VPS.
+**Scope:** universal
+**Category:** sequencing
+
+---
+
+### 2026-04-05 fix-xlsx-export-headers / session 2: json_to_sheet сортирует числовые ключи — нужен явный массив заголовков
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** данные для XLSX содержат числовые ключи (номера дней, ID-колонки) → передавать явный массив заголовков в `json_to_sheet(rows, { header: [...] })`, не полагаться на порядок ключей объекта → гарантировать правильный порядок колонок в итоговом файле
+**Context:** После рефакторинга экспорта XLSX колонки ФИО и Email оказались в конце файла — SheetJS сортирует числовые ключи перед строковыми, игнорируя порядок свойств в объекте.
+**Pattern:** При генерации XLSX через SheetJS/json_to_sheet: числовые ключи всегда идут первыми. Всегда передавай явный массив заголовков через опцию `header` или используй `aoa_to_sheet` для контроля порядка колонок.
+**Scope:** universal
+**Category:** tool-selection
+
+---
