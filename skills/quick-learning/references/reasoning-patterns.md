@@ -79,6 +79,18 @@ Patterns that apply to any project, any stack, any domain.
 
 ---
 
+### 2026-04-06 website-rebuild / session 1: Tailwind plugin-классы и CSS scoping вызывают fix round
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** разработка UI-компонента в проекте с кастомными Tailwind-плагинами и/или CSS-скопингом → перед написанием кода проверить tailwind.config на доступные плагин-классы и активные scope-правила → не получить fix round на CSS-классы невидимые в стандартной Tailwind документации
+**Context:** Task 3 (Homepage ImageSlider) применил scrollbar-hide class из Tailwind-плагина и h1 color override без учёта .cabinet-app скопинга — оба нарушения нашёл reviewer в round 1.
+**Pattern:** При работе в репо с кастомным Tailwind конфигом — прочитать tailwind.config.ts и активные CSS scoping правила ДО написания утилит-классов. Plugin-классы (scrollbar-hide, line-clamp, пр.) и scope-конфликты не выявляются без явной проверки конфига.
+**Scope:** universal
+**Category:** tool-selection
+
+---
+
 ### 2026-04-05 mbc-site / demo: Проверить platform перед Unix-путями в bash
 
 **Seen:** 1
