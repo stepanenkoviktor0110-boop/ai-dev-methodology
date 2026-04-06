@@ -180,3 +180,15 @@ When a task-creator writes a curl command or HTTP call for a QA step → search 
 When two task-creators create new files that share similar code patterns → check real import dependencies between those files (not thematic similarity) before assigning wave and depends_on, to avoid artificial serialization or incorrect parallel placement.
 
 When a tech-spec specifies paths in app-relative format and the app lives in a subdirectory of the repo → pass the full path from the repo root in each task-creator brief, to prevent broken Context File links across all tasks.
+
+When web app responds 20+ sec despite simple route handlers → check all module-level code and background threads for blocking network calls (auth, API) at startup, to find root cause without profiling.
+
+When migration helper / detection banner remains in code after migration completion or rollback → delete migration helper immediately after migration completes; if missed — mark TODO with date, to avoid false positives and blockers on next architecture change.
+
+When `"X% top"` on a trigger element taller than viewport in GSAP ScrollTrigger → switch to absolute pixels: `start: () => fraction * (totalScreens-1) * window.innerHeight`, to ensure trigger fires at the correct scroll position.
+
+When при составлении параллельной волны в tech-spec → проверить Files to modify всех задач волны попарно на пересечения файлов, to предотвратить merge conflict до того, как его поймает validator.
+
+When gsap.fromTo() в компоненте A + gsap.set() на тех же элементах в компоненте B → добавить immediateRender: false к fromTo, to не терять начальное состояние из set().
+
+When gsap.fromTo() in component A and gsap.set() on the same elements in component B → add immediateRender: false to fromTo, to preserve the initial state from set().

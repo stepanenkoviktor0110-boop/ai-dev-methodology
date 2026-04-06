@@ -200,3 +200,8 @@ Load only for audit wave and retrospective — not during spec planning.
 - When spec contains explicit permission matrix for one destructive operation (delete) → verify ALL analogous destructive operations (deactivate, activate, reset, role change) against the same matrix, to find authorization gaps before implementation.
 - When user-spec AVP contains URLs/endpoints written from memory → grep/verify each URL+method in the codebase before approving user-spec, to prevent URL mirage from propagating into tech-spec skeptic pass.
 - When spec defines GET=admin+manager and PUT=manager-only on an endpoint where existing guard allows both roles → explicitly describe creation of a new guard for PUT in the task, to prevent auth gap discovered only at security audit.
+- When запуск task-creator агентов → проверить runner (jest/vitest/pytest) и тест-директории, передать явно в каждый бриф, to предотвратить генерацию неработающих TDD Anchor путей.
+- When написание depends_on для audit wave задач → перечислить ВСЕ задачи, создающие аудируемые файлы (не только последнюю волну), to гарантировать существование всех файлов к моменту аудита.
+- When агент деплоя определяет production URL → читать project memory (deploy_config) ДО project-knowledge docs, to не деплоить на несуществующий домен из устаревшего docs-файла.
+- When tech-spec Data Models содержит UPDATE SQL для существующей таблицы → reality-checker сверяет SQL против реального route.ts ища пропущенные существующие параметры, to предотвратить тихую потерю данных.
+- When Wave 1 создаёт shared module с named exports, Wave 2 потребляет его → перечислить ВСЕ export-символы явно в брифе Wave 1 и передать точную строку импорта в каждый Wave 2 бриф, to предотвратить naming divergence.
