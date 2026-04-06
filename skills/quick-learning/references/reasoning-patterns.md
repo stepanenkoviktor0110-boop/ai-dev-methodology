@@ -1879,3 +1879,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Перед реализацией UI-фильтрации составь явную таблицу: колонка → тип (text/nullable-text/numeric/enum/date) → поведение фильтра для этого типа. Без этой таблицы "фильтр для всех колонок" реализуется неполно — часть типов пропускается.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-06 reports-filter-sort / session 2: Имена shared exports должны явно передаваться в consumer-брифы
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** Wave 1 создаёт shared module с несколькими named exports; Wave 2 таски потребляют его → перечислить ВСЕ export-символы явно в брифе Wave 1 и передать точную строку импорта в каждый Wave 2 бриф → предотвратить naming divergence и локальные переопределения в consumer-задачах
+**Context:** Task 1 создавал FilterDropdown с несколькими filter function exports. Tasks 2–5 в Wave 2 получили только "импортируй из ./FilterDropdown" без перечня символов. Результат: Task 2 Details написал "implement locally", Task 4 не имел явной инструкции, Tasks 3 и 5 использовали разные имена (`nullableTextFilter` vs `composedNullableText`) — всё выловлено в 2 раунда валидации.
+**Pattern:** Когда Wave 1 создаёт shared utility с несколькими exports, явно перечисли все символы в AC Wave 1 (`export { textSearch, fillStatus, nullableTextFilter }`) и вставь точную строку `import { ... } from './Module'` в каждый Wave 2 бриф. Без этого consumer-агенты переопределяют или называют символы по-разному.
+**Scope:** situational
+**Situation:** Multi-wave декомпозиция, Wave 1 создаёт shared utility для параллельных Wave 2 задач
+**Category:** sequencing
