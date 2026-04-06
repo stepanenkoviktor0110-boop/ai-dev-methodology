@@ -13,6 +13,16 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
+### 2026-04-06 responsive-layout / session 1: Адаптация UI не требует design-plan
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** задача адаптирует существующий UI (responsive, a11y), а не создаёт новый визуал → пропустить design-plan, идти из design-spec напрямую в tech-spec → не блокироваться на отсутствующем tokens.json / design system
+**Context:** Design-plan-planning требовал tokens.json для назначения layout-паттернов и стилевых профилей. Для CSS-only responsive adaptation это бессмысленно — все экраны уже существуют, визуальный дизайн не меняется.
+**Pattern:** Когда задача адаптирует существующий UI (responsive, accessibility, performance), а не создаёт новый визуал — пропускать design-plan и идти из design-spec напрямую в tech-spec. Design-plan нужен только для визуального проектирования с нуля.
+**Scope:** universal
+**Category:** scope-management
+
 ### 2026-04-06 mbc-site / demo: Scroll-triggered анимация — пересчитать задержки при переходе с page-load
 
 **Seen:** 1
