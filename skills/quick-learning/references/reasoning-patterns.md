@@ -13,6 +13,16 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
+### 2026-04-07 tree-constructor / techspec: Не реинтродуцировать post-MVP фичи как техрешения
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** user-spec явно исключает capability в post-MVP → не вводить её обратно как Decision в tech-spec → предотвратить scope creep пойманный только на валидации
+**Context:** Decision 4 добавил keyboard navigation в autocomplete, хотя user-spec явно отложил accessibility (keyboard navigation, aria-labels) в post-MVP. Completeness validator поймал как scope creep.
+**Pattern:** Когда user-spec явно выносит capability в post-MVP/out-of-scope — перед добавлением аналогичной capability как «техническое решение» проверить, не покрывается ли она уже существующим исключением. Исключение в user-spec — продуктовое решение, не технический пробел.
+**Scope:** universal
+**Category:** scope-management
+
 ### 2026-04-06 website-rebuild / techspec: AC-чеклист перед написанием Solution
 
 **Seen:** 1
