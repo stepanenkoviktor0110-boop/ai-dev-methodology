@@ -1890,3 +1890,47 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** situational
 **Situation:** Multi-wave декомпозиция, Wave 1 создаёт shared utility для параллельных Wave 2 задач
 **Category:** sequencing
+
+
+### 2026-04-06 portfolio-horizontal / session 1: ScrollTrigger process на элементе выше viewport
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** использование `"X% top"` на триггер-элементе высотой > viewport → переключиться на абсолютные пиксели `start: () => X * window.innerHeight` → триггер срабатывает в правильной точке скролла
+**Context:** Spacer 200vh, viewport 100vh, max scroll = 100vh — `"80% top"` вычислялось как 160vh от top, триггер никогда не достигался.
+**Pattern:** Когда trigger-элемент выше viewport, `"X% top"` отсчитывается от высоты элемента, а не от scroll progress. Для надёжности использовать функцию: `start: () => scrollFraction * (totalScreens - 1) * window.innerHeight`.
+**Scope:** situational
+**Situation:** GSAP ScrollTrigger на spacer-элементе выше одного экрана (sticky+spacer паттерн)
+**Category:** tool-selection
+
+### 2026-04-06 portfolio-horizontal / session 1: Solid-секция блокирует общий overlay фон
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** соседние секции имеют разный backgroundColor (одна solid, другая transparent) при overlay-фоне снизу → сделать все секции transparent, перенести базовый цвет на sticky-враппер → нет жёсткого шва на границе секций
+**Context:** Hero с `backgroundColor: var(--color-hero)` создавал видимую вертикальную линию при скролле, хотя CaseCard был прозрачным.
+**Pattern:** Если фоном управляет общий overlay/враппер ниже по z-index, все дочерние секции должны быть `backgroundColor: transparent`. Иначе solid-секция перекрывает overlay и создаёт шов на своей границе.
+**Scope:** situational
+**Situation:** Горизонтальный канвас с несколькими секциями и общим фоновым overlay
+**Category:** problem-decomposition
+
+### 2026-04-06 portfolio-hero / session 2: GSAP fromTo immediateRender перебивает gsap.set() из соседнего компонента
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** gsap.fromTo() в компоненте A + gsap.set() на тех же элементах в компоненте B → добавить immediateRender: false к fromTo → не терять начальное состояние из set()
+**Context:** HorizontalCanvas устанавливал fromTo для exit-анимации; Hero скрывал элементы через gsap.set() — fromTo с immediateRender:true немедленно применял from:{opacity:1} поверх set(), визуально отменяя скрытие.
+**Pattern:** Если gsap.fromTo() в компоненте B управляет элементами, чьё начальное состояние задаёт gsap.set() в компоненте A — добавляй immediateRender: false к fromTo, иначе from-состояние применится при монтировании и перебьёт set().
+**Scope:** situational
+**Situation:** GSAP-проект с несколькими React-компонентами, каждый из которых управляет анимациями одних и тех же DOM-элементов.
+**Category:** tool-selection
+
+### 2026-04-06 portfolio-hero / session 2: Edit добавляет дублирующийся JSX prop без чтения полного элемента
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** добавление нового prop к JSX-элементу через Edit без чтения полного JSX-блока → читать весь JSX-элемент перед добавлением prop, проверять существующие → не создавать дублирующиеся props
+**Context:** Добавил `style={{ marginBottom }}` к pill-div через Edit, не прочитав его полностью — div уже имел `style={{...}}`. React использует только последний style, первый молча игнорируется.
+**Pattern:** Перед добавлением любого prop через Edit — прочитать полный JSX-блок элемента (от открывающего тега до закрывающего). Если prop уже есть — объединить значения в одном объекте, не добавлять второй атрибут.
+**Scope:** universal
+**Category:** tool-selection
