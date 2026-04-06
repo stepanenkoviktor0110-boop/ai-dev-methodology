@@ -13,6 +13,26 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
+### 2026-04-06 website-rebuild / techspec: AC-чеклист перед написанием Solution
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** написание tech-spec из user-spec с множеством AC → перед написанием Solution пройти все AC user-spec чеклистом, отметить каждый в черновике → не пропустить явное требование (mobile, a11y) которое ловит только валидатор
+**Context:** Mobile responsiveness была явно в AC user-spec, но полностью выпала из tech-spec — обнаружено только completeness-валидатором в round 1.
+**Pattern:** Перед написанием Solution секции tech-spec — пройти все AC user-spec как чеклист и отметить где каждый адресуется. Пропущенный AC = gap, видимый только после валидации = потерянный раунд.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-06 website-rebuild / techspec: Security checklist для публичных POST endpoints
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** tech-spec содержит публичный POST endpoint без авторизации → применить security checklist (CSRF/Origin, sanitization, IP source, rate-limit, headers) при написании спека → не добавлять security decisions только после аудита
+**Context:** 4 security decisions (CSRF, email injection, XSS encoding, IP extraction) были добавлены только после security audit round 1. Это стандартный набор для любого public form endpoint.
+**Pattern:** При написании tech-spec для публичного POST-эндпоинта — сразу применять checklist: (1) CSRF/Origin, (2) input sanitization тип (encode vs strip), (3) источник IP (X-Real-IP vs X-Forwarded-For), (4) injection vectors по типу данных (email headers, SQL, XSS), (5) security headers (HSTS, X-Frame-Options). Не ждать security audit.
+**Scope:** universal
+**Category:** information-gathering
+
 ### 2026-04-06 responsive-layout / session 1: Адаптация UI не требует design-plan
 
 **Seen:** 1

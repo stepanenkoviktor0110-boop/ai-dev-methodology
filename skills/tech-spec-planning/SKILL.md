@@ -24,170 +24,91 @@ Before starting, read [quick-ref-tech-spec-planning.md](../quick-learning/refere
 ## Phase 1: Load Context
 
 1. Ask user for feature name if not provided. Check `work/{feature}/` exists, create if needed.
-
-2. Read `work/{feature}/user-spec.md`. If missing — ask user to describe the task or create user-spec first.
-   Extract `size: S|M|L` from user-spec frontmatter — it determines testing strategy depth in tech-spec.
-
-3. Read all files in `.claude/skills/project-knowledge/references/` (project.md, architecture.md, patterns.md, deployment.md, ux-guidelines.md, and any custom domain files). Missing files are fine — not all projects have all guides.
-
-4. user-spec.md is the single input source — all information from interview.yml and code research is already consolidated there.
-
-**Checkpoint:**
-- [ ] Feature folder exists
-- [ ] user-spec.md read, size extracted
-- [ ] Project Knowledge read
+2. Read `work/{feature}/user-spec.md`. Missing → ask user to describe task or create user-spec first. Extract `size: S|M|L` from frontmatter.
+3. Read all files in `.claude/skills/project-knowledge/references/` (missing files are fine).
+4. user-spec.md is the single input source — interview.yml and code research are already consolidated there.
 
 ## Phase 2: Code Research
 
-Launch `code-researcher` subagent (Task tool, opus) with feature path and user-spec path. The agent reads existing `code-research.md` (from user-spec phase if available) and deepens analysis for implementation.
+Launch `code-researcher` subagent (opus) with feature path and user-spec path. It reads existing `code-research.md` (from user-spec phase) and deepens for implementation.
 
-After subagent completes — read `{feature_path}/code-research.md`. Use in Phase 3 clarification and Phase 4 spec writing.
-
-If during later phases a gap is discovered — launch `code-researcher` again with the specific question.
-
-**Checkpoint:**
-- [ ] code-research.md created/updated with implementation-level analysis
-- [ ] Research file read by orchestrator
-
-**PROMOTED PATTERN:** При интеграции с внешним API — перенести в спек ВСЕ коды ответа, формат данных (JSON/XML/plain text), и edge cases. Перед включением response shapes из code-research — сделать live API call для проверки. Один вызов дешевле propagation миража через весь pipeline.
-
-**PROMOTED PATTERN:** Перед написанием файловых путей в tech-spec — верифицировать через ls/glob, не из памяти или architecture docs. Docs описывают намерение, а не реальность файловой системы. Особенно: пути к shared-ресурсам, шаблонам, скриптам — они часто лежат не там, где написано в docs.
+After completion — read `{feature_path}/code-research.md`. If gap discovered later — re-launch with specific question.
 
 ## Phase 3: Clarification (Adaptive)
 
 Analyze if additional information is needed based on user-spec and code research.
-
-- Ask technical questions if gaps exist. No limit on question count — ask as many as needed.
-- Focus: technical constraints, integration points, data sources, external dependencies.
-- If gaps found in user-spec requirements — discuss with user and update user-spec too (via subagent or directly).
-- If requirements are fundamentally unclear — suggest creating user-spec first.
-
-**Checkpoint:**
-- [ ] All technical gaps clarified (or none existed)
+- Ask technical questions if gaps exist (no limit on count). Focus: constraints, integration points, data sources, external deps.
+- Gaps in user-spec requirements → discuss with user and update user-spec too.
+- Fundamentally unclear → suggest creating user-spec first.
 
 ## Phase 4: Create tech-spec
 
-1. Copy template to feature folder:
+1. Copy template and edit sections one by one:
    ```bash
    cp ~/.claude/shared/work-templates/tech-spec.md.template work/{feature}/tech-spec.md
    ```
-   Then edit sections one by one using Edit tool. This keeps template structure and examples visible while you work.
 
-2. Fill frontmatter:
-   - `created`: today's date
-   - `status`: draft
-   - `size`: copy from user-spec (S|M|L)
-   - `branch`: `dev` (simple change, single component) or `feature/{name}` (multiple components, architectural changes)
+2. Fill frontmatter: `created` (today), `status: draft`, `size` (from user-spec), `branch`: `dev` (simple) or `feature/{name}` (multi-component).
 
-3. Fill all template sections. The template defines section structure — follow it directly.
-   In Architecture → Shared Resources: list heavy resources (ML models, DB pools, browser instances, API clients) shared across components. Specify owner (who creates), consumers, instance count. If none — write "None".
+3. Fill all template sections. Architecture → Shared Resources: list heavy resources (ML models, DB pools, API clients) with owner, consumers, instance count.
 
-4. Fill Implementation Tasks by waves. For each task provide: Description, Skill, Reviewers, Verify-smoke (optional), Verify-user (optional), Files to modify, Files to read. Select skill and reviewers from [skills-and-reviewers.md](references/skills-and-reviewers.md) (execution skills catalog, reviewer agents, default mappings).
+4. Fill Implementation Tasks by waves. For each task: Description (2-3 sentences, WHAT+WHY not HOW), Skill, Reviewers, Verify-smoke (optional), Verify-user (optional), Files to modify, Files to read. Select skill and reviewers from [skills-and-reviewers.md](references/skills-and-reviewers.md).
 
-   For each task, write `Verify-smoke:` when the task involves:
-   - External API integration → curl/httpie command to real endpoint with expected response
-   - Library/model initialization → `python -c` or import check that verifies setup
-   - Docker/infrastructure → `docker compose build`, `docker run` commands
-   - LLM/prompt work → spawn agent with prompt + test question, check response
-   - External service API (OpenRouter, Stripe, etc.) → test API call with expected response
-   - MCP-verifiable UI/frontend → use Playwright MCP or similar to check rendered page
-   Write `Verify-user:` when user should check something: UI on localhost, behavior, UX.
-   Omit both if task is purely internal logic covered by unit tests.
+   `Verify-smoke:` — when task involves external API, library init, Docker/infra, LLM/prompt, MCP-verifiable UI. Write concrete command + expected response.
+   `Verify-user:` — when user should check UI/behavior on localhost.
+   Omit both if purely internal logic covered by unit tests.
 
-   **Task brevity rules:**
-   - Tasks are brief scope descriptions (2-3 sentences). Detailed steps, AC, TDD anchors, and `estimated_loc` are created during task-decomposition phase (Phase 0 estimates LOC, task-creator carries it to task files).
-   - Task Description answers WHAT and WHY, not HOW. No step-by-step instructions, no line numbers, no implementation details.
-   - All technical decisions belong in the Decisions section, not in task descriptions. If you're writing a decision rationale inside a task — move it to Decisions.
+   **Task brevity:** tasks are brief scope descriptions. Detailed steps, AC, TDD anchors, `estimated_loc` come from task-decomposition phase. All technical decisions belong in Decisions section, not tasks.
 
-5. The last two waves are always **Audit Wave** and **Final Wave**, in that order:
+5. Last two waves always **Audit Wave** + **Final Wave**:
 
-   **Audit Wave** (always present) — 3 tasks running in parallel, `reviewers: none`:
-   - **Code Audit** (skill: `code-reviewing`) — holistic code quality review of all feature code
-   - **Security Audit** (skill: `security-auditor`) — OWASP Top 10 across all components
-   - **Test Audit** (skill: `test-master`) — test quality and coverage across all components
-
-   Auditors read all source files from the feature and write reports (analysis only). If issues found — feature-execution lead spawns a fixer agent, auditors become reviewers for the fix.
+   **Audit Wave** — 3 parallel tasks, `reviewers: none`:
+   - Code Audit (`code-reviewing`), Security Audit (`security-auditor`), Test Audit (`test-master`)
+   Auditors read all feature files, write reports. Issues found → feature-execution spawns fixer.
 
    **Final Wave:**
-   - **QA** (skill: `pre-deploy-qa`) — always present. Acceptance testing: run all tests, verify acceptance criteria from user-spec and tech-spec.
-   - **Deploy** (skill: `deploy-pipeline`) — only if deploy is needed for this feature.
-   - **Post-deploy verification** (skill: `post-deploy-qa`) — only if live-environment checks are needed (MCP tools listed in Agent Verification Plan → Tools required).
-   QA is mandatory. Deploy and post-deploy — if applicable.
+   - QA (`pre-deploy-qa`) — mandatory. Acceptance testing against user-spec + tech-spec.
+   - Deploy (`deploy-pipeline`) — if needed.
+   - Post-deploy verification (`post-deploy-qa`) — if live-environment checks needed.
 
-6. Task Count Check: if >15 tasks — propose splitting into MVP + Extension phases. Wait for user decision.
+6. >15 tasks → propose splitting into MVP + Extension. Wait for user decision.
 
 7. Git commit: `draft(techspec): create tech-spec for {feature}`
-
-**Checkpoint:**
-- [ ] tech-spec.md created in work/{feature}/ with all sections
-- [ ] Implementation Tasks include Description (2-3 sentences), skill, reviewers for each task
-- [ ] No AC or TDD anchors in tasks (those come from task-decomposition phase)
-- [ ] Technical decisions are in Decisions section, not in task descriptions
-- [ ] Final Wave present with QA (mandatory) + Deploy/Post-deploy (if applicable)
-- [ ] Task count ≤15 (or user approved larger scope)
 
 ## Phase 5: Validation
 
 ### Run 5 validators in parallel
 
-Launch all as subagents, each writes JSON report to `logs/techspec/{name}-review.json`:
+Each writes JSON report to `logs/techspec/{name}-review.json`:
 
 | Validator | Agent | Checks |
 |-----------|-------|--------|
 | Mirage detector | `skeptic` | Non-existent files, APIs, functions, dependencies |
-| Completeness + adequacy | `completeness-validator` | Bidirectional traceability, scope creep, overengineering, underengineering, solution depth |
+| Completeness | `completeness-validator` | Traceability, scope creep, over/underengineering |
 | Security | `security-auditor` | OWASP, input validation, auth, sensitive data |
-| Testing strategy | `test-reviewer` | Test plan adequacy for feature size S/M/L |
-| Template + wave conflicts | `tech-spec-validator` | All sections filled, frontmatter, format, skills/reviewers, wave conflict detection |
+| Testing strategy | `test-reviewer` | Test plan adequacy for size S/M/L |
+| Template + waves | `tech-spec-validator` | Sections, frontmatter, skills/reviewers, wave conflicts |
 
-Pass to each validator: `work/{feature}/tech-spec.md` + `work/{feature}/user-spec.md`.
+Pass to each: `work/{feature}/tech-spec.md` + `work/{feature}/user-spec.md`.
 
 ### Process findings
 
-Read all 5 reports. For each finding:
-- Fix if clearly valid
-- Reject with reasoning if disagree
-- Discuss with user if controversial
+Read all 5 reports. Fix if valid, reject with reasoning if disagree, discuss with user if controversial.
 
-### Iterate if needed (up to 3 iterations)
-
-If fixes were made:
-1. Apply targeted fixes directly in `work/{feature}/tech-spec.md`.
-2. Git commit: `chore(techspec): validation round {N} — {summary of fixes}`
-3. Re-run validators on updated tech-spec.
-4. Repeat up to 3 iterations.
-
-If problems remain after 3 iterations — show user: "Validation didn't pass in 3 iterations. Here's what remains — let's resolve together."
-
-**Checkpoint:**
-- [ ] All 5 validators ran
-- [ ] Findings processed (fixed / rejected / discussed)
-- [ ] Final tech-spec.md placed in work/{feature}/
+After fixes → commit `chore(techspec): validation round {N} — {summary}` → re-run validators. Max 3 iterations, then escalate to user.
 
 ## Phase 6: User Approval
 
-1. Show user the full tech-spec.md.
-2. Show validation summary: iterations count, issues found and resolved.
-3. Wait for explicit approval.
-4. If user has comments — fix, re-validate, show again.
-5. After approval: update `status: draft` → `status: approved` in tech-spec frontmatter.
-6. Git commit: `chore(techspec): approve tech-spec for {feature}`
-7. Tell user next step: run `/decompose-tech-spec` to create task files.
-
-**Checkpoint:**
-- [ ] User explicitly approved tech-spec
-- [ ] status = approved
-
-## Final Check
-
-- [ ] tech-spec.md created with all sections (Implementation Tasks are brief scope descriptions)
-- [ ] Validation passed (5 validators)
-- [ ] User approved tech-spec
-- [ ] status = approved in frontmatter
+1. Show tech-spec.md + validation summary (iterations, issues resolved).
+2. Wait for explicit approval. Comments → fix, re-validate, show again.
+3. Set `status: approved`, commit `chore(techspec): approve tech-spec for {feature}`.
+4. Suggest `/decompose-tech-spec` as next step.
 
 ## Promoted Patterns
 
-**Верифицируй целевые файлы перед описанием операции (Seen: 2):** Когда spec описывает трансформацию "удалить X из N файлов" или "заменить Y" — grep по каждому файлу перед тем как зафиксировать тип операции. Файл без X требует add, не replace. Ошибка типа операции обнаруживается только при выполнении задачи.
+- **Верифицируй целевые файлы перед описанием операции (Seen: 2):** Когда spec описывает трансформацию "удалить X из N файлов" или "заменить Y" — grep по каждому файлу перед тем как зафиксировать тип операции. Файл без X требует add, не replace. Ошибка типа операции обнаруживается только при выполнении задачи.
+- **Верифицируй API response shapes live-вызовом (Seen: 2):** При интеграции с внешним API — перенести в спек ВСЕ коды ответа, формат данных, edge cases. Перед включением response shapes из code-research — live API call для проверки. Один вызов дешевле propagation миража через pipeline.
+- **Верифицируй файловые пути через ls/glob (Seen: 2):** Перед написанием путей в tech-spec — проверить через ls/glob, не из памяти или architecture docs. Docs описывают намерение, а не реальность.
 
 ## Learned Patterns
 
