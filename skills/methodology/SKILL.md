@@ -229,120 +229,34 @@ Completed features are archived to `work/completed/{feature}/`.
 
 ## Key Principles
 
-### Commit Strategy
-Commit after each step where the repository state is stable and meaningful. Not after every action — after each result.
-
-- **Planning stages** (user-spec, tech-spec, tasks): draft commit → validation round commits → approval commit
-- **Single task execution** (do-task): implementation commit (tests pass) → review fix commits (tests pass) → status/decisions commit
-- **Feature execution** (do-feature): teammates commit code + review fixes, lead commits statuses per wave
-- **Finalization** (done): single commit with PK updates + archive
-
-### Spec-Driven Development
-Write specifications before code. The hierarchy: User Spec → Tech Spec → Tasks → Code. Code starts only after specs are approved.
-
-### Validation at Every Stage
-- User spec: 2 validators (quality + adequacy)
-- Tech spec: 5 validators (skeptic + completeness + security + test + template/task-quality/wave-conflicts)
-- Tasks: 2 validators (template + reality)
-- Code: 3 reviewers (code + test + security) + smoke verification (API calls, library checks, MCP tools, local runs)
-- Audit Wave: 3 auditors (code + security + test) review all feature code holistically after implementation waves
-- QA tasks: pre-deploy QA (tests + acceptance criteria), post-deploy QA (verification on live environment)
-
-Max 3 fix iterations at each stage.
-
-### Project Knowledge as Single Source of Truth
-Project documentation = `.claude/skills/project-knowledge/references/`. CLAUDE.md stays minimal — just a pointer. The `/done` command updates PK after every feature. The `documentation-writing` skill audits PK for bloat and quality.
-
-### Just-In-Time Context
-Agent reads only what's needed for current task, not everything. Task files list their Context Files explicitly.
-
-### Context7 for Library Docs
-Agent uses Context7 MCP to fetch current library documentation instead of relying on training data. Used during tech-spec research and code implementation.
-
-### Session Planning
-Task decomposition groups waves into sessions by LOC budget (~1200 lines per session, empirically sized to fit within a single Claude Code session context window). At session boundary, execution stops and generates a precise prompt for the next session — including feature context, completed progress, next session's tasks, and relevant context files. This keeps each session's context window clean and focused. Audit Wave + Final Wave are always grouped into the last session.
-
-### Checkpoint Recovery
-Feature execution persists state to `checkpoint.yml` after each wave. A `SessionStart(compact)` hook detects context compaction during long feature executions and injects recovery context — the lead resumes from the next pending wave using checkpoint + decisions.md as source of truth.
+- **Spec before code.** User Spec → Tech Spec → Tasks → Code. Code starts only after specs are approved.
+- **Validate at every stage.** User spec (2), tech spec (5), tasks (2), code (3 reviewers + smoke), audit wave (3 holistic auditors), QA (pre-deploy + post-deploy). Max 3 fix iterations each.
+- **Commit after each result.** Planning: draft → validation rounds → approval. Execution: code (tests pass) → review fixes → status. Not after every action.
+- **PK = single source of truth.** All project docs in `.claude/skills/project-knowledge/references/`. CLAUDE.md is minimal. `/done` updates PK. `documentation-writing` audits quality.
+- **Just-in-time context.** Read only what's needed. Task files list Context Files explicitly. Context7 MCP for library docs.
+- **Session planning.** Waves grouped into sessions by ~1200 LOC budget. At boundary → stop, generate next-session prompt. Audit + Final wave = last session.
+- **Checkpoint recovery.** `checkpoint.yml` persists after each wave. On context compaction → resume from next pending wave via checkpoint + decisions.md.
 
 ---
 
 ## Skills Ecosystem
 
-<!-- Exclude from methodology catalogs: items for private repo management (public-repo skill, public-repo-scanner agent, sync-public command). They are tooling for maintaining this repository, not part of the development methodology. -->
-
-### Planning Skills
-| Skill | Purpose |
-|-------|---------|
-| `project-planning` | New project: interview → project knowledge docs (project.md, architecture.md, etc.) |
-| `user-spec-planning` | Feature requirements: interview → user-spec.md |
-| `tech-spec-planning` | Architecture: research → tech-spec.md |
-| `task-decomposition` | Decompose tech-spec into atomic task files |
-
-### Execution Skills
-| Skill | Purpose |
-|-------|---------|
-| `code-writing` | TDD cycle: plan → tests → code → review |
-| `prompt-master` | LLM prompt engineering: write, improve, verify prompts |
-| `feature-execution` | Team lead dispatches agents by wave; teammates commit own code, lead commits statuses |
-| `pre-deploy-qa` | Pre-deploy acceptance testing: tests + acceptance criteria |
-| `post-deploy-qa` | Post-deploy verification on live environment via MCP tools |
-
-### Quality & Review Skills
-| Skill | Purpose |
-|-------|---------|
-| `code-reviewing` | 11-dimension code review methodology (incl. Resource Management) |
-| `security-auditor` | OWASP Top 10 security analysis |
-| `test-master` | Testing strategy: when to use which tests |
-
-### Meta Skills
-| Skill | Purpose |
-|-------|---------|
-| `methodology` | This skill — how the process works |
-| `retrospective` | Extract lessons learned from process problems, embed best practices into skills |
-| `quick-learning` | Fast meta-analysis at session breaks — reasoning patterns, not decisions. Auto-triggered + manual via `/quick-learning` |
-| `documentation-writing` | Manage Project Knowledge files |
-| `skill-master` | Create and maintain quality skills |
-| `infrastructure-setup` | Framework init, Docker, pre-commit hooks, testing setup |
-| `deploy-pipeline` | CI/CD pipelines, deployment config, automated deploy |
-| `skill-test-designer` | Design test scenarios for skills |
-| `skill-tester` | Execute skill test scenarios |
+**Planning:** `project-planning`, `user-spec-planning`, `tech-spec-planning`, `task-decomposition`
+**Execution:** `code-writing` (TDD), `feature-execution` (team lead), `prompt-master`, `pre-deploy-qa`, `post-deploy-qa`
+**Quality:** `code-reviewing` (11 dimensions), `security-auditor` (OWASP), `test-master`
+**Meta:** `methodology`, `retrospective`, `quick-learning`, `documentation-writing`, `skill-master`, `infrastructure-setup`, `deploy-pipeline`
 
 ---
 
 ## Agents
 
-Agents are isolated subprocesses with fresh context. They receive input, do one job, return structured output.
+Isolated subprocesses with fresh context. Each receives input, does one job, returns structured output. Self-describing when invoked.
 
-### Validators (run during spec/task creation)
-- `userspec-quality-validator` — document quality and completeness
-- `userspec-adequacy-validator` — solution feasibility
-- `interview-completeness-checker` — interview coverage gaps
-- `tech-spec-validator` — template compliance
-- `skeptic` — detects mirages (non-existent files/functions/APIs)
-- `completeness-validator` — bidirectional requirements traceability, over/underengineering, solution depth
-- `task-validator` — task template compliance
-- `task-creator` — generates task files from tech-spec
-- `reality-checker` — validates tasks against codebase
-
-### Reviewers (run during/after code writing)
-- `code-reviewer` — code quality across 11 dimensions
-- `test-reviewer` — test quality analysis with concrete fixes
-- `security-auditor` — OWASP Top 10, auth, input validation
-- `prompt-reviewer` — prompt quality against prompt-master principles
-- `documentation-reviewer` — project-knowledge quality against documentation-writing principles
-- `deploy-reviewer` — CI/CD pipeline and deployment configuration quality
-- `infrastructure-reviewer` — folder structure, Docker, pre-commit hooks, .gitignore
-
-### Research
-- `code-researcher` — codebase research for features (files, patterns, tests, integrations, risks)
-
-### QA
-- `pre-deploy-qa` — pre-deploy acceptance testing (tests + acceptance criteria)
-- `post-deploy-qa` — post-deploy verification on live environment (MCP tools, AVP)
-
-### Meta
-- `skill-checker` — validates skills against skill-master standards
+**Validators (9):** userspec-quality, userspec-adequacy, interview-completeness-checker, tech-spec-validator, skeptic, completeness-validator, task-validator, task-creator, reality-checker
+**Reviewers (7):** code-reviewer, test-reviewer, security-auditor, prompt-reviewer, documentation-reviewer, deploy-reviewer, infrastructure-reviewer
+**Research (1):** code-researcher
+**QA (2):** pre-deploy-qa, post-deploy-qa
+**Meta (1):** skill-checker
 
 ---
 
