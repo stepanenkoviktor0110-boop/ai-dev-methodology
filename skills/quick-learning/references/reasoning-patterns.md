@@ -1852,11 +1852,11 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-04-06 employee-cabinet-updates / session 1: передавать конфиг тест-фреймворка в бриф task-creator
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Triad:** запуск task-creator агентов без указания тест-фреймворка проекта → проверить реальный runner (jest/vitest/pytest) и структуру тест-директорий, передать явно в каждый бриф → предотвратить генерацию неработающих TDD Anchor путей во всех задачах
-**Context:** 6 из 13 задач получили пути `src/__tests__/` и команды `npx jest`, хотя проект использует vitest с `tests/unit/`. Потребовалось 2 раунда исправлений.
-**Pattern:** Перед запуском task-creator агентов прочитать `package.json` или `vitest.config.ts`/`jest.config.*` и явно указать в каждом брифе: runner (npx vitest run / npx jest), паттерн тест-директорий (tests/unit/, tests/integration/, src/__tests__/). Это критическая инфраструктурная деталь — агент не угадает.
+**Context:** 6 из 13 задач получили пути `src/__tests__/` и команды `npx jest`, хотя проект использует vitest с `tests/unit/`. Потребовалось 2 раунда исправлений. Повтор: panel-per-court-settings — задачи 2, 3, 5 получили `tests/test_web_routes.py` вместо `tests/unit/test_web_routes.py`.
+**Pattern:** Перед запуском task-creator агентов прочитать `package.json` или `vitest.config.ts`/`jest.config.*` / `pytest.ini` и явно указать в каждом брифе: runner и паттерн тест-директорий (tests/unit/, tests/integration/, src/__tests__/). Для Python: `tests/unit/` vs `tests/` — не одно и то же. Это критическая инфраструктурная деталь — агент угадывает по конвенции, не по факту.
 **Scope:** universal
 **Category:** information-gathering
 
@@ -1869,6 +1869,17 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Audit wave задача зависит от ВСЕХ задач, которые создают или изменяют файлы из её списка аудита. Проверить: для каждого файла в "Files to audit" — в какой задаче он создаётся? Та задача должна быть в depends_on.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-06 panel-per-court-settings / session 1: compatibility constraint в брифе — явно указывать разрешённые API
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** бриф task-creator содержит compatibility constraint (ES5, IE11, legacy) + файл уже использует конкретный HTTP-паттерн → явно указать разрешённые API с примером строки из существующего кода → предотвратить выбор более старого API вопреки code style
+**Context:** Task 8 (index.html): бриф сказал "ES5" — task-creator выбрал XMLHttpRequest, хотя весь JS в файле использует fetch. Reality-checker поймал при чтении файла, потребовалась правка hint-а.
+**Pattern:** Когда в брифе есть constraint-метка (ES5, без стрелок, vanilla JS) — добавлять явную строку: "HTTP-запросы: используй fetch (уже применяется, строка N)". Агент видит constraint → переходит в консервативный режим и может выбрать устаревший API, даже если читал файл.
+**Scope:** situational
+**Situation:** файл содержит mix legacy/modern JS, бриф содержит compatibility constraint
+**Category:** information-gathering
 
 ### 2026-04-06 portfolio-horizontal / session 1: GSAP pin конфликтует с Next.js App Router — используй sticky+spacer
 
