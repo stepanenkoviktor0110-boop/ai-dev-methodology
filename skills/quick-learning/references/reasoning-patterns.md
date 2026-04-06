@@ -1985,3 +1985,15 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Когда несколько параллельных task-creator'ов используют одну внешнюю утилиту (плагин, пакет, CSS-трюк) — оркестратор должен выбрать единый подход и передать его каждому task-creator'у в брифе. Параллельные агенты не общаются — каждый принимает решение независимо.
 **Scope:** universal
 **Category:** scope-management
+
+
+---
+### 2026-04-06 panel-per-court-settings / session 1: Верификация call sites перед фиксацией в tech-spec
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** tech-spec называет "файл X содержит call sites функции Y" из памяти → grep по имени функции перед записью Files to modify → предотвратить миражи в задачах, когда агент ищет call sites в неверном файле
+**Context:** Tech-spec указал `src/main.py` как источник call sites для `set_court_not_running`/`update_last_run_status`. Скептик обнаружил: в `main.py` этих вызовов нет — они в `app.py` (`_run_wrapper`) и `scheduler.py` (`run_pipeline_for_court`). Файл, который ВЫЧИСЛЯЕТ данные, ≠ файл, который ВЫЗЫВАЕТ функцию.
+**Pattern:** Когда tech-spec описывает "обновить call sites функции X в файле Y" — перед записью выполни `grep -r "function_name(" src/` и запиши реальные файлы. Логическое рассуждение ("данные вычисляются здесь") не означает "вызов происходит здесь".
+**Scope:** universal
+**Category:** information-gathering
