@@ -1250,6 +1250,17 @@ Patterns that apply to any project, any stack, any domain.
 
 ## Situational
 
+### 2026-04-06 responsive-layout / session 1: Sticky column ломается через промежуточный div в Safari
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** таблица с overflow-x-auto + sticky колонкой → не ставить промежуточный div между scroll-контейнером и table → корректное sticky-поведение колонки во всех браузерах
+**Context:** Агент обернул table в `<div class="overflow-x-auto"><div class="bg-white"><table>` — Safari игнорирует sticky на td внутри вложенного block-контейнера. Потребовался отдельный fix-коммит.
+**Pattern:** При добавлении horizontal scroll к таблице со sticky колонкой — вешать overflow-x-auto и bg-color на один и тот же контейнер, непосредственно оборачивающий table. Промежуточные div'ы между scroll-контейнером и table ломают sticky в Safari.
+**Scope:** situational
+**Situation:** HTML-таблица с горизонтальным скроллом и sticky-колонкой (CSS position: sticky)
+**Category:** tool-selection
+
 ### 2026-04-01 freelance-dashboard / session design-refactor: дизайн-пайплайн на приложении с inline styles → CSS migration приоритет
 
 **Seen:** 1
