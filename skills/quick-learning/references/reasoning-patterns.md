@@ -1934,3 +1934,34 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Перед добавлением любого prop через Edit — прочитать полный JSX-блок элемента (от открывающего тега до закрывающего). Если prop уже есть — объединить значения в одном объекте, не добавлять второй атрибут.
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-04-06 juridical-parser / session 4: Module-level blocking вызовы замедляют worker startup
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** сервис мгновенно отвечает локально, но медленно снаружи → проверить module import на тяжёлые вызовы → убрать блокировку worker startup
+**Context:** `_check_old_format_banner()` вызывался при импорте модуля Flask-приложения — Google Drive API call блокировал gunicorn worker на ~1s при каждом рестарте.
+**Pattern:** Если сервис быстр локально но медленен при первом запросе — искать не в request handlers, а на уровне module import и startup-кода. Любой I/O, сетевой вызов или внешний API на уровне импорта блокирует worker до завершения. Переносить в `threading.Thread(daemon=True).start()`.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-04-06 juridical-parser / session 4: ERR_TIMED_OUT с нескольких сетей = ISP-блокировка, не server issue
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** ERR_TIMED_OUT с нескольких независимых сетей при открытом порту локально → не дебажить server-side → туннель или смена IP
+**Context:** Панель не открывалась у клиента (МТС, мобильный, VPN, разные города) — ERR_TIMED_OUT, хотя порт 80 отвечал 200 снаружи из Европы.
+**Pattern:** ERR_CONNECTION_REFUSED = сервер отвергает. ERR_TIMED_OUT с нескольких независимых сетей при открытом порту из другой страны = ISP/RKN-блокировка. Server-side дебаг бесполезен. Сразу переходить к туннелю (localhost.run, cloudflared) или смене IP.
+**Scope:** situational
+**Situation:** деплой на VPS за пределами России; клиент в России
+**Category:** recovery
+
+### 2026-04-06 employee-cabinet-updates / session 1: не обходить абстракцию auth-библиотеки
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** серверный код должен инициировать auth flow → вызвать серверный API auth-библиотеки, не писать токен в БД вручную → токены совпадают с форматом который валидирует клиентская часть
+**Context:** Сброс пароля через ручную генерацию UUID и INSERT в verification с identifier `reset:email` — better-auth на клиенте ожидал `reset-password:...`, 5 fix-раундов на поиск причины.
+**Pattern:** Если auth-библиотека предоставляет клиентский метод (resetPassword, verifyEmail), на сервере ВСЕГДА вызывать парный серверный API (requestPasswordReset, sendVerificationEmail). Ручная запись в таблицы библиотеки — обход абстракции, который ломается при любом изменении внутреннего формата.
+**Scope:** universal
+**Category:** tool-selection

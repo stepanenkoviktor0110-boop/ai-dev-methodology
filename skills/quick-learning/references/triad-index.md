@@ -5,7 +5,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 
 | # | Trigger | Action | Goal | Scope | Seen | Section | Adapted |
 |---|---------|--------|------|-------|------|---------|---------|
-| 1 | PROMOTED → feature-execution | верифицировать результат в реальной среде перед объявлением "готово" | — | — | 3 | — | feature-execution |
+| 1 | PROMOTED → feature-execution | верифицировать результат в реальной среде перед объявлением "готово" | — | — | 4 | — | feature-execution |
 | 2 | добавление auth flow к импортированным данным | проверить credentials + isActive | не обнаруживать missing auth на user verification | universal | 1 | Universal | tech-spec-planning |
 | 3 | generic retry decorator оборачивает API-вызов | явно исключить non-retryable exceptions | не ретраить ошибки, которые повторятся всегда | universal | 1 | Universal | code-writing |
 | 4 | написание AC для задачи создания CI/CD pipeline | явно включить concurrency/idempotency guards в AC | избежать предсказуемых deviation записей для best-practice additions | situational | 1 | Situational | task-decomposition |
@@ -243,3 +243,6 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 202 | соседние секции имеют разный backgroundColor при общем overlay-фоне | сделать все секции transparent, базовый цвет — только на wrapper/overlay | нет жёсткого шва на границе секций | situational | 1 | Situational | — |
 | 203 | gsap.fromTo() в компоненте A + gsap.set() на тех же элементах в компоненте B | добавить immediateRender: false к fromTo | не терять начальное состояние из set() | situational | 1 | Situational | — |
 | 204 | добавление нового prop к JSX-элементу через Edit без чтения полного JSX-блока | читать весь JSX-элемент перед добавлением prop, проверять существующие | не создавать дублирующиеся props | universal | 1 | Universal | — |
+| 205 | сервис отвечает мгновенно локально, но медленно/не отвечает на первый запрос снаружи | проверить все вызовы на уровне module import — сетевые, I/O, внешние API; вынести в background thread | убрать блокировку worker startup | universal | 1 | Universal | — |
+| 206 | ERR_TIMED_OUT (не ERR_CONNECTION_REFUSED) с нескольких независимых сетей, порт открыт локально | не дебажить server-side — использовать туннель или сменить IP | не тратить время на дебаг там где проблема на уровне ISP | situational | 1 | Situational | — |
+| 207 | серверный код должен инициировать auth flow (reset password, verify email) | вызвать серверный API auth-библиотеки, не писать токен в БД вручную | токены совпадают с форматом который валидирует клиентская часть | universal | 1 | Universal | — |
