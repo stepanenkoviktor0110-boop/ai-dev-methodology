@@ -36,7 +36,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 27 | PROMOTED → code-writing | маскировать секреты в команде до выполнения | — | — | 2 | — | code-writing |
 | 28 | performance problem на low-traffic сервере | проверить дефолтные таймауты/лимиты connection pool и кэшей | найти root cause в конфигурации до оптимизации кода | universal | 1 | Universal | tech-spec-planning |
 | 29 | визуальная задача с референс-скриншотами | сверить типографику с референсом ДО написания CSS | избежать серии fix-коммитов по визуальному несоответствию | universal | 1 | Universal | design-generate |
-| 30 | PROMOTED → tech-spec-planning | верифицировать файловые пути через ls/glob | — | — | 2 | — | tech-spec-planning |
+| 30 | PROMOTED → tech-spec-planning | верифицировать файловые пути через ls/glob | — | — | 3 | — | tech-spec-planning |
 | 31 | задача в одной волне ссылается на результат другой задачи | заменить зависимость на чтение общего source of truth | сохранить параллельность волны без рисков read-after-write | universal | 1 | Universal | task-decomposition |
 | 32 | задача на удаление фичи/константы/поля | перед ревью проверить dead variables, stale comments, duplicate tests | не тратить review-раунд на предсказуемые артефакты удаления | universal | 1 | Universal | task-decomposition |
 | 33 | редактирование/компрессия AI-промта | проверить prohibition/caps → заменить на motivation-framing | не тратить review-раунды на предсказуемую emphasis-ошибку | universal | 1 | Universal | prompt-master |
@@ -256,3 +256,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 214 | validation добавлена в один route, structurally-similar route с тем же input-полем | grep все аналогичные routes на наличие той же validation | предотвратить partial validation coverage когда аудит найдёт пропуск постфактум | universal | 1 | Universal | — |
 | 215 | сервис с free tunnel перезапустился | считать новый tunnel URL и немедленно передать клиенту | не оставлять клиента со старым нерабочим URL | situational | 1 | Situational | — |
 | 216 | task-файл содержит явный запрет ("NEVER X"), реализация нарушает запрет | grep по запрещённому паттерну в изменённых файлах ДО коммита | не тратить review round на нарушение явного запрета из спека | universal | 1 | Universal | — |
+| 217 | задача требует добавить client state (useState) в существующий server component | явно предписать client wrapper pattern, запретить конвертацию layout в "use client" | не потерять server component преимущества из-за неоднозначной инструкции | universal | 1 | Universal | — |

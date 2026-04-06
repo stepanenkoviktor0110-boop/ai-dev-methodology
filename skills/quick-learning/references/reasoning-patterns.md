@@ -2073,3 +2073,13 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Когда task-файл содержит явный запрет ("NEVER innerHTML", "только textContent", "строго ES5"), после реализации — grep по запрещённому паттерну в изменённых файлах ДО коммита. Запрет в спеке ≠ гарантия исполнения; самопроверка дешевле review round.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-06 website-rebuild / decompose-tech-spec: Client wrapper для state в server component layout
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** задача требует добавить client state (useState) в существующий server component → явно предписать client wrapper pattern, запретить конвертацию layout в "use client" → не потерять server component преимущества из-за неоднозначной инструкции
+**Context:** Task 6 должен был добавить useState для модала в (site)/layout.tsx (server component от Task 1). Инструкция "добавить use client ИЛИ вынести в wrapper" оставляла неоднозначность — cross-task validator нашёл critical. Конвертация layout в client component убила бы SSR для всего поддерева.
+**Pattern:** Когда задача добавляет client state в файл, созданный другой задачей как server component — явно предписать паттерн: "создать отдельный client wrapper, исходный файл остаётся server component". Формулировка "или" в инструкции = гарантированный fix round.
+**Scope:** universal
+**Category:** task-decomposition
