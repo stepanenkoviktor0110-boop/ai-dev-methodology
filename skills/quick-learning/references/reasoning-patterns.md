@@ -1975,3 +1975,13 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Если auth-библиотека предоставляет клиентский метод (resetPassword, verifyEmail), на сервере ВСЕГДА вызывать парный серверный API (requestPasswordReset, sendVerificationEmail). Ручная запись в таблицы библиотеки — обход абстракции, который ломается при любом изменении внутреннего формата.
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-04-06 responsive-layout / decomposition: конфликт подходов при параллельных task-creator'ах
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** параллельные task-creator'ы ссылаются на одну и ту же внешнюю утилиту/подход → в брифе оркестратора явно зафиксировать выбранный подход до диспатча → предотвратить противоречивые инструкции в разных задачах
+**Context:** Task 1 (AppNav) инструктирует использовать плагин `tailwind-scrollbar-hide`, Task 9 (reports) запрещает плагин и требует `[&::-webkit-scrollbar]:hidden`. Конфликт обнаружен только на cross-task check — оба task-creator'а работали параллельно и не знали друг о друге.
+**Pattern:** Когда несколько параллельных task-creator'ов используют одну внешнюю утилиту (плагин, пакет, CSS-трюк) — оркестратор должен выбрать единый подход и передать его каждому task-creator'у в брифе. Параллельные агенты не общаются — каждый принимает решение независимо.
+**Scope:** universal
+**Category:** scope-management
