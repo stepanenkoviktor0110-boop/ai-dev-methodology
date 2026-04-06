@@ -236,17 +236,14 @@ Before finishing, verify:
 
 ## Learned Patterns
 
-- When working on a visual task with reference screenshots -> verify typography against the reference BEFORE writing CSS, to avoid a series of fix commits for visual mismatch
-- When placing text/UI over a full-bleed photo -> identify the subject zone in the cropped viewport BEFORE positioning elements, to avoid covering a face/object with text
-- When asked for alternative design or redesign -> select the layout pattern independently from existing markup to produce a real alternative, not a restyle
-- When selecting a layout with full-bleed photo -> check photo orientation and subject crop feasibility against the container shape, to avoid iterations on a geometrically impossible crop
-- When laying out a section from the user structured data -> map each data field directly to a UI element, to avoid inventing a display structure that diverges from the data source
-- When placing multiple text blocks at different positions on a card -> check visual weight (font-size × font-weight) of each block to verify it supports the intended reading order, to control reading flow through weight hierarchy rather than position alone
-- When placing a text block on a full-bleed photo with an uneven background -> align the text to the side with the least busy background zone rather than the conventional position, to preserve readability without strengthening the overlay
-- When text on a busy/textured background (metal, foil, grass, patterns) has insufficient contrast -> increase font_size by one grid step (8px) until the letter physically covers the texture details; contrast through size, not overlay
-- When a layout constraint (wrap/overflow) conflicts with text agreed in Phase 2 -> adapt font-size / column width / layout to fit the original text, to preserve content integrity agreed in Phase 2
-- When computing font-size fit for a Cyrillic uppercase string -> use 0.72em per character (not 0.62em for Latin) and verify against the longest word, to prevent unexpected line breaks in render
-- When selecting color for a text element -> enumerate ALL options (brand colors + white + dark grey) and evaluate each against background and serial-use context, to avoid auto-selecting by habit rather than by fit
-- When a client requests a visual demo without specific references -> ask for 1-2 reference sites + "what annoys you about the current design" BEFORE starting layout, to reduce iterations from 3+ to 1-2
-- When a UI element is positioned at the boundary of a dark and light background -> use a solid opaque background instead of rgba with low opacity, so the element is readable on both backgrounds without additional CSS variations
-- When generating admin UI with N blocks x M tabs x JS logic -> generate one representative block fully, wait for approval, then scale to remaining blocks, to get early feedback on structure before writing the whole file
+**1. Типографика — проверяй ДО генерации CSS:**
+Верифицируй шрифты по референсу до написания стилей. Кириллица: 0.72em/символ (не 0.62em как для латиницы). Текст на текстуре → увеличивай font-size на grid step до покрытия деталей. Layout constraint vs согласованный текст → адаптируй layout, не текст.
+
+**2. Фото и позиционирование — анализируй субъект ДО размещения:**
+Текст поверх фото → найди зону субъекта, размести текст на наименее загруженной стороне. Full-bleed фото → проверь ориентацию и crop feasibility против формы контейнера. Элемент на границе тёмного/светлого фона → solid opaque bg, не rgba.
+
+**3. Цвет и визуальный вес — перебирай все варианты:**
+При выборе цвета текста → перечисли ВСЕ опции (brand + white + dark grey), оцени каждую против фона. Несколько текстовых блоков → проверь visual weight (size × weight) на соответствие reading order.
+
+**4. Структура — от данных к UI, не наоборот:**
+Structured data → каждое поле = UI-элемент, не изобретать структуру. Alternative design → выбирай layout независимо от существующей разметки. Сложный UI (N×M) → один блок полностью → одобрение → масштабирование. Нет референсов → спроси 1-2 сайта + "что раздражает" ДО старта.
