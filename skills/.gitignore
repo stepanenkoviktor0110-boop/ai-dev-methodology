@@ -10,3 +10,9 @@ moneymaker-new/
 moneymaker-pattern/
 moneymaker-setup/
 content-card/
+
+# Prevent secrets leaking
+*.bak
+settings.json*
+.env*
+.dashboard-events.jsonl

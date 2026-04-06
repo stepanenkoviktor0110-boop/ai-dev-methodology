@@ -2125,3 +2125,23 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Когда log-вызов записывает метрики из N стадий пайплайна — размещать его после ПОСЛЕДНЕЙ стадии, которая вносит вклад в метрику. Промежуточные накопители хранить в переменных, не логировать частично.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-07 website-rebuild / session 2: Числовой security guard — zero/negative case
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** числовой параметр используется как security guard (timestamp, counter, TTL) → явно проверять 0/negative/NaN до основной логики → не пропустить bot/abuse через edge case значения
+**Context:** Task 6 security-auditor нашёл edge case `_rendered_at <= 0` в time-based anti-bot check. Значение 0 или отрицательное проходило проверку `Date.now() - _rendered_at < 3000` как false (т.е. "прошло достаточно времени").
+**Pattern:** Для каждого числового security guard (timestamp, rate counter, TTL) — до основной логики добавить explicit guard: `if (!value || value <= 0 || isNaN(value)) → reject`. Не полагаться на то, что основная arithmetic expression корректно обработает edge cases.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-04-07 website-rebuild / session 2: User-controlled данные в HTML output
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** данные из внешних источников (IP, user input) попадают в HTML-строку (email, page) → применять escapeHtml/sanitize к КАЖДОМУ полю из внешнего источника → предотвратить XSS через non-obvious вектор
+**Context:** Task 6 — IP клиента из x-real-ip header не был экранирован в email template. IP выглядит безопасно (цифры и точки), но x-real-ip — user-controlled header, может содержать произвольный текст.
+**Pattern:** При построении HTML-строки для email/page — применять escapeHtml() к ВСЕМ полям из внешних источников, включая "безопасные" (IP, user-agent, referer). Header значения — user-controlled, даже если выглядят структурированными.
+**Scope:** universal
+**Category:** sequencing
