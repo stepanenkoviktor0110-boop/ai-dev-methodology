@@ -297,6 +297,17 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** tool-selection
 
+### 2026-04-06 employee-cabinet-updates / session 2: Production URL — читать из памяти, не из документации
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** агент деплоя определяет production URL → читать project memory (`project_*_deploy_config.md`) ДО project-knowledge документации → не деплоить на несуществующий домен из устаревшего docs-файла
+**Context:** Агент деплоя взял URL `https://cabinet.geologging.ru` из `deployment.md`, хотя в памяти явно указано что домен не выкуплен и рабочий URL `http://217.114.2.159/cabinet`. Документация была устаревшей, память — нет.
+**Pattern:** Перед любым деплоем читать project memory на наличие `deploy_config` записей — они содержат актуальное состояние (домен, порт, путь), которое может расходиться с закоммиченной документацией. Memory → docs приоритет при конфликте.
+**Scope:** situational
+**Situation:** Проект с VPS-деплоем, где домен или путь могут быть не настроены так, как указано в project-knowledge.
+**Category:** information-gathering
+
 ### 2026-04-06 employee-cabinet-updates / session 2: DB-вызовы в API route — try/catch до первого review
 
 **Seen:** 1
