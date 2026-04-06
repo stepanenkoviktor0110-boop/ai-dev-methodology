@@ -2062,3 +2062,14 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** situational
 **Situation:** Проект использует free tunnel (localhost.run / ngrok free tier) как публичный URL
 **Category:** communication
+
+---
+### 2026-04-06 panel-per-court-settings / session 2: Явный запрет в спеке нарушается при реализации — ловит только ревью
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** task-файл содержит явный запрет ("NEVER X", "только Y") → реализация нарушает запрет → code-reviewer ловит в round 1
+**Context:** Task 7 запрещал querySelector с интерполяцией (selector injection), Task 8 запрещал innerHTML — оба агента нарушили запрет, оба fix поймал code-reviewer round 1.
+**Pattern:** Когда task-файл содержит явный запрет ("NEVER innerHTML", "только textContent", "строго ES5"), после реализации — grep по запрещённому паттерну в изменённых файлах ДО коммита. Запрет в спеке ≠ гарантия исполнения; самопроверка дешевле review round.
+**Scope:** universal
+**Category:** sequencing
