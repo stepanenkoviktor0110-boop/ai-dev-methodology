@@ -2039,3 +2039,26 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Когда tech-spec описывает "обновить call sites функции X в файле Y" — перед записью выполни `grep -r "function_name(" src/` и запиши реальные файлы. Логическое рассуждение ("данные вычисляются здесь") не означает "вызов происходит здесь".
 **Scope:** universal
 **Category:** information-gathering
+
+---
+### 2026-04-06 panel-per-court-settings / session 2: Validation coverage — проверять structurally-similar routes
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** validation добавлена в один route, есть structurally-similar route с тем же input-полем → немедленно grep все аналогичные routes на наличие той же validation → предотвратить partial validation coverage, когда аудит найдёт пропуск постфактум
+**Context:** `run_time_msk` HH:MM validation была добавлена в `POST /api/settings/default`. Structurally-similar route `POST /api/courts/<name>/settings` принимает то же поле, но validation отсутствовала. Code audit (Task 9) нашёл пропуск — потребовался ad-hoc fix уже после завершения Wave 3.
+**Pattern:** При добавлении input validation в endpoint — grep по имени поля во всех route-файлах (`grep -r "run_time_msk" src/`). Убедиться, что structurally-similar endpoints имеют ту же validation. Validation в одном endpoint ≠ coverage для analogичных endpoints.
+**Scope:** universal
+**Category:** sequencing
+
+---
+### 2026-04-06 panel-per-court-settings / session 2: Free tunnel меняет URL при рестарте сервиса
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** сервис с free tunnel (localhost.run, ngrok free) перезапустился → получить новый tunnel URL и немедленно передать клиенту → не оставлять клиента со старым нерабочим URL
+**Context:** После деплоя и рестарта `juridical-parser-web` URL изменился с `96cfde1b7210ca.lhr.life` на `4be5bd2a20e668.lhr.life`. Старый URL стал нерабочим. Клиент мог получить неработающую ссылку.
+**Pattern:** Free tunnel сервисы генерируют новый URL при каждом рестарте. После любого `service restart` — явно считать новый URL (`journalctl` или curl localhost), сравнить со старым (из `.env` / `memory`), передать клиенту если изменился. Для production — рассмотреть платный план с фиксированным subdomain.
+**Scope:** situational
+**Situation:** Проект использует free tunnel (localhost.run / ngrok free tier) как публичный URL
+**Category:** communication
