@@ -2165,3 +2165,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** При построении HTML-строки для email/page — применять escapeHtml() к ВСЕМ полям из внешних источников, включая "безопасные" (IP, user-agent, referer). Header значения — user-controlled, даже если выглядят структурированными.
 **Scope:** universal
 **Category:** sequencing
+
+
+### 2026-04-07 tree-constructor / decompose: Entry-point wiring при создании компонентов
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** задача создаёт UI-компонент но не подключает его в entry point → включить entry point в Files to modify задачи-создателя → не оставлять downstream-задачи с неверным предположением что компонент уже подключён
+**Context:** Tasks 4 и 5 создавали PostForm и TreeChart, но не добавляли их в App.tsx. Task 8 описывал "App.tsx уже содержит импорты PostForm, TreeChart" — что было ложным, потому что ни одна задача не отвечала за этот шаг.
+**Pattern:** При декомпозиции: если задача создаёт UI-компонент, её scope должен включать подключение в entry point (App.tsx / layout). Иначе образуется gap — никто не отвечает за wiring, и downstream-задачи строят предположения на несуществующем состоянии.
+**Scope:** universal
+**Category:** scope-management
