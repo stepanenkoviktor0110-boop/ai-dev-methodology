@@ -44,6 +44,9 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
 
 ## Phase 2: Implementation (TDD)
 
+**Codex delegation** (when `codex_mode: true` and task is Codex-eligible — see do-task for criteria):
+Code generation is handled by Codex via do-task Codex-First Path. This skill's Phase 2 is skipped — go directly to Phase 3 (post-work) to run tests, lint, and reviews on Codex output. If Codex failed and Claude is doing fallback — proceed with TDD below as normal.
+
 1. **Write Tests First**
 
    Read [testing-guide.md](references/testing-guide.md) before writing tests.
@@ -142,3 +145,8 @@ Load only for audit wave and retrospective — not during code writing.
 - When добавление нового prop к JSX-элементу через Edit → читать весь JSX-элемент перед добавлением, проверять существующие props, to не создавать дублирующиеся props.
 - When сервис отвечает мгновенно локально, но медленно снаружи → проверить все вызовы на уровне module import — сетевые, I/O, внешние API; вынести в background thread, to убрать блокировку worker startup.
 - When серверный код должен инициировать auth flow (reset password, verify email) → вызвать серверный API auth-библиотеки, не писать токен в БД вручную, to обеспечить совпадение токенов с форматом который валидирует клиентская часть.
+- When таблица с overflow-x-auto + sticky колонкой → не ставить промежуточный div между scroll-контейнером и table — sticky ломается в Safari, to корректное sticky-поведение колонки во всех браузерах.
+- When делегирование кодогенерации внешнему AI-агенту на много файлов → инструктировать "пиши файлы по одному, не все разом", to предотвратить зависание агента на генерации гигантского патча.
+- When d3 `.each()` на SVG элементах отрисованных React → lookup по data-* атрибутам вместо bound data, to предотвратить crash от undefined datum.
+- When делегирование write-задачи sandboxed-инструменту → проверить write permissions тестовой операцией до полного промта, to не терять время на failed delegation + ручную реализацию.
+- When VPS нужен публичный URL → перед выбором tunnel-сервиса проверить outbound connectivity VPS (HTTPS? SSH?), to не тратить попытки на несовместимые решения.

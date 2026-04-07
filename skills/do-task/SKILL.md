@@ -24,9 +24,42 @@ Before starting, read [quick-ref-do-task.md](../quick-learning/references/quick-
 
 ## Step 2: Execute
 
+### Codex-First Path (when `codex_mode: true` in checkpoint.yml)
+
+   Skip this section if `codex_mode` is absent/false, or if task matches Claude-only criteria:
+   - Task has `verify: [smoke]` or `verify: [user]`
+   - Task has `skills:` containing `deploy-pipeline` or `infrastructure-setup`
+   - Task diff estimate < 30 lines (single file, minor change)
+
+   **2.1. Build Codex prompt:**
+   - Read `~/.claude/skills/quick-learning/references/triad-index.md`
+   - Select 3-5 triads where `skill` column matches task's `skills`, or keyword overlap with task "What to do"
+   - Read `.claude/skills/project-knowledge/references/patterns.md` (if exists, < 2KB)
+   - Assemble prompt per `gpt-5-4-prompting` XML structure (see feature-execution skill for template)
+
+   **2.2. Send to Codex** (foreground, Bash timeout 600000ms — 0 tokens on monitoring):
+   ```
+   node "${CLAUDE_PLUGIN_ROOT}/scripts/codex-companion.mjs" task --write "{prompt}"
+   ```
+
+   **2.3. Validate result:**
+   - On completion: run tests locally, grep for anti-patterns (`password|secret|api_key` in new files)
+   - Tests pass → commit: `feat: task {N} — {brief} [codex]`
+   - Tests fail → `--resume-last` with failure output, max 2 retries
+   - Codex 403/timeout/2 retries exhausted → fall through to Claude Path below
+
+   **2.4. Codex review (lighter):**
+   - Codex self-reviewed via `<action_safety>` in prompt
+   - Run grep for: missing timeouts in fetch/axios, secrets in logs, SQL without parameterization
+   - Full reviewer spawning only if task is last in its wave (reviews cumulative diff)
+   - Skip to Step 3 after review
+
+### Claude Path (default, or fallback from Codex)
+
 1. Load each skill listed in the task (frontmatter `skills: [...]` and "Required Skills" section)
    - If a skill is not found → warn user, continue with remaining skills
    - If task has no skill (frontmatter `skills: []` or absent) → read the task, execute "What to do" and "Verification Steps" directly. For tasks with user instructions → show the instruction to user, wait for confirmation.
+   - If falling back from Codex → Codex-written files are already on disk. Read them, continue from current state.
 2. Follow loaded skill workflow
 3. Git commit implementation (code + tests pass): `feat|fix|refactor: task {N} — {brief description}`
 4. For each reviewer from the task's "Reviewers" section (if present):

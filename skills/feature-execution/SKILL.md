@@ -31,6 +31,11 @@ Before starting, read [quick-ref-feature-execution.md](../quick-learning/referen
 
 1. Read `work/{feature}/tech-spec.md` and `work/{feature}/user-spec.md`
 1.5. Read `work/{feature}/logs/session-plan.md` if it exists. Parse session boundaries: which waves belong to which session. If file does not exist — treat all waves as one session (backward compatibility).
+1.6. **Codex mode** (opt-in, skip if `codex_mode` absent or false in checkpoint.yml):
+   - Set at feature start via `--codex` flag → writes `codex_mode: true` to checkpoint.yml
+   - Read and cache `~/.claude/skills/quick-learning/references/triad-index.md` for prompt injection
+   - Read and cache `.claude/skills/project-knowledge/references/patterns.md` if file exists and < 2KB
+   - If `codex_mode: false` or absent → standard Claude-only flow, skip all "Codex mode" blocks below
 2. Read frontmatter of all task files in `work/{feature}/tasks/` — extract fields:
 
    | Field | Purpose |
@@ -58,6 +63,76 @@ Before starting, read [quick-ref-feature-execution.md](../quick-learning/referen
 
 1. Find tasks for current wave: `status: planned`, all `depends_on` tasks are `done`
 2. Update frontmatter: `status: planned` → `status: in_progress`
+
+### Codex-First Routing (skip if `codex_mode: false`)
+
+   For each task, determine executor before spawning:
+
+   **Claude-only** (auto-override):
+   - Task has `verify: [smoke]` or `verify: [user]` (needs dev-server/browser)
+   - Task has `skills:` containing `deploy-pipeline` or `infrastructure-setup` (needs SSH/MCP)
+   - Fix after review, diff < 30 lines
+   - Codex returned 403 / rate limit / auth failure for this session
+
+   **Codex-eligible** — everything else. For Codex-eligible tasks:
+
+   a. **Select triads** from cached triad-index.md:
+      - Filter by: `skill` column matches any of task's `skills`, OR keyword overlap between task "What to do" and triad `trigger`
+      - Take top 5 by relevance. If 0 matches — skip `<pitfalls>` block.
+
+   b. **Build Codex prompt** (XML structure per `gpt-5-4-prompting` skill):
+
+      ```xml
+      <task>
+      {task "What to do" section, verbatim}
+      Context files: {task Context Files list}
+      Acceptance criteria: {task acceptance criteria, verbatim}
+      </task>
+
+      <pitfalls>
+      {selected triads as: "When {trigger} → {action}"}
+      </pitfalls>
+
+      <project_patterns>
+      {cached patterns.md contents, if available}
+      </project_patterns>
+
+      <completeness_contract>
+      Write files one at a time. After each file, verify syntax.
+      Do not batch all files into one response.
+      </completeness_contract>
+
+      <action_safety>
+      Scope changes to listed files only. No unrelated refactors.
+      Self-review before finishing: no hardcoded secrets, no unused imports, no missing error handling at boundaries.
+      </action_safety>
+      ```
+
+   c. **Send to Codex** via companion runtime (foreground, Bash timeout 600000ms):
+      ```
+      node "${CLAUDE_PLUGIN_ROOT}/scripts/codex-companion.mjs" task --write "{prompt}"
+      ```
+      No polling, no background. Single blocking call — 0 tokens on monitoring.
+      On Bash timeout (10 min) → fall through to Claude (step 3).
+
+   e. **On Codex completion:**
+      - Run tests locally (`npm test` or project equivalent)
+      - Quick grep: `password|secret|api_key` in new files (exclude test fixtures)
+      - Tests pass + grep clean → commit: `feat: task {N} — {brief} [codex]`, proceed to review (step 2.f)
+      - Tests fail → send failure to Codex (`--resume-last`), max 2 retries
+      - After 2 retries still failing → fall through to Claude (step 3)
+
+   f. **Codex review** (lighter than full Claude review):
+      - Codex already did self-review (prompted in `<action_safety>`)
+      - Lead runs grep for anti-patterns: missing timeouts in fetch/axios, secrets in logs, SQL without parameterization
+      - Full reviewer spawning (`code-reviewer`, `security-auditor`) only on **last task of the wave** — reviews cumulative wave diff, not per-task
+      - If task has `reviewers: none` — grep check only, no reviewer spawning
+
+   g. **Fallback to Claude:** On Codex 403/rate-limit/timeout/repeated test failure:
+      - Log: `"Codex failed: {reason}. Falling back to Claude for task {N}."`
+      - Codex-written files remain on disk — Claude teammate starts from current state
+      - Execute standard step 3 below (spawn Claude teammate)
+
 3. For each task, spawn **teammate + reviewers** (if task has reviewers):
 
    Use `teammate_name` from task frontmatter as the agent name. If not set — pick a descriptive name based on the task.
@@ -225,6 +300,8 @@ When escalating:
 - **Спорные решения ДО генерации:** Артефакт > 200 строк → сначала список решений с вариантами → утверждение → генерация. Один раунд вместо серии переделок.
 - **Субагент не завершил → выполни напрямую:** Не ретраить субагент при внешней блокировке (права, permission). Lead делает сам через Write/Edit.
 - **Верифицируй результат в реальной среде** (Seen: 4): После деплоя — curl/лог/проверка. Не объявлять "готово" без подтверждения работы. Для cron — лог через 5 мин.
+- **Codex: один файл за раз** (Seen: 1): Codex зависает при генерации множества файлов одним ответом. Промт должен содержать `<completeness_contract>` с инструкцией писать файлы по одному.
+- **Codex: тесты прогоняет Claude** (Seen: 1): Codex sandbox не может запускать vitest/vite (spawn EPERM на Windows). Тесты всегда запускать локально после получения результата от Codex.
 
 ## Self-Verification
 
@@ -244,10 +321,28 @@ When escalating:
 "Не нужен" → уточни: UI или вся функциональность (API, DB)? "X здесь, а не там" → добавь в новое место, убери только из названного. Неоднозначное название → покажи варианты, спроси. Диагностический вопрос ≠ запрос на действие. Task file > prompt для значений.
 
 **3. Любое изменение — проверяй радиус поражения:**
-Изменён элемент из группы → примени к каждому sibling. Синхронизация файлов → проверь index-файлы. Hotfix вне плана → добавь в audit wave. Новый marker в промте → опиши во всех секциях. DRY-нарушение в N задачах → extraction-задача в audit.
+Изменён элемент из группы → примени к каждому sibling. Синхронизация файлов → проверь index-файлы. Hotfix вне плана → добавь в audit wave. Новый marker в промте → опиши во всех секциях. DRY-нарушение в N задачах → extraction-задача в audit. Validation добавлена в route → немедленно grep по имени поля во всех route-файлах, убедиться что structurally-similar endpoints имеют ту же validation.
 
 **4. Не подтверждай без проверки реальности:**
 "Это работает?" → grep в коде до ответа. Pipeline ok но экспорт упал → алерт на N consecutive 0. Тесты зелёные но покрытие иллюзорно → ad-hoc fix немедленно. Pre-existing failures → проверь working tree (git stash).
 
 **5. Планирование задач — валидируй зависимости:**
 depends_on=[N] в той же wave → проверить wave(dep) < wave(task). Фильтр ко всем колонкам → таблица тип→поведение до кода. Endpoint с resource_id без user_id → проверка роли target-user. Off-by-one в индексах → подставить числа вручную. State-файл → путь от якоря (db_path.parent), не от CWD.
+
+**6. Порядок вызовов — лог после накопления:**
+When функция log_*() вызывается до стадии-накопителя метрики → перенести вызов в конец всех накопительных стадий, to гарантировать полноту записи в лог.
+
+**7. Non-ASCII в HTTP-ответах:**
+When файл с non-ASCII именем отдаётся через HTTP Content-Disposition → использовать RFC 5987 encoding (filename*=UTF-8''...) + ASCII fallback, to предотвратить ByteString crash и некорректное имя при скачивании.
+
+**8. Shared state для UI табов:**
+When общий state объект для нескольких UI табов с разными типами данных → защищать доступ к type-specific полям optional chaining или разделять state по табам, to предотвратить runtime crash при переключении табов из-за stale данных чужого типа.
+
+**9. Tunnel URL после перезапуска:**
+When сервис с free tunnel перезапустился → считать новый tunnel URL и немедленно передать клиенту, to не оставлять клиента со старым нерабочим URL.
+
+**10. Проверка запретов из спека перед коммитом:**
+When task-файл содержит явный запрет ("NEVER X"), реализация нарушает запрет → grep по запрещённому паттерну в изменённых файлах ДО коммита, to не тратить review round на нарушение явного запрета из спека.
+
+**11. Async агент без прогресса — kill threshold:**
+When мониторинг async AI-агента без нового прогресса → установить порог "5 мин без записи в лог = убить и перезапустить", to не тратить 15+ мин на polling заведомо зависшей задачи.

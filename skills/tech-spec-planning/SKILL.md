@@ -108,7 +108,7 @@ After fixes → commit `chore(techspec): validation round {N} — {summary}` →
 
 - **Верифицируй целевые файлы перед описанием операции (Seen: 2):** Когда spec описывает трансформацию "удалить X из N файлов" или "заменить Y" — grep по каждому файлу перед тем как зафиксировать тип операции. Файл без X требует add, не replace. Ошибка типа операции обнаруживается только при выполнении задачи.
 - **Верифицируй API response shapes live-вызовом (Seen: 2):** При интеграции с внешним API — перенести в спек ВСЕ коды ответа, формат данных, edge cases. Перед включением response shapes из code-research — live API call для проверки. Один вызов дешевле propagation миража через pipeline.
-- **Верифицируй файловые пути через ls/glob (Seen: 2):** Перед написанием путей в tech-spec — проверить через ls/glob, не из памяти или architecture docs. Docs описывают намерение, а не реальность.
+- **Верифицируй файловые пути через ls/glob (Seen: 2):** Перед написанием путей в tech-spec — проверить через ls/glob, не из памяти или architecture docs. Docs описывают намерение, а не реальность. Перед записью "call sites функции X в файле Y" в Files to modify — grep по имени функции, подтвердить что вызовы реально существуют в указанном файле.
 
 ## Learned Patterns
 
@@ -126,3 +126,7 @@ Load only for audit wave and retrospective — not during spec planning.
 - When агент деплоя определяет production URL → читать project memory (deploy_config) ДО project-knowledge docs, to не деплоить на несуществующий домен из устаревшего docs-файла.
 - When tech-spec Data Models содержит UPDATE SQL для существующей таблицы → reality-checker сверяет SQL против реального route.ts ища пропущенные существующие параметры, to предотвратить тихую потерю данных.
 - When Wave 1 создаёт shared module с named exports, Wave 2 потребляет его → перечислить ВСЕ export-символы явно в брифе Wave 1 и передать точную строку импорта в каждый Wave 2 бриф, to предотвратить naming divergence.
+- When планирование агрегации из log-таблицы по колонке добавленной ALTER TABLE → проверить заполненность исторических строк, не только наличие колонки, to не получить пустую агрегацию из "наполненной" таблицы.
+- When бриф task-creator содержит compatibility constraint (ES5/legacy) + файл уже использует конкретный HTTP-паттерн → явно указать разрешённые API с примером строки из существующего кода, to предотвратить выбор устаревшего API вопреки code style.
+- When написание tech-spec из user-spec с множеством AC → перед написанием Solution пройти все AC user-spec чеклистом, отметить каждый в черновике, to не пропустить явное требование (mobile, a11y) которое ловит только валидатор.
+- When tech-spec содержит публичный POST endpoint без авторизации → применить security checklist: CSRF/Origin, input sanitization (XSS+injection), IP extraction source, rate-limit, security headers, to не добавлять security decisions только после аудита.

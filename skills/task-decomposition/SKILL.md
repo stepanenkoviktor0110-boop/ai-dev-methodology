@@ -192,3 +192,5 @@ When при составлении параллельной волны в tech-s
 When gsap.fromTo() в компоненте A + gsap.set() на тех же элементах в компоненте B → добавить immediateRender: false к fromTo, to не терять начальное состояние из set().
 
 When gsap.fromTo() in component A and gsap.set() on the same elements in component B → add immediateRender: false to fromTo, to preserve the initial state from set().
+
+When задача требует добавить client state (useState) в существующий server component → явно предписать client wrapper pattern, запретить конвертацию layout в "use client", to не потерять server component преимущества из-за неоднозначной инструкции.
