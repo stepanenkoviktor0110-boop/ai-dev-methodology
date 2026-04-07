@@ -274,3 +274,4 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 223 | делегирование write-задачи sandboxed-инструменту | проверить write permissions тестовой операцией до полного промта | не терять время на failed delegation + ручную реализацию | universal | 2 | Universal | code-writing |
 | 224 | VPS нужен публичный URL | перед выбором tunnel-сервиса проверить outbound connectivity VPS (HTTPS? SSH?) | не тратить попытки на несовместимые решения | situational | 1 | Situational | code-writing |
 | 225 | user-spec для style-only рефакторинга с полным аудитом | пропустить тяжёлых валидаторов или ограничиться лёгким | не терять часы на зависшие агенты при нулевом архитектурном риске | universal | 1 | Universal | user-spec-planning |
+| 159 | фикс задеплоен → баг воспроизводится | проверить upstream-инфраструктуру до повторного анализа кода | не тратить ещё один цикл деплоя на не тот слой | universal | 1 | Universal | — |

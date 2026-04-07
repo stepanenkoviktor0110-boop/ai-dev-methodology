@@ -1664,3 +1664,13 @@ Patterns that apply to any project, any stack, any domain.
 **Situation:** проект использует sketch → Codex delegation workflow для кодогенерации
 **Category:** scope-management
 **Category:** tool-selection
+
+### 2026-04-08 panel-settings-display-bug / session 1: deploy-and-retest reveals infrastructure layer as root cause
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** фикс задеплоен → баг воспроизводится → проверить upstream-инфраструктуру до повторного анализа кода → не тратить ещё один цикл деплоя на не тот слой
+**Context:** Баг описан как "courtSettings JS не обновляется после save". Фикс добавлен и задеплоен. Баг воспроизводится. Настоящая причина: gunicorn hard limit 8190 байт на request line → batch-endpoint возвращал 400 → JS заполнял state дефолтами при каждой загрузке страницы.
+**Pattern:** Когда задеплоенный фикс не устраняет симптом — перед повторным анализом кода проверить инфраструктурные ограничения между клиентом и обработчиком: размеры запроса/ответа, таймауты, кэш, middleware-лимиты. Симптом в одном слое часто вызывается ограничением в другом.
+**Scope:** universal
+**Category:** problem-decomposition
