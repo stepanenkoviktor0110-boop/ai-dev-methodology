@@ -1623,3 +1623,24 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** При декомпозиции: если задача создаёт UI-компонент, её scope должен включать подключение в entry point (App.tsx / layout). Иначе образуется gap — никто не отвечает за wiring, и downstream-задачи строят предположения на несуществующем состоянии.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-04-07 website-design-match / session 1: проверяй write-флаги до делегирования sandbox-инструменту
+
+**Seen:** 2
+**Adapted:** —
+**Triad:** делегирование write-задачи sandboxed-инструменту → проверить write permissions тестовой операцией до полного промта → не терять время на failed delegation + ручную реализацию
+**Context:** Codex rescue субагент запустил task без --write, получил read-only sandbox, потратил 2 минуты на чтение файлов и диагноз "не могу записать". Работу пришлось выполнить вручную в Claude Code с повторным сбором контекста.
+**Pattern:** При делегировании write-задачи инструменту с configurable sandbox — убедиться что write-флаг передаётся явно, а не полагаться на "default to write" в инструкциях агента. Если флаг конфигурационный — проверить его наличие в команде до запуска, не после failure.
+**Scope:** universal
+
+### 2026-04-07 cron-uses-panel-settings / session 1: sketch-first перед кодом — не кодировать напрямую в main-сессии
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** задача требует написания кода, рефлекс — начать писать напрямую → написать sketch.md (root cause + what must work) и делегировать Codex ДО начала кода → соблюдать установленный workflow
+**Context:** Задача fix cron: я начал писать `__main__.py` напрямую. Пользователь остановил: "почему это делаешь ты, когда ты должен оформить документацию и делегировать программирование кодексу?"
+**Pattern:** Когда в проекте установлен workflow "sketch → Codex", при поступлении coding-задачи — сначала написать sketch.md (root cause + what must work), согласовать с пользователем, делегировать Codex. Писать код напрямую = нарушение договорённости.
+**Scope:** situational
+**Situation:** проект использует sketch → Codex delegation workflow для кодогенерации
+**Category:** scope-management
+**Category:** tool-selection
