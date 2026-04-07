@@ -760,11 +760,11 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-03-29 missing-ui-details / wave-2: Сверяй типографику с референсом ДО реализации
 
-**Seen:** 1
-**Adapted:** —
-**Triad:** визуальная задача с референс-скриншотами → сверить типографику (шрифт, вес, размер, padding) с референсом ДО написания CSS → избежать серии итеративных fix-коммитов по визуальному несоответствию
-**Context:** Task 2 (visual polish) выполнен по спеку, но спек не описывал конкретный шрифт и пропорции. Пользователь увидел несоответствие — 9 fix-коммитов подряд: condensed шрифт, +20% размер, padding, кнопки, единообразие строк. Каждый fix был очевиден при сравнении с референсом.
-**Pattern:** Перед реализацией визуальной задачи с референсами — открыть скриншот и составить чеклист: шрифт (семейство, condensed/normal), размеры относительно строки, вес, межстрочные отступы, цвет акцентов. Реализовывать по чеклисту, не по абстрактному описанию в спеке.
+**Seen:** 2
+**Adapted:** design-generate
+**Triad:** фича с визуальным оригиналом (rebuild, redesign, visual polish) → сверить layout, цветовую схему и типографику с референсом ДО написания CSS, составить чеклист расхождений → избежать полного редизайна или серии fix-коммитов после деплоя
+**Context:** (1) Visual polish — спек не описывал конкретный шрифт, 9 fix-коммитов. (2) Website rebuild — текстовое описание из code-research без скриншотов привело к полностью другому дизайну (тёмный gradient вместо белого фона, centered вместо two-column, слайдер отдельно вместо в hero). Обнаружено только после деплоя на VPS.
+**Pattern:** Перед реализацией визуальной задачи с оригиналом — открыть скриншоты и составить чеклист: (1) layout (колонки, выравнивание), (2) цветовая схема (фон, акценты), (3) типографика (шрифт, вес, размер), (4) структура секций (порядок, вложенность компонентов). Если скриншотов нет — запросить у пользователя. Текстовое описание недостаточно для visual match.
 **Scope:** universal
 **Category:** information-gathering
 
@@ -1135,15 +1135,14 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** scope-management
 
-### 2026-04-06 admin-demo / session 1: Сложный admin UI — показывать один блок до масштабирования
+### 2026-04-07 website-design-match / session 1: Визуальная фича — один экран за раз
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
-**Triad:** design-generate задание — admin UI с N блоков × M вкладок × JS-логикой → сгенерировать один representational блок в полном виде → дождаться одобрения структуры, затем масштабировать
-**Context:** admin-demo сгенерирован за один проход (три блока × три вкладки × JS-конструкторы). Пользователь получил 700+ строк и сразу сообщил о "много замечаний", попросил промт для новой сессии — ранний фидбэк дать было невозможно.
-**Pattern:** Если admin UI содержит несколько однотипных секций (блок × вкладки) — генерировать первую секцию полностью, показывать пользователю, ждать одобрения раскладки и логики. Только после этого применять паттерн ко всем секциям. Одобренная структура умножается, не угаданная — переделывается целиком.
-**Scope:** situational
-**Situation:** design-generate, admin/dashboard UI с 3+ однотипными секциями, каждая содержит несколько вкладок и интерактивный JS
+**Triad:** визуальная фича с несколькими экранами/блоками → показать один экран/блок полностью → дождаться одобрения перед следующим
+**Context:** (1) admin-demo сгенерирован за один проход (3 блока × 3 вкладки) — 700+ строк без раннего фидбэка. (2) website-design-match tech-spec поставил 3 страницы в параллельную волну — пользователь сказал "один экран за раз", перестройка волн.
+**Pattern:** При планировании визуальной фичи (дизайн, редизайн, layout) — каждый экран/блок в отдельную волну с Verify-user. Не параллелить страницы, даже если технически независимы.
+**Scope:** universal
 **Category:** design-iteration
 
 <!-- PROMOTED → feature-execution (Seen: 2, 2026-03-30): Флаг-файл run-once — путь от якоря, не от CWD -->
@@ -1349,6 +1348,16 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Если JS state имеет ровно два значения и оба соответствуют CSS-состояниям для breakpoint — это признак отсутствующей CSS-архитектуры. Удалить state, вынести логику в media queries, заменить inline styles на className. Это не рефакторинг ради чистоты — это устранение источника будущих багов при добавлении новых breakpoints.
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-04-07 website-design-match / session 1: Пропуск тяжёлой валидации при чётком style-only scope
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** user-spec для style-only рефакторинга с полным аудитом параметров → пропустить тяжёлых валидаторов (opus) или запускать только лёгкий (sonnet) → не терять часы на зависшие агенты при нулевом риске архитектурных ошибок
+**Context:** Запуск двух валидаторов (quality-sonnet + adequacy-opus) для CSS-only user-spec привёл к зависанию на 3+ часа. Пользователь перезапускал сессию 5 раз. Валидация была пропущена без последствий — scope очевиден.
+**Pattern:** Когда user-spec описывает исключительно стилевые изменения (CSS, шрифты, цвета, отступы) без изменений логики/API — оценить необходимость валидации по формуле: есть архитектурные решения → валидировать, только стили → пропустить или ограничиться одним лёгким валидатором.
+**Scope:** universal
+**Category:** scope-management
 
 ## Situational
 
@@ -2216,3 +2225,37 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** При декомпозиции: если задача создаёт UI-компонент, её scope должен включать подключение в entry point (App.tsx / layout). Иначе образуется gap — никто не отвечает за wiring, и downstream-задачи строят предположения на несуществующем состоянии.
 **Scope:** universal
 **Category:** scope-management
+
+
+### 2026-04-07 tree-constructor / session 2: d3 .each() на React-rendered SVG элементах
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** d3 `.each(callback(datum))` на SVG элементах отрисованных React → заменить на lookup по data-* атрибутам → предотвратить crash от undefined datum
+**Context:** TreeChart использовал d3 `selectAll('path').each(function(link) {...})` для анимации, но SVG элементы рендерились React — d3 selection не имела bound data через `.data()`. `link` был undefined → crash → чёрный экран.
+**Pattern:** При смешивании React-рендеринга SVG с d3 imperative-анимацией: d3 `.each()` не получает bound data на React-элементах. Вместо `selection.each((datum) => ...)` используй `selection.each(function() { const key = select(this).attr('data-key'); const datum = lookupMap.get(key); })`.
+**Scope:** situational
+**Situation:** Проект использует React для SVG-рендеринга + d3 для анимации/transitions
+**Category:** tool-selection
+
+
+### 2026-04-07 tree-constructor / session 2: Проверка write capabilities перед делегированием sandboxed-инструменту
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** делегирование write-задачи sandboxed-инструменту → проверить write permissions до отправки полного промта → не терять время на failed delegation + ручную реализацию
+**Context:** Дважды делегировал Codex реализацию фичи с полным промтом на 30+ строк. Оба раза Codex прочитал все файлы, составил план, но не смог записать ни одного файла из-за read-only policy sandbox. Итого: ~20 мин потеряно на два провала + пришлось делать всё вручную.
+**Pattern:** Перед делегированием write-задачи внешнему инструменту (Codex, subagent, CI): проверить одной тестовой операцией что инструмент может писать в целевую директорию. Дешевле потратить 10 сек на проверку, чем 10 мин на полный цикл read→plan→fail.
+**Scope:** universal
+**Category:** tool-selection
+
+### 2026-04-07 tunnel-infra / session 1: проверять outbound connectivity VPS до выбора tunnel-сервиса
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** VPS нужен публичный URL → перед выбором tunnel-сервиса проверить outbound connectivity (`curl -m5 https://example.com`) → не тратить попытки на несовместимые решения
+**Context:** Три последовательных попытки: lhr-tunnel (упал), Cloudflare Tunnel (VPS не достучался до api.trycloudflare.com по HTTPS), serveo (работает по SSH). Каждая попытка — новое SSH-подключение, fail2ban-риск.
+**Pattern:** До выбора tunnel-сервиса проверить одной командой что VPS может делать — `curl -m5 https://example.com` (HTTPS outbound?) и `ssh -o ConnectTimeout=5 user@external 'echo ok'` (SSH outbound?). Cloudflare/ngrok/bore требуют HTTPS; localhost.run/serveo — только SSH port 22. Несовместимые варианты не предлагать.
+**Scope:** situational
+**Situation:** VPS с ограниченным outbound (хостинг в РФ или за NAT) нужно сделать публично доступным
+**Category:** tool-selection
