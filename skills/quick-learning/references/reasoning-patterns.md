@@ -13,6 +13,26 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
+### 2026-04-07 geolog-cabinet / hotfix: RFC 5987 для non-ASCII filename в Content-Disposition
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** файл с non-ASCII именем отдаётся через HTTP → использовать RFC 5987 encoding + ASCII fallback → предотвратить ByteString crash и некорректное имя при скачивании
+**Context:** Content-Disposition с кириллическим именем файла вызвал ByteString crash в Node.js — символы >255 не допускаются в HTTP header values.
+**Pattern:** При отдаче файлов через HTTP всегда использовать двойной формат: `filename="safe-ascii.ext"; filename*=UTF-8''${encodeURIComponent(originalName)}`. Никогда не подставлять user-generated имя файла напрямую в header.
+**Scope:** universal
+**Category:** recovery
+
+### 2026-04-07 geolog-cabinet / hotfix: Shared state между UI табами — защита type-specific доступа
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** общий state для табов с разными типами данных → optional chaining на type-specific полях или раздельный state → предотвратить runtime crash при переключении
+**Context:** Один `useState<TimesheetRow | PersonalRow>` для всех табов → при смене таба React рендерит компонент с данными чужого типа до срабатывания useEffect, вызывая crash на `.counts[code]`.
+**Pattern:** Если один state хранит данные разных типов для разных UI-режимов — каждый потребитель обязан защищать доступ к type-specific полям через optional chaining. Лучше: раздельный state per tab.
+**Scope:** universal
+**Category:** recovery
+
 ### 2026-04-07 tree-constructor / session 1: Внешнему AI-агенту — файлы по одному, не батчем
 
 **Seen:** 1
