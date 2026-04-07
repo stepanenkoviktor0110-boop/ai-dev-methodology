@@ -1633,6 +1633,26 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** При делегировании write-задачи инструменту с configurable sandbox — убедиться что write-флаг передаётся явно, а не полагаться на "default to write" в инструкциях агента. Если флаг конфигурационный — проверить его наличие в команде до запуска, не после failure.
 **Scope:** universal
 
+### 2026-04-07 panel-settings-display-bug / session 1: после POST-мутации синхронно обновлять in-memory state
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** JS frontend хранит список в in-memory state → POST мутирует один элемент → state не обновляется → re-render показывает устаревшее → после успешного POST обновить запись в state синхронно → не допустить stale display
+**Context:** После сохранения настроек суда (POST 200 ok) `courtSettings[courtName]` не обновлялся. При переключении вкладки `renderTable()` перерисовывал форму с дефолтами из stale state.
+**Pattern:** Если frontend кэширует список в JS-переменной и отдельно мутирует элементы через POST — после успешного ответа немедленно обновить in-memory запись (`state[key] = newValue`). Иначе любой последующий re-render использует устаревшие данные.
+**Scope:** universal
+**Category:** scope-management
+
+### 2026-04-07 panel-settings-display-bug / session 1: batch endpoint — skip unknowns вместо reject-all
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** batch endpoint валидирует каждый элемент и возвращает 400 если хоть один неизвестен → изменить на "skip unknowns, return known" → не ломать весь batch из-за одного невалидного элемента
+**Context:** `/api/courts/settings/batch?courts=...` с 90 судами возвращал 400 из-за одного неизвестного имени. Весь JS-state заполнялся дефолтами.
+**Pattern:** Для batch-read endpoints предпочитать partial success: неизвестные ключи пропускать, возвращать результат для известных. Reject-all оправдан только для write-операций где частичное применение опаснее полного отказа.
+**Scope:** universal
+**Category:** problem-decomposition
+
 ### 2026-04-07 cron-uses-panel-settings / session 1: sketch-first перед кодом — не кодировать напрямую в main-сессии
 
 **Seen:** 1
