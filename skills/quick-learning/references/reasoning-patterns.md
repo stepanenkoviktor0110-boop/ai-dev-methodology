@@ -1696,3 +1696,23 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Когда несколько процессов параллельно расходуют общий ресурсный пул — агрегируй через дельту пула (start − end по хронологии), а не через SUM индивидуальных записей. SUM корректен только для последовательных процессов.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-08 dns-migration / session 1: .env менять ПОСЛЕ пропагации DNS, не параллельно
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** DNS-миграция: .env содержит домен который ещё не пропагировался → менять .env и пересобирать ПОСЛЕ подтверждения dig A → новый IP → не ломать работающий сайт на период пропагации
+**Context:** При миграции geologging.ru обновили BETTER_AUTH_URL на новый домен до пропагации DNS. Сайт перестал работать по IP — пришлось откатывать .env и пересобирать дважды.
+**Pattern:** При DNS-миграции разделяй инфраструктурные шаги (nginx, SSL) и application-level шаги (.env, build) строгой границей: application config меняется только после `dig A domain → новый IP`. Nginx можно готовить заранее, .env — нельзя.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-04-08 dns-migration / session 1: При смене домена — grep hardcoded origin lists
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** смена домена приложения → grep hardcoded origin/domain списки (CORS, CSRF, allowed_origins) и обновить ВСЕ до деплоя → не получить молчаливый 403 на формах и API
+**Context:** Форма заявки на geologging.ru возвращала 403 — CSRF Origin check содержал только geologging.ru, а сайт работал по IP. Ошибка молчаливая, в логах нет следов.
+**Pattern:** При любой смене домена/URL приложения выполнить `grep -r 'старый_домен\|allowed_origin\|CORS\|CSRF' src/` и обновить все найденные списки. Особое внимание к middleware с Origin/Referer-проверками — они дают молчаливый 403 без записи в лог.
+**Scope:** universal
+**Category:** information-gathering
