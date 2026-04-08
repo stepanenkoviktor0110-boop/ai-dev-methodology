@@ -1674,3 +1674,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Когда задеплоенный фикс не устраняет симптом — перед повторным анализом кода проверить инфраструктурные ограничения между клиентом и обработчиком: размеры запроса/ответа, таймауты, кэш, middleware-лимиты. Симптом в одном слое часто вызывается ограничением в другом.
 **Scope:** universal
 **Category:** problem-decomposition
+
+
+### 2026-04-08 responsive-fixes / session 1: Verify agent diff for unintended side-effects
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** delegating point edits to external agent (Codex) → review full git diff after agent completes, not just target files → catch unintended changes before commit
+**Context:** Codex was given 6 precise Tailwind class replacements with explicit "don't touch anything else" instruction, but also changed the Yandex Maps iframe URL — an unrelated modification that had to be reverted.
+**Pattern:** After any delegated edit task (Codex, subagent), always run `git diff` on ALL changed files before committing — not just the files you expect to be changed. "Don't touch other lines" is not a reliable constraint for LLM agents.
+**Scope:** universal
+**Category:** tool-selection
+
+
+### 2026-04-08 juridical-parser / session diagnostic: Агрегация параллельных процессов через дельту пула
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** агрегация расхода ресурса из параллельных запусков → использовать pool_start − pool_end вместо SUM(individual_spent) → получить корректный совокупный показатель без двойного счёта
+**Context:** SUM(requests_spent) по run_log дал 9762, тогда как реальный расход квот = quota_before(первый запуск) − quota_after(последний) = 3024 — параллельные запуски стартуют с одного значения, SUM даёт двойной счёт.
+**Pattern:** Когда несколько процессов параллельно расходуют общий ресурсный пул — агрегируй через дельту пула (start − end по хронологии), а не через SUM индивидуальных записей. SUM корректен только для последовательных процессов.
+**Scope:** universal
+**Category:** information-gathering
