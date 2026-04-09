@@ -1767,3 +1767,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** При любом диагностическом запросе "что произошло вчера/сегодня" — первым запросом сдампить 5 последних уникальных run_date из run_log с created_at, чтобы сопоставить фактические временные метки с тем, что имеет в виду пользователь. Только после этого формировать фильтр по дате.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-09 juridical-parser / session techspec-1: test-reviewer в фазе tech-spec проверяет план, а не файлы
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** test-reviewer возвращает fail в фазе tech-spec, ссылаясь на отсутствие тестов в реальных файлах → признать false fail; в prompt для test-reviewer явно указать "проверь план, а не наличие тестов в коде" → не тратить раунд ревалидации на проблему формулировки промпта
+**Context:** Round 2 test-reviewer вернул fail потому что увидел, что в test_main.py ещё не написаны новые тесты. Но на этапе tech-spec тесты не пишутся — это задача Codex при implementation.
+**Pattern:** Перед запуском test-reviewer как валидатора tech-spec — явно указать в промпте: "оцени адекватность тестового плана, не проверяй наличие тестов в файлах". Если reviewer вернул fail за отсутствие реализованных тестов — это ложный fail, spec корректен.
+**Scope:** situational
+**Situation:** запуск test-reviewer в фазе tech-spec-planning (до implementation)
+**Category:** tool-selection
