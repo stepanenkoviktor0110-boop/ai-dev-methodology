@@ -283,3 +283,5 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 
 | 231 | пользователь спрашивает «сколько X» когда пайплайн делает 1→N разворачивание | найти код трансформации и считать на выходной стороне | дать метрику совпадающую с тем что пользователь видит | universal | 1 | Universal | — |
 | 232 | пользователь говорит «вчера/сегодня запускалось» в контексте диагностики | сначала SELECT DISTINCT run_date ORDER BY DESC LIMIT 5 для ориентации | не запрашивать данные за ошибочную дату | universal | 1 | Universal | — |
+| 231 | server-side код исправлен и закоммичен | задеплоить сразу как последний шаг сессии | не допустить запуск продакшна со старым кодом | universal | 1 | Universal | — |
+| 232 | deploy script делает systemctl restart сервиса на порту | добавить pkill orphan-процессов перед restart | предотвратить crash loop из-за Address already in use | universal | 1 | Universal | — |
