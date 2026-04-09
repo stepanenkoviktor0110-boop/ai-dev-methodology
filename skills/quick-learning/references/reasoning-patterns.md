@@ -1849,3 +1849,13 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** situational
 **Situation:** integration-тесты с URL-манипуляцией в jsdom среде (vitest, jest)
 **Category:** tool-selection
+
+### 2026-04-10 demo-trees-sharing / session 3: non-code задачи не делегировать Codex
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** задача типа audit/review (read-only, без кодогенерации) → выполнять Claude напрямую, не делегировать Codex → избежать повторных крашей сессии из-за mismatch executor/task-type
+**Context:** Codex запускался 4 раза для аудит-задач (code review, security audit, test audit) и каждый раз сессия падала. Аудиты — это чтение кода и написание отчётов, не кодогенерация.
+**Pattern:** Перед делегацией задачи Codex проверять тип: если задача read-only (audit, review, QA отчёт) — выполнять Claude напрямую. Codex оптимизирован для кодогенерации с sandbox, а аудит-задачи требуют широкого чтения файлов без модификации.
+**Scope:** universal
+**Category:** tool-selection
