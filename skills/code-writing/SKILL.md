@@ -150,3 +150,7 @@ Load only for audit wave and retrospective — not during code writing.
 - When d3 `.each()` на SVG элементах отрисованных React → lookup по data-* атрибутам вместо bound data, to предотвратить crash от undefined datum.
 - When делегирование write-задачи sandboxed-инструменту → проверить write permissions тестовой операцией до полного промта, to не терять время на failed delegation + ручную реализацию.
 - When VPS нужен публичный URL → перед выбором tunnel-сервиса проверить outbound connectivity VPS (HTTPS? SSH?), to не тратить попытки на несовместимые решения.
+- When задача требует написания кода, рефлекс — начать писать напрямую → написать sketch.md (root cause + what must work) и делегировать кодогенерацию Codex ДО начала написания кода, to соблюдать установленный workflow и не тратить ресурс пользователя на ручную остановку.
+- When JS frontend хранит список в in-memory state → POST мутирует один элемент → после успешного POST обновить запись в state синхронно (state[key] = newValue), to не допустить stale display при последующем re-render.
+- When batch endpoint валидирует каждый элемент и возвращает 400 если хоть один неизвестен → изменить на "skip unknowns, return known" (partial success), to не ломать весь batch из-за одного невалидного элемента.
+- When одноимённая колонка в двух таблицах используется как ключ для JOIN/match → проверить семантику колонки в каждой таблице до объединения, to предотвратить молчаливое расхождение данных.

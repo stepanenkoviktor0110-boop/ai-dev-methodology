@@ -1838,3 +1838,14 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** situational
 **Situation:** deploy script с SSH pipe для загрузки файлов + systemctl restart в одном вызове
 **Category:** tool-selection
+
+### 2026-04-09 demo-trees-sharing / session 1: jsdom блокирует replaceState с абсолютным URL
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** jsdom integration-тест использует history.replaceState с абсолютным URL → использовать window.location.hash или относительный путь → избежать SecurityError в jsdom test environment
+**Context:** Codex сгенерировал тесты с `window.history.replaceState({}, '', 'http://localhost/')` — jsdom выбросил SecurityError потому что origin URL в тест-среде не совпадает.
+**Pattern:** В jsdom-тестах для URL-based routing (hash, query params) — не использовать replaceState с абсолютным URL. Устанавливать window.location.hash напрямую или использовать относительные пути. Особенно при делегировании написания тестов AI-агенту, который не знает ограничений test environment.
+**Scope:** situational
+**Situation:** integration-тесты с URL-манипуляцией в jsdom среде (vitest, jest)
+**Category:** tool-selection

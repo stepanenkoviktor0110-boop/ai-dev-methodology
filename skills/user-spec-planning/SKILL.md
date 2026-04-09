@@ -149,3 +149,4 @@ If understanding changes significantly: update scores downward, reassess size S/
 - When user-spec explicitly excludes a capability in post-MVP -> before adding an analogous capability as a Decision check the exclusions list in user-spec, to prevent scope creep caught only at validation
 - When a task creates a UI component -> include entry point integration (import and render in App/page) in the spec's implementation notes, to not leave downstream tasks with a wrong assumption that the component is already wired in
 - When user-spec is for a style-only refactoring with full audit -> skip heavy validators or limit to lightweight validation, to not lose hours on stuck agents when architectural risk is zero
+- When пользователь описывает фичу знакомым термином (демо, шаблон, виджет) → спросить «кто потребитель и зачем ему это?» до технических деталей, to не потратить 3 батча интервью на выяснение реальной потребности.

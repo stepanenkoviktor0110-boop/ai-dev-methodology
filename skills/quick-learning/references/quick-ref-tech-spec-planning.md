@@ -8,5 +8,5 @@
 6. Требования к формату поступают итеративно → согласовать полную структуру до кода (Seen: 2)
 7. AC checklist: перед написанием Solution пройти все AC user-spec, отметить каждый в черновике (Seen: 1)
 8. Security checklist для публичного POST: CSRF/Origin, sanitization, IP source, rate-limit, headers (Seen: 1)
-9. Compatibility constraint в брифе → явно указать разрешённые API с примером из кода (Seen: 1)
-10. Агрегация по колонке из ALTER TABLE → проверить заполненность исторических строк (Seen: 1)
+9. test-reviewer fail в фазе tech-spec на отсутствие файлов → false fail; в промпте "проверь план, а не файлы" (Seen: 1)
+10. Compatibility constraint в брифе → явно указать разрешённые API с примером из кода (Seen: 1)
