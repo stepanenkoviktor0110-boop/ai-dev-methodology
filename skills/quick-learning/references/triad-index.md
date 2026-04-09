@@ -294,3 +294,5 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 239 | deploy.sh объединяет pkill + systemctl restart в один длинный SSH-вызов | разбить на два вызова: upload/config и restart/verify | убедиться что сервис перезапущен даже если SSH рвётся | situational | 1 | Situational | feature-execution |
 | 240 | jsdom integration-тест использует history.replaceState с абсолютным URL | использовать window.location.hash или относительный путь вместо абсолютного URL | избежать SecurityError в jsdom test environment | situational | 1 | Situational | — |
 | 241 | задача типа audit/review (read-only, без кодогенерации) | выполнять Claude напрямую, не делегировать Codex | избежать повторных крашей сессии из-за mismatch executor/task-type | universal | 1 | Universal | — |
+| 242 | визуальный баг в SVG/Canvas layout | вывести координаты нод через unit-тест до написания фикса | не итерировать вслепую 5+ раз | universal | 1 | Universal | — |
+| 243 | нужно проверить визуальный результат из CLI без браузера | Playwright скриншот через dev server + Read tool | не деплоить 4 раза ради проверки глазами | universal | 1 | Universal | — |
