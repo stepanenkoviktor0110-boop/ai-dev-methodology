@@ -1879,3 +1879,56 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Для визуальных проверок в CLI-среде: запустить dev server → Playwright скриншот → Read tool для просмотра PNG. Не деплоить для проверки визуала — это медленно и зависит от кеша CDN.
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-04-10 content-tree-visualizer / ad-hoc: Спека первична, код вторичен
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** баг в визуальном поведении, код кажется "неправильным" → сначала читать project-knowledge (domain glossary, patterns), потом код → не делать ложных выводов из реализации, противоречащих спеке
+**Context:** При диагностике multi-root layout сказал "корни не должны соединяться", потому что в коде root — parent of trunk. Но project-knowledge/patterns.md чётко описывал: "mirrors root nodes below trunk, root-to-trunk links use dark brown". Код мог быть сломан, а спека — source of truth.
+**Pattern:** При визуальных багах: сначала читать domain glossary и patterns.md чтобы понять ОЖИДАЕМОЕ поведение, потом смотреть код чтобы понять ТЕКУЩЕЕ. Иначе рискуешь принять баг за фичу.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-10 content-tree-visualizer / ad-hoc: Baseline тесты до своих изменений
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** добавление кода в область с существующими тестами → запустить тесты ДО своих изменений (baseline run) → отличить свои баги от предсуществующих сломанных тестов
+**Context:** После добавления synthetic links тест `height < superRoot.y + 80` упал. Потратил время на диагностику — оказался предсуществующий баг (Math.max(860, ...) всегда ≥ 860). Если бы запустил тесты до правок — сразу бы знал что это чужой баг.
+**Pattern:** Перед правкой файла с тестами — запустить `vitest run {test-file}` на чистом коде (git stash). Зелёные тесты — твой baseline. Красные — предсуществующие баги, не твоя ответственность.
+**Scope:** universal
+**Category:** sequencing
+
+---
+### 2026-04-11 juridical-parser / ad-hoc: decisions.md актуальнее architecture.md для инфра-вопросов
+
+**Seen:** 2
+**Adapted:** —
+**Triad:** вопрос об инфраструктуре, деплое или production URL → читать decisions.md (changelog) ДО project-knowledge docs → не дать ответ из устаревшего статичного снимка
+**Context:** architecture.md содержал старое описание lhr-tunnel как публичного URL. Правда (Cloudflare Worker с 2026-04-07) была в decisions.md — Infrastructure Change log. Дал неверный ответ, потом исправил после проверки decisions.md.
+**Pattern:** При вопросах об инфраструктуре, сервере или production URL — сначала читать decisions.md (содержит changelog изменений), потом architecture.md (статичный снимок). Changelog всегда актуальнее docs: архитектурные изменения фиксируются там первыми.
+**Scope:** situational
+**Situation:** Проект ведёт decisions.md с Infrastructure Change / Migration Log секцией
+**Category:** information-gathering
+
+### 2026-04-11 juridical-parser / session: Commit ≠ Deployed — верификация деплоя как часть закрытия фичи
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** фича помечается как выполнена после коммита → до закрытия проверить `systemctl is-active` + `grep` нового кода на сервере → не оставить сервер на старом коде молча
+**Context:** Несколько фич были закоммичены и помечены DONE, но сервер продолжал работать на старом коде — что обнаружилось только при диагностике бага в продакшене.
+**Pattern:** На проектах с ручным деплоем — закрывать фичу только после `bash deploy.sh` и явной проверки нового кода на сервере (`grep НОВАЯ_КОНСТАНТА /opt/.../config.py`). Коммит ≠ задеплоен.
+**Scope:** situational
+**Situation:** Проект с ручным деплоем (deploy.sh или аналог), нет CI/CD автодеплоя
+**Category:** sequencing
+
+### 2026-04-11 juridical-parser / session: Называть метрику по имени перед числом
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** пользователь спрашивает «сколько X» при наличии нескольких похожих счётчиков → называть имя метрики явно перед числом → не перепутать cases_saved / rows_exported / phones между собой
+**Context:** На вопрос «сколько контактов выгружено» ответил «72» имея в виду cases_saved, тогда как contacts=6 (with_phone). Пользователь поймал ошибку.
+**Pattern:** Когда пайплайн выдаёт несколько числовых метрик со схожими названиями — всегда называть конкретную метрику перед числом: не «72», а «72 дел сохранено, из них 6 с телефоном». Не использовать слова пользователя («контакты») как синоним технической метрики без явной проверки соответствия.
+**Scope:** universal
+**Category:** communication
