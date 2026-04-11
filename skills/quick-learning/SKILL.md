@@ -122,6 +122,15 @@ When merging: keep the most general trigger and most actionable wording. Update 
 - Max 2 entries per session.
 - Every entry must have Triad and Adapted fields.
 
+**Abstraction gate (mandatory before writing):**
+For each triad field (Trigger, Action, Goal), apply this test:
+1. Replace every product/service name with its category. "Vercel" → "хостинг-платформа", "Cloudflare" → "DNS-провайдер", "TXT-запись" → "verification proof".
+2. If the triad still makes sense after replacement — it's abstract enough. If it becomes meaningless — the logic was hiding behind the brand name; reformulate.
+3. The triad must answer "what reasoning error to avoid" — not "which button to click".
+
+Bad: "Vercel Refresh сбрасывает TXT-токен" → specific to one product's UI.
+Good: "после отправки proof не перезапрашивать проверку — ждать автопроверки системы" → transferable to any verification flow.
+
 > Checkpoint: reasoning-patterns.md and triad-index.md both updated. New entries ≤ 2. Adapted: — set on all new rows.
 
 ### Step 4: Summary (5 sec)
