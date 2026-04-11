@@ -829,6 +829,16 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** sequencing
 
+### 2026-04-12 responsive-layout / decompose: Вычислять relative paths для каждого task-creator, не копировать
+
+**Seen:** 2 (merged from #187)
+**Adapted:** —
+**Triad:** параллельные task-creator'ы используют relative paths (import, @use, context files), файлы на разной глубине вложенности → вычислить и передать конкретный путь в каждом брифе → предотвратить нерабочие пути из-за разной глубины файлов
+**Context:** (1) responsive-layout: Task 3 задокументировал `@use '../../app/globals.scss'`, но Tasks 5, 6, 8 модифицируют файлы на глубине 3-4 уровня. Cross-task reality checker поймал 4 неверных пути. (2) предыдущий: app-relative paths в tech-spec при вложенной app директории.
+**Pattern:** При диспатче параллельных task-creator'ов, если задачи используют общий relative path pattern (import, @use, context files) — вычислить конкретный путь для каждого файла и передать в бриф явно. Агенты не видят брифы друг друга и скопируют глубину из примера.
+**Scope:** universal
+**Category:** sequencing
+
 ## Situational
 ### 2026-04-01 freelance-dashboard / session design-refactor: дизайн-пайплайн на приложении с inline styles → CSS migration приоритет
 
