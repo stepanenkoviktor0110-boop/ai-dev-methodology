@@ -185,13 +185,11 @@ When web app responds 20+ sec despite simple route handlers → check all module
 
 When migration helper / detection banner remains in code after migration completion or rollback → delete migration helper immediately after migration completes; if missed — mark TODO with date, to avoid false positives and blockers on next architecture change.
 
-When `"X% top"` on a trigger element taller than viewport in GSAP ScrollTrigger → switch to absolute pixels: `start: () => fraction * (totalScreens-1) * window.innerHeight`, to ensure trigger fires at the correct scroll position.
+When scroll-триггер срабатывает в неверной точке на элементе высотой больше viewport → заменить процентный offset на абсолютные пиксели вычисленные из высоты viewport, to триггер срабатывает в предсказуемой точке независимо от высоты элемента.
 
 When при составлении параллельной волны в tech-spec → проверить Files to modify всех задач волны попарно на пересечения файлов, to предотвратить merge conflict до того, как его поймает validator.
 
-When gsap.fromTo() в компоненте A + gsap.set() на тех же элементах в компоненте B → добавить immediateRender: false к fromTo, to не терять начальное состояние из set().
-
-When gsap.fromTo() in component A and gsap.set() on the same elements in component B → add immediateRender: false to fromTo, to preserve the initial state from set().
+When две анимации в разных компонентах управляют одними и теми же элементами → отключить немедленный рендер начального состояния в анимации-потребителе, to не терять начальное состояние установленное другим компонентом.
 
 When задача требует добавить client state (useState) в существующий server component → явно предписать client wrapper pattern, запретить конвертацию layout в "use client", to не потерять server component преимущества из-за неоднозначной инструкции.
 

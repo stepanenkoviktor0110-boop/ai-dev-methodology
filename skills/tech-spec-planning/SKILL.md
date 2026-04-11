@@ -123,7 +123,7 @@ Load only for audit wave and retrospective — not during spec planning.
 - When spec defines GET=admin+manager and PUT=manager-only on an endpoint where existing guard allows both roles → explicitly describe creation of a new guard for PUT in the task, to prevent auth gap discovered only at security audit.
 - When запуск task-creator агентов → проверить runner (jest/vitest/pytest) и тест-директории, передать явно в каждый бриф, to предотвратить генерацию неработающих TDD Anchor путей.
 - When написание depends_on для audit wave задач → перечислить ВСЕ задачи, создающие аудируемые файлы (не только последнюю волну), to гарантировать существование всех файлов к моменту аудита.
-- When агент деплоя определяет production URL → читать project memory (deploy_config) ДО project-knowledge docs, to не деплоить на несуществующий домен из устаревшего docs-файла.
+- When вопрос об инфраструктуре, деплое или production URL → читать decisions.md (changelog) ДО project-knowledge docs, to не дать ответ из устаревшего статичного снимка.
 - When tech-spec Data Models содержит UPDATE SQL для существующей таблицы → reality-checker сверяет SQL против реального route.ts ища пропущенные существующие параметры, to предотвратить тихую потерю данных.
 - When Wave 1 создаёт shared module с named exports, Wave 2 потребляет его → перечислить ВСЕ export-символы явно в брифе Wave 1 и передать точную строку импорта в каждый Wave 2 бриф, to предотвратить naming divergence.
 - When планирование агрегации из log-таблицы по колонке добавленной ALTER TABLE → проверить заполненность исторических строк, не только наличие колонки, to не получить пустую агрегацию из "наполненной" таблицы.
