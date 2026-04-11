@@ -122,14 +122,16 @@ When merging: keep the most general trigger and most actionable wording. Update 
 - Max 2 entries per session.
 - Every entry must have Triad and Adapted fields.
 
-**Abstraction gate (mandatory before writing):**
-For each triad field (Trigger, Action, Goal), apply this test:
-1. Replace every product/service name with its category. "Vercel" → "хостинг-платформа", "Cloudflare" → "DNS-провайдер", "TXT-запись" → "verification proof".
-2. If the triad still makes sense after replacement — it's abstract enough. If it becomes meaningless — the logic was hiding behind the brand name; reformulate.
-3. The triad must answer "what reasoning error to avoid" — not "which button to click".
+**Abstraction gate (mandatory before writing — applies to ALL fields, not just Triad):**
+For each field (Triad, Context, Pattern), apply this test:
+1. Replace every product/service/file/component name with its category. "Vercel" → "хостинг-платформа", "page.tsx" → "entry point", "Barista" → "компонент", "globals.scss" → "глобальный стилевой файл".
+2. If the field still makes sense after replacement — it's abstract enough. If it becomes meaningless — the logic was hiding behind the specific name; reformulate.
+3. Every field must answer "what reasoning error to avoid" — not "which file to check" or "which button to click".
 
-Bad: "Vercel Refresh сбрасывает TXT-токен" → specific to one product's UI.
-Good: "после отправки proof не перезапрашивать проверку — ждать автопроверки системы" → transferable to any verification flow.
+Bad Context: "Включил Barista в tech-spec, но он закомментирован в page.tsx" → project-specific.
+Good Context: "Включил компонент в scope рефакторинга по наличию файлов, но он был отключён в entry point" → transferable.
+Bad Pattern: "Проверяй page.tsx на закомментированные импорты" → file-specific.
+Good Pattern: "Проверяй entry point на фактический рендеринг каждого компонента перед включением в scope" → transferable.
 
 > Checkpoint: reasoning-patterns.md and triad-index.md both updated. New entries ≤ 2. Adapted: — set on all new rows.
 
