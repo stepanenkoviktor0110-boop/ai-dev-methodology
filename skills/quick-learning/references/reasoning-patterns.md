@@ -1932,22 +1932,22 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** communication
 
-### 2026-04-11 responsive-layout / session 1: Vercel Refresh сбрасывает TXT-токен при Verify & Claim
+### 2026-04-11 responsive-layout / session 1: Не перезапрашивай проверку при one-time token verification
 
 **Seen:** 1
 **Adapted:** —
-**Triad:** Vercel domain Verify & Claim с TXT-верификацией → после обновления TXT-записи НЕ нажимать Refresh в UI — дождаться auto-check → не попасть в бесконечный цикл: Refresh генерирует новый токен
-**Context:** При привязке домена mbcculture.by к новому Vercel-аккаунту (домен был на аккаунте Temkinn), каждый клик Refresh генерировал новый verification token, делая предыдущую TXT-запись невалидной.
-**Pattern:** При Vercel Verify & Claim: обнови TXT-запись в DNS, подтверди через dig что она видна, затем НЕ трогай UI Vercel 5-10 минут. Vercel проверяет автоматически. Refresh = новый токен = начинай сначала.
+**Triad:** верификация ownership через одноразовый токен, система не подтверждает → после отправки proof не перезапрашивать проверку через UI — ждать автопроверки системы → не инвалидировать свой proof повторным запросом, который генерирует новый challenge
+**Context:** При верификации домена через TXT-запись каждый клик "Refresh" в UI платформы генерировал новый verification token, делая предыдущий proof невалидным. Замкнутый цикл: обновил proof → нажал проверить → получил новый challenge → обновил proof → ...
+**Pattern:** Когда система верифицирует ownership через одноразовый challenge-response (TXT, DNS, файл): отправь proof, подтверди его наличие независимо (dig, curl), затем жди автопроверки. Кнопка "проверить/обновить" в UI может регенерировать challenge, инвалидируя твой proof.
 **Scope:** universal
 **Category:** recovery
 
-### 2026-04-11 responsive-layout / session 1: Deploy Ready но 404 — проверяй Deployment Protection и Production Branch
+### 2026-04-11 responsive-layout / session 1: Билд ОК но 4xx — проверяй настройки платформы до кода
 
 **Seen:** 1
 **Adapted:** —
-**Triad:** Vercel deploy Ready, но сайт 404; deployment URL → 401 → проверить Deployment Protection и Production Branch → не дебажить DNS/код когда проблема в настройках Vercel-проекта
-**Context:** Билд Next.js прошёл успешно, статус Ready, алиасы привязаны — но все URL (включая *.vercel.app) отдают 404. Deployment-specific URL → 401 Unauthorized. Git push в dev создавал Preview, не Production.
-**Pattern:** Когда Vercel deploy Ready но сайт 404/401: (1) проверь Settings → Deployment Protection — если включён, production домен может не обслуживаться; (2) проверь Settings → Git → Production Branch — если ≠ твоей ветке, git push создаёт Preview, а не Production. Не дебажь DNS и код — проблема в настройках проекта.
+**Triad:** билд/деплой ОК но приложение недоступно (4xx) → проверять настройки платформы (access policies, маппинг веток на окружения) до дебага кода и инфраструктуры → не тратить время на DNS/код когда проблема в конфигурации платформы
+**Context:** Билд прошёл, статус Ready, алиасы привязаны — но все URL отдавали 404/401. Причина: access control платформы и несовпадение ветки деплоя с production-окружением.
+**Pattern:** Когда билд ОК но приложение недоступно: сначала проверь платформенные настройки — access policies (защита деплоев), маппинг git-веток на окружения (production branch). Не дебажь код, DNS или инфраструктуру пока не исключишь конфигурацию платформы.
 **Scope:** universal
 **Category:** problem-decomposition
