@@ -1931,3 +1931,23 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Слова пользователя — это его модель мира, не технические названия. Перед ответом на числовой вопрос: найти, какая именно метрика соответствует термину пользователя, назвать её явно. «72 дел сохранено» и «72 контакта» — разные утверждения даже если число одно.
 **Scope:** universal
 **Category:** communication
+
+### 2026-04-11 responsive-layout / session 1: Vercel Refresh сбрасывает TXT-токен при Verify & Claim
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** Vercel domain Verify & Claim с TXT-верификацией → после обновления TXT-записи НЕ нажимать Refresh в UI — дождаться auto-check → не попасть в бесконечный цикл: Refresh генерирует новый токен
+**Context:** При привязке домена mbcculture.by к новому Vercel-аккаунту (домен был на аккаунте Temkinn), каждый клик Refresh генерировал новый verification token, делая предыдущую TXT-запись невалидной.
+**Pattern:** При Vercel Verify & Claim: обнови TXT-запись в DNS, подтверди через dig что она видна, затем НЕ трогай UI Vercel 5-10 минут. Vercel проверяет автоматически. Refresh = новый токен = начинай сначала.
+**Scope:** universal
+**Category:** recovery
+
+### 2026-04-11 responsive-layout / session 1: Deploy Ready но 404 — проверяй Deployment Protection и Production Branch
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** Vercel deploy Ready, но сайт 404; deployment URL → 401 → проверить Deployment Protection и Production Branch → не дебажить DNS/код когда проблема в настройках Vercel-проекта
+**Context:** Билд Next.js прошёл успешно, статус Ready, алиасы привязаны — но все URL (включая *.vercel.app) отдают 404. Deployment-specific URL → 401 Unauthorized. Git push в dev создавал Preview, не Production.
+**Pattern:** Когда Vercel deploy Ready но сайт 404/401: (1) проверь Settings → Deployment Protection — если включён, production домен может не обслуживаться; (2) проверь Settings → Git → Production Branch — если ≠ твоей ветке, git push создаёт Preview, а не Production. Не дебажь DNS и код — проблема в настройках проекта.
+**Scope:** universal
+**Category:** problem-decomposition
