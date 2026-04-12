@@ -2021,3 +2021,23 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** После деплоя проверяй не только HTTP-статус и deployment state платформы, а реальное содержимое production URL. Grep в HTML-ответе по уникальному маркеру нового кода (class name, component, текст). Если маркера нет — деплой не промоутился.
 **Scope:** universal
 **Category:** recovery
+
+### 2026-04-12 client-bugfixes / session 1: Верификация маппинга ветки на environment перед деплоем
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** объявление деплоя завершённым → верифицировать маппинг ветки на environment (preview vs production) ДО пуша → не тратить время пользователя ложными отчётами о деплое
+**Context:** Пушил в dev-ветку и сообщал об успешном деплое, но платформа маппила dev на Preview, а production — на другую ветку. Пользователь не видел изменений на сайте.
+**Pattern:** Перед первым пушем в сессии — проверь какая ветка маппится на production environment (API платформы, deployment history, или конфиг). Не предполагай что текущая ветка = production.
+**Scope:** universal
+**Category:** tool-selection
+
+### 2026-04-12 client-bugfixes / session 1: Полный diff при мерже накопленных коммитов в production
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** мерж ветки разработки с накопленными коммитами в production-ветку → проверить полный diff против HEAD production, не только свои коммиты → не задеплоить непроверенные изменения из предыдущих сессий
+**Context:** Смержил dev в master для деплоя своих багфиксов. В diff попали все коммиты performance optimization из предыдущих сессий, которые сломали стили карточек подписок на production.
+**Pattern:** При мерже ветки с накопленной историей — выполни diff HEAD production vs HEAD dev и просмотри ВСЕ изменённые файлы, не только свои коммиты. Каждый файл в diff — потенциальный источник регрессии.
+**Scope:** universal
+**Category:** sequencing
