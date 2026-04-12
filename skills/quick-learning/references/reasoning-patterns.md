@@ -839,6 +839,16 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** sequencing
 
+### 2026-04-12 core-constructor / userspec: чеклист покрытия при трансформации формата данных
+
+**Seen:** 1
+**Adapted:** —
+**Triad:** трансформация структурированных данных (items, checklist) в прозаический документ (spec, report) → перед написанием пройтись по каждому item источника, отметить что попал в целевой документ → не потерять обсуждённые темы при смене формата представления
+**Context:** User-spec draft пропустил 5 тем из interview.yml (3 error scenarios + 2 edge cases), хотя все имели score 85% и заполненные values. Валидаторы поймали пропуск в round 1 — стоило 2 раунда фиксов и 4 агента.
+**Pattern:** При переводе структурированного источника (items с полями score/value/gaps) в прозаический документ — перед финализацией пройтись по каждому required item источника и убедиться что его value отражён в целевом документе. Особенно уязвимы items из «error» и «edge case» категорий — их легко считать «и так очевидными».
+**Scope:** universal
+**Category:** information-gathering
+
 ## Situational
 ### 2026-04-01 freelance-dashboard / session design-refactor: дизайн-пайплайн на приложении с inline styles → CSS migration приоритет
 
