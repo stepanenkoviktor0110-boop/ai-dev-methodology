@@ -15,87 +15,82 @@ description: |
 
 # Quick Learning
 
-**Format owner** for the unified methodology knowledge system. Defines triad structure, similarity check, Seen counters, and Adapted tracking. Both quick-learning and retrospective follow these rules when writing entries.
-
-**Time budget:** Under 60 seconds. This is NOT a full retrospective.
+**Time budget:** Under 60 seconds. Not a full retrospective. Not a code review. Not responsible for embedding (that's `/skill-trainer`).
 **Input:** `work/{feature}/decisions.md` + git log of current session
 **Output:** entries in `$AGENTS_HOME/skills/quick-learning/references/reasoning-patterns.md`
 **Language:** Entries in Russian, communication in Russian.
-
-## What This Is NOT
-
-- NOT a code review (that's done per-task by reviewers)
-- NOT responsible for embedding patterns into skills (that's `/skill-trainer`)
-
-## Design: TRIZ-Optimized
-
-1. **Signal gate** (TRIZ-15: Dynamicity) — analyze by signal, not schedule. No signals = skip immediately, zero cost.
-2. **Write-only** (TRIZ-2: Extraction) — only writes patterns. Reads triad-index.md for dedup only. Embedding into skills is done by skill-trainer.
-3. **Three-tier graduation** (TRIZ-1: Segmentation + TRIZ-10: Prior action) — raw buffer → skill instructions → quick reference. Each tier smaller and cheaper.
-4. **Scope segmentation** (TRIZ-1) — universal vs situational. Different read cost, different application rules.
 
 ## Procedure
 
 ### Step 1: Signal Gate (5 sec)
 
-Check 4 binary signals. If ALL are zero — **skip entirely** with "Clean session, no new patterns."
+Check 4 binary signals. If ALL zero — **skip** with "Clean session, no new patterns."
 
 | Signal | How to check | Meaning |
 |--------|-------------|---------|
 | Fix rounds | `git log --oneline -20` — count `fix:` commits | Something went wrong and was corrected |
-| Scope change | `decisions.md` — any deviation, unplanned work, changed approach | Plan didn't survive contact with reality |
-| Recovery event | `git log` — rollbacks, retries, blocked→unblocked | A non-obvious recovery path was found |
-| Context waste | `decisions.md` — Concerns field contains description of repeated reads of unchanged file | Inefficient tool use, not a logic error |
+| Scope change | `decisions.md` — any deviation, changed approach | Plan didn't survive contact with reality |
+| Recovery event | `git log` — rollbacks, retries, blocked→unblocked | Non-obvious recovery path found |
+| Context waste | `decisions.md` — Concerns field, repeated reads of unchanged file | Inefficient tool use |
 
-**For design sessions** (called from design-generate):
+**Design sessions** (from design-generate) — additional signals: iteration rounds, taste correction, layout rework.
 
-| Signal | How to check | Meaning |
-|--------|-------------|---------|
-| Iteration rounds | Count user feedback cycles in session | Multiple rounds = initial approach missed |
-| Taste correction | User changed color/font/spacing after proposal | Proposal didn't match aesthetic sense |
-| Layout rework | User rejected layout and asked for different one | Wrong layout pattern selected |
-
-**If at least 1 signal is present → proceed to Step 2.**
-
-> Checkpoint: at least one signal confirmed. If all signals are zero — exit with "Clean session."
+At least 1 signal → proceed. All zero → exit.
 
 ### Step 2: Analyze (15 sec)
 
-> **Scope change vs Context waste:** scope change = *what* was done changed (plan didn't hold); context waste = *how* it was done was inefficient (tool used suboptimally). Both may appear in the same session — analyze independently.
+> Scope change = *what* was done changed; context waste = *how* it was done was inefficient. Analyze independently.
 
-For each detected signal, ask:
+For each signal:
+1. **What thinking mistake was made?** Name the cognitive error in 3-5 words. Can't name it → it's an event, not a pattern. Skip.
+2. **Was the first approach right?** What signal should have told us earlier?
+3. **Cost of the detour?** (fix rounds, wasted reviews, rework)
+4. **Transferable?** Would someone on a completely different project benefit from knowing this trap?
 
-1. **What thinking mistake was made?** Name the cognitive error in 3-5 words. If you can't — it's an event, not a pattern. Skip.
-2. **Was the first approach right?** If not — what signal should have told us to try something different earlier?
-3. **What was the actual cost of the detour?** (fix rounds, wasted review cycles, rework)
-4. **Is the cognitive error transferable?** Would someone on a completely different project (different stack, domain, team) benefit from knowing about this trap?
-
-Write only patterns that name a genuine cognitive error. Skip if analysis produces only domain-specific events.
+Skip if analysis produces only domain-specific events.
 
 ### Step 3: Write (20 sec)
 
 Append to `$AGENTS_HOME/skills/quick-learning/references/reasoning-patterns.md`.
 
-**Run the Similarity Check before writing (mandatory).**
+#### Abstraction Gate (mandatory before writing)
+
+The gate ensures entries capture **cognitive errors**, not events.
+
+**Step A — Name the cognitive error** in 3-5 words. Examples:
+- "partial mutation bias" (local change → assume global invariant holds)
+- "existence ≠ active use", "scope anchoring", "authority by proximity", "silent dependency assumption"
+
+Can't name it → skip.
+
+**Step B — Domain-strip test.** Remove ALL domain nouns. Must remain a useful **thinking rule**.
+
+| Level | Example | Verdict |
+|-------|---------|---------|
+| Bad | "после объединения задач пересчитать wave по depends_on" | Domain-specific → meaningless after strip |
+| Medium | "после мутации графа перевалидировать топологический порядок" | Structural, but no cognitive error |
+| Good | "изменил часть системы с инвариантом — не перепроверил, потому что остальное выглядело нетронутым. Ошибка: partial mutation bias" | Cognitive error, domain-free, transferable |
+
+**Step C — Triad orientation.**
+- Trigger = **situation type** (NOT event)
+- Action = **corrective thinking rule**
+- Goal = **cognitive trap name to avoid**
 
 #### Similarity Check
 
-Decompose insight into a **trigger → action → goal** triad. Two patterns are the SAME if they share action+goal, even with different wording.
+Decompose into **trigger → action → goal** triad. Same action+goal = same pattern.
 
-1. Formulate triad: **Trigger** / **Action** / **Goal**
-2. Read `$AGENTS_HOME/skills/quick-learning/references/triad-index.md`. Compare each row:
+Read `$AGENTS_HOME/skills/quick-learning/references/triad-index.md`:
 
-| Match level | Criteria | What to do |
-|-------------|----------|-----------|
-| **Exact** | Same action AND same goal | Increment `Seen`. Do NOT add new entry. |
-| **Near** | Same goal, different action (or same action, different goal) | Merge: keep most actionable wording, combine triggers, Seen++. |
-| **Distinct** | Different goal | Add as new entry. |
+| Match | Criteria | Action |
+|-------|----------|--------|
+| **Exact** | Same action AND goal | Seen++. No new entry. |
+| **Near** | Same goal, different action (or vice versa) | Merge: best wording, combine triggers, Seen++. |
+| **Distinct** | Different goal | Add new entry. |
 
-**Mechanical pre-filter:** if new Goal shares 3+ content words with existing Goal — treat as Near match candidate and verify manually.
+Pre-filter: new Goal shares 3+ words with existing → Near candidate. Merging: keep most general trigger.
 
-When merging: keep the most general trigger and most actionable wording. Update date.
-
-**Updating reasoning-patterns.md (Exact / Near):** Use Grep to locate the entry by pattern title or unique trigger phrase — do NOT read the full 235 KB file. Then use Edit to update only that entry (increment Seen, update trigger/wording if merging).
+**Updating existing entries:** Grep by title/trigger phrase — do NOT read full file. Edit only that entry.
 
 #### Entry format
 
@@ -104,121 +99,65 @@ When merging: keep the most general trigger and most actionable wording. Update 
 
 **Seen:** 1
 **Adapted:** —
-**Cognitive Error:** {3-5 word name of the thinking mistake, e.g. "partial mutation bias", "existence ≠ active use"}
+**Cognitive Error:** {3-5 word name, e.g. "partial mutation bias"}
 **Triad:** {situation type} → {corrective thinking rule} → {cognitive trap to avoid}
 **Context:** {what thinking mistake was made — 1 sentence, domain-free}
-**Pattern:** {the corrective rule — 1-2 sentences, imperative, domain-free}
+**Pattern:** {corrective rule — 1-2 sentences, imperative, domain-free}
 **Scope:** {universal | situational}
-**Situation:** {only for situational — when this applies}
+**Situation:** {only for situational}
 **Category:** {sequencing | information-gathering | problem-decomposition | scope-management | recovery | communication | tool-selection | design-taste | design-process | design-iteration}
 ```
 
-**Scope rules:**
-- **universal** — any project, any stack, any domain. Goes to `## Universal` section.
-- **situational** — specific context required. Goes to `## Situational` section. Must have `Situation` field.
-
-**Writing rules:**
-- Must name a **cognitive error** — if you can't name the thinking mistake in 3-5 words, you're describing an event.
-- Must be domain-free — no file names, tool names, framework names, role names. Pure thinking logic.
-- Must be non-obvious — "write tests" is obvious. "Existence of an artifact ≠ its active participation in the system" is not.
-- Max 2 entries per session.
-- Every entry must have Cognitive Error, Triad, and Adapted fields.
-- **Backward compatibility:** existing entries without Cognitive Error field remain valid. New entries MUST include it. When incrementing Seen on an old entry, optionally add Cognitive Error if the error is clear.
-
-**Abstraction gate (mandatory before writing — applies to ALL fields):**
-
-The gate ensures entries capture **cognitive errors**, not events. Three steps:
-
-**Step A — Name the cognitive error.**
-Before writing anything, answer: "Какая ошибка мышления привела к проблеме?" Name it in 3-5 words.
-Examples of cognitive errors:
-- "наличие ≠ использование" (existence ≠ active use)
-- "partial mutation bias" (local change → assume global invariant holds)
-- "scope anchoring" (anchored to original scope after conditions changed)
-- "authority by proximity" (nearest similar example treated as authoritative)
-- "silent dependency assumption" (assumed a dependency exists without checking)
-
-If you can't name a cognitive error — you're describing an event, not a pattern. Skip.
-
-**Step B — Domain-strip test.**
-Remove ALL domain nouns (files, tools, frameworks, roles, artifacts) from every field. What remains must be a useful **thinking rule**. If it becomes meaningless — the logic was hiding behind specific names; reformulate.
-
-| Level | Example | Verdict |
-|-------|---------|---------|
-| Bad | "после объединения задач пересчитать wave по depends_on" | Domain-specific action. Strip → meaningless |
-| Medium | "после мутации графа перевалидировать топологический порядок" | Structural, but no cognitive error named |
-| Good | "изменил часть системы с инвариантом — не перепроверил инвариант, потому что незатронутая часть выглядела корректной. Ошибка: partial mutation bias" | Cognitive error named, domain-free, transferable |
-
-**Step C — Triad orientation check.**
-- Trigger must describe a **situation type**, not an event ("изменена часть системы с глобальным инвариантом", NOT "задача 4 оказалась в wave 3")
-- Action must be a **corrective thinking rule** ("перепроверить инвариант на всех затронутых узлах, не только на изменённых")
-- Goal must name the **cognitive trap to avoid** ("не попасть в partial mutation bias: локальность изменения ≠ локальность последствий")
-
-> Checkpoint: reasoning-patterns.md and triad-index.md both updated. New entries ≤ 2. Adapted: — set on all new rows.
+**Rules:**
+- Must name a **cognitive error** — can't name in 3-5 words → describing an event.
+- Must be **domain-free** — no file/tool/framework/role names. Pure thinking logic.
+- Must be **non-obvious** — "write tests" is obvious. "Existence ≠ active participation" is not.
+- Max 2 entries per session. Every entry must have Cognitive Error, Triad, Adapted.
+- **Scope:** universal = any project/stack/domain → `## Universal`. Situational = specific context → `## Situational` + `Situation` field.
+- **Backward compat:** old entries without Cognitive Error remain valid. New entries MUST include it.
 
 ### Step 4: Summary (5 sec)
 
-Count rows where the **last column** (`Adapted`) is exactly `—`. Use pattern `| — |$` (line ends with `| — |`).
+Count unadapted triads: rows where line **ends with** `| — |` (use `| — |$` — middle columns also contain `| — |`, don't count those).
 
-**WARNING:** many rows contain `| — |` in middle columns (Goal, Section). Do NOT count those. Only rows where the ENTIRE line ends with `| — |` qualify. Using `| — |` without `$` anchor will produce ~2× overcounts.
-
-Show user ONE line:
-```
-Quick Learning: {1 sentence summary, or "Clean session, no signals detected."}
-```
-
+Show: `Quick Learning: {1 sentence summary, or "Clean session, no signals detected."}`
 If count ≥ 25: append "Накопилось {N} необработанных триад — запусти /skill-trainer."
 
 ## Three-Tier Knowledge System
 
-```
-Tier 0: Triad Index          Tier 1: Transit Buffer        Tier 2: Skill Instructions    Tier 3: Quick Ref Cards
-triad-index.md               reasoning-patterns.md         {skill}/SKILL.md              quick-ref-{skill}.md
-━━━━━━━━━━━━━━━━━━━━         ━━━━━━━━━━━━━━━━━━━━          ━━━━━━━━━━━━━━━━━━            ━━━━━━━━━━━━━━━━━━━━
-1-line + Adapted col         Full entries + context        Embedded by skill-trainer     Generated by skill-trainer
-Read: ALWAYS (dedup)         Read: on merge only           Read: by skill itself         Read: by skill at start
-Writers: ql                  Writers: ql                   Managed by: skill-trainer     Stored in: this references/
-```
+| Tier | File | Purpose | Writers | Readers |
+|------|------|---------|---------|---------|
+| 0 | `triad-index.md` | 1-line dedup index + Adapted col | ql | ql (always), skill-trainer |
+| 1 | `reasoning-patterns.md` | Full entries + context | ql | ql (on merge only) |
+| 2 | `{skill}/SKILL.md` | Embedded instructions | skill-trainer | skill itself |
+| 3 | `quick-ref-{skill}.md` | Top-10 reminders | skill-trainer | skill at start |
 
-Quick-ref files live in `$AGENTS_HOME/skills/quick-learning/references/quick-ref-{skill-name}.md`.
-They are written by skill-trainer after embedding, not by quick-learning.
-Each pipeline skill reads its own file at session start for a top-10 pattern reminder.
+Quick-ref files: `$AGENTS_HOME/skills/quick-learning/references/quick-ref-{skill-name}.md`.
 
-### Tier 0: Triad Index (the similarity engine)
+### Triad Index format
 
 File: `$AGENTS_HOME/skills/quick-learning/references/triad-index.md`
 
-Compact index of all patterns — one line per entry. Read ONLY this file for similarity check.
-
-Format:
 ```markdown
-# Triad Index
 | # | Trigger | Action | Goal | Scope | Seen | Section | Adapted |
 |---|---------|--------|------|-------|------|---------|---------|
 | 1 | before review | run smoke test | avoid wasted review rounds | universal | 2 | Universal | feature-execution |
-| 2 | multi-task feature | define shared types in task 1 | prevent type drift | situational | 1 | Situational | — |
 ```
 
-**Rules:**
-- Updated on every write, merge, or Seen increment.
-- Entries are never removed — Adapted column tracks processing status.
-- `Adapted: —` = not yet processed by skill-trainer.
-- `Adapted: {skill}` = embedded into that skill. Multiple skills: comma-separated.
-- `Adapted: n/a` = reviewed by skill-trainer, no matching skill found.
+- Updated on every write/merge/Seen increment. Never removed.
+- `Adapted: —` = unprocessed. `{skill}` = embedded. `n/a` = no matching skill.
 
 ### Guard-triggered Seen increment
 
-When a guard (smoke test, reviewer, self-verification) catches an error matching an existing pattern's trigger — increment Seen in `triad-index.md`, even outside quick-learning flow. Patterns catching real issues get prioritized by skill-trainer.
+When a guard catches an error matching an existing pattern's trigger — increment Seen in triad-index.md, even outside quick-learning flow.
 
 ## Self-Verification
 
 - [ ] Signal gate checked — clean sessions skipped
-- [ ] Context waste signal checked separately from scope change
-- [ ] **Cognitive error named** — every new entry has a 3-5 word cognitive error name
-- [ ] **Domain-strip test passed** — remove all domain nouns, pattern still makes sense as a thinking rule
-- [ ] **Triad orientation** — Trigger = situation type, Action = corrective thinking rule, Goal = cognitive trap name
-- [ ] Scope correctly classified (universal vs situational)
-- [ ] No duplicates — existing patterns got Seen++ instead
-- [ ] Max 2 entries written
-- [ ] Adapted: — field set on all new entries in both reasoning-patterns.md and triad-index.md
-- [ ] Summary shown; count by pattern `| — |$` (last column only — NOT `| — |` without anchor); if ≥25 — user notified about /skill-trainer
+- [ ] Context waste checked separately from scope change
+- [ ] **Cognitive error named** — 3-5 word name on every new entry
+- [ ] **Domain-strip passed** — no domain nouns, still a thinking rule
+- [ ] **Triad orientation** — Trigger=situation type, Action=corrective rule, Goal=trap name
+- [ ] No duplicates — existing patterns got Seen++
+- [ ] Max 2 entries, Adapted: — set on all new entries
+- [ ] Summary shown; `| — |$` count; if ≥25 → notify about /skill-trainer
