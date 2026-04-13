@@ -2101,3 +2101,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Ограничение доступа в контейнеризированной среде — на уровне маппинга портов хоста, не на уровне bind-адреса процесса. Loopback внутри контейнера изолирован от сети хоста — применение ограничения на неверном уровне абстракции маскируется под правильный intent, но ломает connectivity.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-04-13 bystricky-layout-fix / session ad-hoc: stereotype-driven assumption
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** stereotype-driven assumption
+**Triad:** действие с проектом на основе стереотипа стека (фреймворк → типичная платформа) → проверить project-knowledge/memory ДО действия, даже если "очевидно" → не выполнить действие на несуществующей платформе из-за stereotype-driven assumption
+**Context:** Предложил деплой через Vercel для Next.js проекта, хотя в memory хранилась информация о миграции на VPS. Стереотип "Next.js = Vercel" заблокировал проверку фактов.
+**Pattern:** Перед любым инфраструктурным действием проверяй документацию/memory проекта — стереотип стека не заменяет факты о конкретном проекте. "Очевидность" = сигнал перепроверить, не пропустить проверку.
+**Scope:** universal
+**Category:** information-gathering
