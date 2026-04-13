@@ -1953,3 +1953,47 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Перед назначением любого идентификатора (порт, имя, путь) в разделяемом окружении — сначала перечисли занятых. Shared окружение никогда не является clean slate — всегда есть другие компоненты. "Дефолтный" идентификатор означает "наиболее вероятно занятый".
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-13 freelance-autopilot / session audit+deploy: spawn-for-capability bias
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** spawn-for-capability bias
+**Triad:** gatekeeper rejects all framework-spawned instances despite disguise attempts → connect to already-running unmanaged instance via debug interface instead of spawning new controlled one → spawn-for-capability bias
+**Context:** Anti-bot protection blocked every browser instance spawned by the automation framework (regardless of stealth settings or executable used). The solution was connecting to a manually-launched browser via its native debug interface — no automation flags present at launch.
+**Pattern:** When an external gatekeeper blocks instances created by your framework, stop spawning — connect instead. Capability to send commands and detectability of instance origin are separate concerns. An already-running instance launched manually carries no automation fingerprint regardless of what commands you send through it.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-04-13 menu-editor / session 1: stated-state authority bias
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** stated-state authority bias
+**Triad:** стейкхолдер называет конкретный технический компонент как часть требований → сверить с актуальной документацией до фиксации → не принять устаревший технический факт как ограничение спека
+**Context:** Стейкхолдер назвал конкретную платформу хранения как действующую — она уже была заменена. Несоответствие поймано по документации до записи в спек.
+**Pattern:** Когда стейкхолдер называет конкретное техническое состояние системы (платформу, инструмент, конфиг) — трактовать это как гипотезу, не как факт. Сверить с наиболее свежим авторитетным источником (документацией, конфигом) до фиксации в артефакте.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-14 menu-editor / session decompose: execution-context portability assumption
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** execution-context portability assumption
+**Triad:** написание import-statement для модуля из одного окружения выполнения в артефакт другого окружения → до написания import-а проверить транзитивную цепочку зависимостей модуля на совместимость с целевым контекстом → не считать что модуль переносим только потому что он существует в проекте
+**Context:** Seed-скрипт (запускается через plain node/tsx) получил import файла данных, который через транзитивные зависимости импортировал .jpg-файлы через webpack-трансформы — невалидные за пределами bundler-контекста. Ошибка поймана на review, потребовала полного перезаписа подхода (hardcode data вместо import).
+**Pattern:** Перед написанием import-statement спросить: «В каком контексте выполняется этот артефакт? Был ли импортируемый модуль написан для того же контекста?» Если контексты различаются — пройти транзитивную цепочку зависимостей импортируемого модуля и проверить каждый шаг на совместимость. Существование файла в проекте не гарантирует его переносимость между контекстами (bundler vs runtime, server vs client, browser vs node).
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-14 menu-editor / session decompose: producer-centric specification
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** producer-centric specification
+**Triad:** спецификация задачи-продьюсера написана по внутренней модели данных → до финализации спека прочитать задачи-консьюмеры последующих волн и перечислить каждое поле которое они обращаются → не упустить вычисляемые/агрегированные поля которые нужны потребителю но отсутствуют в модели продьюсера
+**Context:** Задача создания API-endpoint'а написана по полям таблицы БД. Задача UI в следующей волне обращалась к агрегированному полю (itemCount), которого не было в базовой схеме и не попало в спек endpoint'а. Проблема поймана cross-task валидатором, потребовала дополнительного fix-раунда.
+**Pattern:** Когда пишешь спек задачи-продьюсера (API, генератор данных, report builder) — после описания базовой логики сделай обход всех задач-консьюмеров в последующих волнах и составь список всех полей/форматов, которые они ожидают на входе. Дизайн вывода должен быть определён потребностями консьюмера, а не внутренней моделью данных продьюсера.
+**Scope:** universal
+**Category:** information-gathering
