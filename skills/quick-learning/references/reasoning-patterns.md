@@ -12,16 +12,6 @@ Single transit buffer for ALL methodology knowledge — both reasoning patterns 
 Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
-### 2026-04-12 core-constructor / tech-spec: Фильтр «меняет ли поведение продукта?» для списка решений на обсуждение
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** формирование списка решений для обсуждения с пользователем → фильтровать каждое: «если выбрать другой вариант, изменится ли то, что видит/делает пользователь продукта?» — если нет, принять самостоятельно → не тратить раунды коммуникации на чисто технические решения
-**Context:** Подготовил 5 решений для обсуждения tech-spec (архитектура процесса, хранилище FSM, OAuth flow, API endpoint, SDK abstraction). Пользователь дважды указал что все вопросы — чисто технические и не требуют его участия.
-**Pattern:** Перед показом списка решений пользователю — каждый вопрос проверять: «Если выбрать альтернативу, изменится ли поведение продукта для конечного пользователя?» Вопросы об архитектуре, хранилищах, SDK, протоколах — принимать самостоятельно. Обсуждать только то, что меняет UX или бизнес-логику.
-**Scope:** universal
-**Category:** communication
-
 ### 2026-03-31 dashboard-v1 / deploy: Браузер молчит — смотри server access log до диагностики сети
 
 **Seen:** 1
@@ -829,26 +819,6 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** scope-management
 
-### 2026-04-13 vps-migration / session 1: Процесс-менеджер с кэшированием cwd ломается при symlink-деплое
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** деплой через symlink-releases с процесс-менеджером, кэширующим cwd → удалять и пересоздавать процесс при каждом деплое вместо reload → не запускать процесс из директории старого релиза после смены symlink
-**Context:** PM2 `startOrReload` запомнил абсолютный путь первого релиза. После деплоя нового релиза symlink `current` переключился, но PM2 продолжал запускать `server.js` из старой директории — 502 в проде.
-**Pattern:** При использовании symlink-based releases с процесс-менеджером, кэширующим абсолютный cwd — не использовать reload/restart. Удалять процесс и создавать заново из нового каталога, чтобы cwd обновился.
-**Scope:** universal
-**Category:** tool-selection
-
-### 2026-04-13 vps-migration / session 1: Конфиги рантайма не попадают в framework-сборку автоматически
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** подготовка release-артефакта из framework-сборки → явно копировать конфиги процесс-менеджера/рантайма в release → не получить crash при деплое из-за отсутствия конфигов вне dependency tree
-**Context:** Next.js standalone output включает только файлы из dependency graph. Конфиг PM2 не был в зависимостях — деплой упал с "File not found".
-**Pattern:** При сборке release-артефакта через framework-трейсинг — составить явный список файлов рантайма вне dependency tree (конфиги процесс-менеджера, .env). Копировать в release явным шагом CI.
-**Scope:** universal
-**Category:** sequencing
-
 ### 2026-04-09 multi-trees-sharing / techspec: cross-check edge case descriptions across tasks
 
 **Seen:** 1
@@ -869,17 +839,6 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** sequencing
 
-### 2026-04-12 core-constructor / userspec: чеклист покрытия при трансформации формата данных
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** трансформация структурированных данных (items, checklist) в прозаический документ (spec, report) → перед написанием пройтись по каждому item источника, отметить что попал в целевой документ → не потерять обсуждённые темы при смене формата представления
-**Context:** User-spec draft пропустил 5 тем из interview.yml (3 error scenarios + 2 edge cases), хотя все имели score 85% и заполненные values. Валидаторы поймали пропуск в round 1 — стоило 2 раунда фиксов и 4 агента.
-**Pattern:** При переводе структурированного источника (items с полями score/value/gaps) в прозаический документ — перед финализацией пройтись по каждому required item источника и убедиться что его value отражён в целевом документе. Особенно уязвимы items из «error» и «edge case» категорий — их легко считать «и так очевидными».
-**Scope:** universal
-**Category:** information-gathering
-
-## Situational
 ### 2026-04-01 freelance-dashboard / session design-refactor: дизайн-пайплайн на приложении с inline styles → CSS migration приоритет
 
 **Seen:** 1
@@ -1889,27 +1848,6 @@ Patterns that apply to any project, any stack, any domain.
 **Situation:** deploy script с SSH pipe для загрузки файлов + systemctl restart в одном вызове
 **Category:** tool-selection
 
-### 2026-04-09 demo-trees-sharing / session 1: jsdom блокирует replaceState с абсолютным URL
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** jsdom integration-тест использует history.replaceState с абсолютным URL → использовать window.location.hash или относительный путь → избежать SecurityError в jsdom test environment
-**Context:** Codex сгенерировал тесты с `window.history.replaceState({}, '', 'http://localhost/')` — jsdom выбросил SecurityError потому что origin URL в тест-среде не совпадает.
-**Pattern:** В jsdom-тестах для URL-based routing (hash, query params) — не использовать replaceState с абсолютным URL. Устанавливать window.location.hash напрямую или использовать относительные пути. Особенно при делегировании написания тестов AI-агенту, который не знает ограничений test environment.
-**Scope:** situational
-**Situation:** integration-тесты с URL-манипуляцией в jsdom среде (vitest, jest)
-**Category:** tool-selection
-
-### 2026-04-10 demo-trees-sharing / session 3: non-code задачи не делегировать Codex
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** задача типа audit/review (read-only, без кодогенерации) → выполнять Claude напрямую, не делегировать Codex → избежать повторных крашей сессии из-за mismatch executor/task-type
-**Context:** Codex запускался 4 раза для аудит-задач (code review, security audit, test audit) и каждый раз сессия падала. Аудиты — это чтение кода и написание отчётов, не кодогенерация.
-**Pattern:** Перед делегацией задачи Codex проверять тип: если задача read-only (audit, review, QA отчёт) — выполнять Claude напрямую. Codex оптимизирован для кодогенерации с sandbox, а аудит-задачи требуют широкого чтения файлов без модификации.
-**Scope:** universal
-**Category:** tool-selection
-
 ### 2026-04-10 demo-trees-sharing / session 3: проверять координатную систему числами до написания фикса
 
 **Seen:** 1
@@ -1920,37 +1858,6 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
-### 2026-04-10 demo-trees-sharing / session 3: для визуальных задач — Playwright скриншот вместо деплоя
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** нужно проверить визуальный результат из CLI без браузера → запустить Playwright скриншот локально → не деплоить 4 раза ради проверки глазами
-**Context:** 4 деплоя на Cloudflare чтобы пользователь проверил визуал в браузере. Кеш не сбрасывался. Playwright скриншот через dev server дал результат за 5 секунд без деплоя.
-**Pattern:** Для визуальных проверок в CLI-среде: запустить dev server → Playwright скриншот → Read tool для просмотра PNG. Не деплоить для проверки визуала — это медленно и зависит от кеша CDN.
-**Scope:** universal
-**Category:** tool-selection
-
-### 2026-04-10 content-tree-visualizer / ad-hoc: Спека первична, код вторичен
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** баг в визуальном поведении, код кажется "неправильным" → сначала читать project-knowledge (domain glossary, patterns), потом код → не делать ложных выводов из реализации, противоречащих спеке
-**Context:** При диагностике multi-root layout сказал "корни не должны соединяться", потому что в коде root — parent of trunk. Но project-knowledge/patterns.md чётко описывал: "mirrors root nodes below trunk, root-to-trunk links use dark brown". Код мог быть сломан, а спека — source of truth.
-**Pattern:** При визуальных багах: сначала читать domain glossary и patterns.md чтобы понять ОЖИДАЕМОЕ поведение, потом смотреть код чтобы понять ТЕКУЩЕЕ. Иначе рискуешь принять баг за фичу.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-10 content-tree-visualizer / ad-hoc: Baseline тесты до своих изменений
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** добавление кода в область с существующими тестами → запустить тесты ДО своих изменений (baseline run) → отличить свои баги от предсуществующих сломанных тестов
-**Context:** После добавления synthetic links тест `height < superRoot.y + 80` упал. Потратил время на диагностику — оказался предсуществующий баг (Math.max(860, ...) всегда ≥ 860). Если бы запустил тесты до правок — сразу бы знал что это чужой баг.
-**Pattern:** Перед правкой файла с тестами — запустить `vitest run {test-file}` на чистом коде (git stash). Зелёные тесты — твой baseline. Красные — предсуществующие баги, не твоя ответственность.
-**Scope:** universal
-**Category:** sequencing
-
----
 ### 2026-04-11 juridical-parser / ad-hoc: decisions.md актуальнее architecture.md для инфра-вопросов
 
 **Seen:** 2
@@ -1962,16 +1869,6 @@ Patterns that apply to any project, any stack, any domain.
 **Situation:** Проект ведёт decisions.md с Infrastructure Change / Migration Log секцией
 **Category:** information-gathering
 
-### 2026-04-11 juridical-parser / session: Промежуточный артефакт ≠ конечный эффект
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** задача помечается завершённой по промежуточному артефакту → проверить реальный эффект в системе, а не только артефакт → не считать done до подтверждения конечного результата
-**Context:** Несколько фич были закоммичены и помечены DONE, но сервер продолжал работать на старом коде — что обнаружилось только при диагностике бага в продакшене.
-**Pattern:** Коммит, PR, запуск скрипта — артефакты, не доказательство результата. Перед закрытием задачи задать вопрос: что именно изменилось в реальной системе и как это проверить напрямую? Completion = конечный эффект подтверждён, а не "действие выполнено".
-**Scope:** universal
-**Category:** sequencing
-
 ### 2026-04-11 juridical-parser / session: Термин пользователя ≠ техническая метрика
 
 **Seen:** 1
@@ -1981,66 +1878,6 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Слова пользователя — это его модель мира, не технические названия. Перед ответом на числовой вопрос: найти, какая именно метрика соответствует термину пользователя, назвать её явно. «72 дел сохранено» и «72 контакта» — разные утверждения даже если число одно.
 **Scope:** universal
 **Category:** communication
-
-### 2026-04-11 responsive-layout / session 1: Не перезапрашивай проверку при one-time token verification
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** верификация ownership через одноразовый токен, система не подтверждает → после отправки proof не перезапрашивать проверку через UI — ждать автопроверки системы → не инвалидировать свой proof повторным запросом, который генерирует новый challenge
-**Context:** При верификации домена через TXT-запись каждый клик "Refresh" в UI платформы генерировал новый verification token, делая предыдущий proof невалидным. Замкнутый цикл: обновил proof → нажал проверить → получил новый challenge → обновил proof → ...
-**Pattern:** Когда система верифицирует ownership через одноразовый challenge-response (TXT, DNS, файл): отправь proof, подтверди его наличие независимо (dig, curl), затем жди автопроверки. Кнопка "проверить/обновить" в UI может регенерировать challenge, инвалидируя твой proof.
-**Scope:** universal
-**Category:** recovery
-
-### 2026-04-11 responsive-layout / session 1: Билд ОК но 4xx — проверяй настройки платформы до кода
-
-**Seen:** 2
-**Adapted:** —
-**Triad:** билд/деплой ОК но приложение недоступно (4xx) → проверять настройки платформы (framework detection, access policies, маппинг веток) до дебага кода и инфраструктуры → не тратить время на DNS/код когда проблема в конфигурации платформы
-**Context:** Билд прошёл, статус Ready, алиасы привязаны — но все URL отдавали 404/401. Причина: платформа не распознала фреймворк (framework: null), output пустой. Seen 2: тот же паттерн — «билд ОК, output 0 файлов» из-за отсутствия framework detection.
-**Pattern:** Когда билд ОК но приложение недоступно: сначала проверь платформенные настройки — framework detection, access policies, маппинг git-веток на окружения. Не дебажь код, DNS или инфраструктуру пока не исключишь конфигурацию платформы.
-**Scope:** universal
-**Category:** problem-decomposition
-
-### 2026-04-12 responsive-layout / session 2: Артефакт в файловой системе ≠ артефакт в scope
-
-**Seen:** 2
-**Adapted:** —
-**Triad:** планирование рефакторинга на основе файловой структуры или пользовательской диагностики → верифицировать через code research что каждый артефакт реально используется (рендерится, импортируется) до включения в scope → не планировать работу над мёртвым кодом и не строить спек на ложных предпосылках
-**Context:** Случай 1: компонент включён в scope по наличию файлов — оказался закомментирован в entry point. Случай 2: пользователь описал папку с большим весом как проблему #1 — code research показал что файлы нигде не импортируются (мёртвый груз). Аналогично "CSS bloat" при проверке оказался полностью используемым.
-**Pattern:** При планировании рефакторинга — верифицируй каждый артефакт (файл, папку, зависимость) через grep/code research на фактическое использование в коде. Наличие в файловой системе или в пользовательском описании проблемы не означает что артефакт задействован. Пользовательская диагностика часто опирается на внешние признаки (размер папки, количество файлов), а не на фактические импорты.
-**Scope:** universal
-**Category:** scope-management
-
-### 2026-04-12 responsive-layout / session 1: Сетевой сбой сборки ≠ ошибка кода
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** сборка падает с сетевой/инфраструктурной ошибкой (timeout, ECONNRESET, DNS) → подтвердить корректность кода через независимые проверки (tsc + тесты), пометить как заблокировано окружением → не тратить время на debug кода при инфраструктурном сбое
-**Context:** `npm run build` падал с ECONNRESET при подключении к внешнему CDN. TypeScript и тесты проходили чисто. Агент правильно распознал это как ошибку среды, а не кода.
-**Pattern:** Когда сборка падает с сетевой ошибкой — немедленно запусти tsc + тесты как независимое подтверждение корректности кода. Если они проходят чисто — проблема в окружении (CDN, DNS, firewall), не в коде. Не переходи к debugging кода без этого разделения.
-**Scope:** universal
-**Category:** problem-decomposition
-
-### 2026-04-12 responsive-layout / session 2: Стилевой модуль + глобальный файл = purity error
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** стилевой модуль импортирует файл содержащий глобальные селекторы через @use → выносить переменные в отдельный partial без глобальных правил, модули @use только partial → предотвратить purity error сборщика из-за non-local селекторов в модуле
-**Context:** 10 SCSS-модулей делали `@use 'globals.scss'` для доступа к переменным, но globals.scss содержал глобальные селекторы (*, body). Сборщик отклонил non-local selectors. Проблема обнаружена только на audit wave, не при кодинге.
-**Pattern:** Когда стилевой модуль нуждается в переменных из общего файла — проверь, содержит ли этот файл глобальные селекторы. Если да — вынеси переменные в отдельный partial (_variables). Модуль может импортировать только файлы с local-scoped содержимым.
-**Scope:** universal
-**Category:** sequencing
-
-### 2026-04-12 responsive-layout / session 2: Статус деплоя ≠ production URL обновлён
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** CI/CD деплой показывает статус READY / 200 OK → проверять что production URL отдаёт контент из НОВОГО коммита (grep уникальный маркер или component name) → не объявлять деплой завершённым когда платформа не промоутила сборку
-**Context:** Vercel собрал коммит и показал READY, но target оказался None — не production. Production URL по-прежнему отдавал старую версию. Пользователь обнаружил отсутствие нового компонента, не агент.
-**Pattern:** После деплоя проверяй не только HTTP-статус и deployment state платформы, а реальное содержимое production URL. Grep в HTML-ответе по уникальному маркеру нового кода (class name, component, текст). Если маркера нет — деплой не промоутился.
-**Scope:** universal
-**Category:** recovery
 
 ### 2026-04-12 client-bugfixes / session 1: Верификация маппинга ветки на environment перед деплоем
 
@@ -2052,26 +1889,6 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** tool-selection
 
-### 2026-04-12 client-bugfixes / session 1: Полный diff при мерже накопленных коммитов в production
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** мерж ветки разработки с накопленными коммитами в production-ветку → проверить полный diff против HEAD production, не только свои коммиты → не задеплоить непроверенные изменения из предыдущих сессий
-**Context:** Смержил dev в master для деплоя своих багфиксов. В diff попали все коммиты performance optimization из предыдущих сессий, которые сломали стили карточек подписок на production.
-**Pattern:** При мерже ветки с накопленной историей — выполни diff HEAD production vs HEAD dev и просмотри ВСЕ изменённые файлы, не только свои коммиты. Каждый файл в diff — потенциальный источник регрессии.
-**Scope:** universal
-**Category:** sequencing
-
-### 2026-04-12 core-constructor / session 2: Количество незнакомых интерфейсов пропорционально ошибкам — верифицируй ДО, не ПОСЛЕ
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** задача касается N≥3 незнакомых интерфейсов → верифицировать каждый интерфейс до генерации, не полагаться на ревью → избежать O(N) ошибок, каждая из которых стоит review round
-**Context:** Задача с 4 внешними интерфейсами — ревью предсказуемо нашло фактические ошибки в каждом. Ошибки не логические, а фактические: неверный тип, неверный метод, неверный параметр. Все решались 10-секундным чтением документации.
-**Pattern:** "Проверю на ревью" выгодно при 1 незнакомом интерфейсе. При N≥3 ожидаемое количество ошибок растёт линейно, а стоимость каждого fix round константна. Стратегия "верифицировать до действия" доминирует над "поймать на ревью" когда N×P(ошибка) > стоимость(N×верификация). Это ошибка секвенирования: ставить контроль качества ПОСЛЕ генерации вместо ДО — когда входных неизвестных много.
-**Scope:** universal
-**Category:** sequencing
-
 ### 2026-04-12 core-constructor / session 2: Неявные границы scope не соблюдаются — только явные ограничения работают
 
 **Seen:** 1
@@ -2081,37 +1898,6 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Описание задачи задаёт "что сделать", но не "что НЕ делать". Исполнитель, видящий возможность сделать больше, сделает больше — полезное поведение при последовательном исполнении, деструктивное при параллельном. Логика: при параллельном исполнении boundary вывода должен быть explicit constraint, а не implicit следствие из описания задачи. Implicit scope = no scope.
 **Scope:** universal
 **Category:** scope-management
-
-### 2026-04-12 core-constructor / session 3: Verify API signatures before delegating to external agent
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** составление промта для внешнего AI-агента с указанием API-сигнатур → верифицировать каждую сигнатуру через inspect.signature() или docs ДО отправки промта → не передавать неверные факты вызывающие fix round в сгенерированном коде
-**Context:** Передал Codex неверную информацию о StorageKey API (chat/user вместо chat_id/user_id) — промт содержал "факт" из устаревшей документации вместо проверки актуального API.
-**Pattern:** При делегировании кодогенерации внешнему агенту, каждый API-факт в промте (имена параметров, поля, сигнатуры) верифицировать через `inspect.signature()`, `help()` или grep в исходниках до отправки. Стоимость проверки — 5 секунд, стоимость ошибки — fix round + re-run tests.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-12 core-constructor / session 4: Уровень абстракции сетевого ограничения в контейнере
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** настройка bind-адреса процесса внутри контейнера для ограничения внешнего доступа → применять сетевое ограничение на уровне port mapping хоста, внутри контейнера слушать на 0.0.0.0 → не сделать сервис недостижимым из-за применения ограничения на неверном уровне абстракции
-**Context:** Настроил `--host 127.0.0.1` внутри контейнера для защиты от внешнего доступа. Code-reviewer поймал: loopback внутри контейнера ≠ loopback хоста, сервис становится недостижим через port mapping.
-**Pattern:** Ограничение доступа в контейнеризированной среде — на уровне маппинга портов хоста, не на уровне bind-адреса процесса. Loopback внутри контейнера изолирован от сети хоста — применение ограничения на неверном уровне абстракции маскируется под правильный intent, но ломает connectivity.
-**Scope:** universal
-**Category:** scope-management
-
-### 2026-04-13 bystricky-layout-fix / session ad-hoc: category default bias
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** category default bias
-**Triad:** решение кажется очевидным из категории/типа объекта → проверить имеющиеся данные о конкретном случае ДО действия — очевидность = сигнал перепроверить → не подменить факт конкретного случая свойством по умолчанию его категории
-**Context:** Объект принадлежал знакомой категории — приписал ему типичное свойство категории, не проверив доступные данные о конкретном экземпляре. Данные были под рукой, но "очевидность" заблокировала обращение к ним.
-**Pattern:** Когда решение кажется очевидным из типа/категории — это сигнал перепроверить конкретный случай, а не пропустить проверку. Чем "очевиднее", тем выше риск category default bias.
-**Scope:** universal
-**Category:** information-gathering
 
 ### 2026-04-13 sheets-column-shift / session bugfix: downstream invariant blindspot
 
@@ -2124,13 +1910,3 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** problem-decomposition
 
-### 2026-04-13 sheets-date-diagnosis / session bugfix: hypothesis anchoring bias
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** hypothesis anchoring bias
-**Triad:** симптом имеет несколько правдоподобных объяснений → прочитать observable evidence (реальные данные в системе) ДО объявления диагноза пользователю → не останавливаться на первом правдоподобном объяснении
-**Context:** Пользователь сообщил о неверных датах. Первое правдоподобное объяснение (export_date column visible) было озвучено без проверки. Реальные ячейки таблицы (`ws.get("A1:D5")`) прочитаны только после трёх раундов уточнений — и показали другой баг (column shift).
-**Pattern:** Когда симптом правдоподобно объясняется первой гипотезой — не объявлять диагноз до чтения фактических данных. "Правдоподобно" ≠ "верно". Стоимость одного инструментального запроса всегда меньше стоимости ложного диагноза в разговоре с пользователем.
-**Scope:** universal
-**Category:** information-gathering
