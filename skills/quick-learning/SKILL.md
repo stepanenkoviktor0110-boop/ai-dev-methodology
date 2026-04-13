@@ -65,11 +65,12 @@ Check 4 binary signals. If ALL are zero — **skip entirely** with "Clean sessio
 
 For each detected signal, ask:
 
-1. **Was the first approach right?** If not — what signal should have told us to try something different earlier?
-2. **What was the actual cost of the detour?** (fix rounds, wasted review cycles, rework)
-3. **Is this transferable?** Would this insight help someone on a DIFFERENT project?
+1. **What thinking mistake was made?** Name the cognitive error in 3-5 words. If you can't — it's an event, not a pattern. Skip.
+2. **Was the first approach right?** If not — what signal should have told us to try something different earlier?
+3. **What was the actual cost of the detour?** (fix rounds, wasted review cycles, rework)
+4. **Is the cognitive error transferable?** Would someone on a completely different project (different stack, domain, team) benefit from knowing about this trap?
 
-Write only patterns that are genuinely non-obvious and transferable. Skip if analysis produces nothing new.
+Write only patterns that name a genuine cognitive error. Skip if analysis produces only domain-specific events.
 
 ### Step 3: Write (20 sec)
 
@@ -103,9 +104,10 @@ When merging: keep the most general trigger and most actionable wording. Update 
 
 **Seen:** 1
 **Adapted:** —
-**Triad:** {trigger} → {action} → {goal}
-**Context:** {what situation triggered this insight — 1 sentence}
-**Pattern:** {the transferable reasoning approach — 1-2 sentences, imperative}
+**Cognitive Error:** {3-5 word name of the thinking mistake, e.g. "partial mutation bias", "existence ≠ active use"}
+**Triad:** {situation type} → {corrective thinking rule} → {cognitive trap to avoid}
+**Context:** {what thinking mistake was made — 1 sentence, domain-free}
+**Pattern:** {the corrective rule — 1-2 sentences, imperative, domain-free}
 **Scope:** {universal | situational}
 **Situation:** {only for situational — when this applies}
 **Category:** {sequencing | information-gathering | problem-decomposition | scope-management | recovery | communication | tool-selection | design-taste | design-process | design-iteration}
@@ -116,22 +118,41 @@ When merging: keep the most general trigger and most actionable wording. Update 
 - **situational** — specific context required. Goes to `## Situational` section. Must have `Situation` field.
 
 **Writing rules:**
-- Must be actionable — a concrete instruction, not vague advice.
-- Must be non-obvious — "write tests" is obvious. "Run smoke before spawning reviewers" is not.
-- Must capture REASONING LOGIC, not implementation specifics. Transferable to any project. Bad: "удалять Лист1 в Google Sheets по имени". Good: "при программном создании документа — зачищать дефолтные артефакты по имени, не по содержимому".
+- Must name a **cognitive error** — if you can't name the thinking mistake in 3-5 words, you're describing an event.
+- Must be domain-free — no file names, tool names, framework names, role names. Pure thinking logic.
+- Must be non-obvious — "write tests" is obvious. "Existence of an artifact ≠ its active participation in the system" is not.
 - Max 2 entries per session.
-- Every entry must have Triad and Adapted fields.
+- Every entry must have Cognitive Error, Triad, and Adapted fields.
+- **Backward compatibility:** existing entries without Cognitive Error field remain valid. New entries MUST include it. When incrementing Seen on an old entry, optionally add Cognitive Error if the error is clear.
 
-**Abstraction gate (mandatory before writing — applies to ALL fields, not just Triad):**
-For each field (Triad, Context, Pattern), apply this test:
-1. Replace every product/service/file/component name with its category. "Vercel" → "хостинг-платформа", "page.tsx" → "entry point", "Barista" → "компонент", "globals.scss" → "глобальный стилевой файл".
-2. If the field still makes sense after replacement — it's abstract enough. If it becomes meaningless — the logic was hiding behind the specific name; reformulate.
-3. Every field must answer "what reasoning error to avoid" — not "which file to check" or "which button to click".
+**Abstraction gate (mandatory before writing — applies to ALL fields):**
 
-Bad Context: "Включил Barista в tech-spec, но он закомментирован в page.tsx" → project-specific.
-Good Context: "Включил компонент в scope рефакторинга по наличию файлов, но он был отключён в entry point" → transferable.
-Bad Pattern: "Проверяй page.tsx на закомментированные импорты" → file-specific.
-Good Pattern: "Проверяй entry point на фактический рендеринг каждого компонента перед включением в scope" → transferable.
+The gate ensures entries capture **cognitive errors**, not events. Three steps:
+
+**Step A — Name the cognitive error.**
+Before writing anything, answer: "Какая ошибка мышления привела к проблеме?" Name it in 3-5 words.
+Examples of cognitive errors:
+- "наличие ≠ использование" (existence ≠ active use)
+- "partial mutation bias" (local change → assume global invariant holds)
+- "scope anchoring" (anchored to original scope after conditions changed)
+- "authority by proximity" (nearest similar example treated as authoritative)
+- "silent dependency assumption" (assumed a dependency exists without checking)
+
+If you can't name a cognitive error — you're describing an event, not a pattern. Skip.
+
+**Step B — Domain-strip test.**
+Remove ALL domain nouns (files, tools, frameworks, roles, artifacts) from every field. What remains must be a useful **thinking rule**. If it becomes meaningless — the logic was hiding behind specific names; reformulate.
+
+| Level | Example | Verdict |
+|-------|---------|---------|
+| Bad | "после объединения задач пересчитать wave по depends_on" | Domain-specific action. Strip → meaningless |
+| Medium | "после мутации графа перевалидировать топологический порядок" | Structural, but no cognitive error named |
+| Good | "изменил часть системы с инвариантом — не перепроверил инвариант, потому что незатронутая часть выглядела корректной. Ошибка: partial mutation bias" | Cognitive error named, domain-free, transferable |
+
+**Step C — Triad orientation check.**
+- Trigger must describe a **situation type**, not an event ("изменена часть системы с глобальным инвариантом", NOT "задача 4 оказалась в wave 3")
+- Action must be a **corrective thinking rule** ("перепроверить инвариант на всех затронутых узлах, не только на изменённых")
+- Goal must name the **cognitive trap to avoid** ("не попасть в partial mutation bias: локальность изменения ≠ локальность последствий")
 
 > Checkpoint: reasoning-patterns.md and triad-index.md both updated. New entries ≤ 2. Adapted: — set on all new rows.
 
@@ -193,7 +214,9 @@ When a guard (smoke test, reviewer, self-verification) catches an error matching
 
 - [ ] Signal gate checked — clean sessions skipped
 - [ ] Context waste signal checked separately from scope change
-- [ ] Patterns capture reasoning LOGIC, not specific technical decisions
+- [ ] **Cognitive error named** — every new entry has a 3-5 word cognitive error name
+- [ ] **Domain-strip test passed** — remove all domain nouns, pattern still makes sense as a thinking rule
+- [ ] **Triad orientation** — Trigger = situation type, Action = corrective thinking rule, Goal = cognitive trap name
 - [ ] Scope correctly classified (universal vs situational)
 - [ ] No duplicates — existing patterns got Seen++ instead
 - [ ] Max 2 entries written
