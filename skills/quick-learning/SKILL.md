@@ -63,6 +63,11 @@ The gate ensures entries capture **cognitive errors**, not events.
 
 Can't name it → skip.
 
+**Step A2 — Knowledge vs Reasoning gate.** What fixes the problem — "learn a fact" or "change how you reason"?
+- Fix = learn a fact (checklist item, OWASP rule, linting rule, framework API, docs) → **knowledge, skip.**
+- Fix = change the reasoning process (no checklist would catch this, expert still falls for it) → **reasoning, proceed.**
+- Indicator: if the pattern reduces to a checklist entry (security, code style, API usage) — it's knowledge. If no existing checklist covers it — it's reasoning.
+
 **Step B — Domain-strip test.** Mechanical, not mental. Do NOT skip sub-steps.
 
 **B1. Write draft** triad (Trigger → Action → Goal) using whatever words come naturally.
@@ -167,6 +172,7 @@ When a guard catches an error matching an existing pattern's trigger — increme
 - [ ] Signal gate checked — clean sessions skipped
 - [ ] Context waste checked separately from scope change
 - [ ] **Cognitive error named** — 3-5 word name on every new entry
+- [ ] **Knowledge vs Reasoning passed** — fix = "learn fact" → skip; fix = "change reasoning" → proceed
 - [ ] **Domain-strip passed** — ran B1→B4 mechanically; listed domain nouns explicitly; ALL THREE triad fields stripped independently
 - [ ] **Triad orientation** — Trigger=situation type, Action=corrective rule, Goal=trap name
 - [ ] No duplicates — existing patterns got Seen++
