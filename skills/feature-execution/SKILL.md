@@ -69,7 +69,6 @@ Before starting, read [quick-ref-feature-execution.md](../quick-learning/referen
    For each task, determine executor before spawning:
 
    **Claude-only** (auto-override):
-   - Task has `verify: [smoke]` or `verify: [user]` (needs dev-server/browser)
    - Task has `skills:` containing `deploy-pipeline` or `infrastructure-setup` (needs SSH/MCP)
    - Fix after review, diff < 30 lines
    - Codex returned 403 / rate limit / auth failure for this session

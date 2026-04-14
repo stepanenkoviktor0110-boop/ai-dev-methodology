@@ -23,6 +23,39 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** communication
 
+### 2026-04-14 menu-editor / session 1: runtime readiness conflation
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** runtime readiness conflation
+**Triad:** исполнитель получает недоступный инфраструктурный сервис → явно разделить compile-time зависимости (типы/контракты) от runtime зависимостей и продолжать работу по compile-time ветке → не блокировать работу из-за смешения уровней зависимостей
+**Context:** Применение миграции к БД заблокировано по инфраструктурным причинам. Следующие задачи зависели от schema.ts (compile-time types), а не от живой БД (runtime) — правильно продолжить и зафиксировать блокер как deferred.
+**Pattern:** При инфраструктурном блокере явно спросить: «Следующие задачи зависят от runtime-состояния сервиса или только от его compile-time контракта?» Если compile-time — продолжать работу, фиксировать блокер как deferred для smoke/integration шага.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-04-14 menu-editor / session 2: eager state collapse bias
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** eager state collapse bias
+**Triad:** компонент с переключаемым количеством видимых элементов → откладывать обрезку массива до момента submit, не при переключении режима → не потерять данные при обратном переключении
+**Context:** volumes.slice(0, volumeCount) применяется только при отправке PUT, не при смене radio-кнопки. Если обрезать при switch — данные невидимых слотов уничтожены.
+**Pattern:** UI управляет видимостью подмножества данных через переключатель — не мутируй массив при смене режима. Slice только при submit.
+**Scope:** universal
+**Category:** scope-management
+
+### 2026-04-14 menu-editor / session 2: success-path-only state design
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** success-path-only state design
+**Triad:** форма выполняет async-операцию с возможным failure → сбрасывать UI state только при успехе, сохранять при ошибке → пользователь не теряет ввод
+**Context:** editState preserved on save error в Task 8. Дефолтная интуиция "операция завершена → сбросить форму" не различает success и error path.
+**Pattern:** Post-operation state: на success — сбрасывай, на error — сохраняй.
+**Scope:** universal
+**Category:** scope-management
+
 ### 2026-03-31 dashboard-v1 / deploy: Браузер молчит — смотри server access log до диагностики сети
 
 **Seen:** 1
@@ -1976,14 +2009,14 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
-### 2026-04-14 menu-editor / session decompose: execution-context portability assumption
+### 2026-04-14 menu-editor / session decompose+deploy: execution-context portability assumption
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Cognitive Error:** execution-context portability assumption
-**Triad:** написание import-statement для модуля из одного окружения выполнения в артефакт другого окружения → до написания import-а проверить транзитивную цепочку зависимостей модуля на совместимость с целевым контекстом → не считать что модуль переносим только потому что он существует в проекте
-**Context:** Seed-скрипт (запускается через plain node/tsx) получил import файла данных, который через транзитивные зависимости импортировал .jpg-файлы через webpack-трансформы — невалидные за пределами bundler-контекста. Ошибка поймана на review, потребовала полного перезаписа подхода (hardcode data вместо import).
-**Pattern:** Перед написанием import-statement спросить: «В каком контексте выполняется этот артефакт? Был ли импортируемый модуль написан для того же контекста?» Если контексты различаются — пройти транзитивную цепочку зависимостей импортируемого модуля и проверить каждый шаг на совместимость. Существование файла в проекте не гарантирует его переносимость между контекстами (bundler vs runtime, server vs client, browser vs node).
+**Triad:** перенос задачи (скрипта, модуля, пайплайна) из одной среды исполнения в другую → перечислить все неявные зависимости от среды-источника (env vars, filesystem, network, runtime) до переноса → не считать что артефакт переносим только потому что он работает в текущей среде
+**Context:** (1) Seed-скрипт с транзитивными webpack-зависимостями не работал в plain node. (2) Тот же скрипт перенесён в CI — 3 итерации: не хватало env vars (ADMIN_EMAIL, UPLOADS_DIR), файлов (photos не в git), filesystem paths (hardcoded /var/www).
+**Pattern:** Перед переносом задачи в другую среду: составить полный список зависимостей от среды-источника — env vars, filesystem paths, network access, runtime capabilities, файлы вне VCS. Каждую зависимость проверить на наличие в целевой среде. Работоспособность в одной среде не гарантирует переносимость — каждая среда имеет свой implicit contract.
 **Scope:** universal
 **Category:** information-gathering
 
