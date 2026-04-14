@@ -2020,6 +2020,17 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
+### 2026-04-14 menu-editor / session 3-final: silent degradation trust
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** silent degradation trust
+**Triad:** операция с graceful fallback (warn + default) сообщает success → после завершения проверить полноту результата (count/sample ключевых полей), не только отсутствие ошибок → не принять неполный результат за полный из-за отсутствия ошибки
+**Context:** Seed скрипт обработал 35 items, вывел "seed complete: 35 items" — выглядел успешным. Но каждое фото вызвало ENOENT (файлы в другой среде), обработанное через warn + photo=null. Результат: все items без фото, меню пустое на сайте. Ошибок формально ноль — деградация тихая.
+**Pattern:** Когда операция использует graceful error handling (catch → warn → fallback value) — после завершения проверить полноту результата через count/sample ключевых полей. "Завершилось без ошибок" ≠ "завершилось полностью". Особенно опасно когда fallback — допустимое значение (null, пустая строка, 0), которое не вызовет ошибок downstream, но изменит поведение системы.
+**Scope:** universal
+**Category:** information-gathering
+
 ### 2026-04-14 menu-editor / session decompose: producer-centric specification
 
 **Seen:** 1
