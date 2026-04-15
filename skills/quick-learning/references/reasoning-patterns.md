@@ -2120,3 +2120,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When you discover that documentation does not match observed state, add an explicit disambiguation note to the deliverable at the moment of discovery — not after reviewers flag it. The cost of a single sentence upfront is zero; the cost of a missed note is a full validation round.
 **Scope:** universal
 **Category:** communication
+
+### 2026-04-15 shared-whisper-service / session 1: unverified corrective action
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** corrective action without re-verification
+**Triad:** correction received for an incorrect interface usage → verify the correct form against authoritative source before committing the fix → avoid fix-that-doesn't-fix (double validation round)
+**Context:** Validator flagged incorrect parameter names. Fix renamed parameters to a plausible-looking alternative without checking the actual constructor signature. Second validation round caught the fix was also wrong — the interface requires a different argument structure entirely. Two rounds spent on one issue that a single verification call would have resolved.
+**Pattern:** When a reviewer flags an incorrect usage of an interface, do not guess the correct form from memory or pattern-match. Execute a minimal verification (import + construct, read docs, run --help) to confirm the fix is actually correct before committing. The cost of one verification is negligible; the cost of a wrong fix is a full re-validation cycle.
+**Scope:** universal
+**Category:** information-gathering
