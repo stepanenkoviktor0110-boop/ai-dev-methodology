@@ -34,14 +34,6 @@ Then collect changed files:
 git diff --name-only <first-session-commit>^..HEAD
 ```
 
-**Output:** list of changed files grouped by area:
-- Config: `next.config.*`, `ecosystem.config.*`, `.env*`, `nginx/`
-- Schema/DB: `shared/db/schema.ts`, `migrations/`
-- API routes: `**/api/**`
-- Components: `src/containers/`, `src/components/`, `cabinet/src/`
-- Deploy: `.github/workflows/`, `Dockerfile`, etc.
-- Docs: `.claude/skills/project-knowledge/`
-
 ## Step 2: Check if Project Knowledge Exists
 
 If `.claude/skills/project-knowledge/references/` does not exist or is empty:
@@ -49,46 +41,68 @@ If `.claude/skills/project-knowledge/references/` does not exist or is empty:
 - Inform user: "Project knowledge not initialized, skipping docs check."
 - Jump to Step 6
 
-## Step 3: Detect Documentation Drift
+## Step 3: Load Drift Checklist
 
-For each PK file, check if session changes affect documented content:
+Read `.claude/skills/project-knowledge/references/drift-checklist.md`.
 
-### architecture.md
-Drift if session touched:
-- `next.config.*` — images config, output mode, transpile
-- `shared/db/schema.ts` — data model, table count
-- `shared/db/index.ts` — connection pool config
-- `src/app/page.tsx` — section rendering, LazySection usage, navigation anchors
-- `src/lib/` — data fetching functions
-- Component structure changes (new/removed containers)
+This file maps source file patterns → PK documentation sections.
+Each project maintains its own checklist tailored to its structure.
 
-### deployment.md
-Drift if session touched:
-- `.github/workflows/` — CI/CD pipeline, secrets, steps
-- `ecosystem.config.*` — PM2 config, ports, restart policy
-- `nginx/` or server SSH commands were run — nginx config
-- `.env*` — environment variables
-- New GitHub Secrets added
+**If the file does not exist** — generate it:
+1. Read the project's PK files to understand what's documented
+2. Scan the project structure (`ls` key directories)
+3. Create a checklist mapping actual project paths → PK sections
+4. Write to `.claude/skills/project-knowledge/references/drift-checklist.md`
+5. Inform user: "Generated drift checklist. Review it after session close."
 
-### patterns.md
-Drift if session touched:
-- Git workflow changes
-- New testing patterns discovered
-- Business rules changed
+**If session changes revealed new mappings** not in the checklist
+(e.g., a new config file was added that affects deployment):
+- Append the new mapping to the checklist
+- Note it in the drift report: "Added to drift checklist: {mapping}"
 
-### ux-guidelines.md (if exists)
-Drift if session touched:
-- Responsive breakpoints, CSS changes
-- UI component behavior changes
+### Drift Checklist Format
 
-**For each potential drift item, produce a one-line description:**
+```markdown
+# Drift Checklist
+
+Maps source files/patterns to PK documentation sections.
+Used by `/done` to detect when documentation may be outdated.
+
+## architecture.md
+- path/to/config.* — what it documents (e.g., "images, output mode")
+- path/to/schema.ts — what it documents (e.g., "data model, table count")
+- path/to/page.tsx — what it documents (e.g., "sections, anchors")
+
+## deployment.md
+- .github/workflows/ — CI/CD pipeline, secrets
+- path/to/pm2.config.* — process manager config
+
+## patterns.md
+- (typically empty — patterns drift is hard to map to files)
+
+## ux-guidelines.md
+- path/to/styles/ — breakpoints, responsive rules
+```
+
+Each line: `- <glob or path pattern> — <what aspect of the PK section it affects>`
+
+## Step 4: Detect Documentation Drift
+
+Cross-reference the session's changed files against the drift checklist.
+
+For each match:
+1. Read the relevant PK section
+2. Read the actual source file to see current state
+3. Compare: does the PK section reflect the source file's current state?
+4. If not → record as drift item with one-line description
+
+**For each drift item, produce a one-line description:**
 ```
 [architecture.md] images config changed: was formats:webp, now unoptimized:true
 [deployment.md] REVALIDATE_SECRET added to env but not documented
-[deployment.md] PM2 hardening settings added but not in docs
 ```
 
-## Step 4: Present Drift Report
+## Step 5: Present Drift Report
 
 Show the user the drift report:
 
@@ -111,7 +125,7 @@ Then ask: "Update documentation? (all / pick numbers / skip)"
 - **pick numbers** → update only selected items (e.g., "1, 3")
 - **skip** → skip documentation update entirely
 
-## Step 5: Update Documentation
+## Step 6: Update Documentation
 
 For each approved drift item:
 1. Read the current PK file
@@ -127,7 +141,7 @@ Quality rules (from documentation-writing):
 
 After updates, show a brief summary of what was changed in each file.
 
-## Step 6: Feature Archive (Feature Mode Only)
+## Step 7: Feature Archive (Feature Mode Only)
 
 If a `work/{feature}/` directory was involved:
 
@@ -138,15 +152,18 @@ If a `work/{feature}/` directory was involved:
 
 If no feature directory — skip this step silently.
 
-## Step 7: Commit & Report
+## Step 8: Commit & Report
 
 If any documentation was updated:
 ```
 docs: update project knowledge — <brief list of what changed>
 ```
 
+If drift checklist was created or updated, include it in the commit.
+
 Report to user:
 - Documentation items updated (or "no drift detected")
+- Drift checklist updates (if any)
 - Feature archived (if applicable)
 - Session closed
 
@@ -162,10 +179,13 @@ No commit needed, no questions asked.
 ## Self-Verification
 
 - [ ] Session diff collected (git log + changed files)
-- [ ] PK files checked against actual changes
+- [ ] Drift checklist loaded (or generated if missing)
+- [ ] Changed files cross-referenced against checklist
+- [ ] PK sections verified against actual source state (not just "file changed")
 - [ ] Drift report shown to user (or "no drift" confirmed)
 - [ ] User approved updates before writing
 - [ ] Only affected sections updated (no unnecessary rewrites)
+- [ ] Drift checklist updated if new mappings discovered
 - [ ] Feature archived if applicable
-- [ ] Changes committed
+- [ ] Changes committed and pushed
 - [ ] Report delivered
