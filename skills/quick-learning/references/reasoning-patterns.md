@@ -2131,3 +2131,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a reviewer flags an incorrect usage of an interface, do not guess the correct form from memory or pattern-match. Execute a minimal verification (import + construct, read docs, run --help) to confirm the fix is actually correct before committing. The cost of one verification is negligible; the cost of a wrong fix is a full re-validation cycle.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-15 qwen-setup / session 1: completion over verification
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** completion pressure suppresses verification
+**Triad:** multiple artifacts generated in batch under time pressure → run mental execution of each artifact before declaring done → avoid fix-round-after-batch: batch creation creates compound error debt
+**Context:** Generated 21 files (scripts, configs, docs, skills) in sequence without verifying any. Verification afterward revealed 6 bugs across 6 files — dead regex patterns, missing deduplication, path injection, wrong command references. Each bug was individually obvious, but batch completion pressure suppressed per-artifact verification.
+**Pattern:** After generating each executable artifact (script, config, hook), mentally execute one representative path through it before moving to the next artifact. The cost of inline verification is seconds; the cost of batch-deferred verification is a full fix round with context switching across all files.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-04-15 qwen-setup / session 1: author environment assumption
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** author environment projection
+**Triad:** writing distribution instructions for end users → enumerate prerequisites available on a fresh target environment before choosing distribution method → avoid author-env projection: what's available to the author ≠ what's available to the user
+**Context:** Wrote installation instructions using a tool (git) that requires separate installation on the target platform. The target audience (non-technical users on fresh machines) would not have it. The author's own environment had git pre-installed, which made the assumption invisible. Caught only when user explicitly questioned it.
+**Pattern:** When writing instructions that will be executed on someone else's machine, list the tools used in each step and verify each is available on a fresh installation of the target OS. Prefer tools that ship with the OS (curl, tar, python3 on macOS) over tools that require separate installation.
+**Scope:** universal
+**Category:** information-gathering
