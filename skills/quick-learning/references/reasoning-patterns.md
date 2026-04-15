@@ -865,11 +865,11 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-04-09 multi-trees-sharing / techspec: cross-check edge case descriptions across tasks
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
-**Triad:** две задачи описывают поведение для одного edge case → cross-check описания обеих задач на консистентность до коммита → предотвратить противоречие пойманное только валидатором
-**Context:** Task 5 (store) заявлял "deleteTree on last tree creates 'Моё дерево'" — auto-create. Task 7 (UI) заявлял "show EmptyState when last tree is deleted". Противоречие: store никогда не допускает пустой trees[], но UI ожидает EmptyState. Completeness validator поймал это только в round 2.
-**Pattern:** Перед коммитом tech-spec пройти все задачи, выписать edge cases (удаление последнего, пустые данные, невалидный ввод). Если один edge case описан в двух задачах — проверить что описания совместимы. Особенно: store-task (что делает бизнес-логика) vs UI-task (что видит пользователь).
+**Triad:** две задачи описывают поведение/scope для одного ресурса или edge case → cross-check описания обеих задач на консистентность до коммита → предотвратить противоречие пойманное только валидатором
+**Context:** (1) multi-trees-sharing: Task 5 (store) "deleteTree creates 'Моё дерево'" vs Task 7 (UI) "show EmptyState when last deleted". Completeness validator round 2. (2) shared-whisper-service: Task 4 "no hardening for said-done-bot.service" vs Task 6 AC "all systemd units have PrivateTmp". Tech-spec TAC10 generic term "systemd units" → task-creators интерпретировали scope по-разному. Reality-checker cross-task check.
+**Pattern:** Перед коммитом пройти задачи, выписать shared concepts (edge cases, scope ресурсов, AC формулировки). Если один concept в двух задачах — проверить совместимость. Когда tech-spec использует generic terms ("all services", "systemd units") — квалифицировать scope перед передачей task-creators.
 **Scope:** universal
 **Category:** sequencing
 
