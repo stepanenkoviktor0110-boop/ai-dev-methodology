@@ -1,82 +1,171 @@
 ---
 name: done
-disable-model-invocation: true
 description: |
-  Finalize a completed feature: read specs and decisions, update project knowledge files,
-  archive feature directory to work/completed/.
+  Finalize work session: detect documentation drift from git changes,
+  show drift items for review, update project knowledge, optionally archive feature.
 
-  Use when: "фича готова", "заверши фичу", "done", "финализация", "закрой фичу", "перенеси в completed"
+  Use when: "done", "/done", "проект done", "фича готова", "заверши фичу",
+  "финализация", "закрой фичу", "перенеси в completed"
 ---
 
-# Done — Finalize Feature
+# Done — Finalize Session
 
-## Step 1: Load Documentation Skill
+Closes a work session by detecting what changed in code/config and verifying
+that project documentation reflects those changes.
 
-Use Skill tool: `documentation-writing`
+Works in two modes:
+- **Feature mode** — if `work/{feature}/` directory exists with specs
+- **Session mode** — any work session, no feature directory required
 
-## Step 2: Identify Feature
+## Step 1: Collect Session Diff
 
-User typically provides feature directory with the command (e.g., `/done work/my-feature`).
-- If provided → use it
-- If not → ask: "Which feature to finalize? Provide path to work/{feature}/ directory."
+Determine what changed in this session:
 
-## Step 3: Read Feature Artifacts
+```
+git log --oneline -20
+```
 
-Read these files from the feature directory:
-1. `user-spec.md` — what was planned
-2. `tech-spec.md` — how it was implemented
-3. `decisions.md` — what decisions were made during implementation
+From the log, identify the range of commits made in the current session
+(typically: everything after the last `docs:` commit or the last commit
+before the session started).
 
-If `decisions.md` is missing or sparse, use `git log --oneline` for feature-related commits to understand what changed.
+Then collect changed files:
+```
+git diff --name-only <first-session-commit>^..HEAD
+```
 
-**Completeness check:** If the feature looks incomplete (tasks not marked done in tech-spec, missing implementation, failing tests) — warn the user: "Feature appears incomplete: {reason}. Continue with finalization anyway?"
+**Output:** list of changed files grouped by area:
+- Config: `next.config.*`, `ecosystem.config.*`, `.env*`, `nginx/`
+- Schema/DB: `shared/db/schema.ts`, `migrations/`
+- API routes: `**/api/**`
+- Components: `src/containers/`, `src/components/`, `cabinet/src/`
+- Deploy: `.github/workflows/`, `Dockerfile`, etc.
+- Docs: `.claude/skills/project-knowledge/`
 
-## Step 4: Quick Learning
+## Step 2: Check if Project Knowledge Exists
 
-Run quick-learning to extract any remaining lessons from the feature:
+If `.claude/skills/project-knowledge/references/` does not exist or is empty:
+- Skip documentation check
+- Inform user: "Project knowledge not initialized, skipping docs check."
+- Jump to Step 6
 
-Check Signal Gate on `work/{feature}/decisions.md`:
-- Fix rounds, scope change, recovery events, context waste signals
-- If all signals = 0 → "Clean session, no new patterns."
-- If signals present → analyze and write triads per quick-learning/SKILL.md procedure
+## Step 3: Detect Documentation Drift
 
-Output goes to `quick-learning/references/reasoning-patterns.md`.
+For each PK file, check if session changes affect documented content:
 
-## Step 5: Update Project Knowledge
+### architecture.md
+Drift if session touched:
+- `next.config.*` — images config, output mode, transpile
+- `shared/db/schema.ts` — data model, table count
+- `shared/db/index.ts` — connection pool config
+- `src/app/page.tsx` — section rendering, LazySection usage, navigation anchors
+- `src/lib/` — data fetching functions
+- Component structure changes (new/removed containers)
 
-If `.claude/skills/project-knowledge/references/` does not exist or is empty — skip this step, inform the user that project knowledge has not been initialized.
+### deployment.md
+Drift if session touched:
+- `.github/workflows/` — CI/CD pipeline, secrets, steps
+- `ecosystem.config.*` — PM2 config, ports, restart policy
+- `nginx/` or server SSH commands were run — nginx config
+- `.env*` — environment variables
+- New GitHub Secrets added
 
-Otherwise, read current PK files and update only those affected by the feature:
-- `architecture.md` — new components, changed structure, data model / schema changes
-- `patterns.md` — new project-specific patterns, testing approaches, business rules
-- `deployment.md` — deployment or monitoring changes
-- If the project has a backlog file, note any status updates for the user
+### patterns.md
+Drift if session touched:
+- Git workflow changes
+- New testing patterns discovered
+- Business rules changed
 
-Apply quality principles from documentation-writing skill: no code examples, no obvious content, only project-specific information.
+### ux-guidelines.md (if exists)
+Drift if session touched:
+- Responsive breakpoints, CSS changes
+- UI component behavior changes
 
-## Step 6: Archive
+**For each potential drift item, produce a one-line description:**
+```
+[architecture.md] images config changed: was formats:webp, now unoptimized:true
+[deployment.md] REVALIDATE_SECRET added to env but not documented
+[deployment.md] PM2 hardening settings added but not in docs
+```
 
-Move `work/{feature}/` → `work/completed/{feature}/` (create `work/completed/` if it doesn't exist).
+## Step 4: Present Drift Report
+
+Show the user the drift report:
+
+```
+Documentation drift detected (N items):
+
+[architecture.md]
+  1. <description>
+  2. <description>
+
+[deployment.md]
+  3. <description>
+
+No drift: patterns.md, ux-guidelines.md
+```
+
+Then ask: "Update documentation? (all / pick numbers / skip)"
+
+- **all** → update all drift items
+- **pick numbers** → update only selected items (e.g., "1, 3")
+- **skip** → skip documentation update entirely
+
+## Step 5: Update Documentation
+
+For each approved drift item:
+1. Read the current PK file
+2. Read the actual source file to get current values
+3. Update only the specific section affected
+4. Do NOT rewrite unrelated sections
+
+Quality rules (from documentation-writing):
+- No code blocks in PK files — describe in prose
+- No obvious/generic content — only project-specific
+- Keep sections concise — one fact per line where possible
+- Update counts/versions to match reality
+
+After updates, show a brief summary of what was changed in each file.
+
+## Step 6: Feature Archive (Feature Mode Only)
+
+If a `work/{feature}/` directory was involved:
+
+1. Read `decisions.md` (if exists) for quick-learning signals
+2. Run quick-learning signal gate (fix rounds, scope change, recovery, context waste)
+3. If signals present → extract patterns per quick-learning procedure
+4. Move `work/{feature}/` → `work/completed/{feature}/`
+
+If no feature directory — skip this step silently.
 
 ## Step 7: Commit & Report
 
-1. Commit PK file changes and feature archive move.
-   ```
-   docs: update project knowledge after {feature-name}
-   ```
+If any documentation was updated:
+```
+docs: update project knowledge — <brief list of what changed>
+```
 
-2. Report to user:
-   - What was done (brief summary from specs)
-   - What PK files were updated and what changed
-   - Feature archived to `work/completed/{feature}/`
+Report to user:
+- Documentation items updated (or "no drift detected")
+- Feature archived (if applicable)
+- Session closed
+
+## Quick Path
+
+If drift detection finds 0 items:
+```
+Documentation is up to date. Session closed.
+```
+
+No commit needed, no questions asked.
 
 ## Self-Verification
 
-- [ ] Documentation-writing skill loaded
-- [ ] Feature artifacts read and understood
-- [ ] Completeness assessed (user warned if incomplete)
-- [ ] Quick-learning completed (lessons extracted or clean session confirmed)
-- [ ] PK files updated (only affected ones)
-- [ ] Feature archived to work/completed/
+- [ ] Session diff collected (git log + changed files)
+- [ ] PK files checked against actual changes
+- [ ] Drift report shown to user (or "no drift" confirmed)
+- [ ] User approved updates before writing
+- [ ] Only affected sections updated (no unnecessary rewrites)
+- [ ] Feature archived if applicable
 - [ ] Changes committed
-- [ ] Report delivered to user
+- [ ] Report delivered
