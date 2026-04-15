@@ -173,52 +173,9 @@ Open the HTML file, apply the feedback, regenerate HTML+SVG.
 ## Phase 5: Before/After Collage
 
 Triggers when the user confirms the final variant ("да", "этот", "утверждаю", "go", "approved").
+Read [collage-workflow.md](references/collage-workflow.md) for full collage generation + cleanup steps.
 
-### 5.1 Capture "Before"
-
-- If replacing an existing page → take a screenshot of the current version (or ask user to paste one)
-- If designing from scratch → use a solid `var(--color-neutral-200)` rectangle with centered text "No previous design"
-
-### 5.2 Build collage
-
-Generate a single HTML file with diagonal split overlay:
-
-```html
-<div class="collage" style="position:relative; width:100%; max-width:1440px; aspect-ratio:16/9; overflow:hidden">
-  <!-- Bottom layer: After -->
-  <img src="{after-screenshot}" style="width:100%; height:100%; object-fit:cover">
-  <!-- Top layer: Before, clipped diagonally -->
-  <img src="{before-screenshot}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; clip-path:polygon(0 0,100% 0,0 100%)">
-  <!-- Diagonal line -->
-  <div style="position:absolute; inset:0; background:linear-gradient(to bottom right,transparent calc(50% - 1px),white calc(50% - 1px),white calc(50% + 1px),transparent calc(50% + 1px)); pointer-events:none"></div>
-  <!-- Labels -->
-  <span style="position:absolute; top:12%; left:8%; background:rgba(0,0,0,.6); color:#fff; padding:6px 18px; border-radius:4px; font:600 14px/1 system-ui">До</span>
-  <span style="position:absolute; bottom:12%; right:8%; background:rgba(0,0,0,.6); color:#fff; padding:6px 18px; border-radius:4px; font:600 14px/1 system-ui">После</span>
-</div>
-```
-
-Images: embed as base64 data URIs (self-contained file, no external dependencies).
-
-### 5.3 Save
-
-1. Validate name: `/^[a-z0-9-]+$/`
-2. Save to `.design-system/collages/{page-name}-collage.html`
-3. Tell the user: "Collage saved to `.design-system/collages/{page-name}-collage.html` — open in browser to see the diagonal before/after comparison."
-
-**Checkpoint:** collage generated with diagonal clip-path, both images embedded, labels overlaid, file saved.
-
-### 5.4 Cleanup
-
-After the collage is saved, delete intermediate artifacts that were used only for demonstration and iteration:
-
-1. Remove all iteration SVGs: `.design-system/pages/{name}.svg`, `{name}-mobile.svg`, etc.
-2. Remove intermediate HTML previews if the final version has been applied to the actual codebase
-3. Keep only:
-   - `.design-system/collages/{page-name}-collage.html` (before/after comparison)
-   - `.design-system/pages/{name}.html` (final approved version — as reference)
-4. Ask the user: "Промежуточные файлы (SVG, черновики) удалены. Оставлен финальный HTML и коллаж до/после. Ок?"
-
-**Checkpoint:** intermediate artifacts removed, only final HTML + collage remain.
+**Checkpoint:** collage generated, intermediate artifacts cleaned up, only final HTML + collage remain.
 
 ## Final Check
 
@@ -236,14 +193,4 @@ Before finishing, verify:
 
 ## Learned Patterns
 
-**1. Типографика — проверяй ДО генерации CSS:**
-Верифицируй шрифты по референсу до написания стилей. When вычисление font-size для текста с фиксированной шириной контейнера → проверить коэффициент ширины символа для используемого шрифта и скрипта; ориентироваться на самое длинное слово, to предотвратить неожиданный перенос строки в рендере. When текст на busy/текстурном фоне с недостаточным контрастом → увеличить font-size на один шаг дизайн-сетки пока буква визуально перекрывает детали текстуры, to добиться контраста через размер без overlay. Layout constraint vs согласованный текст → адаптируй layout, не текст.
-
-**2. Фото и позиционирование — анализируй субъект ДО размещения:**
-Текст поверх фото → найди зону субъекта, размести текст на наименее загруженной стороне. Full-bleed фото → проверь ориентацию и crop feasibility против формы контейнера. Элемент на границе тёмного/светлого фона → solid opaque bg, не rgba.
-
-**3. Цвет и визуальный вес — перебирай все варианты:**
-При выборе цвета текста → перечисли ВСЕ опции (brand + white + dark grey), оцени каждую против фона. Несколько текстовых блоков → проверь visual weight (size × weight) на соответствие reading order.
-
-**4. Структура — от данных к UI, не наоборот:**
-Structured data → каждое поле = UI-элемент, не изобретать структуру. Alternative design → выбирай layout независимо от существующей разметки. Сложный UI (N×M) → один блок полностью → одобрение → масштабирование. Нет референсов → спроси 1-2 сайта + "что раздражает" ДО старта.
+**Lazy load:** Read [design-learned-patterns.md](references/design-learned-patterns.md) at Phase 2 start (4 rules: typography, photo positioning, color weight, structure).

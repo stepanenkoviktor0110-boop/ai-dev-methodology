@@ -62,20 +62,25 @@ Triads to process (id | trigger | action | goal | scope):
 
 Task:
 1. Read SKILL.md
-2. For each triad, search for existing logic covering the same trigger or goal
-3. Classify each triad:
-   - auto-apply: no coverage → add rule to Learned Patterns section:
+2. Find the "## Learned Patterns" section. Check if it contains a lazy-load reference
+   (a link to a references/*.md file). If yes — that file is the write target.
+   If no lazy-load reference — SKILL.md itself is the write target.
+3. Read the write target file (if different from SKILL.md)
+4. For each triad, search for existing logic covering the same trigger or goal
+5. Classify each triad:
+   - auto-apply: no coverage → add rule to the write target file:
      "When {trigger} → {action}, to {goal}"
-     (create ## Learned Patterns section at end of file if not exists)
+     (if writing to SKILL.md and no ## Learned Patterns section exists, create it at end of file)
    - dispute: partial coverage exists → do NOT edit file, return existing rule + proposed refinement
    - skip: already fully covered → no changes
 
-4. Apply all auto-apply edits to SKILL.md (Edit tool)
-5. Do NOT touch triad-index.md — main context will update it
+6. Apply all auto-apply edits to the write target (Edit tool)
+7. Do NOT touch triad-index.md — main context will update it
 
 Return ONLY this JSON (no extra text):
 {
   "skill": "{skill-name}",
+  "write_target": "{path to file where rules were written}",
   "applied": [{"id": N, "rule": "one-line rule added"}],
   "disputes": [{"id": N, "existing": "...", "proposed": "..."}],
   "skipped": [N, N]
@@ -131,7 +136,7 @@ After all changes for a skill are applied, regenerate that skill's quick-ref car
 
 File: `$AGENTS_HOME/skills/quick-learning/references/quick-ref-{skill-name}.md`
 
-Collect all patterns embedded in the target skill (from its SKILL.md "Learned Patterns" section + other promoted rules), pick top 10 sorted by Seen desc, write:
+Collect all patterns from the target skill's write target (either SKILL.md "Learned Patterns" section or externalized references file — use `write_target` from agent result) + Promoted Patterns from SKILL.md, pick top 10 sorted by Seen desc, write:
 
 ```markdown
 # Quick Reference — {Skill Name}
