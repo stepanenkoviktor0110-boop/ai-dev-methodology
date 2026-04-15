@@ -2109,3 +2109,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Декларативное существование (JSX, шаблон, объявление) не гарантирует присутствие в runtime. Если элемент используется через императивный запрос, убедиться что он рендерится безусловно — или перенести идентификатор на ближайший безусловно рендерящийся предок.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-04-15 shared-whisper-service / session 1: known-gap not documented in artifact
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** knowing ≠ communicating assumption
+**Triad:** discovered discrepancy between documentation and observed reality during research → immediately add explicit disambiguation note to the output artifact before passing it to reviewers → avoid validator round wasted on a fact the author already knew but did not write down
+**Context:** During research phase, identified that project documentation described one technology stack while production environment used a different one. Mentioned verbally but did not add clarifying note to the specification. Validator flagged it as critical — costing an entire fix-and-revalidate cycle for something already known.
+**Pattern:** When you discover that documentation does not match observed state, add an explicit disambiguation note to the deliverable at the moment of discovery — not after reviewers flag it. The cost of a single sentence upfront is zero; the cost of a missed note is a full validation round.
+**Scope:** universal
+**Category:** communication
