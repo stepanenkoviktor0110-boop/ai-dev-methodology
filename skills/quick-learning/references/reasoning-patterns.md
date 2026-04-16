@@ -2175,3 +2175,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When parallel agents produce artifacts that must interoperate (call each other's functions, share data formats, wire into same entry point), pass the exact interface contract (name, parameters, return value) to every producer — not a prose description. Natural language is ambiguous; signatures are not.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-04-16 quotas-and-referrals / session 1: negative-input omission
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** negative-input omission
+**Triad:** приёмка кода от внешнего производителя (copilot, LLM, другой агент) → проверить guards на невалидные/пустые/отсутствующие входы в каждой public-функции → negative-input omission: производитель фокусируется на happy path, boundary guards пропускаются
+**Context:** Session 1, quotas-and-referrals. Codex-generated verifyWebhookSignature lacked empty-secret guard (security risk: predictable HMAC with empty key). formatBalance didn't check if subscription was expired (showed "безлимит до..." for past dates). Both caught by wave review, required 1 fix commit.
+**Pattern:** External code generators systematically under-specify boundary conditions. When accepting generated code, run a mental checklist on every public function: what happens with empty/null/expired/missing inputs? The generator tested happy paths; your job is the sad paths.
+**Scope:** universal
+**Category:** verification
