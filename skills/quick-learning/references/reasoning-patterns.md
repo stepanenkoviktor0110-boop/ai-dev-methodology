@@ -2164,3 +2164,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When writing instructions that will be executed on someone else's machine, list the tools used in each step and verify each is available on a fresh installation of the target OS. Prefer tools that ship with the OS (curl, tar, python3 on macOS) over tools that require separate installation.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-16 quotas-and-referrals / task-decomposition: implicit consensus assumption
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** implicit consensus assumption
+**Triad:** spawning parallel autonomous producers whose outputs must interoperate → pass exact interface contracts (signatures, parameter counts, return types) to each producer → avoid implicit consensus assumption: independent producers cannot converge on shared interface from natural-language descriptions alone
+**Context:** Launched parallel task-creators that each described the same shared function differently — one said 1 parameter, another 2; one said 3 params, another 4. No single source of truth was passed, so each interpreted the description independently and diverged. Caught only by cross-task validation.
+**Pattern:** When parallel agents produce artifacts that must interoperate (call each other's functions, share data formats, wire into same entry point), pass the exact interface contract (name, parameters, return value) to every producer — not a prose description. Natural language is ambiguous; signatures are not.
+**Scope:** universal
+**Category:** problem-decomposition
