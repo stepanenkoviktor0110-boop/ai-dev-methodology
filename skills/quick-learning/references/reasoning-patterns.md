@@ -1454,11 +1454,11 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-04-06 employee-cabinet-updates / session 1: wave file-overlap check before finalizing
 
-**Seen:** 3
+**Seen:** 5
 **Adapted:** —
 **Triad:** при составлении или переносе задач между волнами в tech-spec → проверить Files to modify всех задач волны попарно на пересечения файлов → предотвратить merge conflict до того, как его поймает validator
-**Context:** (1) Tasks 1+2 Wave 1 оба модифицировали page.tsx. (2) multi-trees-sharing: Tasks 7+8+9 Wave 3 модифицировали App.tsx — перенос 8+9 в Wave 4 создал тот же конфликт, потребовался round 2 для выноса Task 9 в Wave 5.
-**Pattern:** Перед утверждением состава волны И при переносе задач пройтись по Files to modify всех задач волны попарно. Пересечение файлов → объединить задачи или перенести в разные волны. Особенно при переносе: не переносить два конфликтующих таска вместе в одну destination-волну.
+**Context:** (1) Tasks 1+2 Wave 1 оба модифицировали page.tsx. (2) multi-trees-sharing: Tasks 7+8+9 Wave 3 модифицировали App.tsx — перенос 8+9 в Wave 4 создал тот же конфликт, потребовался round 2 для выноса Task 9 в Wave 5. (3) quotas-and-referrals: Tasks 4+6+7 Wave 2 все модифицировали src/index.js (handler registration) — fix: выделить Task 10 "integration" для всего wiring.
+**Pattern:** Перед утверждением состава волны И при переносе задач пройтись по Files to modify всех задач волны попарно. Пересечение файлов → объединить задачи или перенести в разные волны. Особенно при переносе: не переносить два конфликтующих таска вместе в одну destination-волну. Типичный case: handler registration в entry point — выносить в отдельную интеграционную задачу.
 **Scope:** universal
 **Category:** sequencing
 
