@@ -12,6 +12,17 @@ Single transit buffer for ALL methodology knowledge — both reasoning patterns 
 Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
+
+### 2026-04-16 qwen-setup / session 1: label-semantic conflation in config fields
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** label-semantic conflation
+**Triad:** присвоение значения именованному полю конфигурации → проследить как потребляющая система реально читает и использует это значение, не только что подсказывает имя поля → avoid label-semantic conflation
+**Context:** Поле называлось "id" — назначили человекочитаемый идентификатор. Система использовала значение этого поля как payload в API-запросе. 2 fix-раунда.
+**Pattern:** Когда заполняешь поле конфигурации — не выводи назначение из имени поля. Проследи в коде или документации как потребляющая система реально использует это значение. Имя поля — подсказка для человека, не контракт для машины.
+**Scope:** universal
+**Category:** information-gathering
 ### 2026-04-13 admin-panel / session 3: Запрос стейкхолдера ≠ следующий шаг плана
 
 **Seen:** 1
