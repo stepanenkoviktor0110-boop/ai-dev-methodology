@@ -1800,11 +1800,11 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-04-13 admin-panel / session 5: first-fix completion bias
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Cognitive Error:** first-fix completion bias
 **Triad:** исправляется структурное ограничение, нарушённое в нескольких местах артефакта → после исправления первого нарушения — просканировать ВЕСЬ артефакт на остальные вхождения того же структурного паттерна → не считать проблему решённой после первого исправления
-**Context:** В многочастном артефакте было нарушено форматное ограничение. Исправил первое найденное нарушение и объявил задачу решённой — не проверив, есть ли такие же нарушения в других секциях того же файла. Потребовались 2 дополнительных итерации.
+**Context:** В многочастном артефакте было нарушено форматное ограничение. Исправил первое найденное нарушение и объявил задачу решённой — не проверив, есть ли такие же нарушения в других секциях того же файла. Потребовались 2 дополнительных итерации. — 2026-04-17 juridical-parser: та же ошибка на вводе config-переменной. Ввели `PARSE_DAYS_OFFSET=2` и обновили primary-ветку Stage 0, но забыли про else-ветку `SKIP_WORKDAY_CHECK`, где остался хардкод `timedelta(days=1)`. Параллельная ветка тихо расходилась с primary, проявилось только при ручном запуске через несколько дней.
 **Scope:** universal
 **Category:** problem-decomposition
 
@@ -2009,3 +2009,24 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a reusable component handles errors with a generic catch, it collapses all failures into one outcome — callers can't distinguish "try again later" from "this will never work." Catch specific transient error types and let them propagate; reserve the permanent-failure path for errors that won't resolve on retry.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-04-16 ai-dev-methodology-codex / ad-hoc: completion assumption bias
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** completion assumption bias
+**Triad:** large deliverable produced after extended multi-step work → proactively offer the natural completion action (delivery, publication, finalization) without waiting for request → completion assumption bias: producing output feels like finishing, but delivery is a separate step the recipient expects
+**Context:** After adapting 35 skills, updating READMEs, and verifying all changes — stopped without offering to commit and push. The recipient had to ask "did you push?" The deliverable was ready but not delivered.
+**Scope:** universal
+**Category:** communication
+
+### 2026-04-17 juridical-parser / ad-hoc: log-first forensics bias
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** log-first forensics bias
+**Triad:** расследование «что произошло во время T» на production/long-running системе → сначала опросить durable audit источники (file modification timestamps, append-only audit/event таблицы, system-level event logs с retention-политикой) → потом уже grep по текстовым логам, которые могут быть ротированы или усечены и не содержать нужного окна
+**Context:** При диагностике «почему вчерашний запуск загрузил данные не за ту дату» потратил 5+ SSH-итераций на grep по /var/log/..., пока не обнаружил, что лог ротирован и нужная запись была в .log.1.gz с другим форматом. Финальный ключ — `stat src/config.py` показал mtime деплоя (11:01 UTC), а audit-таблица `run_log` показала ручной запуск (court_name='default') с сопоставимым временем. Эти два durable источника сразу восстановили таймлайн. Следовало начать с них.
+**Pattern:** Для форензики «что случилось в момент T» на долгоживущей системе — ранжировать источники по долговечности, не по удобству grep: audit-таблицы (append-only DB rows), file mtime, system event logs с явной retention-политикой — в первую очередь. Текстовые логи — во вторую очередь, и сначала проверить, что запрашиваемое окно вообще сохранилось в текущем файле.
+**Scope:** universal
+**Category:** information-gathering
