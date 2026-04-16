@@ -1987,3 +1987,25 @@ Patterns that apply to any project, any stack, any domain.
 **Context:** Session 1, quotas-and-referrals. Codex-generated verifyWebhookSignature lacked empty-secret guard (security risk: predictable HMAC with empty key). formatBalance didn't check if subscription was expired (showed "безлимит до..." for past dates). Both caught by wave review, required 1 fix commit.
 **Scope:** universal
 **Category:** verification
+
+### 2026-04-16 quotas-and-referrals / session 3: Parameter name masks semantic mismatch
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** parameter semantics assumed by name
+**Triad:** same parameter name used across a boundary → verify both sides agree on the identifier's semantic domain → avoid name-match semantics-mismatch trap
+**Context:** A shared parameter name appeared correct at call site and callee, but each side expected a different identifier space — the mismatch caused silent no-ops with no runtime error.
+**Pattern:** When an identifier crosses a component boundary, check that both sides agree on which semantic domain the value belongs to. Identical variable names do not guarantee identical semantics — verify at integration time, not just at unit level.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-16 enricher-tor-proxy / session 1: transient-permanent error conflation
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** transient-permanent error conflation
+**Triad:** добавление обработки ошибок в переиспользуемый компонент → различать transient (пропустить наверх) и permanent (пометить как failed) — не глотать оба через generic Exception → avoid transient-permanent error conflation
+**Context:** Proxy client caught all exceptions at leaf level, returning None. Caller interpreted None as "API returned no data" and marked record as permanently failed — losing retry opportunity. Codex review caught this before deploy.
+**Pattern:** When a reusable component handles errors with a generic catch, it collapses all failures into one outcome — callers can't distinguish "try again later" from "this will never work." Catch specific transient error types and let them propagate; reserve the permanent-failure path for errors that won't resolve on retry.
+**Scope:** universal
+**Category:** problem-decomposition
