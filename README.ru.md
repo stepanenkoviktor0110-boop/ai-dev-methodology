@@ -1,4 +1,4 @@
-# AI-First Development Methodology v1.6 — Claude Code
+# AI-First Development Methodology v2.0 — Claude Code
 
 [English version](README.md)
 
@@ -24,32 +24,33 @@
 
 ### Шаг 1: Клонировать фреймворк
 
+Репозиторий — это overlay для директории `~/.claude/`. Два варианта установки:
+
+**Вариант A — поверх существующей конфигурации:**
+
 ```bash
-git clone https://github.com/stepanenkoviktor0110-boop/ai-dev-methodology.git ~/.claude/skills
+git clone https://github.com/stepanenkoviktor0110-boop/ai-dev-methodology.git /tmp/ai-dev-methodology
+cp -r /tmp/ai-dev-methodology/{skills,agents,shared} ~/.claude/
+cp /tmp/ai-dev-methodology/CLAUDE.md ~/.claude/CLAUDE.md   # проверить перед перезаписью
 ```
 
-Это размещает все скиллы и шаблоны там, где Claude Code их ожидает (`~/.claude/skills/`).
+**Вариант B — чистая установка (пустой `~/.claude/`):**
 
-### Шаг 2: Настроить Claude Code
-
-Добавить в `~/.claude/CLAUDE.md`:
-
-```markdown
-# Global Preferences
-
-## Communication
-- Общаться с пользователем по-русски. Код и команды — на английском.
+```bash
+git clone https://github.com/stepanenkoviktor0110-boop/ai-dev-methodology.git ~/.claude
 ```
 
-### Шаг 3: Настроить MCP (опционально, но рекомендуется)
+### Шаг 2: Настроить MCP (опционально, но рекомендуется)
 
 Добавить [Context7](https://github.com/upstash/context7) MCP-сервер для актуальной документации библиотек.
 
-### Шаг 4: Проверить установку
+### Шаг 3: Проверить установку
 
 ```bash
 ls ~/.claude/skills/methodology/SKILL.md
 ```
+
+Перезапустить Claude Code и выполнить `/methodology` — скилл должен описать полный пайплайн.
 
 ## Использование
 
@@ -128,6 +129,9 @@ ls ~/.claude/skills/methodology/SKILL.md
 | `/infrastructure-setup` | Dev-инфраструктура: Docker, pre-commit хуки, настройка тестирования |
 | `/deploy-pipeline` | CI/CD пайплайн и конфигурация деплоя |
 | `/documentation-writing` | Аудит и обновление базы знаний проекта |
+| `/pishi` | Редактура русского текста по инфостилю Ильяхова |
+| `/content-card` | Генерация карточек для соцсетей (1080×1350) |
+| `/safe-delete` | Пред-удалительный аудит проекта (git sync, docs, состояние VPS) |
 | `/done` | Финализировать фичу, обновить документацию, архивировать |
 
 ## Как это работает
@@ -157,15 +161,18 @@ your-project/
 └── README.md
 ```
 
-### Глобальный фреймворк (`~/.claude/skills/`)
+### Глобальный фреймворк (`~/.claude/`)
 
 ```
-~/.claude/skills/                   # Этот репозиторий
-├── skills/                        # 39+ скиллов (методология, выполнение, качество, дизайн)
+~/.claude/                         # Этот репозиторий (overlay)
+├── skills/                        # 45+ скиллов (методология, выполнение, качество, дизайн, утилиты)
+├── agents/                        # 20 специализированных ревьюеров/валидаторов
 ├── shared/
 │   ├── work-templates/            # Шаблоны для спеков, задач, сессий
 │   └── design-references/         # Кросс-проектный дизайн-опыт
-└── README.md
+├── CLAUDE.md
+├── README.md
+└── README.ru.md
 ```
 
 ### Ключевые принципы
@@ -203,9 +210,10 @@ Claude Code использует встроенный Agent tool со специ
 | Выполнение | `feature-execution`, `code-writing`, `do-task`, `pre-deploy-qa`, `post-deploy-qa`, `deploy-pipeline` |
 | Качество | `code-reviewing`, `security-auditor`, `test-master` |
 | Дизайн | `design-system-init`, `design-spec`, `design-plan`, `design-plan-planning`, `design-task-decompose`, `design-generate`, `design-review`, `design-retrospective`, `photo-crop` |
+| Контент | `pishi` (редактура русского текста), `content-card`, `project-card`, `promoter` |
 | Инфраструктура | `init-project`, `init-project-knowledge`, `infrastructure-setup` |
 | Мета | `methodology`, `quick-learning`, `skill-trainer`, `documentation-writing`, `prompt-master` |
-| Утилиты | `sketch`, `pause`, `done` |
+| Утилиты | `sketch`, `pause`, `progress`, `done`, `safe-delete` |
 
 Полные детали любого скилла:
 ```
@@ -223,13 +231,21 @@ Claude Code использует встроенный Agent tool со специ
 | Расположение скиллов | `~/.claude/skills/` | `~/.agents/` |
 | Модели | Claude (Opus/Sonnet/Haiku) | GPT-5.x тиры |
 | Дизайн-пайплайн | Полный (9 скиллов) | Полный (4 скилла) |
-| Директория agents/ | Нет (валидаторы через Agent tool) | Да (`agents/`) |
+| Директория agents/ | Да (`agents/`) | Да (`agents/`) |
 
 ## Основано на
 
 Эволюционный форк [molyanov-ai-dev](https://github.com/pavel-molyanov/molyanov-ai-dev) Павла Молянова (MIT License).
 
 ## Changelog
+
+### v2.0 — Чистый публичный релиз + локализация (2026-04-17)
+
+- **Очистка репо** — приватные рабочие артефакты (`session-env/`, `paste-cache/`, `tasks/`, `.dashboard-events.jsonl`, `dashboard.json`) удалены из публичного репо и добавлены в `.gitignore`. Публичный репо теперь содержит только методологию: скиллы, агенты, шаблоны, документация.
+- **Русская локализация** — полная [README.ru.md](README.ru.md) в корне репо для русскоязычных пользователей.
+- **Расширенный набор скиллов** — 45+ скиллов (было 39+ в v1.6): добавлены `content-card`, `project-card`, `promoter`, `progress`, `safe-delete`, `skill-trainer`; консолидированы группы контента и утилит.
+- **Сжатие буфера reasoning** — `reasoning-patterns.md` сжат с 282 KB до 197 KB (30%) через pruning и dedup без потери покрытия.
+- **Inline retrospective** — отдельная команда `/retrospective` удалена; обучение теперь идёт inline через `quick-learning` на каждом разрыве сессии, с авто-промоушеном в SKILL.md после 3+ повторений.
 
 ### v1.6 — Инструменты сессий + расширенный дизайн-пайплайн (2026-04-04)
 
