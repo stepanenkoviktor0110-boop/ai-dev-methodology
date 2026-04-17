@@ -2030,3 +2030,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Для форензики «что случилось в момент T» на долгоживущей системе — ранжировать источники по долговечности, не по удобству grep: audit-таблицы (append-only DB rows), file mtime, system event logs с явной retention-политикой — в первую очередь. Текстовые логи — во вторую очередь, и сначала проверить, что запрашиваемое окно вообще сохранилось в текущем файле.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-17 zvonok-com / session 1: positional spec without schema verification
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** trusted external spec over code
+**Triad:** external document names positional attributes (column letters, field indices) for an existing data structure → verify actual positions in code before accepting them into the spec → avoid schema assumption from external spec
+**Context:** TZ specified column letters O/P/Q/R for zvonok data, but the actual table already had 15 columns A–O — causing a silent column collision discovered only during code scan.
+**Pattern:** When an external document (client TZ, screenshot, legacy spec) names positional attributes of an existing data structure, verify the actual positions in code before writing the spec. External documents reflect the author's mental model, not the current codebase.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-17 zvonok-com / session 1: over-constrained idempotency guard
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** over-constrained guard condition
+**Triad:** writing an idempotency guard for an event handler that updates multiple fields → base the guard on the primary state indicator only, not on a compound check including secondary fields → avoid gaps where late-arriving events bypass the guard because secondary fields are empty
+**Context:** Idempotency check required both "P is final status" AND "Q+R filled" — but if secondary fields were empty (no transcription), a late intermediate postback could overwrite a final status.
+**Pattern:** Idempotency guards should test the minimum sufficient condition. For status-based guards, check only the terminal state of the primary status field. Adding secondary field checks to the guard creates bypass gaps when those fields are legitimately absent.
+**Scope:** universal
+**Category:** problem-decomposition
