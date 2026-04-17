@@ -125,7 +125,7 @@ If understanding changes significantly: update scores downward, reassess size S/
 
 ## Learned Patterns
 
-- When writing client-facing documentation on behalf of the user -> filter every paragraph through the reader's knowledge model to avoid iterative corrections
+- When writing distribution instructions for end users → enumerate prerequisites on a fresh target environment before choosing the delivery method, to avoid projecting the author's environment (tools, access, paths) onto the user's environment
 - When user spec grows to 3+ sequentially-dependent deliverables -> keep the first active, create the rest as planned stubs with visible progress and preserved post-feature context
 - When the repo contains skills/modules from multiple domains -> enumerate all domains and get is_in_scope per domain before writing spec, to avoid rewriting scope from iterative boundary clarification
 - When user-spec has a descriptive block with a requirement not reflected in AC -> follow only the AC; document the gap with a decision record and update user-spec
@@ -150,3 +150,4 @@ If understanding changes significantly: update scores downward, reassess size S/
 - When a task creates a UI component -> include entry point integration (import and render in App/page) in the spec's implementation notes, to not leave downstream tasks with a wrong assumption that the component is already wired in
 - When user-spec is for a style-only refactoring with full audit -> skip heavy validators or limit to lightweight validation, to not lose hours on stuck agents when architectural risk is zero
 - When пользователь описывает фичу знакомым термином (демо, шаблон, виджет) → спросить «кто потребитель и зачем ему это?» до технических деталей, to не потратить 3 батча интервью на выяснение реальной потребности.
+- When a stakeholder confirms a proposed decomposition as a whole → validate each element separately by asking targeted questions per item, to avoid bundle confirmation bias where a group "yes" does not equal per-element validation

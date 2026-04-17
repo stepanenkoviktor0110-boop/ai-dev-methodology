@@ -1,8 +1,10 @@
-# AI-First Development Methodology v1.4
+# AI-First Development Methodology v2.0
 
 A structured methodology for building software with AI coding agents (Claude Code). Instead of ad-hoc prompting, every feature follows a disciplined pipeline: requirements interview, technical specification, task decomposition, automated implementation with reviews, and retrospective learning.
 
 **Based on:** Evolved fork of [molyanov-ai-dev](https://github.com/pavel-molyanov/molyanov-ai-dev) by Pavel Molyanov.
+
+**Русская версия:** [README.ru.md](./README.ru.md)
 
 ## Core Principles
 
@@ -18,12 +20,14 @@ A structured methodology for building software with AI coding agents (Claude Cod
 
 ## Pipeline
 
-Every feature flows through 6 stages with hard stops between them. No stage auto-advances — the user explicitly starts each one.
+Every feature flows through 5 stages with hard stops between them. No stage auto-advances — the user explicitly starts each one.
 
 ```
-/new-user-spec  -->  /new-tech-spec  -->  /decompose-tech-spec  -->  /do-feature  -->  /retrospective  -->  /done
-   Interview          Architecture          Tasks + Sessions          Build + Review      Learn              Archive
+/new-user-spec  -->  /new-tech-spec  -->  /decompose-tech-spec  -->  /do-feature  -->  /done
+   Interview          Architecture          Tasks + Sessions          Build + Review       Archive
 ```
+
+Retrospective learning runs **inline** at every session break via `quick-learning` (background subagent) — no separate manual stage needed.
 
 ### Stage 1: User Spec — `/new-user-spec`
 
@@ -53,38 +57,36 @@ Execute tasks via agent teams. For each task: implement with TDD, run reviewers 
 **Reviewers per task:** code-reviewer, security-auditor, test-reviewer
 **Audit wave:** same 3 reviewers on the full feature diff
 
-### Stage 5: Retrospective — `/retrospective`
+### Stage 5: Done — `/done`
 
-Analyze `decisions.md` and git history for process problems: multiple fix rounds, scope changes, wrong technical choices. Extract lessons and embed them into the specific skills that should know about them.
-
-**Output:** entries in `skills/{skill}/references/lessons-learned.md`
-
-### Stage 6: Done — `/done`
-
-Update project knowledge documentation, archive the feature directory to `work/completed/`.
+Detect documentation drift from git changes, update project knowledge, and archive the feature directory to `work/completed/`. Session-break retrospective has already run inline via `quick-learning` during Stage 4.
 
 ## Self-Improvement Loop
 
 The methodology has two learning mechanisms that work at different scales:
 
-| | Quick Learning | Retrospective |
+| | Quick Learning | Auto-promotion |
 |---|---|---|
-| **When** | Every session break (automatic) | After full feature (manual) |
-| **Focus** | HOW decisions were made (reasoning patterns) | WHAT went wrong (specific problems) |
-| **Output** | `quick-learning/references/reasoning-patterns.md` | `{skill}/references/lessons-learned.md` |
-| **Scope** | Cross-project transferable insights | Skill-specific rules |
-| **Cost** | Background subagent, ~0 main context tokens | Full analysis, user reviews results |
+| **When** | Every session break (automatic) | When a pattern is seen 3+ times across features |
+| **Focus** | HOW decisions were made (reasoning patterns) | Mature patterns that survived multiple features |
+| **Output** | `quick-learning/references/reasoning-patterns.md` (transit buffer) | `skills/{skill}/SKILL.md` (permanent instruction) |
+| **Scope** | Cross-project transferable insights | Skill-specific permanent rules |
+| **Cost** | Background subagent, ~0 main context tokens | Zero — promotion happens inside quick-learning |
 
-Both write back to the methodology repo, so all users benefit from accumulated experience.
+Both feed back into the methodology repo, so all users benefit from accumulated experience.
 
 ## Structure
 
 ```
-skills/               # 25+ skills — methodology knowledge (WHAT to do)
-  quick-learning/     #   Session reasoning analysis (NEW in v1.2)
+skills/               # 45+ skills — methodology knowledge (WHAT to do)
+  quick-learning/     #   Session reasoning analysis
   feature-execution/  #   Team lead orchestration
   code-writing/       #   TDD implementation workflow
-  retrospective/      #   Post-feature learning
+  done/               #   Session finalization and archive
+  design-*/           #   Design pipeline: spec, plan, generate, retrospective
+  pishi/              #   Russian copy editing (Ilyahov infostyle)
+  content-card/       #   Social media content cards
+  sketch/             #   Rapid prototyping mode
   ...
 agents/               # 20 agents — isolated subprocesses (HOW to deliver)
   code-reviewer.md    #   11-dimension code review
@@ -108,7 +110,26 @@ CLAUDE.md             # Global agent preferences
 | Audit | same 3 reviewers (holistic) | Cross-task inconsistencies, integration issues |
 | QA | pre-deploy + post-deploy | Acceptance criteria verification |
 
-## What's New in v1.4
+## What's New in v2.0
+
+### Clean public release
+
+- **Repo cleanup** — personal workspace artifacts (session-env, paste-cache, tasks, dashboard telemetry) removed from the public repo and added to `.gitignore`. The public repo now contains only methodology content: skills, agents, shared templates.
+- **Russian localization** — full [README.ru.md](./README.ru.md) for Russian-speaking users.
+
+### Expanded skill set
+
+- **45+ skills** (up from 25+ in v1.4), including `pishi` (Russian copy editing), `photo-crop`, `content-card`, `design-*` pipeline (spec → plan → generate → task-decompose → retrospective), `sketch` (rapid prototyping), `safe-delete`, `skill-trainer`, `project-card`, `promoter`, `pause`/`progress`.
+- **Design pipeline** promoted to first-class: own interview, planning, task decomposition, review, and retrospective skills.
+
+### Mature knowledge loop
+
+- **Compressed reasoning buffer** — `reasoning-patterns.md` reduced 282 KB → 197 KB (30%) through pruning and deduplication, while preserving coverage.
+- **Triad-based knowledge** system unified across quick-learning (session breaks) and retrospective (post-feature), writing to a single buffer with `trigger → action → goal` structure.
+- **Auto-promotion** from buffer to skill SKILL.md when a pattern is seen 3+ times across features.
+
+<details>
+<summary>What was new in v1.4</summary>
 
 ### Pruning & quality improvements
 
@@ -116,6 +137,8 @@ CLAUDE.md             # Global agent preferences
 - **Mechanical pre-filter** — similarity matching now uses a 3+ content word overlap heuristic before semantic comparison, reducing false positives.
 - **Design categories** — retrospective now recognizes `design-taste`, `design-process`, and `design-iteration` categories alongside existing engineering ones.
 - **Cross-reference by title** — triad-index references entries by matching title instead of fragile row numbers.
+
+</details>
 
 <details>
 <summary>What was new in v1.3</summary>
@@ -183,7 +206,7 @@ triad-index.md               reasoning-patterns.md        {skill}/SKILL.md      
 
 ### New feature
 ```
-/new-user-spec  -->  /new-tech-spec  -->  /decompose-tech-spec  -->  /do-feature  -->  /retrospective  -->  /done
+/new-user-spec  -->  /new-tech-spec  -->  /decompose-tech-spec  -->  /do-feature  -->  /done
 ```
 
 ### Ad-hoc coding (no spec)
@@ -198,11 +221,23 @@ triad-index.md               reasoning-patterns.md        {skill}/SKILL.md      
 
 ## Installation
 
-Clone into your Claude Code skills directory:
+The repo is laid out as a drop-in overlay for your Claude Code config directory (`~/.claude/`). Contents to copy over: `skills/`, `agents/`, `shared/`, `CLAUDE.md`, `.gitignore`.
+
+**Option 1 — merge into an existing config:**
 
 ```bash
-git clone https://github.com/stepanenkoviktor0110-boop/ai-dev-methodology.git ~/.claude/skills
+git clone https://github.com/stepanenkoviktor0110-boop/ai-dev-methodology.git /tmp/ai-dev-methodology
+cp -r /tmp/ai-dev-methodology/{skills,agents,shared} ~/.claude/
+cp /tmp/ai-dev-methodology/CLAUDE.md ~/.claude/CLAUDE.md   # review before overwriting
 ```
+
+**Option 2 — fresh setup (empty `~/.claude/`):**
+
+```bash
+git clone https://github.com/stepanenkoviktor0110-boop/ai-dev-methodology.git ~/.claude
+```
+
+After install, restart Claude Code to pick up new skills and agents. Verify with `/methodology` inside Claude Code — the skill should describe the full pipeline.
 
 ## License
 

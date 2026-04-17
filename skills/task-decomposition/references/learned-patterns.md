@@ -17,3 +17,5 @@
 - When task-creator writes hints for a file already implemented in the codebase -> read the actual code of that file BEFORE writing hints, to avoid hints that contradict existing implementation
 - When Task A TDD Anchor names a test file that is the primary deliverable of Task B -> remove the test from Task A TDD Anchor and add a reference to the owning task, one file one owner
 - When a task's deliverable is a SKILL.md file -> assign skill: skill-master and reviewers: skill-checker, to avoid wrong skill/reviewer values caught only by validators
+- When a producer task spec is written from internal data model -> read consumer tasks of subsequent waves and list every expected field explicitly, to avoid producer-centric design that omits fields required by downstream consumers
+- When spawning parallel autonomous producers whose outputs must interoperate -> pass exact interface contracts (field names, types, shapes) to each producer, to prevent implicit consensus failure where independent producers cannot converge from prose alone

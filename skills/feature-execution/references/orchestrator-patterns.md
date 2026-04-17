@@ -104,3 +104,33 @@ When структурное изменение общего ресурса (ми
 
 **34. Несколько гипотез — evidence first:**
 When симптом имеет несколько правдоподобных объяснений → прочитать observable evidence ДО объявления диагноза, to не попасть в hypothesis anchoring bias.
+
+**35. Стейкхолдер просит результат — интерпретируй буквально:**
+When стейкхолдер просит увидеть результат при наличии плана с ≥2 оставшимися шагами → интерпретировать запрос буквально, не через призму следующего шага плана, to избежать pipeline momentum bias.
+
+**36. Явная директива о режиме — переключай немедленно:**
+When стейкхолдер даёт явную директиву о режиме работы ("не спрашивай", "делай молча") → переключить режим немедленно, не задавать ещё один уточняющий вопрос, to избежать directive deafness: продолжения прежнего режима после явного переключения.
+
+**37. Регистрация нового компонента в разделяемом пространстве — перечисли занятые:**
+When регистрация нового компонента в разделяемом пространстве ресурсов → перед выбором идентификатора перечислить уже занятые в целевом окружении, to избежать clean-slate assumption и конфликта имён.
+
+**38. Graceful fallback сообщает success — проверь полноту:**
+When операция с graceful fallback (warn + default) сообщает success → после завершения проверить полноту результата (не только отсутствие ошибок), count/sample ключевых полей, to избежать silent degradation trust: отсутствие ошибки ≠ полнота результата.
+
+**39. Расхождение документация/состояние — фиксируй сразу:**
+When обнаружено расхождение между документацией и наблюдаемым состоянием → добавить disambiguation note в deliverable в момент обнаружения, до передачи ревьюерам, to не тратить validation round на факт уже известный автору.
+
+**40. Batch артефакты под давлением — прогони мысленно каждый:**
+When multiple artifacts generated in batch under time pressure → run mental execution of each artifact before declaring done, to избежать completion pressure suppresses verification: batch creation creates compound error debt.
+
+**41. Большой deliverable после многошаговой работы — предложи следующий шаг:**
+When large deliverable produced after extended multi-step work → proactively offer the natural completion action without waiting for request, to избежать completion assumption bias: producing output feels like finishing, but delivery is a separate step.
+
+**42. Расследование production во времени — durable источники первыми:**
+When расследование «что произошло во время T» на production/long-running системе → сначала опросить durable audit источники (file mtime, append-only audit-таблицы, system event logs с retention-политикой) — потом уже grep по текстовым логам, to избежать log-first forensics bias: текстовые логи могут быть ротированы или усечены.
+
+**43. Расследование при наличии control layer — читай конфиг первым:**
+When system investigation with a dedicated settings/control layer present → read authoritative config first, then interpret data through that lens, to avoid misidentifying configured state as a bug.
+
+**44. Ранее «решённая» проблема снова в продакшне — проверь деплой:**
+When previously "resolved" issue recurs in production → verify fix was actually persisted in deployment artifacts (env, config files, infra state), to избежать fix documentation conflated with fix deployment.

@@ -1,12 +1,12 @@
-# Quick Reference — User Spec Planning
+# Quick Reference — User-Spec Planning
 
-1. Генерировать все шаги deliverable целиком — частичный deliverable вызывает запрос на доработку (Seen: 3)
-2. Нетривиальная фича mid-interview — задать scope-impact вопрос до обновления спека (Seen: 2)
-3. Новая роль mid-interview — немедленно составить матрицу "роль x возможности" (Seen: 2)
-4. CRUD-форма vs action над группой — уточнить кардинальность до реализации (Seen: 2)
-5. Disabled-кнопки как placeholder — не добавлять пока будущая задача не подтверждена (Seen: 2)
-6. Пользователь описывает фичу знакомым термином (демо, шаблон, виджет) → спросить «кто потребитель и зачем ему это?» до технических деталей (Seen: 1)
-7. Адаптация UI (responsive, a11y) — пропустить design-plan, идти из design-spec в tech-spec (Seen: 1)
-8. Post-MVP исключение в user-spec — не вводить аналогичную capability как Decision (Seen: 1)
-9. MVP план без entry point — проверить наличие runnable entry point и npm start (Seen: 1)
-10. Style-only рефакторинг → пропустить тяжёлых валидаторов при нулевом архитектурном риске (Seen: 1)
+1. When deliverable has multiple steps → generate ALL steps at once, not incrementally (Seen: 3)
+2. When a new role appears mid-interview → immediately build a role x capabilities matrix and validate with the user (Seen: 1)
+3. When user adds a non-trivial feature mid-interview → ask a scope-impact question before updating the spec (Seen: 1)
+4. When a client sends amendments to an approved user-spec → run focused mini-interview on changed points only, update spec directly (Seen: 1)
+5. When a feature generates a list of items with a numeric attribute → explicitly ask who/what sets that value before writing AC (Seen: 1)
+6. When user-spec describes instant-save operations → explicitly add AC for network error and rollback before validation (Seen: 1)
+7. When user-spec is for a feature completing an existing sketch with real API routes → scan all API implementations and include found bugs in AC (Seen: 1)
+8. When user describes several interrelated features → explicitly clarify implementation order BEFORE initializing the first feature folder (Seen: 1)
+9. When a stakeholder confirms a proposed decomposition as a whole → validate each element separately to avoid bundle confirmation bias (Seen: 1)
+10. When пользователь описывает фичу знакомым термином → спросить «кто потребитель и зачем ему это?» до технических деталей (Seen: 1)

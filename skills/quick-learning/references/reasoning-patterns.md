@@ -13,26 +13,6 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
-### 2026-04-16 qwen-setup / session 1: label-semantic conflation in config fields
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** label-semantic conflation
-**Triad:** присвоение значения именованному полю конфигурации → проследить как потребляющая система реально читает и использует это значение, не только что подсказывает имя поля → avoid label-semantic conflation
-**Context:** Поле называлось "id" — назначили человекочитаемый идентификатор. Система использовала значение этого поля как payload в API-запросе. 2 fix-раунда.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-13 admin-panel / session 3: Запрос стейкхолдера ≠ следующий шаг плана
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** pipeline momentum bias
-**Triad:** стейкхолдер просит увидеть результат при наличии плана с ≥2 оставшимися шагами → интерпретировать запрос буквально, не через призму следующего шага плана → предотвратить подмену цели стейкхолдера ближайшим пунктом плана
-**Context:** Стейкхолдер сказал «хочу увидеть» — исполнитель интерпретировал как «запустить деплой» (следующий шаг плана), а не «показать работающее локально». Инерция плана подменила буквальный смысл запроса.
-**Scope:** universal
-**Category:** communication
-
 ### 2026-04-14 menu-editor / session 1: runtime readiness conflation
 
 **Seen:** 1
@@ -1788,96 +1768,6 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** problem-decomposition
 
-### 2026-04-13 admin-panel / session 4: directive deafness
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** directive deafness
-**Triad:** стейкхолдер даёт явную директиву о режиме работы → переключить режим немедленно, не задавать ещё один уточняющий вопрос → не продолжать прежний режим после явного переключения
-**Context:** Стейкхолдер сказал "ничего не спрашивай, просто делай". Следующим действием был AskUserQuestion с двумя вопросами. Инерция предыдущего режима (ask-before-act) заглушила явную директиву о переключении на act-without-ask.
-**Scope:** universal
-**Category:** communication
-
-### 2026-04-13 admin-panel / session 5: first-fix completion bias
-
-**Seen:** 2
-**Adapted:** —
-**Cognitive Error:** first-fix completion bias
-**Triad:** исправляется структурное ограничение, нарушённое в нескольких местах артефакта → после исправления первого нарушения — просканировать ВЕСЬ артефакт на остальные вхождения того же структурного паттерна → не считать проблему решённой после первого исправления
-**Context:** В многочастном артефакте было нарушено форматное ограничение. Исправил первое найденное нарушение и объявил задачу решённой — не проверив, есть ли такие же нарушения в других секциях того же файла. Потребовались 2 дополнительных итерации. — 2026-04-17 juridical-parser: та же ошибка на вводе config-переменной. Ввели `PARSE_DAYS_OFFSET=2` и обновили primary-ветку Stage 0, но забыли про else-ветку `SKIP_WORKDAY_CHECK`, где остался хардкод `timedelta(days=1)`. Параллельная ветка тихо расходилась с primary, проявилось только при ручном запуске через несколько дней.
-**Scope:** universal
-**Category:** problem-decomposition
-
-### 2026-04-13 admin-panel / session 5: clean-slate assumption
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** clean-slate assumption
-**Triad:** регистрация нового компонента в разделяемом пространстве ресурсов → перед выбором идентификатора (порт, путь, имя) — перечислить уже занятые идентификаторы в целевом окружении → не предполагать, что пространство ресурсов свободно
-**Context:** Новому компоненту назначен дефолтный идентификатор без проверки занятости в shared-окружении. Конфликт обнаружен только при запуске — потребовалась смена идентификатора и обновление конфигурации в нескольких местах.
-**Scope:** universal
-**Category:** sequencing
-
-### 2026-04-13 freelance-autopilot / session audit+deploy: spawn-for-capability bias
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** spawn-for-capability bias
-**Triad:** gatekeeper rejects all framework-spawned instances despite disguise attempts → connect to already-running unmanaged instance via debug interface instead of spawning new controlled one → spawn-for-capability bias
-**Context:** Anti-bot protection blocked every browser instance spawned by the automation framework (regardless of stealth settings or executable used). The solution was connecting to a manually-launched browser via its native debug interface — no automation flags present at launch.
-**Scope:** universal
-**Category:** problem-decomposition
-
-### 2026-04-13 menu-editor / session 1: stated-state authority bias
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** stated-state authority bias
-**Triad:** стейкхолдер называет конкретный технический компонент как часть требований → сверить с актуальной документацией до фиксации → не принять устаревший технический факт как ограничение спека
-**Context:** Стейкхолдер назвал конкретную платформу хранения как действующую — она уже была заменена. Несоответствие поймано по документации до записи в спек.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-14 menu-editor / session decompose+deploy: execution-context portability assumption
-
-**Seen:** 2
-**Adapted:** —
-**Cognitive Error:** execution-context portability assumption
-**Triad:** перенос задачи (скрипта, модуля, пайплайна) из одной среды исполнения в другую → перечислить все неявные зависимости от среды-источника (env vars, filesystem, network, runtime) до переноса → не считать что артефакт переносим только потому что он работает в текущей среде
-**Context:** (1) Seed-скрипт с транзитивными webpack-зависимостями не работал в plain node. (2) Тот же скрипт перенесён в CI — 3 итерации: не хватало env vars (ADMIN_EMAIL, UPLOADS_DIR), файлов (photos не в git), filesystem paths (hardcoded /var/www).
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-14 menu-editor / session 3-final: silent degradation trust
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** silent degradation trust
-**Triad:** операция с graceful fallback (warn + default) сообщает success → после завершения проверить полноту результата (count/sample ключевых полей), не только отсутствие ошибок → не принять неполный результат за полный из-за отсутствия ошибки
-**Context:** Seed скрипт обработал 35 items, вывел "seed complete: 35 items" — выглядел успешным. Но каждое фото вызвало ENOENT (файлы в другой среде), обработанное через warn + photo=null. Результат: все items без фото, меню пустое на сайте. Ошибок формально ноль — деградация тихая.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-14 menu-editor / session decompose: producer-centric specification
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** producer-centric specification
-**Triad:** спецификация задачи-продьюсера написана по внутренней модели данных → до финализации спека прочитать задачи-консьюмеры последующих волн и перечислить каждое поле которое они обращаются → не упустить вычисляемые/агрегированные поля которые нужны потребителю но отсутствуют в модели продьюсера
-**Context:** Задача создания API-endpoint'а написана по полям таблицы БД. Задача UI в следующей волне обращалась к агрегированному полю (itemCount), которого не было в базовой схеме и не попало в спек endpoint'а. Проблема поймана cross-task валидатором, потребовала дополнительного fix-раунда.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-14 freelance-os / session 1: platform lock-in assumption
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** platform lock-in assumption
-**Triad:** проектирование системы через конкретный инструмент, который будет реализовывать другой исполнитель → до фиксации архитектуры проверить какие инструменты доступны исполнителю → не привязывать архитектуру к инструменту проектировщика
-**Context:** Архитектура спроектирована вокруг конкретного протокола (доступного только проектировщику). При передаче реализации другому исполнителю обнаружилось, что тот не имеет доступа к этому протоколу. Пришлось создавать универсальную обёртку и переписывать всю документацию.
-**Scope:** universal
-**Category:** tool-selection
-
 ### 2026-04-14 freelance-os / session 1: entity type conflation
 
 **Seen:** 1
@@ -1885,96 +1775,6 @@ Patterns that apply to any project, any stack, any domain.
 **Cognitive Error:** entity type conflation
 **Triad:** поле "тип" с радикально разными типами сущностей в одной таблице → при наличии поля-классификатора проверить: имеют ли типы одинаковый набор атрибутов → не объединять сущности с разной структурой данных в одну таблицу
 **Context:** Люди (контакты, дни рождения) и организации (реквизиты, юр. форма) были объединены в одну таблицу с полем "Тип". После реализации (8 баз, 13 связей, 25 SOP-страниц) пришлось полностью перестраивать архитектуру — разделять на две базы с M:M связью.
-**Scope:** universal
-**Category:** problem-decomposition
-
-### 2026-04-15 subscription-blocks-admin / session 1: bundle confirmation bias
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** bundle confirmation bias
-**Triad:** стейкхолдер подтверждает предложенную декомпозицию целиком → для каждого элемента отдельно проверить: осознаёт ли стейкхолдер назначение этого конкретного элемента → не реализовать ненужный компонент по инерции группового подтверждения
-**Context:** Предложили пользователю разделить блок на 3 части. Пользователь подтвердил концепцию разделения, но не понимал назначения одной из частей (она была незавершённой и закомментированной в коде). Реализовали все 3 — третью пришлось скрывать сразу после деплоя.
-**Scope:** universal
-**Category:** scope-management
-
-### 2026-04-15 bystricky-cleanup / session 1: invisible state dependency on removal
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** isolated removal assumption
-**Triad:** удаление элемента, оценённого как самодостаточный → проверить дефолтное состояние всего, чем удаляемый элемент управлял (видимость, значения, переключения) → не оставить зависимые элементы в нерабочем дефолтном состоянии
-**Context:** Удалил управляющий элемент как «мёртвый код». Не заметил, что управляемый элемент имел нерабочее дефолтное состояние (скрыт), которое управляющий элемент переключал. Результат — целый блок пропал с продакшена.
-**Scope:** universal
-**Category:** problem-decomposition
-
-### 2026-04-15 bystricky-site / session 1: single-path coverage bias
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** single-path coverage bias
-**Triad:** система обращается к ресурсу по нескольким различным путям (внешний клиентский и внутренний серверный) → перечислить все пути доступа к ресурсу и проверить каждый независимо → не считать ресурс "доступным" только потому что один путь работает
-**Context:** Настроили прокси-слой (nginx) для внешних запросов к ресурсу — проверили, получили 200. Не заметили, что оптимизатор изображений делает внутренний запрос к тому же пути, минуя прокси, и получает 404. Ошибка обнаружена только по жалобе пользователя.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-15 bystricky-site / session 1: source-presence ≠ runtime-presence
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** source-presence = runtime-presence bias
-**Triad:** императивный запрос (getElementById, querySelector, ref.current) нацелен на элемент в условно рендерящейся части системы → перед использованием проверить, что целевой элемент присутствует в выводе безусловно (не скрыт lazy-рендером, условным состоянием, порталом) → не считать, что элемент существует в runtime только потому что он объявлен в исходнике
-**Context:** Кнопка вызывала getElementById("loyalty"). Элемент с этим id находился внутри компонента, который рендерил null до достижения зоны видимости. Результат: вызов возвращал null, кнопка молча не работала на мобильном, где до скролла далеко.
-**Scope:** universal
-**Category:** problem-decomposition
-
-### 2026-04-15 shared-whisper-service / session 1: known-gap not documented in artifact
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** knowing ≠ communicating assumption
-**Triad:** discovered discrepancy between documentation and observed reality during research → immediately add explicit disambiguation note to the output artifact before passing it to reviewers → avoid validator round wasted on a fact the author already knew but did not write down
-**Context:** During research phase, identified that project documentation described one technology stack while production environment used a different one. Mentioned verbally but did not add clarifying note to the specification. Validator flagged it as critical — costing an entire fix-and-revalidate cycle for something already known.
-**Scope:** universal
-**Category:** communication
-
-### 2026-04-15 shared-whisper-service / session 1: unverified corrective action
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** corrective action without re-verification
-**Triad:** correction received for an incorrect interface usage → verify the correct form against authoritative source before committing the fix → avoid fix-that-doesn't-fix (double validation round)
-**Context:** Validator flagged incorrect parameter names. Fix renamed parameters to a plausible-looking alternative without checking the actual constructor signature. Second validation round caught the fix was also wrong — the interface requires a different argument structure entirely. Two rounds spent on one issue that a single verification call would have resolved.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-15 qwen-setup / session 1: completion over verification
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** completion pressure suppresses verification
-**Triad:** multiple artifacts generated in batch under time pressure → run mental execution of each artifact before declaring done → avoid fix-round-after-batch: batch creation creates compound error debt
-**Context:** Generated 21 files (scripts, configs, docs, skills) in sequence without verifying any. Verification afterward revealed 6 bugs across 6 files — dead regex patterns, missing deduplication, path injection, wrong command references. Each bug was individually obvious, but batch completion pressure suppressed per-artifact verification.
-**Scope:** universal
-**Category:** sequencing
-
-### 2026-04-15 qwen-setup / session 1: author environment assumption
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** author environment projection
-**Triad:** writing distribution instructions for end users → enumerate prerequisites available on a fresh target environment before choosing distribution method → avoid author-env projection: what's available to the author ≠ what's available to the user
-**Context:** Wrote installation instructions using a tool (git) that requires separate installation on the target platform. The target audience (non-technical users on fresh machines) would not have it. The author's own environment had git pre-installed, which made the assumption invisible. Caught only when user explicitly questioned it.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-16 quotas-and-referrals / task-decomposition: implicit consensus assumption
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** implicit consensus assumption
-**Triad:** spawning parallel autonomous producers whose outputs must interoperate → pass exact interface contracts (signatures, parameter counts, return types) to each producer → avoid implicit consensus assumption: independent producers cannot converge on shared interface from natural-language descriptions alone
-**Context:** Launched parallel task-creators that each described the same shared function differently — one said 1 parameter, another 2; one said 3 params, another 4. No single source of truth was passed, so each interpreted the description independently and diverged. Caught only by cross-task validation.
 **Scope:** universal
 **Category:** problem-decomposition
 
@@ -1987,71 +1787,6 @@ Patterns that apply to any project, any stack, any domain.
 **Context:** Session 1, quotas-and-referrals. Codex-generated verifyWebhookSignature lacked empty-secret guard (security risk: predictable HMAC with empty key). formatBalance didn't check if subscription was expired (showed "безлимит до..." for past dates). Both caught by wave review, required 1 fix commit.
 **Scope:** universal
 **Category:** verification
-
-### 2026-04-16 quotas-and-referrals / session 3: Parameter name masks semantic mismatch
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** parameter semantics assumed by name
-**Triad:** same parameter name used across a boundary → verify both sides agree on the identifier's semantic domain → avoid name-match semantics-mismatch trap
-**Context:** A shared parameter name appeared correct at call site and callee, but each side expected a different identifier space — the mismatch caused silent no-ops with no runtime error.
-**Pattern:** When an identifier crosses a component boundary, check that both sides agree on which semantic domain the value belongs to. Identical variable names do not guarantee identical semantics — verify at integration time, not just at unit level.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-16 enricher-tor-proxy / session 1: transient-permanent error conflation
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** transient-permanent error conflation
-**Triad:** добавление обработки ошибок в переиспользуемый компонент → различать transient (пропустить наверх) и permanent (пометить как failed) — не глотать оба через generic Exception → avoid transient-permanent error conflation
-**Context:** Proxy client caught all exceptions at leaf level, returning None. Caller interpreted None as "API returned no data" and marked record as permanently failed — losing retry opportunity. Codex review caught this before deploy.
-**Pattern:** When a reusable component handles errors with a generic catch, it collapses all failures into one outcome — callers can't distinguish "try again later" from "this will never work." Catch specific transient error types and let them propagate; reserve the permanent-failure path for errors that won't resolve on retry.
-**Scope:** universal
-**Category:** problem-decomposition
-
-### 2026-04-16 ai-dev-methodology-codex / ad-hoc: completion assumption bias
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** completion assumption bias
-**Triad:** large deliverable produced after extended multi-step work → proactively offer the natural completion action (delivery, publication, finalization) without waiting for request → completion assumption bias: producing output feels like finishing, but delivery is a separate step the recipient expects
-**Context:** After adapting 35 skills, updating READMEs, and verifying all changes — stopped without offering to commit and push. The recipient had to ask "did you push?" The deliverable was ready but not delivered.
-**Scope:** universal
-**Category:** communication
-
-### 2026-04-17 juridical-parser / ad-hoc: log-first forensics bias
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** log-first forensics bias
-**Triad:** расследование «что произошло во время T» на production/long-running системе → сначала опросить durable audit источники (file modification timestamps, append-only audit/event таблицы, system-level event logs с retention-политикой) → потом уже grep по текстовым логам, которые могут быть ротированы или усечены и не содержать нужного окна
-**Context:** При диагностике «почему вчерашний запуск загрузил данные не за ту дату» потратил 5+ SSH-итераций на grep по /var/log/..., пока не обнаружил, что лог ротирован и нужная запись была в .log.1.gz с другим форматом. Финальный ключ — `stat src/config.py` показал mtime деплоя (11:01 UTC), а audit-таблица `run_log` показала ручной запуск (court_name='default') с сопоставимым временем. Эти два durable источника сразу восстановили таймлайн. Следовало начать с них.
-**Pattern:** Для форензики «что случилось в момент T» на долгоживущей системе — ранжировать источники по долговечности, не по удобству grep: audit-таблицы (append-only DB rows), file mtime, system event logs с явной retention-политикой — в первую очередь. Текстовые логи — во вторую очередь, и сначала проверить, что запрашиваемое окно вообще сохранилось в текущем файле.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-17 zvonok-com / session 1: positional spec without schema verification
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** trusted external spec over code
-**Triad:** external document names positional attributes (column letters, field indices) for an existing data structure → verify actual positions in code before accepting them into the spec → avoid schema assumption from external spec
-**Context:** TZ specified column letters O/P/Q/R for zvonok data, but the actual table already had 15 columns A–O — causing a silent column collision discovered only during code scan.
-**Pattern:** When an external document (client TZ, screenshot, legacy spec) names positional attributes of an existing data structure, verify the actual positions in code before writing the spec. External documents reflect the author's mental model, not the current codebase.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-17 zvonok-com / session 1: over-constrained idempotency guard
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** over-constrained guard condition
-**Triad:** writing an idempotency guard for an event handler that updates multiple fields → base the guard on the primary state indicator only, not on a compound check including secondary fields → avoid gaps where late-arriving events bypass the guard because secondary fields are empty
-**Context:** Idempotency check required both "P is final status" AND "Q+R filled" — but if secondary fields were empty (no transcription), a late intermediate postback could overwrite a final status.
-**Pattern:** Idempotency guards should test the minimum sufficient condition. For status-based guards, check only the terminal state of the primary status field. Adding secondary field checks to the guard creates bypass gaps when those fields are legitimately absent.
-**Scope:** universal
-**Category:** problem-decomposition
 
 ### 2026-04-17 parser-diagnostics / session 1: Check authoritative config before raw data
 
@@ -2066,13 +1801,3 @@ Patterns that apply to any project, any stack, any domain.
 
 ---
 
-### 2026-04-17 parser-diagnostics / session 2: Documented fix ≠ persisted deployment config
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** fix documentation conflated with fix deployment
-**Triad:** previously "resolved" issue recurs in production → verify the fix was actually persisted in deployment artifacts (config files, env, infra state), not just in code or docs → treating "resolved" label as proof the fix is active everywhere it needs to be
-**Context:** `ENRICHER_PROXY=socks5h://127.0.0.1:9050` was added to server `.env` for a manual run, marked as "RESOLVED" in decisions.md, but was never persisted — subsequent cron runs had no proxy, silently failing with 0 enrichments for 2 days.
-**Pattern:** When a fix involves runtime configuration (env vars, infra state, config files), verify the artifact was actually persisted after each deploy. "Code committed + docs updated" ≠ "config is live." Test the deployed state, not the documented intent.
-**Scope:** universal
-**Category:** recovery
