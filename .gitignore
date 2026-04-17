@@ -3,6 +3,7 @@
 settings.json
 settings.local.json
 mcp-needs-auth-cache.json
+paste-cache/
 
 # Runtime state
 sessions/
@@ -20,3 +21,8 @@ todos/
 ide/
 plugins/
 projects/
+session-env/
+tasks/
+dashboard.json
+.dashboard-events.jsonl
+*.jsonl
