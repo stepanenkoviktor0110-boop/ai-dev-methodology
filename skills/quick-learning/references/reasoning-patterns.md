@@ -1799,5 +1799,16 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
+### 2026-04-17 ai-dev-methodology-public / session 1: first-found copy bias
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** first-found copy bias
+**Triad:** editing a document that may exist as multiple copies across repo locations (root + nested, overlays, forks) → enumerate all copies via file-name survey and compare timestamp/content to identify the canonical version before editing → first-found copy bias: treating the first opened copy as the source-of-truth without verifying
+**Context:** Started incremental edits on the root README (older version) with several Edits before discovering a more complete newer version sitting in a sibling subdirectory. Had to rewrite the target file entirely via Write, wasting the earlier Edits. No survey of same-name files in the repo was done before the first Edit.
+**Pattern:** Before editing a document that plausibly has siblings (same filename in different directories, overlay repos, forks, or generated copies), run a quick file-name survey across the repo, diff or compare mtimes, and establish which copy is the source-of-truth. Edit only the canonical; treat the rest as candidates for deletion or sync, not for parallel editing.
+**Scope:** universal
+**Category:** information-gathering
+
 ---
 
