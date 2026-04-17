@@ -2052,3 +2052,27 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Idempotency guards should test the minimum sufficient condition. For status-based guards, check only the terminal state of the primary status field. Adding secondary field checks to the guard creates bypass gaps when those fields are legitimately absent.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-04-17 parser-diagnostics / session 1: Check authoritative config before raw data
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** raw data before config layer
+**Triad:** system investigation with a dedicated settings/control layer present → read the authoritative config first, then interpret data through that lens → jumping to logs/DB before knowing what the system is supposed to do
+**Context:** Diagnosed court `is_active=0` as a potential bug without first checking the control panel where those settings are managed — user had to correct that it was intentional configuration.
+**Pattern:** When a system has an authoritative configuration layer (control panel, settings DB, admin UI), check it first during any investigation. Raw data (logs, DB state) is only interpretable through the lens of what the config says should be happening.
+**Scope:** universal
+**Category:** information-gathering
+
+---
+
+### 2026-04-17 parser-diagnostics / session 2: Documented fix ≠ persisted deployment config
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** fix documentation conflated with fix deployment
+**Triad:** previously "resolved" issue recurs in production → verify the fix was actually persisted in deployment artifacts (config files, env, infra state), not just in code or docs → treating "resolved" label as proof the fix is active everywhere it needs to be
+**Context:** `ENRICHER_PROXY=socks5h://127.0.0.1:9050` was added to server `.env` for a manual run, marked as "RESOLVED" in decisions.md, but was never persisted — subsequent cron runs had no proxy, silently failing with 0 enrichments for 2 days.
+**Pattern:** When a fix involves runtime configuration (env vars, infra state, config files), verify the artifact was actually persisted after each deploy. "Code committed + docs updated" ≠ "config is live." Test the deployed state, not the documented intent.
+**Scope:** universal
+**Category:** recovery
