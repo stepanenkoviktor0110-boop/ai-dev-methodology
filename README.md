@@ -12,7 +12,8 @@ A complete development framework where AI agents handle the full cycle: requirem
 - **Context loss between sessions** — distributed knowledge base persists across sessions
 - **Quality without human review** — automated validators at every stage
 - **Scope creep** — specs approved before coding starts
-- **Outdated library knowledge** — Context7 MCP fetches current docs
+- **Outdated library / API knowledge** — Context7 MCP fetches current docs; `/stack-research` gate halts planning until official docs are read by parallel subagents (critical elements: external APIs, non-whitelisted libraries, tools with major<1.0)
+- **Memory-based stack decisions** — root cause of late-stage rewrites. `stack-research` writes facts to a version-cached registry in project knowledge (`stack-research.md` + per-decision `stack-comparison-*.md` tables)
 
 ## Installation
 

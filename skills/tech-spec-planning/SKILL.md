@@ -41,6 +41,44 @@ Analyze if additional information is needed based on user-spec and code research
 - Gaps in user-spec requirements → discuss with user and update user-spec too.
 - Fundamentally unclear → suggest creating user-spec first.
 
+## Phase 3.5: Stack Research Gate (deep)
+
+Before writing Architecture / Decisions / Shared Resources in Phase 4, collect every stack element that will be used or touched: external APIs, third-party services, new libraries not already covered in the existing `stack-research.md` registry, and libraries whose usage pattern differs from what's documented there.
+
+Classify each candidate:
+
+**Critical** (BLOCK — must be researched at `depth=deep`):
+- External APIs (AI, payments, messaging, data providers)
+- External services (deploy platforms, auth providers, queues)
+- Libraries NOT in the whitelist (`~/.claude/skills/stack-research/references/stable-libraries-whitelist.md`)
+- Library with major version < 1.0
+- Niche tools (Paged.js, remark/rehype plugins, MCP servers, etc.)
+- Any element where the tech-spec will rely on specific endpoints, rate limits, auth flow, or edge-case behavior
+
+**Familiar** (PROMPT — may skip):
+- Whitelisted libraries used in a standard way
+
+**Action by class:**
+
+- **Critical candidates present** → STOP. Output:
+  > "Перед формулировкой архитектуры и решений требуется deep-ресёрч критичных элементов: [candidate list]. Вызови `/stack-research` с параметрами:
+  > - decision_context: {one-sentence, what this tech-spec uses the element for}
+  > - candidates: [list with type]
+  > - depth: deep
+  > - project_context: {2-3 sentences including user-spec constraints}
+  > - feature_path: {work/{feature}}
+  >
+  > Скажи 'продолжаем' после завершения — прочитаю отчёты и продолжу."
+  >
+  > Do not write Architecture / Decisions / Shared Resources sections for critical candidates without a fresh deep entry in `stack-research.md` or a report under `{feature_path}/logs/stack-research/`.
+
+- **Only familiar candidates** → Output:
+  > "Новые/изменённые элементы стека — только из whitelist: [list]. Deep-ресёрч опционален: `/stack-research`. Вызывать? (да / пропускаем)"
+  >
+  > Wait for answer. Proceed either way.
+
+After the gate passes, read the fresh report(s) and the registry. In Phase 4, when writing Decisions, cite report paths as the source of non-trivial technical claims. Do NOT mix memory-based claims with researched facts.
+
 ## Phase 4: Create tech-spec
 
 1. Copy template and edit sections one by one:

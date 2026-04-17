@@ -86,16 +86,51 @@ TBD is acceptable for optional aspects.
 ### 2.1 New Project (no code)
 
 1. **Propose tech stack** based on Phase 1: frontend, backend, database, key dependencies
-2. **Verify choices** against current docs (Context7 if available). Update if you find deprecations or better alternatives.
+2. **Stack research gate** (see 2.3). DO NOT propose a decision before passing this gate for critical candidates.
 3. **Propose deployment:** platform, CI/CD approach, environments
-4. **Present proposal** to user with rationale for each choice. Iterate until user approves.
+4. **Present proposal** to user with rationale from stack-research reports. Iterate until user approves.
 
 ### 2.2 Existing Code
 
 1. **Extract stack** from the codebase: package files, configs, directory structure
-2. **Verify** against current docs (Context7 if available)
-3. **Confirm with user:** show what you found, ask about gaps (deployment, missing pieces)
+2. **Stack research gate** (see 2.3) for elements already in use — especially external APIs and niche libraries. Goal: verify nothing shifted since code was written.
+3. **Confirm with user:** show what you found (including stack-research findings on outdated versions / breaking changes), ask about gaps.
 4. Iterate until confirmed.
+
+### 2.3 Stack Research Gate (BLOCKING for critical, PROMPT for familiar)
+
+Before making any stack decision, classify every candidate under consideration:
+
+**Critical** (must be researched — BLOCK):
+- External APIs (AI, payments, messaging, etc.)
+- External services (deploy platforms, auth providers)
+- Libraries NOT in the whitelist (`~/.claude/skills/stack-research/references/stable-libraries-whitelist.md`)
+- Any library with major version < 1.0
+- Any niche tool (Paged.js, remark plugins, MCP servers, etc.)
+
+**Familiar** (may skip — PROMPT):
+- Libraries on the whitelist
+- Docker / Git / standard runtimes
+
+**Action by class:**
+
+- **Critical candidates present** → STOP. Output to user:
+  > "Перед принятием решений по стеку требуется ресёрч критичных элементов: [candidate list]. Вызови `/stack-research` с параметрами:
+  > - decision_context: {one-sentence}
+  > - candidates: [list with type]
+  > - depth: shallow (сравниваем варианты) | deep (углубляем выбранный)
+  > - project_context: {2-3 sentences}
+  >
+  > После завершения ресёрча скажи 'продолжаем' — я прочитаю отчёты и продолжу."
+  >
+  > Wait. Do not propose decisions for critical candidates without fresh research output in `.claude/skills/project-knowledge/references/stack-comparison-*.md` or `stack-research.md` registry.
+
+- **Only familiar candidates** → Output:
+  > "Кандидаты [list] — из whitelist. Ресёрч не обязателен, но можно актуализировать: `/stack-research`. Вызывать? (да / пропускаем)"
+  >
+  > Wait for user answer. Proceed either way.
+
+After gate passes (either researched or skipped), read the resulting comparison table / registry entries and use them as the **authoritative source** when proposing decisions. Do NOT mix memory-based claims with researched facts.
 
 ### 2.3 Checkpoint
 

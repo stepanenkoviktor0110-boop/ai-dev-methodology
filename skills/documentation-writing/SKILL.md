@@ -45,6 +45,12 @@ These rules apply to ALL documentation operations (audit, edit, create).
 - **ux-guidelines.md** — only for projects with significant UI
 - **{custom}.md** — domain-specific (bot.md, vault.md, api.md)
 
+**Auto-maintained by `stack-research` skill (do not edit manually):**
+- **stack-research.md** — registry of deep-researched stack elements (version, auth, limits, gotchas, doc URL). Used as cache by `/stack-research`.
+- **stack-comparison-{slug}.md** — comparison tables produced when evaluating multiple stack candidates (one per decision).
+
+These files are data, not prose. Audit workflow should validate they exist and follow the template shape, but never rewrite their content — the `stack-research` skill owns them.
+
 Templates with placeholder structure are in `~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/references/`. The templates are self-documenting — each section has comments explaining what to write.
 
 ## Workflows

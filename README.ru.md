@@ -12,7 +12,8 @@
 - **Потеря контекста между сессиями** — распределённая база знаний сохраняется между сессиями
 - **Качество без ручного ревью** — автоматические валидаторы на каждом этапе
 - **Расползание скоупа** — спеки утверждаются до начала кодирования
-- **Устаревшие знания о библиотеках** — Context7 MCP подтягивает актуальную документацию
+- **Устаревшие знания о библиотеках и API** — Context7 MCP + явный gate `stack-research` заставляет сверяться с официальной документацией ДО принятия решений по стеку, а не после провала
+- **Решения по стеку из памяти** — `/stack-research` запускает параллельных субагентов, которые читают официальные доки по каждому кандидату и пишут факты в реестр `stack-research.md` (кеш по версии) и сравнительные таблицы `stack-comparison-*.md`
 
 ## Установка
 
@@ -67,6 +68,8 @@ ls ~/.claude/skills/methodology/SKILL.md
 /new-user-spec                 # Шаг 1: Интервью → user-spec.md (требования)
                                #   ⛔ пользователь утверждает спек
 /new-tech-spec                 # Шаг 2: Исследование → tech-spec.md (архитектура)
+                               #   ⛔ GATE: /stack-research по критичным элементам (внешние API,
+                               #      библиотеки не из whitelist) до написания Architecture/Decisions
                                #   ⛔ пользователь утверждает спек
 /decompose-tech-spec           # Шаг 3: Разбивка на задачи → tasks/*.md
                                #   ⛔ GATE 1: пользователь утверждает декомпозицию
@@ -178,6 +181,7 @@ your-project/
 ### Ключевые принципы
 
 - **Spec-Driven** — пиши спеки до кода. Иерархия: User Spec → Tech Spec → Tasks → Code
+- **Research Stack Before Deciding** — `/stack-research` — блокирующий гейт перед решениями по стеку в `project-planning` и `tech-spec-planning`. Для критичных элементов (внешние API, библиотеки не из whitelist, мажорная версия <1.0) пайплайн останавливается, пока параллельные субагенты не прочитают официальную документацию. Результаты кешируются по версии в реестре `stack-research.md`
 - **Blocking Gates** — 6 обязательных HARD STOP в пайплайне. Ни один шаг не продолжается без явного одобрения
 - **Многоуровневая валидация** — автоматические валидаторы на каждом этапе (2 → 5 → 2 → 3)
 - **Планирование сессий** — волны сгруппированы по ~1200 LOC бюджету на сессию
@@ -206,7 +210,7 @@ Claude Code использует встроенный Agent tool со специ
 
 | Категория | Скиллы |
 |-----------|--------|
-| Планирование | `user-spec-planning`, `tech-spec-planning`, `task-decomposition`, `project-planning` |
+| Планирование | `user-spec-planning`, `tech-spec-planning`, `task-decomposition`, `project-planning`, `stack-research` |
 | Выполнение | `feature-execution`, `code-writing`, `do-task`, `pre-deploy-qa`, `post-deploy-qa`, `deploy-pipeline` |
 | Качество | `code-reviewing`, `security-auditor`, `test-master` |
 | Дизайн | `design-system-init`, `design-spec`, `design-plan`, `design-plan-planning`, `design-task-decompose`, `design-generate`, `design-review`, `design-retrospective`, `photo-crop` |

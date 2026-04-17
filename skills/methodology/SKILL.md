@@ -230,6 +230,7 @@ Completed features are archived to `work/completed/{feature}/`.
 ## Key Principles
 
 - **Spec before code.** User Spec → Tech Spec → Tasks → Code. Code starts only after specs are approved.
+- **Research stack before deciding.** Before stack decisions in `project-planning` (shallow, comparing candidates) and `tech-spec-planning` (deep, chosen element), a BLOCKING gate requires `/stack-research` for critical elements — external APIs, services, non-whitelisted libraries. No memory-based decisions on critical stack.
 - **Validate at every stage.** User spec (2), tech spec (5), tasks (2), code (3 reviewers + smoke), audit wave (3 holistic auditors), QA (pre-deploy + post-deploy). Max 3 fix iterations each.
 - **Commit after each result.** Planning: draft → validation rounds → approval. Execution: code (tests pass) → review fixes → status. Not after every action.
 - **PK = single source of truth.** All project docs in `.claude/skills/project-knowledge/references/`. CLAUDE.md is minimal. `/done` updates PK. `documentation-writing` audits quality.
@@ -241,7 +242,7 @@ Completed features are archived to `work/completed/{feature}/`.
 
 ## Skills Ecosystem
 
-**Planning:** `project-planning`, `user-spec-planning`, `tech-spec-planning`, `task-decomposition`
+**Planning:** `project-planning`, `user-spec-planning`, `tech-spec-planning`, `task-decomposition`, `stack-research` (explicit-call gate)
 **Execution:** `code-writing` (TDD), `feature-execution` (team lead), `prompt-master`, `pre-deploy-qa`, `post-deploy-qa`
 **Quality:** `code-reviewing` (11 dimensions), `security-auditor` (OWASP), `test-master`
 **Meta:** `methodology`, `retrospective`, `quick-learning`, `documentation-writing`, `skill-master`, `infrastructure-setup`, `deploy-pipeline`
@@ -254,7 +255,7 @@ Isolated subprocesses with fresh context. Each receives input, does one job, ret
 
 **Validators (9):** userspec-quality, userspec-adequacy, interview-completeness-checker, tech-spec-validator, skeptic, completeness-validator, task-validator, task-creator, reality-checker
 **Reviewers (7):** code-reviewer, test-reviewer, security-auditor, prompt-reviewer, documentation-reviewer, deploy-reviewer, infrastructure-reviewer
-**Research (1):** code-researcher
+**Research (2):** code-researcher, stack-researcher
 **QA (2):** pre-deploy-qa, post-deploy-qa
 **Meta (1):** skill-checker
 
@@ -271,6 +272,7 @@ Isolated subprocesses with fresh context. Each receives input, does one job, ret
 | `/do-feature` | Execute all tasks via agent teams |
 | `/retrospective` | Extract lessons learned, update skills with best practices |
 | `/quick-learning` | Fast reasoning analysis — auto at session breaks, manual anytime |
+| `/stack-research` | Research stack elements against official docs (gate before stack decisions) |
 | `/done` | Update PK, archive feature |
 | `/write-code` | Ad-hoc coding with TDD and reviews |
 | `/init-project` | Initialize new project with template, git, GitHub |
