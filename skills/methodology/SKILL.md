@@ -255,7 +255,7 @@ Isolated subprocesses with fresh context. Each receives input, does one job, ret
 
 **Validators (9):** userspec-quality, userspec-adequacy, interview-completeness-checker, tech-spec-validator, skeptic, completeness-validator, task-validator, task-creator, reality-checker
 **Reviewers (7):** code-reviewer, test-reviewer, security-auditor, prompt-reviewer, documentation-reviewer, deploy-reviewer, infrastructure-reviewer
-**Research (2):** code-researcher, stack-researcher
+**Research (3):** code-researcher, stack-researcher, stack-aggregator
 **QA (2):** pre-deploy-qa, post-deploy-qa
 **Meta (1):** skill-checker
 

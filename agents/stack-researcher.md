@@ -101,3 +101,15 @@ Source: {URL or "—"}
 - Do not recommend "use this" or "don't use this". Return data, not verdicts.
 - Keep the report inside depth limits. Cut lower-priority sections first if over.
 - Write the report file atomically — one `Write` call with the full content.
+
+## Return Value (context-efficient)
+
+Your final text response MUST be exactly one line in the format:
+
+```
+DONE element={element} depth={depth} path={output_path} answered={N}/{M} notfound={K}
+```
+
+Where `N` is focus questions answered from docs, `M` is total focus questions, `K` is focus questions marked `Not found in official docs`.
+
+Do NOT include the report content in your response. The full report lives in the file. The orchestrator never reads it in its own context — only an aggregator subagent will. Any extra text in your response wastes the orchestrator's context window.
