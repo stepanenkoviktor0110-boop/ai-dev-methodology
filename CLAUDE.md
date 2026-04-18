@@ -40,3 +40,38 @@ Violation = credentials compromised, requires emergency rotation.
 - Границы сессий определяются автоматически из `session-plan.md` (генерируется при `/decompose-tech-spec`). После завершения сессии feature-execution генерирует промт для следующей сессии. Не запускать следующую сессию автоматически.
 - После завершения каждого этапа: проверить документацию, зафиксировать шаги, дать рекомендацию начать новую сессию с конкретным промтом для копирования.
 - Сначала искать ответы в документации проекта (project knowledge, backlog, code-research, skills), не спрашивать пользователя то, что можно найти самостоятельно.
+
+## Available Resources
+
+Inventory of what's installed and ready on this machine. **Not a prescribed stack** — when starting a project, ask the user which tools to use. This list exists so that I don't suggest installing something that is already there, and don't suggest tools that are explicitly not available.
+
+**GitHub account:** stepanenkoviktor0110-boop (via gh CLI, auth stored).
+
+### Runtimes (verified April 2026)
+
+- **Node.js 24.11.1** + npm 11.6.2
+- **Python 3.14.3** + pip 25.3 + **uv 0.10.9** (modern Python package manager)
+- **Rust 1.93.1** (rustc + cargo)
+- **Docker 29.2.1**
+- **Git 2.53** + **gh 2.88** (GitHub CLI)
+
+### Utilities
+
+- ripgrep 15.1, gitleaks 8.30, tesseract 5.4 (OCR)
+
+### Global npm CLIs
+
+- @anthropic-ai/claude-code, @openai/codex, @qwen-code/qwen-code, @upstash/context7-mcp, vercel
+
+### Not installed on this machine
+
+- Bun, pnpm, yarn — alternative Node package managers
+- poetry — Python package manager (uv is used instead)
+- Go, .NET SDK
+- Database clients (psql, mysql, sqlite3 CLI) — if a DB is needed, run it in Docker
+
+**Behaviour:** don't suggest tools from this list without first asking the user whether to install them.
+
+### Experienced across projects
+
+The user has projects in: Next.js + Prisma + PostgreSQL, Vite + React, Fastify + grammy (Telegram bots) + better-sqlite3, Python via uv with Flask/requests/gspread, plain Node scripts. Assume familiarity with any of these without extra explanation.

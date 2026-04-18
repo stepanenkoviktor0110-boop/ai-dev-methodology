@@ -1810,5 +1810,16 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
+### 2026-04-18 course-guide / session 1: process-fit unchecked before run
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** process-fit unchecked before run
+**Triad:** heavyweight multi-phase process (decomposition, validators, waves, LOC estimation) invoked on a lightweight deliverable (content-first, ~50 lines of glue code, single-developer one-shot) → before Phase 0 artefact generation, check whether the process's core artefacts fit the work's shape; if mismatched, propose a lightweight mode (checklist from spec, no task files, no validators) and confirm with user → blindly following the process pipeline because it was invoked, without checking that the pipeline's abstractions (tasks, waves, reviews) are meaningful for this specific work
+**Context:** User invoked decomposition skill on a project whose tech-spec already listed 15 brief tasks for a content-PDF build toolchain. The skill's Phase 0 produced an LOC-estimated 4-session plan with audit waves and dedicated reviewers — immediately rejected by the user as "overcomplication for a non-technical info project." The spec itself had been flagged "одна большая фича" two messages earlier. Signal was present but ignored because the skill's entry gate had no process-fit check.
+**Pattern:** When a process skill is invoked, inspect the target artefact first and ask: do this process's core units (tasks/files/waves/reviewers) correspond to actual structure in the work, or are they imposing structure the work doesn't have? Content-first, single-deliverable, or ~50-LOC glue work usually does not benefit from per-task TDD anchors, parallel-waves coordination, or multi-reviewer audit gates. Before Phase 0 output, offer the lightweight mode explicitly. If the user chose the heavyweight entrypoint by slash-command habit rather than by process need, they'll opt down.
+**Scope:** universal
+**Category:** tool-selection
+
 ---
 
