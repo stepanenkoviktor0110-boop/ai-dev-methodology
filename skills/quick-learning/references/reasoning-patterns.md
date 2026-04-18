@@ -1923,3 +1923,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a deliverable has a preface/setup section that declares tools, conventions, voice, audience, or methodology commitments, treat each declaration as a contract. Before declaring done, enumerate every declared item and check: is there at least one concrete demonstration of this later in the same deliverable? If not — either demonstrate it, or remove/demote the declaration to «optional, not verified». Do not rely on author memory that declarations were honoured; audit mechanically.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-04-19 juridical-parser / session: cascaded permission layers
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** single-layer trust assumption
+**Triad:** делегирование падает с permission/access error → проверить ВСЕ слои разрешений (config trust, OS ACL, sandbox identity), не только тот, на который сразу указывает диагноз → ремонт верхнего слоя при существовании нижнего → новый круг неудач и повторных делегаций
+**Context:** Делегирование агенту падало по доступу. Первый слой (config trust list) был исправлен, но фактический исполнитель работал под отдельной OS-идентичностью со своим набором ACL — нижний слой остался закрытым. Каждая повторная попытка делегации жгла время и контекст до тех пор, пока не был сделан inventory всех слоёв.
+**Pattern:** При access/permission ошибке от делегированного исполнителя — НЕ чинить первый попавшийся слой. Сначала перечислить все слои, через которые проходит операция (конфиг trust, OS-уровень ACL/UID/GID, sandbox profile), и определить, какой именно отказывает (пробой записью в смежные пути той же иерархии). Чинить точечно тот слой, который реально отказал, а не тот, про который проще вспомнить.
+**Scope:** universal
+**Category:** information-gathering
