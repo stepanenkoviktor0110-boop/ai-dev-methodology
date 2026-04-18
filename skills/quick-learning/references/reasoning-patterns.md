@@ -1823,3 +1823,14 @@ Patterns that apply to any project, any stack, any domain.
 
 ---
 
+
+### 2026-04-18 zvonok-com / session 1: API signature from memory without version check
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** version-untethered API recall
+**Triad:** writing concrete method call signatures in implementation hints for a task using a third-party dependency → verify actual installed package version and its behavior before writing call signatures in hints → avoid generating stale API guidance from training memory
+**Context:** Task hints included `gspread.exceptions.CellNotFound` (removed in gspread 6.x) and `ws.update(range, values)` (arg order reversed in 6.x) — generated from training data without checking the installed version.
+**Pattern:** Before writing any concrete method call, exception name, or constructor signature in implementation hints, grep the installed package or check `pip show` to verify the actual API. Training memory is frozen at a past date; libraries break APIs between major versions.
+**Scope:** universal
+**Category:** information-gathering
