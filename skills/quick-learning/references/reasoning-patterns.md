@@ -1901,3 +1901,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** При добавлении нового внешнего HTTP-клиента в систему — сначала прочитать список существующих сетевых workarounds (proxy, tunnel, VPN). Если они существуют — применить к новому клиенту сразу, до тестирования.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-18 zvonok-com / session 4: producer names output fields independently
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** producer-side naming assumption
+**Triad:** configuring data output that feeds a separate system → derive output field names directly from the consumer's parsing code → assume producer and consumer independently converge on the same field names
+**Context:** Callback URL parameters were named freely (`call_id`, `status`) without checking what parameter names the receiving handler actually reads (`ct_call_id`, `ct_dial_status`). Both sides worked but silently never connected.
+**Pattern:** When configuring the output fields of a channel that feeds another system, read the consumer's actual parsing code first and use exactly those names. Never derive output field names from spec prose, variable naming habits, or symmetry assumptions.
+**Scope:** universal
+**Category:** information-gathering
