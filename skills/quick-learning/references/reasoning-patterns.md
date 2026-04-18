@@ -1834,3 +1834,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before writing any concrete method call, exception name, or constructor signature in implementation hints, grep the installed package or check `pip show` to verify the actual API. Training memory is frozen at a past date; libraries break APIs between major versions.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-18 zvonok-com / session 2: Container-level substitute contaminates co-located logic
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** mock target scope mismatch
+**Triad:** test substitutes an entire class to double one instance method; class has co-located pure/static function returning typed result → explicitly restore the co-located function on the mock (`mock.pure_fn.side_effect = real_fn`), or scope substitution to just the target method → container-level patch silently replaces co-located functions, turning typed returns into truthy mocks
+**Context:** Patching the entire class to mock `create_call` (instance method) also replaced `normalize_phone` (static method) — the mock returned a truthy MagicMock instead of None, causing dedup and invalid-phone branches to misbehave.
+**Pattern:** When substituting a container (class, module, object) to mock one behavior, check whether co-located pure functions are used for typed returns elsewhere in the same code path. Restore them explicitly, or narrow the substitution to only the intended target.
+**Scope:** universal
+**Category:** scope-management
