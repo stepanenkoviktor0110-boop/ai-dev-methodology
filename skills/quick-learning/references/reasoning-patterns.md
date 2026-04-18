@@ -1912,3 +1912,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When configuring the output fields of a channel that feeds another system, read the consumer's actual parsing code first and use exactly those names. Never derive output field names from spec prose, variable naming habits, or symmetry assumptions.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-18 course-guide / session: declaration-demonstration gap
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** declaration-demonstration gap
+**Triad:** preface of a multi-section deliverable declares a resource/convention as part of the approach → before declaring deliverable done, walk every preface declaration and verify at least one concrete later section actually exercises it → ship a deliverable that promises resources/conventions it never demonstrates
+**Context:** A multi-chapter methodology declared a secondary tool as «10% of the workflow» in the setup chapter, but none of the six concrete worked examples actually used it. Each example chapter was written in isolation against its own local plan; nobody cross-checked examples against the setup chapter's promises. Client noticed only at final review, forcing rework of five chapters and re-delivery.
+**Pattern:** When a deliverable has a preface/setup section that declares tools, conventions, voice, audience, or methodology commitments, treat each declaration as a contract. Before declaring done, enumerate every declared item and check: is there at least one concrete demonstration of this later in the same deliverable? If not — either demonstrate it, or remove/demote the declaration to «optional, not verified». Do not rely on author memory that declarations were honoured; audit mechanically.
+**Scope:** universal
+**Category:** scope-management
