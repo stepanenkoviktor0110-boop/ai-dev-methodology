@@ -964,10 +964,10 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-04-01 juridical-parser / diagnostic session: Многострочный скрипт на удалённом VPS — записать в файл, не инлайн
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Triad:** выполнение нетривиального Python-скрипта на удалённом сервере через SSH → записать скрипт в локальный файл, залить по SFTP, выполнить через `python3 -u` → избежать ошибок экранирования и буферизации вывода
-**Context:** 3 попытки запустить Python через inline heredoc/параметры shell — каждый раз ошибки экранирования кавычек или пустой output из-за буферизации. Фикс: Write tool в локальный файл → sftp.put() → запуск с `-u`.
+**Context:** 3 попытки запустить Python через inline heredoc/параметры shell — каждый раз ошибки экранирования кавычек или пустой output из-за буферизации. Фикс: Write tool в локальный файл → sftp.put() → запуск с `-u`. (Seen 2: 2026-04-18 juridical-parser recovery session — снова множественные SyntaxError через `python3 -c`, пользователь прямо указал на паттерн.)
 **Scope:** situational
 **Situation:** выполнение скриптов на удалённом VPS через paramiko/SSH
 **Category:** tool-selection
@@ -1845,3 +1845,15 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When substituting a container (class, module, object) to mock one behavior, check whether co-located pure functions are used for typed returns elsewhere in the same code path. Restore them explicitly, or narrow the substitution to only the intended target.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-04-18 juridical-parser / recovery session: Проверить критические env vars перед запуском долгого pipeline
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** skipped irreversible operation precondition check
+**Triad:** запуск многочасового pipeline на сервере, где критические env vars могли пропасть → `grep -c CRITICAL_VAR .env` перед стартом → не тратить часы на прогон с нулевым результатом
+**Context:** ENRICHER_PROXY пропал из .env. Пайплайн запустили, добавили переменную во время прогона — процесс уже читал конфиг без неё. 0 обогащений из 212 ИНН, пришлось убивать PID и перезапускать. Ошибка: запуск долгой необратимой операции без верификации preconditions.
+**Pattern:** Перед запуском любой долгой batch-операции на сервере (pipeline, migration, import) проверить список критических env vars через `grep -c`. Python-процесс читает config при старте — добавление переменных в .env во время прогона не имеет эффекта.
+**Scope:** situational
+**Situation:** запуск долгих pipeline / batch-job / migration на удалённом сервере
+**Category:** execution-safety
