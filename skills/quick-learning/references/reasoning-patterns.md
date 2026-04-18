@@ -1857,3 +1857,47 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** situational
 **Situation:** запуск долгих pipeline / batch-job / migration на удалённом сервере
 **Category:** execution-safety
+
+### 2026-04-18 zvonok-com / session 3: Silent Delegation Trap
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** delegated and forgot monitoring
+**Triad:** запуск async инструмента/агента с неизвестным временем выполнения → сразу сообщить ожидаемое время + мониторить прогресс + алертить при молчании → допустить, что delegation = done, пока инструмент работает незаметно
+**Context:** Задача делегирована инструменту, запущен без предупреждения о времени и без мониторинга — пользователь ждал 1:40 в неведении.
+**Pattern:** До запуска любого async инструмента: сообщи ожидаемое время выполнения и как прервать. Во время — мониторь и давай промежуточные апдейты. Молчание инструмента дольше разумного — сигнализируй пользователю, не жди завершения.
+**Scope:** universal
+**Category:** communication
+
+### 2026-04-18 zvonok-com / session 3: SSH-deploy kills own connection on service restart
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** restart severs monitoring connection
+**Triad:** деплой через SSH делает systemctl restart в том же сеансе → проверять статус сервиса отдельным SSH-соединением после паузы, не в той же pipe-команде → не считать exit 255 после restart сбоем деплоя и не запускать повторный деплой
+**Context:** deploy.sh убил gunicorn и перезапустил сервис внутри одного SSH-сеанса; при рестарте соединение оборвалось (exit 255), что было воспринято как провал — запущен второй деплой, который убил уже поднятый сервис.
+**Pattern:** После `systemctl restart` в SSH-сеансе соединение может оборваться — это не ошибка деплоя. Статус сервиса проверять отдельным SSH-вызовом с задержкой (sleep 5 && ssh ... systemctl is-active), не в той же pipe-команде.
+**Scope:** universal
+**Category:** recovery
+
+### 2026-04-18 dedup-inn-monthly / session: upstream filter blindness in pipeline tests
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** upstream filter blindness
+**Triad:** написание теста для шага N многоступенчатого пайплайна → составить список предшествующих фильтров и убедиться что тестовые данные их проходят → не допустить маскировку логики нулевым результатом из upstream-фильтрации
+**Context:** Тест для Stage 4c (INN dedup) написан с данными, которые не прошли Stage 4 (OPF-фильтр) → `filtered` был пуст → `inn_dedup_skipped` всегда 0, тест всегда падал.
+**Pattern:** Перед написанием теста для шага N пайплайна — явно проверить все предшествующие шаги-фильтры и убедиться что тестовые данные им соответствуют. Если шаг N проверяет поведение «при условии X» — убедиться, что X физически достигается в тестовом сценарии.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-04-18 zvonok-com / session: known constraint not propagated to new client
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** known constraint not propagated
+**Triad:** новый внешний HTTP-клиент добавляется в систему → явно проверить все существующие сетевые обходные пути и применить к новому клиенту → не допустить прямое соединение в сети с уже известными ограничениями
+**Context:** В системе уже был Tor-прокси для одного HTTP-клиента (ofdata.ru). Новый клиент (zvonok.com) добавлен без прокси — Beget так же блокирует TLS к zvonok.com. Потребовался fix-коммит.
+**Pattern:** При добавлении нового внешнего HTTP-клиента в систему — сначала прочитать список существующих сетевых workarounds (proxy, tunnel, VPN). Если они существуют — применить к новому клиенту сразу, до тестирования.
+**Scope:** universal
+**Category:** information-gathering
