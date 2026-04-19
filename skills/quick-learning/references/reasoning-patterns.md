@@ -1934,3 +1934,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** При access/permission ошибке от делегированного исполнителя — НЕ чинить первый попавшийся слой. Сначала перечислить все слои, через которые проходит операция (конфиг trust, OS-уровень ACL/UID/GID, sandbox profile), и определить, какой именно отказывает (пробой записью в смежные пути той же иерархии). Чинить точечно тот слой, который реально отказал, а не тот, про который проще вспомнить.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-19 codex-delegate / session 1: redundant safety gate
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** redundant safety gate assumption
+**Triad:** background process with pre-qualification gate + added time-based cancel → check if pre-qualification already covers the failure case before adding a time limit → treating long-running as stuck/oversized when the scope check already excluded oversized inputs
+**Context:** A background process already had a size/quality pre-check gate. A time-based auto-cancel was added as extra "stuck" protection. The user pointed out: if the quality gate passed, cancelling on time penalizes correctly-scoped work that happens to be slow.
+**Pattern:** When a background process has a pre-delegation quality gate, verify that gate covers the failure case before adding a time-based safety limit. A time limit on a pre-qualified process is a false positive factory — it conflates "long-running" with "low-quality input."
+**Scope:** universal
+**Category:** scope-management
