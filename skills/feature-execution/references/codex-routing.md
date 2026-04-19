@@ -79,13 +79,18 @@ LAUNCH_JSON=$(node "${CLAUDE_PLUGIN_ROOT}/scripts/codex-companion.mjs" \
   task --background --write --json --prompt-file "$PROMPT_FILE")
 JOB_ID=$(echo "$LAUNCH_JSON" | jq -r '.jobId // empty')
 [ -z "$JOB_ID" ] && { echo "Codex launch failed: $LAUNCH_JSON"; exit 1; }
+[[ "$JOB_ID" =~ ^[a-zA-Z0-9_-]+$ ]] || { echo "Codex launch returned invalid JOB_ID format: $JOB_ID"; exit 1; }
 ```
 
-If `JOB_ID` is empty → stop with error message; do NOT proceed to step (e), do NOT call ScheduleWakeup.
+If `JOB_ID` is empty or has unexpected format → stop with error message; do NOT proceed to step (e), do NOT call ScheduleWakeup.
 
 ### (e) Initialize codex-jobs.yml
 
-Before calling ScheduleWakeup, write an entry to `work/{feature}/codex-jobs.yml`:
+Before calling ScheduleWakeup, write an entry to `work/{feature}/codex-jobs.yml`.
+
+> **Note:** Add `codex-jobs.yml` to `.gitignore` for the feature directory — the `description` field is copied from the task and may contain internal URLs or sensitive context. Do not commit this file.
+
+Keep `description` short and human-readable (e.g. "Task 3: add webhook handler") — do not paste the full task context.
 
 ```yaml
 jobs:
