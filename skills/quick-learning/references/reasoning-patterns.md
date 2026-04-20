@@ -2012,3 +2012,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Перед bulk-creation через API artifacts, которые в UI имеют runtime-динамику (фильтры по контексту, auto-rewrite, template-binding), создать ОДИН тестовый экземпляр и прогнать полный пользовательский сценарий до конца. Structural equivalence в API-ответе ≠ behavioral equivalence в runtime. Платформа может хранить одинаковую структуру, но обрабатывать её по-разному в зависимости от происхождения.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-20 windows-codex-setup / session 1: check user's tool config before asking for preferences
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** external-config blindness
+**Triad:** about to ask user for a default/preference of a tool they use locally → first inspect user's existing configuration for that tool (home-dir dotfiles, registry, env vars) before asking → external-config blindness: treating the conversation + project-docs as the only knowledge sources, ignoring authoritative config the user maintains outside the project
+**Context:** Сессия tech-spec-planning. Surfaced вопрос «пиним ли модель или дефолт?» как контроверсию. Пользователь ответил «я точно отвечал, у тебя этого нет в документации?» Не было в project-docs, было в `~/.codex/config.toml` самого пользователя (`model = "gpt-5.4"`, `model_reasoning_effort = "medium"`). Обычная CLAUDE.md-привычка «искать в project knowledge» не покрыла user-level tool configs.
+**Pattern:** Перед тем как спросить пользователя про дефолт/preference/версию инструмента, которым он пользуется локально, — grep его `~/.{tool}/`, `$XDG_CONFIG_HOME/{tool}`, Windows registry, env vars, dotfile в `$HOME`. Если пользователь уже эксплуатирует этот инструмент, его config — первоисточник. Conversation + project docs могут не содержать преференций, явно зафиксированных в его собственной среде. Applies to: tool model configs, editor settings, shell preferences, git config, любая per-user конфигурация — везде, где tool — предмет обсуждения.
+**Scope:** universal
+**Category:** information-gathering
