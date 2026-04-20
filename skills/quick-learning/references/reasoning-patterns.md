@@ -2002,6 +2002,17 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
+### 2026-04-21 mvp-booking-flow / session 1: recent-interview overrides pre-recorded default
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** pre-recorded default erosion
+**Triad:** writing derivative planning artifact (user-spec from TZ, tech-spec from user-spec) whose upstream source contains explicit defaults for the same concept → before encoding each policy, grep upstream source for the concept by name and reconcile with the explicit default → treat the most recent interview exchange as highest-authority approval, silently overriding an explicit default already recorded in the source
+**Context:** User's pre-recorded TZ clearly stated "синий = подтверждено автоматически" (no admin approval needed). During user-spec interview a narrow technical question about confirmation mechanisms ("обе схемы сработают?") got a "да"; I extrapolated it into a policy ("admin confirms every booking via buttons") that contradicted the pre-recorded default. Contradiction caught by validators in round 1; required full rewrite of confirmation scenarios + state machine + architecture.md/patterns.md.
+**Pattern:** Before encoding any default/policy in a derivative artifact, grep the upstream source (original TZ, project-knowledge, earlier spec) for the concept's name. If the source contains an explicit default that differs from the interview-inferred one — treat the source as authoritative or explicitly surface the conflict to the user. Recent conversational "yes" to a narrow technical question is not a policy endorsement; it cannot silently override an explicit earlier statement.
+**Scope:** universal
+**Category:** information-gathering
+
 ### 2026-04-20 notion-crm / session 1: API-created artifacts ≠ UI-created semantically
 
 **Seen:** 1
