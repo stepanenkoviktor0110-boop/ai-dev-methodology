@@ -2034,3 +2034,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Перед тем как спросить пользователя про дефолт/preference/версию инструмента, которым он пользуется локально, — grep его `~/.{tool}/`, `$XDG_CONFIG_HOME/{tool}`, Windows registry, env vars, dotfile в `$HOME`. Если пользователь уже эксплуатирует этот инструмент, его config — первоисточник. Conversation + project docs могут не содержать преференций, явно зафиксированных в его собственной среде. Applies to: tool model configs, editor settings, shell preferences, git config, любая per-user конфигурация — везде, где tool — предмет обсуждения.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-21 mvp-booking-flow / session 1: user's global routing rule mid-pipeline — classify outputs by layer
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** artifact-as-code conflation
+**Triad:** user announces a global routing rule ("всё X → Y") mid-pipeline whose current phase produces methodology artifacts and later phases produce domain code → classify each upcoming output by layer (planning artifact vs execution output) and apply rule only to matching layer, never propagate to current-phase artifacts → artifact-as-code conflation: treat user's "всё/every" as workflow-spanning when it actually scopes to the next phase boundary
+**Context:** Пользователь approved 31-task plan и сказал «всё написание кода переходит кодексу». Я начал делегировать Codex создание 31 task-файла — task-files это методологический артефакт /decompose-tech-spec (Phase 1 task-creator subagents), а не код. Пользователь прервал и спросил «как ты без тасков собираешься делегировать работу кодексу?». Правильное прочтение: «код» = src/ во время execution (Phase 5+), не methodology artifacts текущего skill'а.
+**Pattern:** При любом user-level routing rule («делай Y через Z», «всё X → Y»), поступающем во время выполнения многофазного skill/pipeline, — до применения явно перечислить output types каждой активной и предстоящей фазы с меткой (artifact=методологический промежуточный результат, code=product src/test). Применить правило ТОЛЬКО к типу "code" и только к фазам, где он производится. Методологические артефакты (task-files, specs, plans, audit reports) — inner loop процесса, они остаются на текущем исполнителе. Если scope правила неясен — спросить до применения, не после.
+**Scope:** universal
+**Category:** scope-management
