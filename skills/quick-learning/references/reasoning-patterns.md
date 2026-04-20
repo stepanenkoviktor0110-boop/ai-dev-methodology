@@ -917,10 +917,10 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-04-01 employee-cabinet / task-decomposition: Implementation hints должны отражать реальный код, а не идеальный
 
-**Seen:** 1 (employee-cabinet)
+**Seen:** 2 (employee-cabinet, court-flags-separation)
 **Adapted:** —
 **Triad:** task-creator пишет hints для файла, который уже реализован в кодовой базе → прочитать фактический код файла ДО написания hints → не создавать hints противоречащие существующей реализации
-**Context:** task-creator для Task 5 написал hint про `fs.createReadStream+Readable.toWeb()`, хотя реальный файл использовал `fs.readFile+NextResponse(buffer)`. Task 6 имел `authClient.forgetPassword()` вместо реального `authClient.requestPasswordReset()`. Reality-checker поймал оба в round 1.
+**Context:** task-creator для Task 5 написал hint про `fs.createReadStream+Readable.toWeb()`, хотя реальный файл использовал `fs.readFile+NextResponse(buffer)`. Task 6 имел `authClient.forgetPassword()` вместо реального `authClient.requestPasswordReset()`. Reality-checker поймал оба в round 1. Повтор: court-flags-separation task 1 — hints ссылались на `self.base_url` и `self.public_key` (не существуют), тогда как реальные атрибуты `self._session`, `self._public_key` (private). Task 12 — SQLite path `/src/db/juridical.db` вместо реального `/data/cases.db`. Паттерн устойчив: orchestrator не читает код перед брифингом task-creator → hints генерируются по аналогии с типичными паттернами.
 **Scope:** universal
 **Category:** problem-decomposition
 
