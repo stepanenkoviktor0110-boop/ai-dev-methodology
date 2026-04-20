@@ -1967,3 +1967,37 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Когда пользователь меняет решение, уже зафиксированное в нескольких документах — **перед продолжением перечислить все места захвата и обновить каждое одним заходом**, а не полагаться, что reviewer/validator будет смотреть только последний output. Применимо к spec + interview + ADR, к design-plan + design-spec, к task-list + доска, к любому набору артефактов, где одно решение попадает в N капт. Стоимость sync'а — одна минута. Стоимость пропуска — раунд ревью/валидации за phantom issues.
 **Scope:** universal
 **Category:** communication
+
+### 2026-04-20 court-flags-separation / session 2: convention-based name inference
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** convention-based name inference
+**Triad:** spec называет конкретный символ кода (переменную, константу, функцию) по имени → grep точного имени до записи в спек → предположение что имя соответствует нейминг-конвенции языка вместо проверки реального кода
+**Context:** В tech-spec написал `_COURTS_BY_DISTRICT` с underscore-prefix (предположив, что переменная "приватная" по Python-конвенции). Реальная переменная — `COURTS_BY_DISTRICT` без underscore. Skeptic-validator поймал mirage, потребовался fix-коммит и повторная валидация.
+**Pattern:** Перед тем как записать имя символа из существующей кодовой базы в спек — grep по файлу и убедиться в точном написании. Нейминг-конвенции (underscore prefix, camelCase, UPPER_CASE) в реальном коде нарушаются, изменяются и не совпадают с ожидаемыми. Один grep — дешевле одного validation round.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-20 court-flags-separation / session 2: default layout overrides explicit constraint
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** default-layout assumption over explicit constraint
+**Triad:** Architecture-секция описывает размещение нового UI-компонента → перечитать user-spec на явные layout-ограничения до выбора placement → размещение по "умолчанию для нового поля" (новая колонка, новый блок) игнорирует явный запрет из user-spec
+**Context:** В tech-spec описал `.f-zvonok-id` как новый `<td class="col-zvonok">` — логичное "поле = колонка таблицы". User-spec содержал явное "не в отдельной колонке". Validation round поймал противоречие. Fix: поле переехало в `col-name` ячейку существующей строки.
+**Pattern:** Когда tech-spec описывает UI-компонент — до выбора placement grep/перечитать user-spec на явные layout-ограничения ("не в колонке", "внутри раскрытия", "рядом с X"). Default placement ("новый элемент = новая строка/колонка") — самый распространённый выбор и самый частый способ нарушить явный запрет. Constraint в user-spec важнее convention.
+**Scope:** situational
+**Situation:** tech-spec раздел описывает размещение нового UI-компонента, когда user-spec содержит явные layout-ограничения
+**Category:** information-gathering
+
+### 2026-04-20 windows-codex-setup / session 1: user-subset completeness illusion
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** user-subset completeness illusion
+**Triad:** user-spec опирается на внешний framework/chain (методология, stack, SDK) и пользователь называет подмножество компонентов для установки → открыть entry-point framework'а (его README, главный SKILL/manifest, install doc) и выписать ИМЕННО перечисленные им зависимости до записи компонентов в AC → принимать пользовательский список как финальный scope, игнорируя, что chain сам требует дополнительные элементы
+**Context:** Пользователь сказал «тянем 3 скилла (methodology, quick-learning, skill-master) из ai-dev-methodology-codex». Записал в AC «3 скилла». Позже пришлось заново открывать `methodology/SKILL.md`, выяснять, что pipeline требует цепочку из 31 скилла + agents/ + shared/, перевёрстывать Technical Decisions и AC. Один лишний батч интервью и частичная переверстка спека.
+**Pattern:** Когда спека импортирует внешний framework или dependency chain, и пользователь называет подмножество — открыть entry-point (README, install section, главный manifest) ДО фиксации AC. Пользовательский список = seed, framework-манифест = финальный scope. Правило «user knows best» не работает для внешних зависимостей, потому что пользователь часто знает только верхушку.
+**Scope:** universal
+**Category:** information-gathering
