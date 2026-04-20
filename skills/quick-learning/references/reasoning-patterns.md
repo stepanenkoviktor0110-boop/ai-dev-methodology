@@ -2001,3 +2001,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Когда спека импортирует внешний framework или dependency chain, и пользователь называет подмножество — открыть entry-point (README, install section, главный manifest) ДО фиксации AC. Пользовательский список = seed, framework-манифест = финальный scope. Правило «user knows best» не работает для внешних зависимостей, потому что пользователь часто знает только верхушку.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-20 notion-crm / session 1: API-created artifacts ≠ UI-created semantically
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** API-UI parity assumption
+**Triad:** bulk-creating platform artifacts via API that have UI-specific dynamic behaviors → создать 1 artifact через API, прогнать полный end-to-end тест (включая runtime-поведение фичи), только потом масштабировать → API/UI semantic divergence: одинаковая структура артефакта в хранилище, разное поведение в runtime (dynamic filters, template-awareness, permissions)
+**Context:** Созданы 12 artifacts через API batch-скрипт, структурно идентичных UI-созданным, но runtime-поведение отличалось (static vs dynamic filter). Пришлось удалять все 12 и пересоздавать вручную через UI.
+**Pattern:** Перед bulk-creation через API artifacts, которые в UI имеют runtime-динамику (фильтры по контексту, auto-rewrite, template-binding), создать ОДИН тестовый экземпляр и прогнать полный пользовательский сценарий до конца. Structural equivalence в API-ответе ≠ behavioral equivalence в runtime. Платформа может хранить одинаковую структуру, но обрабатывать её по-разному в зависимости от происхождения.
+**Scope:** universal
+**Category:** information-gathering
