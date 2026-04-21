@@ -2101,3 +2101,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before writing any call to a function or service across a module boundary, grep its actual definition: what arguments does it take, what does it inject or import, what preconditions must be satisfied? Name-based inference ("this looks like a pure utility") is unreliable — the real signature may carry injected state (bot, db, config, context). Check the signature, not the name.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-21 КульмИИнатор / session 6: Middleware dispatch model assumption
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** unconditional middleware assumption
+**Triad:** writing test that triggers middleware → verify whether framework fires middleware on all events or only on handler-matched dispatch → assume middleware runs unconditionally on every incoming event
+**Context:** A test was written to trigger pre-handler logic by sending an event in a state that had no matching handler — the middleware never fired because the framework only runs "inner" middleware as part of handler dispatch, not on every event.
+**Pattern:** Before writing tests for middleware behavior, check the framework's middleware dispatch model: "inner" (wrapped) middleware fires only when a handler is dispatched; "outer" (router-level) middleware fires on all events. If no handler matches the event, inner middleware is bypassed entirely. Design test input to match an existing handler.
+**Scope:** universal
+**Category:** information-gathering
