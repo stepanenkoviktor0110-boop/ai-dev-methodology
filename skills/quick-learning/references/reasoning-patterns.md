@@ -2057,3 +2057,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Any skill or plan step that spawns >3 parallel subagents is a cost checkpoint, not an automatic action. Before spawning: (1) estimate total cost = agents × expected output size × expected tool uses per agent; (2) compare to session-so-far burn (token/context/time); (3) if this wave + remaining pipeline likely exceeds a healthy budget, stop and present to user: expected cost, alternatives (one sequential agent, smaller batch, narrower scope, skip this step). Applies to research fanout, validator fanout, per-task fix fanout, per-file review fanout — any time "parallel subagents" is the chosen pattern. Treat the user's budget as a first-class constraint equal to correctness, not a background assumption.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-21 content-card-series / session 1: unified treatment for mixed-content sections
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** variety-by-content-type bias
+**Triad:** deliverable has sections carrying different content types within one frame → pick ONE structural treatment for all sections; let content differences live as minimal inline variations → variety-by-content-type bias
+**Context:** When one card had three sections — testimonial quote, structured case facts, narrative — I assigned three distinct visual containers (italic+border-left blockquote, label/value grid with opacity dimming, plain paragraph). User read it as unbalanced cacophony.
+**Pattern:** When sections within the same frame carry different content types, do NOT reach for a distinct visual container per type. Commit to one structural treatment (same size/weight/margins for all section bodies) and let content differences surface as minimal inline variations — italic span for a quote, bold label for a data key, nothing else. Unified container → content speaks; varied containers → form competes with content.
+**Scope:** universal
+**Category:** design-taste
+
+### 2026-04-21 content-card-series / session 1: category-typography reflex in editorial context
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** category-typography reflex
+**Triad:** implementing a commercial-category format inside an editorial/personal-voice context → check whether the voice actually wants that category's typographic conventions before applying them → category-typography reflex
+**Context:** Asked to render a pricing card for a personal-brand Telegram channel, I instinctively used marketplace typography — strikethrough old prices, "→" transition arrows, explicit "для подписчиков со спеццена автоматически" framing. User rejected: "суть содержания очень рыночно". The visual decisions bled commercial voice into an editorial brand.
+**Pattern:** When implementing a conventional format for a commercial category (pricing, product spec, comparison, discount), do NOT auto-apply the category's typographic kit (strikethrough, discount arrows, % badges, CTA buttons, SKU tables). First check the surrounding voice: editorial/personal? Neutral typographic variants required — prices as simple typography with a middot separator, subscriber price as a color-differentiated inline phrase, no strike/arrow. Content category ≠ typographic category.
+**Scope:** universal
+**Category:** design-taste
