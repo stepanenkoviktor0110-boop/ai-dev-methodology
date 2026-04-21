@@ -1810,20 +1810,6 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
-### 2026-04-18 course-guide / session 1: process-fit unchecked before run
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** process-fit unchecked before run
-**Triad:** heavyweight multi-phase process (decomposition, validators, waves, LOC estimation) invoked on a lightweight deliverable (content-first, ~50 lines of glue code, single-developer one-shot) → before Phase 0 artefact generation, check whether the process's core artefacts fit the work's shape; if mismatched, propose a lightweight mode (checklist from spec, no task files, no validators) and confirm with user → blindly following the process pipeline because it was invoked, without checking that the pipeline's abstractions (tasks, waves, reviews) are meaningful for this specific work
-**Context:** User invoked decomposition skill on a project whose tech-spec already listed 15 brief tasks for a content-PDF build toolchain. The skill's Phase 0 produced an LOC-estimated 4-session plan with audit waves and dedicated reviewers — immediately rejected by the user as "overcomplication for a non-technical info project." The spec itself had been flagged "одна большая фича" two messages earlier. Signal was present but ignored because the skill's entry gate had no process-fit check.
-**Pattern:** When a process skill is invoked, inspect the target artefact first and ask: do this process's core units (tasks/files/waves/reviewers) correspond to actual structure in the work, or are they imposing structure the work doesn't have? Content-first, single-deliverable, or ~50-LOC glue work usually does not benefit from per-task TDD anchors, parallel-waves coordination, or multi-reviewer audit gates. Before Phase 0 output, offer the lightweight mode explicitly. If the user chose the heavyweight entrypoint by slash-command habit rather than by process need, they'll opt down.
-**Scope:** universal
-**Category:** tool-selection
-
----
-
-
 ### 2026-04-18 zvonok-com / session 1: API signature from memory without version check
 
 **Seen:** 1
@@ -1858,39 +1844,6 @@ Patterns that apply to any project, any stack, any domain.
 **Situation:** запуск долгих pipeline / batch-job / migration на удалённом сервере
 **Category:** execution-safety
 
-### 2026-04-18 zvonok-com / session 3: Silent Delegation Trap
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** delegated and forgot monitoring
-**Triad:** запуск async инструмента/агента с неизвестным временем выполнения → сразу сообщить ожидаемое время + мониторить прогресс + алертить при молчании → допустить, что delegation = done, пока инструмент работает незаметно
-**Context:** Задача делегирована инструменту, запущен без предупреждения о времени и без мониторинга — пользователь ждал 1:40 в неведении.
-**Pattern:** До запуска любого async инструмента: сообщи ожидаемое время выполнения и как прервать. Во время — мониторь и давай промежуточные апдейты. Молчание инструмента дольше разумного — сигнализируй пользователю, не жди завершения.
-**Scope:** universal
-**Category:** communication
-
-### 2026-04-18 zvonok-com / session 3: SSH-deploy kills own connection on service restart
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** restart severs monitoring connection
-**Triad:** деплой через SSH делает systemctl restart в том же сеансе → проверять статус сервиса отдельным SSH-соединением после паузы, не в той же pipe-команде → не считать exit 255 после restart сбоем деплоя и не запускать повторный деплой
-**Context:** deploy.sh убил gunicorn и перезапустил сервис внутри одного SSH-сеанса; при рестарте соединение оборвалось (exit 255), что было воспринято как провал — запущен второй деплой, который убил уже поднятый сервис.
-**Pattern:** После `systemctl restart` в SSH-сеансе соединение может оборваться — это не ошибка деплоя. Статус сервиса проверять отдельным SSH-вызовом с задержкой (sleep 5 && ssh ... systemctl is-active), не в той же pipe-команде.
-**Scope:** universal
-**Category:** recovery
-
-### 2026-04-18 dedup-inn-monthly / session: upstream filter blindness in pipeline tests
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** upstream filter blindness
-**Triad:** написание теста для шага N многоступенчатого пайплайна → составить список предшествующих фильтров и убедиться что тестовые данные их проходят → не допустить маскировку логики нулевым результатом из upstream-фильтрации
-**Context:** Тест для Stage 4c (INN dedup) написан с данными, которые не прошли Stage 4 (OPF-фильтр) → `filtered` был пуст → `inn_dedup_skipped` всегда 0, тест всегда падал.
-**Pattern:** Перед написанием теста для шага N пайплайна — явно проверить все предшествующие шаги-фильтры и убедиться что тестовые данные им соответствуют. Если шаг N проверяет поведение «при условии X» — убедиться, что X физически достигается в тестовом сценарии.
-**Scope:** universal
-**Category:** sequencing
-
 ### 2026-04-18 zvonok-com / session: known constraint not propagated to new client
 
 **Seen:** 1
@@ -1902,95 +1855,6 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
-### 2026-04-18 zvonok-com / session 4: producer names output fields independently
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** producer-side naming assumption
-**Triad:** configuring data output that feeds a separate system → derive output field names directly from the consumer's parsing code → assume producer and consumer independently converge on the same field names
-**Context:** Callback URL parameters were named freely (`call_id`, `status`) without checking what parameter names the receiving handler actually reads (`ct_call_id`, `ct_dial_status`). Both sides worked but silently never connected.
-**Pattern:** When configuring the output fields of a channel that feeds another system, read the consumer's actual parsing code first and use exactly those names. Never derive output field names from spec prose, variable naming habits, or symmetry assumptions.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-18 course-guide / session: declaration-demonstration gap
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** declaration-demonstration gap
-**Triad:** preface of a multi-section deliverable declares a resource/convention as part of the approach → before declaring deliverable done, walk every preface declaration and verify at least one concrete later section actually exercises it → ship a deliverable that promises resources/conventions it never demonstrates
-**Context:** A multi-chapter methodology declared a secondary tool as «10% of the workflow» in the setup chapter, but none of the six concrete worked examples actually used it. Each example chapter was written in isolation against its own local plan; nobody cross-checked examples against the setup chapter's promises. Client noticed only at final review, forcing rework of five chapters and re-delivery.
-**Pattern:** When a deliverable has a preface/setup section that declares tools, conventions, voice, audience, or methodology commitments, treat each declaration as a contract. Before declaring done, enumerate every declared item and check: is there at least one concrete demonstration of this later in the same deliverable? If not — either demonstrate it, or remove/demote the declaration to «optional, not verified». Do not rely on author memory that declarations were honoured; audit mechanically.
-**Scope:** universal
-**Category:** scope-management
-
-### 2026-04-19 juridical-parser / session: cascaded permission layers
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** single-layer trust assumption
-**Triad:** делегирование падает с permission/access error → проверить ВСЕ слои разрешений (config trust, OS ACL, sandbox identity), не только тот, на который сразу указывает диагноз → ремонт верхнего слоя при существовании нижнего → новый круг неудач и повторных делегаций
-**Context:** Делегирование агенту падало по доступу. Первый слой (config trust list) был исправлен, но фактический исполнитель работал под отдельной OS-идентичностью со своим набором ACL — нижний слой остался закрытым. Каждая повторная попытка делегации жгла время и контекст до тех пор, пока не был сделан inventory всех слоёв.
-**Pattern:** При access/permission ошибке от делегированного исполнителя — НЕ чинить первый попавшийся слой. Сначала перечислить все слои, через которые проходит операция (конфиг trust, OS-уровень ACL/UID/GID, sandbox profile), и определить, какой именно отказывает (пробой записью в смежные пути той же иерархии). Чинить точечно тот слой, который реально отказал, а не тот, про который проще вспомнить.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-19 codex-delegate / session 1: redundant safety gate
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** redundant safety gate assumption
-**Triad:** background process with pre-qualification gate + added time-based cancel → check if pre-qualification already covers the failure case before adding a time limit → treating long-running as stuck/oversized when the scope check already excluded oversized inputs
-**Context:** A background process already had a size/quality pre-check gate. A time-based auto-cancel was added as extra "stuck" protection. The user pointed out: if the quality gate passed, cancelling on time penalizes correctly-scoped work that happens to be slow.
-**Pattern:** When a background process has a pre-delegation quality gate, verify that gate covers the failure case before adding a time-based safety limit. A time limit on a pre-qualified process is a false positive factory — it conflates "long-running" with "low-quality input."
-**Scope:** universal
-**Category:** scope-management
-
-### 2026-04-19 court-flags-separation / session 1: human-as-last-resort bias
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** human-as-last-resort bias
-**Triad:** state в общей системе оказалось неожиданно изменённым (флаг в 0 вместо 1, значение обнулилось, конфиг пустой) → СНАЧАЛА прямой вопрос оператору: "ты изменял это вручную?" до расследования автоматических путей мутации → поиск призрачного бага в коде, когда изменение было сделано человеком out-of-band
-**Context:** В production-системе у всех судов флаг активности оказался в 0, хотя логика пайплайна требовала 1. Погрузился в grep + чтение панельного JS + endpoint'ов, чтобы найти "кто программно сбрасывает флаг". Через час пользователь сказал: "я сам выставил 0 через параллельную сессию Claude как аварийный стоп звонка". Часовое расследование было потрачено на несуществующий в коде баг.
-**Pattern:** Если состояние системы оказалось неожиданно мутированным и есть возможность общения с оператором — первым шагом явно спросить: "это могло быть сделано вручную через другой канал?" до того, как начинается охота за кодом-мутатором. Особенно актуально в проектах с несколькими точками входа (панель, SQL-консоль, другие сессии AI, скрипты на сервере). Если ответ "да" — код невиновен, сэкономили раунды диагностики. Если "нет" — легитимно копаем код, но теперь с гарантией, что это не out-of-band правка.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-19 court-flags-separation / session 1: stale sibling blindness
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** stale sibling blindness
-**Triad:** пользователь изменил ранее принятое решение, зафиксированное в нескольких артефактах (интервью-лог, документ-результат, changelog) → сразу после смены решения синхронизировать ВСЕ артефакты, которые держат это решение, не только primary output → валидатор / reviewer флажит phantom-противоречие между свежим primary и устаревшим sibling, стоит дополнительных раундов валидации
-**Context:** Во время ревизии user-spec пользователь пересмотрел два решения: миграционный подход и UI-деталь. Я обновил user-spec.md (primary output) — но не обновил interview.yml, в котором те же решения были зафиксированы в старой форме. Валидатор сравнил два артефакта, увидел "противоречие", выдал critical findings. Потратили два лишних раунда валидации, пока не синхронизировал yml.
-**Pattern:** Когда пользователь меняет решение, уже зафиксированное в нескольких документах — **перед продолжением перечислить все места захвата и обновить каждое одним заходом**, а не полагаться, что reviewer/validator будет смотреть только последний output. Применимо к spec + interview + ADR, к design-plan + design-spec, к task-list + доска, к любому набору артефактов, где одно решение попадает в N капт. Стоимость sync'а — одна минута. Стоимость пропуска — раунд ревью/валидации за phantom issues.
-**Scope:** universal
-**Category:** communication
-
-### 2026-04-20 court-flags-separation / session 2: convention-based name inference
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** convention-based name inference
-**Triad:** spec называет конкретный символ кода (переменную, константу, функцию) по имени → grep точного имени до записи в спек → предположение что имя соответствует нейминг-конвенции языка вместо проверки реального кода
-**Context:** В tech-spec написал `_COURTS_BY_DISTRICT` с underscore-prefix (предположив, что переменная "приватная" по Python-конвенции). Реальная переменная — `COURTS_BY_DISTRICT` без underscore. Skeptic-validator поймал mirage, потребовался fix-коммит и повторная валидация.
-**Pattern:** Перед тем как записать имя символа из существующей кодовой базы в спек — grep по файлу и убедиться в точном написании. Нейминг-конвенции (underscore prefix, camelCase, UPPER_CASE) в реальном коде нарушаются, изменяются и не совпадают с ожидаемыми. Один grep — дешевле одного validation round.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-20 court-flags-separation / session 2: default layout overrides explicit constraint
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** default-layout assumption over explicit constraint
-**Triad:** Architecture-секция описывает размещение нового UI-компонента → перечитать user-spec на явные layout-ограничения до выбора placement → размещение по "умолчанию для нового поля" (новая колонка, новый блок) игнорирует явный запрет из user-spec
-**Context:** В tech-spec описал `.f-zvonok-id` как новый `<td class="col-zvonok">` — логичное "поле = колонка таблицы". User-spec содержал явное "не в отдельной колонке". Validation round поймал противоречие. Fix: поле переехало в `col-name` ячейку существующей строки.
-**Pattern:** Когда tech-spec описывает UI-компонент — до выбора placement grep/перечитать user-spec на явные layout-ограничения ("не в колонке", "внутри раскрытия", "рядом с X"). Default placement ("новый элемент = новая строка/колонка") — самый распространённый выбор и самый частый способ нарушить явный запрет. Constraint в user-spec важнее convention.
-**Scope:** situational
-**Situation:** tech-spec раздел описывает размещение нового UI-компонента, когда user-spec содержит явные layout-ограничения
-**Category:** information-gathering
-
 ### 2026-04-20 windows-codex-setup / session 1: user-subset completeness illusion
 
 **Seen:** 1
@@ -1999,17 +1863,6 @@ Patterns that apply to any project, any stack, any domain.
 **Triad:** user-spec опирается на внешний framework/chain (методология, stack, SDK) и пользователь называет подмножество компонентов для установки → открыть entry-point framework'а (его README, главный SKILL/manifest, install doc) и выписать ИМЕННО перечисленные им зависимости до записи компонентов в AC → принимать пользовательский список как финальный scope, игнорируя, что chain сам требует дополнительные элементы
 **Context:** Пользователь сказал «тянем 3 скилла (methodology, quick-learning, skill-master) из ai-dev-methodology-codex». Записал в AC «3 скилла». Позже пришлось заново открывать `methodology/SKILL.md`, выяснять, что pipeline требует цепочку из 31 скилла + agents/ + shared/, перевёрстывать Technical Decisions и AC. Один лишний батч интервью и частичная переверстка спека.
 **Pattern:** Когда спека импортирует внешний framework или dependency chain, и пользователь называет подмножество — открыть entry-point (README, install section, главный manifest) ДО фиксации AC. Пользовательский список = seed, framework-манифест = финальный scope. Правило «user knows best» не работает для внешних зависимостей, потому что пользователь часто знает только верхушку.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-21 mvp-booking-flow / session 1: recent-interview overrides pre-recorded default
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** pre-recorded default erosion
-**Triad:** writing derivative planning artifact (user-spec from TZ, tech-spec from user-spec) whose upstream source contains explicit defaults for the same concept → before encoding each policy, grep upstream source for the concept by name and reconcile with the explicit default → treat the most recent interview exchange as highest-authority approval, silently overriding an explicit default already recorded in the source
-**Context:** User's pre-recorded TZ clearly stated "синий = подтверждено автоматически" (no admin approval needed). During user-spec interview a narrow technical question about confirmation mechanisms ("обе схемы сработают?") got a "да"; I extrapolated it into a policy ("admin confirms every booking via buttons") that contradicted the pre-recorded default. Contradiction caught by validators in round 1; required full rewrite of confirmation scenarios + state machine + architecture.md/patterns.md.
-**Pattern:** Before encoding any default/policy in a derivative artifact, grep the upstream source (original TZ, project-knowledge, earlier spec) for the concept's name. If the source contains an explicit default that differs from the interview-inferred one — treat the source as authoritative or explicitly surface the conflict to the user. Recent conversational "yes" to a narrow technical question is not a policy endorsement; it cannot silently override an explicit earlier statement.
 **Scope:** universal
 **Category:** information-gathering
 
@@ -2024,29 +1877,6 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
-### 2026-04-20 windows-codex-setup / session 1: check user's tool config before asking for preferences
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** external-config blindness
-**Triad:** about to ask user for a default/preference of a tool they use locally → first inspect user's existing configuration for that tool (home-dir dotfiles, registry, env vars) before asking → external-config blindness: treating the conversation + project-docs as the only knowledge sources, ignoring authoritative config the user maintains outside the project
-**Context:** Сессия tech-spec-planning. Surfaced вопрос «пиним ли модель или дефолт?» как контроверсию. Пользователь ответил «я точно отвечал, у тебя этого нет в документации?» Не было в project-docs, было в `~/.codex/config.toml` самого пользователя (`model = "gpt-5.4"`, `model_reasoning_effort = "medium"`). Обычная CLAUDE.md-привычка «искать в project knowledge» не покрыла user-level tool configs.
-**Pattern:** Перед тем как спросить пользователя про дефолт/preference/версию инструмента, которым он пользуется локально, — grep его `~/.{tool}/`, `$XDG_CONFIG_HOME/{tool}`, Windows registry, env vars, dotfile в `$HOME`. Если пользователь уже эксплуатирует этот инструмент, его config — первоисточник. Conversation + project docs могут не содержать преференций, явно зафиксированных в его собственной среде. Applies to: tool model configs, editor settings, shell preferences, git config, любая per-user конфигурация — везде, где tool — предмет обсуждения.
-**Scope:** universal
-**Category:** information-gathering
-
-### 2026-04-21 mvp-booking-flow / session 1: user's global routing rule mid-pipeline — classify outputs by layer
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** artifact-as-code conflation
-**Triad:** user announces a global routing rule ("всё X → Y") mid-pipeline whose current phase produces methodology artifacts and later phases produce domain code → classify each upcoming output by layer (planning artifact vs execution output) and apply rule only to matching layer, never propagate to current-phase artifacts → artifact-as-code conflation: treat user's "всё/every" as workflow-spanning when it actually scopes to the next phase boundary
-**Context:** Пользователь approved 31-task plan и сказал «всё написание кода переходит кодексу». Я начал делегировать Codex создание 31 task-файла — task-files это методологический артефакт /decompose-tech-spec (Phase 1 task-creator subagents), а не код. Пользователь прервал и спросил «как ты без тасков собираешься делегировать работу кодексу?». Правильное прочтение: «код» = src/ во время execution (Phase 5+), не methodology artifacts текущего skill'а.
-**Pattern:** При любом user-level routing rule («делай Y через Z», «всё X → Y»), поступающем во время выполнения многофазного skill/pipeline, — до применения явно перечислить output types каждой активной и предстоящей фазы с меткой (artifact=методологический промежуточный результат, code=product src/test). Применить правило ТОЛЬКО к типу "code" и только к фазам, где он производится. Методологические артефакты (task-files, specs, plans, audit reports) — inner loop процесса, они остаются на текущем исполнителе. Если scope правила неясен — спросить до применения, не после.
-**Scope:** universal
-**Category:** scope-management
-
-
 ### 2026-04-21 mvp-booking-flow / session 1: runaway parallel subagent fanout without economic gate
 
 **Seen:** 1
@@ -2057,17 +1887,6 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Any skill or plan step that spawns >3 parallel subagents is a cost checkpoint, not an automatic action. Before spawning: (1) estimate total cost = agents × expected output size × expected tool uses per agent; (2) compare to session-so-far burn (token/context/time); (3) if this wave + remaining pipeline likely exceeds a healthy budget, stop and present to user: expected cost, alternatives (one sequential agent, smaller batch, narrower scope, skip this step). Applies to research fanout, validator fanout, per-task fix fanout, per-file review fanout — any time "parallel subagents" is the chosen pattern. Treat the user's budget as a first-class constraint equal to correctness, not a background assumption.
 **Scope:** universal
 **Category:** sequencing
-
-### 2026-04-21 content-card-series / session 1: unified treatment for mixed-content sections
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** variety-by-content-type bias
-**Triad:** deliverable has sections carrying different content types within one frame → pick ONE structural treatment for all sections; let content differences live as minimal inline variations → variety-by-content-type bias
-**Context:** When one card had three sections — testimonial quote, structured case facts, narrative — I assigned three distinct visual containers (italic+border-left blockquote, label/value grid with opacity dimming, plain paragraph). User read it as unbalanced cacophony.
-**Pattern:** When sections within the same frame carry different content types, do NOT reach for a distinct visual container per type. Commit to one structural treatment (same size/weight/margins for all section bodies) and let content differences surface as minimal inline variations — italic span for a quote, bold label for a data key, nothing else. Unified container → content speaks; varied containers → form competes with content.
-**Scope:** universal
-**Category:** design-taste
 
 ### 2026-04-21 content-card-series / session 1: category-typography reflex in editorial context
 
@@ -2080,17 +1899,6 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** design-taste
 
-### 2026-04-21 mvp-booking-flow / session 1: partial staging before auto-fix hook
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** partial staging before auto-fix hook
-**Triad:** preparing commit when recently-edited files have unstaged changes and auto-fixing hooks are active → verify `git diff --name-only` is empty before committing; re-stage all modified files if not → auto-fix hooks stash unstaged changes, apply fixes, then roll back on stash conflict — silently undoing all fixes and forcing re-diagnosis
-**Context:** Files were staged for commit but working-tree still held modified versions; auto-fixing hook stashed unstaged changes, applied fixes, then rolled back the stash due to conflict — requiring two extra commit attempts and a re-staging cycle.
-**Pattern:** Before any commit involving auto-fixing hooks, confirm all modified files are fully staged (working tree clean for those files). If the commit fails with a stash-conflict message, do not re-run fixes piecemeal — stage everything first, then retry.
-**Scope:** universal
-**Category:** sequencing
-
 ### 2026-04-21 mvp-booking-flow / session 1: silent dependency assumption
 
 **Seen:** 2
@@ -2101,17 +1909,6 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before writing any call to a function or service across a module boundary, grep its actual definition: what arguments does it take, what does it inject or import, what preconditions must be satisfied? Name-based inference ("this looks like a pure utility") is unreliable — the real signature may carry injected state (bot, db, config, context). Check the signature, not the name.
 **Scope:** universal
 **Category:** information-gathering
-
-### 2026-04-21 mvp-booking-flow / session 3: tool availability assumed in session plan
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** environment availability assumed
-**Triad:** designing a session workflow that plans multi-agent review rounds → verify tooling availability (SendMessage between subagents) at session start before committing the review plan → environment availability assumed: planning as if listed tools will be usable at runtime without checking
-**Context:** All 5 tasks in session 3 planned structured 3-reviewer rounds via SendMessage. SendMessage between subagents was unavailable throughout — every review degraded to self-review, producing a repeated deviation note across all tasks.
-**Pattern:** At the start of any session that plans to use external tooling or inter-agent communication, do a quick availability check first. If the tool is unavailable, revise the quality plan upfront — not per-task after discovering the gap. A degraded plan set once is better than per-task surprises.
-**Scope:** universal
-**Category:** scope-management
 
 ### 2026-04-21 КульмИИнатор / session 6: Middleware dispatch model assumption
 
@@ -2157,17 +1954,6 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** communication
 
-### 2026-04-21 mvp-booking-flow / session 6: bulk tool assumed complete without post-verify
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** completion assumption without verification
-**Triad:** after applying a bulk-operation tool to a large file set → verify with the tool's check/dry-run mode before committing → assuming bulk application covered all targets without checking
-**Context:** A bulk reformatter was applied to the whole codebase and committed. Two files were missed silently, causing a subsequent gate check to fail — triggering an extra fix round and QA re-run.
-**Pattern:** After any bulk operation (format pass, mass rename, migration), immediately verify with the tool's check mode before staging. Commit only after check exits 0. Never assume bulk = complete.
-**Scope:** universal
-**Category:** sequencing
-
 ### 2026-04-21 mvp-booking-flow / session 6: defined artifact ≠ runtime invocation
 
 **Seen:** 1
@@ -2190,13 +1976,3 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** problem-decomposition
 
-### 2026-04-21 kulminiator / session calibration-1: positive isinstance excludes valid subtypes
-
-**Seen:** 1
-**Adapted:** —
-**Cognitive Error:** positive type check excludes subtypes
-**Triad:** narrowing a union type before accessing a method → check for the unwanted variant (`not isinstance(x, Excluded)`) rather than asserting the wanted one (`isinstance(x, Target)`) → assuming `isinstance(x, Target)` is equivalent to "x is usable as Target" when subtypes and duck-typed proxies exist
-**Context:** A guard used `isinstance(message, Message)` to exclude an inaccessible message type. This simultaneously excluded MagicMock test doubles (not a subclass of Message) and confused mypy's type narrowing on the union type. Switching to `not isinstance(message, InaccessibleMessage)` fixed both: test doubles pass, mypy narrows correctly.
-**Pattern:** When excluding one variant from a union, express the exclusion directly (`not isinstance(x, Unwanted)`) rather than asserting membership in the wanted type. This preserves duck-typed objects, satisfies type narrowers, and keeps intent explicit.
-**Scope:** universal
-**Category:** problem-decomposition

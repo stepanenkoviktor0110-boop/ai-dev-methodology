@@ -10,7 +10,7 @@
 "Не нужен" → уточни: UI или вся функциональность (API, DB)? "X здесь, а не там" → добавь в новое место, убери только из названного. Неоднозначное название → покажи варианты, спроси. При нескольких похожих метриках/счётчиках — явно сопоставить термин пользователя с конкретной метрикой до ответа, не подменять один другим по схожести. Диагностический вопрос ≠ запрос на действие. Task file > prompt для значений.
 
 **3. Любое изменение — проверяй радиус поражения:**
-Изменён элемент из группы → примени к каждому sibling. Синхронизация файлов → проверь index-файлы. Hotfix вне плана → добавь в audit wave. Новый marker в промте → опиши во всех секциях. DRY-нарушение в N задачах → extraction-задача в audit. Validation добавлена в route → немедленно grep по имени поля во всех route-файлах, убедиться что structurally-similar endpoints имеют ту же validation. Смена домена → grep hardcoded CORS/CSRF/allowed_origins в кодовой базе и обновить ВСЕ до деплоя, иначе молчаливый 403 после переключения.
+Изменён элемент из группы → примени к каждому sibling. Синхронизация файлов → проверь index-файлы. Hotfix вне плана → добавь в audit wave. Новый marker в промте → опиши во всех секциях. DRY-нарушение в N задачах → extraction-задача в audit. Validation добавлена в route → немедленно grep по имени поля во всех route-файлах, убедиться что structurally-similar endpoints имеют ту же validation. Смена домена → grep hardcoded CORS/CSRF/allowed_origins в кодовой базе и обновить ВСЕ до деплоя, иначе молчаливый 403 после переключения. Частный случай: пользователь изменил ранее принятое решение, зафиксированное в нескольких артефактах (spec, decisions, task) → сначала перечислить ВСЕ места захвата, затем синхронизировать одним заходом, чтобы reviewer не флажил phantom-противоречия из устаревших sibling-документов.
 
 **4. Не подтверждай без проверки реальности:**
 "Это работает?" → grep в коде до ответа. Pipeline ok но экспорт упал → алерт на N consecutive 0. Тесты зелёные но покрытие иллюзорно → ad-hoc fix немедленно. Pre-existing failures → проверь working tree (git stash). Задача помечается done только после проверки реального эффекта в системе, а не по наличию промежуточного артефакта (файл создан ≠ фича работает).
@@ -33,8 +33,8 @@ When сервис с free tunnel перезапустился → считать
 **10. Проверка запретов из спека перед коммитом:**
 When task-файл содержит явный запрет ("NEVER X"), реализация нарушает запрет → grep по запрещённому паттерну в изменённых файлах ДО коммита, to не тратить review round на нарушение явного спрета из спека.
 
-**11. Async агент без прогресса — kill threshold:**
-When мониторинг async AI-агента без нового прогресса → установить порог "5 мин без записи в лог = убить и перезапустить", to не тратить 15+ мин на polling заведомо зависшей задачи.
+**11. Async агент — старт и мониторинг:**
+When запуск async инструмента/агента с неизвестным временем выполнения → сообщить пользователю ожидаемое время ДО запуска + мониторить прогресс + при молчании >5 мин алертить; при отсутствии новых записей в лог — убить и перезапустить, to не допустить, что пользователь ждёт в неведении и не тратить 15+ мин на зависшую задачу.
 
 **12. Визуальная фича — по одному экрану:**
 When визуальная фича с несколькими экранами/блоками → показать один экран/блок полностью → дождаться одобрения → следующий, to получить ранний фидбэк на каждый экран до следующего.
@@ -129,8 +129,41 @@ When large deliverable produced after extended multi-step work → proactively o
 **42. Расследование production во времени — durable источники первыми:**
 When расследование «что произошло во время T» на production/long-running системе → сначала опросить durable audit источники (file mtime, append-only audit-таблицы, system event logs с retention-политикой) — потом уже grep по текстовым логам, to избежать log-first forensics bias: текстовые логи могут быть ротированы или усечены.
 
-**43. Расследование при наличии control layer — читай конфиг первым:**
-When system investigation with a dedicated settings/control layer present → read authoritative config first, then interpret data through that lens, to avoid misidentifying configured state as a bug.
+**43. Читай конфиг прежде чем спрашивать пользователя:**
+When system investigation with a dedicated settings/control layer present → read authoritative config first, then interpret data through that lens, to avoid misidentifying configured state as a bug. Обобщение: when вот-вот спросить пользователя про дефолт/настройку инструмента который он использует локально → сначала проверить home-dir dotfiles, registry, env для этого инструмента; спрашивать только если конфиг не найден.
 
 **44. Ранее «решённая» проблема снова в продакшне — проверь деплой:**
 When previously "resolved" issue recurs in production → verify fix was actually persisted in deployment artifacts (env, config files, infra state), to избежать fix documentation conflated with fix deployment.
+
+**45. Редактирование документа с возможными копиями — найди канонический:**
+When editing a document that may have multiple copies across repo locations (root + nested, overlays, forks) → enumerate all copies via file-name survey, compare mtime/content to identify the canonical one, edit only canonical, to avoid first-found copy bias: treating the first opened copy as source-of-truth without verifying.
+
+**46. Тяжёлый процесс на лёгкий артефакт — проверь соответствие:**
+When a heavyweight multi-phase process is invoked on a lightweight deliverable (content-first, small glue code, one-shot) → inspect target artefact first, check whether process's core units (tasks/waves/reviewers) fit the work's shape, propose lightweight mode before Phase 0 output, to avoid blindly following process pipeline because it was invoked, without checking that its abstractions are meaningful for this work.
+
+**47. Преамбула обещает ресурсы — верифицируй демонстрацию:**
+When the preface of a multi-section deliverable declares a resource/convention as part of the approach → before declaring done, walk every preface declaration and verify at least one concrete later section actually exercises it, to avoid declaration-demonstration gap: shipping a deliverable that promises resources/conventions it never demonstrates.
+
+**48. Делегирование падает с permission error — пробей все слои:**
+When delegation fails with a permission/access error → enumerate ALL permission layers (config trust, OS ACL, sandbox identity) and probe adjacent paths in the same hierarchy to identify the actual failing layer, to avoid single-layer trust assumption: fixing the first found layer and hitting the same failure from a second.
+
+**49. Неожиданное изменение состояния — сначала спроси человека:**
+When state in a shared system turns out to be unexpectedly changed (flag reset, config zeroed, data gone) → first ask the operator directly "did you touch this manually?" — before investigating automated mutation paths, to avoid human-as-last-resort bias: hunting a phantom code-mutator while ignoring out-of-band human intervention.
+
+**50. Глобальное правило маршрутизации в середине пайплайна — классифицируй по слою:**
+When a user announces a global routing rule ("всё X → Y") mid-pipeline whose current phase produces methodology artifacts and later phases produce domain code → classify each upcoming output by layer (planning artifact vs execution output) and apply rule only to matching layer, to avoid artifact-as-code conflation: treating user's "всё/every" as workflow-spanning when it actually scopes to the next phase boundary.
+
+**51. Запуск >3 параллельных субагентов — оцени стоимость:**
+When about to spawn >3 parallel subagents for any purpose (research, validation, fix, review, generation) → before spawn estimate fanout cost (agents × expected context each) vs remaining session budget; if wave would consume a large share or a prior wave already did, halt and surface options (one sequential agent / smaller batch / narrower scope / stop), to avoid silent-scaling bias: treating "parallelism available" as permission to use maximum fanout without checking session budget.
+
+**52. Задача зависит от компонента из предыдущей волны — читай живой код:**
+When implementing a task that depends on a component written in a prior wave → read actual source code interface before using the spec description, to avoid spec-text as ground truth: trusting task document over live implementation.
+
+**53. Планирование межагентного взаимодействия — верифицируй инструменты заранее:**
+When designing a session workflow that plans multi-agent review rounds using inter-agent tooling → verify tooling availability (e.g. SendMessage between subagents) at session start before committing the review plan, to avoid environment availability assumed: planning as if listed tools will be usable at runtime.
+
+**54. Автономный исполнитель без явного окончания — добавь терминатор:**
+When an autonomous worker receives a step-by-step completion protocol without explicit scope termination → close the protocol with explicit termination: "only these N steps, no additional actions", to avoid permissive gap assumption: executor treats gap between not-listed and not-prohibited as permission.
+
+**55. Массовая операция над файлами — верифицируй до коммита:**
+When after applying a bulk-operation tool to a large file set → verify with the tool's check/dry-run mode before committing, to avoid completion assumption without verification: bulk assumed complete without checking.

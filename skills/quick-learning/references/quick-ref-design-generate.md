@@ -1,12 +1,12 @@
 # Quick Reference — Design Generate
 
-1. Визуальная задача с референс-скриншотами — сверить типографику с референсом ДО написания CSS, чтобы не накапливать fix-коммиты на визуальное несоответствие (Seen: 1)
-2. Размещение текста/UI поверх full-bleed фото — определить зону субъекта в кропированном вьюпорте ДО расстановки элементов, чтобы не перекрыть лицо/объект (Seen: 1)
-3. Задача "альтернативный дизайн" или "редизайн" — выбирать layout pattern независимо от существующей верстки, чтобы получить реальную альтернативу, а не ресайл (Seen: 1)
-4. Выбор лейаута с full-bleed фото — проверить ориентацию фото и кадрирование субъекта против формы контейнера, чтобы не итерировать над геометрически невозможным кропом (Seen: 1)
-5. Верстка секции из структурированных данных пользователя — маппировать каждое поле данных в UI-элемент напрямую, чтобы не изобретать структуру расходящуюся с источником (Seen: 1)
-6. Несколько текстовых блоков на карточке с разными позициями — проверить visual weight (font-size × font-weight) каждого блока для поддержки нужного порядка чтения (Seen: 1)
-7. Текстовый блок на full-bleed фото с неравномерным фоном — выровнять по стороне с наименее загруженной фоновой зоной, а не по конвенциональной позиции (Seen: 1)
-8. Текст на busy/текстурном фоне с недостаточным контрастом — увеличить font_size на 1 шаг сетки (8px) пока буква не перекроет детали текстуры (Seen: 1)
-9. Design constraint (wrap/overflow) конфликтует с согласованным текстом — адаптировать font-size / колонку / лейаут под оригинальный текст, сохранить content integrity (Seen: 1)
-10. Вычисление font-size fit для кириллического uppercase — использовать 0.72em на символ (не 0.62em для латиницы), проверять самое длинное слово (Seen: 1)
+1. Verify fonts against reference BEFORE writing CSS; calculate font-size from character-width coefficient of the longest word.
+2. Text over photo → find subject zone, place text on least-busy side; solid opaque bg on dark/light boundaries — never rgba.
+3. Color choice: enumerate ALL options (brand + white + dark grey), evaluate each against background before deciding.
+4. Check visual weight (size × weight) across text blocks to match reading order intent.
+5. Structured data → each field = one UI element; do not invent structure that isn't in the data.
+6. Complex UI: build ONE block fully → get approval → scale to the rest. Never generate multiple artifacts without stopping.
+7. When sections carry mixed content types, use ONE structural container treatment; let content vary only via minimal inline styles.
+8. Commercial format in editorial context → verify the voice before using category typography (badges, strikethrough, SKU tables).
+9. Read design-learned-patterns.md at Phase 2 start (lazy load), not before — keeps context lean.
+10. Layout constraint vs coherent text → adapt the layout, not the text.
