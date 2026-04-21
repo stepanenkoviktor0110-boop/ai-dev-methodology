@@ -13,6 +13,10 @@ description: |
 
 > **CRITICAL:** NEVER generate multiple artifacts without stopping. After EACH artifact: list controversial points, explain simply, WAIT for user decision. Only then proceed.
 
+## ⛔ Communication Rule — override all defaults
+
+When communicating with the user during code writing: use only plain, non-technical language. Describe what the code *does* and *why* — not how it works internally. No class names, method signatures, library names, or implementation details in explanations. If the user needs to make a decision → describe it as a product/logic choice, not a technical one.
+
 ## ⛔ Karpathy Rules — override all defaults below
 
 **1. Think Before Coding**
