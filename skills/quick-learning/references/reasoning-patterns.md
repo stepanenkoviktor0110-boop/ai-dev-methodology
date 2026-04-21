@@ -2045,3 +2045,15 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** При любом user-level routing rule («делай Y через Z», «всё X → Y»), поступающем во время выполнения многофазного skill/pipeline, — до применения явно перечислить output types каждой активной и предстоящей фазы с меткой (artifact=методологический промежуточный результат, code=product src/test). Применить правило ТОЛЬКО к типу "code" и только к фазам, где он производится. Методологические артефакты (task-files, specs, plans, audit reports) — inner loop процесса, они остаются на текущем исполнителе. Если scope правила неясен — спросить до применения, не после.
 **Scope:** universal
 **Category:** scope-management
+
+
+### 2026-04-21 mvp-booking-flow / session 1: runaway parallel fanout without economic gate
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** missing fanout-cost gate
+**Triad:** orchestrator runs validation-fix loop with N parallel subagents × M iterations → before each new iteration, estimate fanout cost vs remaining budget and surface to user with options (batch-into-one / defer minor / stop early) instead of auto-continuing → silent-scaling bias: treat "max N iterations" spec as permission to use all N even when prior iteration already burned most of the budget
+**Context:** A validation-fix loop kept spawning dozens of parallel subagents per iteration; each iteration surfaced new minor findings on top of fixes, so the loop ran to the hard limit. User could not practically interrupt because each wave finished only after all parallel agents returned.
+**Pattern:** When a skill specifies "up to N iterations" of parallel subagent fanout, treat N as a ceiling, not a target. Before iteration k>1, compute approximate fanout cost (agents × expected context per agent) and compare to remaining user budget signals (session length, prior burn). If cost ≥ remaining budget OR prior iteration already crossed a threshold, halt auto-continue: present current findings, group by severity, and ask user whether to (a) collapse all remaining fixes into a single agent, (b) defer minor findings as known issues, or (c) stop at Phase 3 with current state. Default to asking, not continuing.
+**Scope:** universal
+**Category:** sequencing
