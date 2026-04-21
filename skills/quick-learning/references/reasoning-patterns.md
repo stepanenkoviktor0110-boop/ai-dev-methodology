@@ -2047,13 +2047,13 @@ Patterns that apply to any project, any stack, any domain.
 **Category:** scope-management
 
 
-### 2026-04-21 mvp-booking-flow / session 1: runaway parallel fanout without economic gate
+### 2026-04-21 mvp-booking-flow / session 1: runaway parallel subagent fanout without economic gate
 
 **Seen:** 1
 **Adapted:** —
 **Cognitive Error:** missing fanout-cost gate
-**Triad:** orchestrator runs validation-fix loop with N parallel subagents × M iterations → before each new iteration, estimate fanout cost vs remaining budget and surface to user with options (batch-into-one / defer minor / stop early) instead of auto-continuing → silent-scaling bias: treat "max N iterations" spec as permission to use all N even when prior iteration already burned most of the budget
-**Context:** A validation-fix loop kept spawning dozens of parallel subagents per iteration; each iteration surfaced new minor findings on top of fixes, so the loop ran to the hard limit. User could not practically interrupt because each wave finished only after all parallel agents returned.
-**Pattern:** When a skill specifies "up to N iterations" of parallel subagent fanout, treat N as a ceiling, not a target. Before iteration k>1, compute approximate fanout cost (agents × expected context per agent) and compare to remaining user budget signals (session length, prior burn). If cost ≥ remaining budget OR prior iteration already crossed a threshold, halt auto-continue: present current findings, group by severity, and ask user whether to (a) collapse all remaining fixes into a single agent, (b) defer minor findings as known issues, or (c) stop at Phase 3 with current state. Default to asking, not continuing.
+**Triad:** about to spawn multiple parallel subagents (any purpose: research, validation, fix, review, generation) → before spawn, estimate fanout cost (agents × expected context per agent) vs remaining session budget; if cost would consume a large share of budget or a prior wave already did, halt auto-spawn and surface options (collapse to one agent / sequential batches / narrower scope / stop and ask) → silent-scaling bias: treat "parallelism available" or "spec allows N" as permission to use maximum fanout without checking whether budget remains for the rest of the session
+**Context:** A validation-fix loop kept spawning dozens of parallel subagents per iteration; each wave took ~5 min and had to finish before user could practically redirect. Three rounds × ~20-30 agents burned a large share of context and token budget before the user intervened. Generalises beyond validation loops — any plan phase that says "spawn N research/review/fix agents in parallel" has the same failure mode.
+**Pattern:** Any skill or plan step that spawns >3 parallel subagents is a cost checkpoint, not an automatic action. Before spawning: (1) estimate total cost = agents × expected output size × expected tool uses per agent; (2) compare to session-so-far burn (token/context/time); (3) if this wave + remaining pipeline likely exceeds a healthy budget, stop and present to user: expected cost, alternatives (one sequential agent, smaller batch, narrower scope, skip this step). Applies to research fanout, validator fanout, per-task fix fanout, per-file review fanout — any time "parallel subagents" is the chosen pattern. Treat the user's budget as a first-class constraint equal to correctness, not a background assumption.
 **Scope:** universal
 **Category:** sequencing
