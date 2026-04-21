@@ -36,6 +36,9 @@ After completion — read `{feature_path}/code-research.md`. If gap discovered l
 
 ## Phase 3: Clarification (Adaptive)
 
+**⛔ Think Before Coding (Karpathy — overrides default behavior):**
+Before writing any architecture: list every assumption you are making about the system — explicitly, as a numbered list. For each assumption that isn't confirmed in user-spec or code research → ask the user. If multiple architectural interpretations exist → present them, don't pick silently. If something is unclear → stop and name it before proceeding.
+
 Analyze if additional information is needed based on user-spec and code research.
 - Ask technical questions if gaps exist (no limit on count). Focus: constraints, integration points, data sources, external deps.
 - Gaps in user-spec requirements → discuss with user and update user-spec too.
@@ -80,6 +83,9 @@ Classify each candidate:
 After the gate passes, read the fresh report(s) and the registry. In Phase 4, when writing Decisions, cite report paths as the source of non-trivial technical claims. Do NOT mix memory-based claims with researched facts.
 
 ## Phase 4: Create tech-spec
+
+**⛔ Simplicity First (Karpathy — overrides default behavior):**
+Design the minimum architecture that solves today's problem. No components added "for future flexibility". No abstractions until needed by at least 2 concrete use cases in this spec. Before adding any architectural element ask: "Is this required by user-spec, or am I speculating?" If speculating → don't add it. If the spec grows beyond 15 tasks → treat it as a signal of overengineering, not scope, and propose MVP split before continuing.
 
 1. Copy template and edit sections one by one:
    ```bash

@@ -13,6 +13,19 @@ description: |
 
 > **CRITICAL:** NEVER generate multiple artifacts without stopping. After EACH artifact: list controversial points, explain simply, WAIT for user decision. Only then proceed.
 
+## ⛔ Karpathy Rules — override all defaults below
+
+**1. Think Before Coding**
+Before writing a single line: list every assumption you are making. If uncertain → ask, don't guess. If multiple interpretations exist → present them, don't pick silently. If something is unclear → stop and name it.
+
+**2. Simplicity First**
+Write the minimum code that solves the problem. No abstractions for single-use code. No flexibility or configurability that wasn't requested. No error handling for impossible scenarios. If you write 200 lines and 50 would do → rewrite it. Test: "Would a senior engineer say this is overcomplicated?" If yes → simplify before continuing.
+
+**3. Surgical Changes**
+Every changed line must trace directly to the user's request. Don't improve adjacent code, comments, or formatting. Don't refactor things that aren't broken. Match existing style even if you'd do it differently. If YOUR changes create orphan imports/variables/functions → remove them. Pre-existing dead code → mention it, don't touch it.
+
+---
+
 Before starting, read [quick-ref-code-writing.md](../quick-learning/references/quick-ref-code-writing.md) — top reasoning patterns for this skill (if file exists and non-empty).
 
 ## Phase 1: Preparation
