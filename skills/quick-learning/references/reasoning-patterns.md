@@ -2178,3 +2178,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** After implementing any output artifact (text, side-effect, message), trace backward from the user-visible entry point to verify the artifact is actually invoked. Presence in a module is not evidence of execution; only the call graph is.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-21 kulminiator / session calibration-1: narrow except hides side-effect swallowing
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** narrow except silently propagates
+**Triad:** function wraps an external call in a named-exception tuple → catch all exceptions that represent "unavailable" semantics, then add `# noqa: BLE001` with rationale → assuming a named-exception list is exhaustive when the API surface is broad
+**Context:** A helper caught three specific exception types for "API unavailable" and returned a fallback value. A fourth exception type with the same semantic was not listed, so it propagated upward and silently killed the caller's response path with no error message to the user.
+**Pattern:** When the intent is "treat any failure from this external call as unavailable", use `except Exception` with a suppression annotation rather than enumerating exception types. Enumerate only when different exception types require different handling paths.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-04-21 kulminiator / session calibration-1: positive isinstance excludes valid subtypes
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** positive type check excludes subtypes
+**Triad:** narrowing a union type before accessing a method → check for the unwanted variant (`not isinstance(x, Excluded)`) rather than asserting the wanted one (`isinstance(x, Target)`) → assuming `isinstance(x, Target)` is equivalent to "x is usable as Target" when subtypes and duck-typed proxies exist
+**Context:** A guard used `isinstance(message, Message)` to exclude an inaccessible message type. This simultaneously excluded MagicMock test doubles (not a subclass of Message) and confused mypy's type narrowing on the union type. Switching to `not isinstance(message, InaccessibleMessage)` fixed both: test doubles pass, mypy narrows correctly.
+**Pattern:** When excluding one variant from a union, express the exclusion directly (`not isinstance(x, Unwanted)`) rather than asserting membership in the wanted type. This preserves duck-typed objects, satisfies type narrowers, and keeps intent explicit.
+**Scope:** universal
+**Category:** problem-decomposition
