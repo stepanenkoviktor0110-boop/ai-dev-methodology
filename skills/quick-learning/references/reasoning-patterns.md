@@ -2167,3 +2167,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** After any bulk operation (format pass, mass rename, migration), immediately verify with the tool's check mode before staging. Commit only after check exits 0. Never assume bulk = complete.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-21 mvp-booking-flow / session 6: defined artifact ≠ runtime invocation
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** definition-as-invocation assumption
+**Triad:** implementing a module with exported constants/functions → trace the call path from every entry point to each defined artifact before marking done → treating "constant defined and exported" as equivalent to "constant used at runtime"
+**Context:** A text constant was written, exported, referenced in docs, and confirmed present in the module — but the handler that was supposed to send it only sent a different message. The definition was never wired to the entry point. Discovered only during live testing.
+**Pattern:** After implementing any output artifact (text, side-effect, message), trace backward from the user-visible entry point to verify the artifact is actually invoked. Presence in a module is not evidence of execution; only the call graph is.
+**Scope:** universal
+**Category:** information-gathering
