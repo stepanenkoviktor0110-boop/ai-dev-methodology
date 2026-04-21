@@ -2093,14 +2093,25 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-04-21 mvp-booking-flow / session 1: silent dependency assumption
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Cognitive Error:** silent dependency assumption
 **Triad:** writing code or a task that calls a function/service/utility defined elsewhere in the codebase → grep the actual call-site signature and injected dependencies of that function before wiring it up → silent dependency assumption: assuming the target is self-contained or already injected based on its name alone, without verifying how the surrounding system provides its dependencies
-**Context:** In wave-3 FSM storage tasks, a helper was referenced by name as if it accepted only domain-level arguments. The actual implementation required a `bot` instance injected through a `deps` container that the calling code never assembled. The omission was invisible until integration — the function silently failed to resolve its dependency at runtime.
+**Context:** In wave-3 FSM storage tasks, a helper was referenced by name as if it accepted only domain-level arguments. The actual implementation required a `bot` instance injected through a `deps` container that the calling code never assembled. The omission was invisible until integration — the function silently failed to resolve its dependency at runtime. (Seen 2: session 3 — task 14 teammates assumed bookings.mark_draft_abandoned signature from spec; actual signature added session_factory param per established DI pattern.)
 **Pattern:** Before writing any call to a function or service across a module boundary, grep its actual definition: what arguments does it take, what does it inject or import, what preconditions must be satisfied? Name-based inference ("this looks like a pure utility") is unreliable — the real signature may carry injected state (bot, db, config, context). Check the signature, not the name.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-21 mvp-booking-flow / session 3: tool availability assumed in session plan
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** environment availability assumed
+**Triad:** designing a session workflow that plans multi-agent review rounds → verify tooling availability (SendMessage between subagents) at session start before committing the review plan → environment availability assumed: planning as if listed tools will be usable at runtime without checking
+**Context:** All 5 tasks in session 3 planned structured 3-reviewer rounds via SendMessage. SendMessage between subagents was unavailable throughout — every review degraded to self-review, producing a repeated deviation note across all tasks.
+**Pattern:** At the start of any session that plans to use external tooling or inter-agent communication, do a quick availability check first. If the tool is unavailable, revise the quality plan upfront — not per-task after discovering the gap. A degraded plan set once is better than per-task surprises.
+**Scope:** universal
+**Category:** scope-management
 
 ### 2026-04-21 КульмИИнатор / session 6: Middleware dispatch model assumption
 
@@ -2112,3 +2123,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before writing tests for middleware behavior, check the framework's middleware dispatch model: "inner" (wrapped) middleware fires only when a handler is dispatched; "outer" (router-level) middleware fires on all events. If no handler matches the event, inner middleware is bypassed entirely. Design test input to match an existing handler.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-21 mvp-booking-flow / session 4: Spec-prescribed test tool incompatible with component
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** prescribed-mechanism trust
+**Triad:** spec prescribes a specific test tool for an async/stateful component → verify tool-component compatibility before writing tests; fall back to asserting observable state if incompatible → prescribed-mechanism trust: using the spec's tool name without checking whether it works with the target component
+**Context:** A task spec said "use freezegun to advance clock through scheduled jobs." The test tool (freezegun) and the async scheduler component are a brittle pairing — freezegun does not reliably intercept the scheduler's internal clock. The agent pivoted to asserting the `run_date` on scheduled triggers directly, which is the observable contract without needing to fire jobs.
+**Pattern:** When a spec names a test tool for an async or stateful component, verify the combination is viable before writing tests. If incompatible, assert the observable contract (scheduled times, stored state, emitted events) rather than the execution mechanism. The contract is what matters; the prescribed mechanism is a suggestion.
+**Scope:** universal
+**Category:** tool-selection
+
+### 2026-04-21 mvp-booking-flow / session 4: Integration test references future-wave function
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** cross-wave forward reference
+**Triad:** integration test in wave N references a function not yet implemented in wave N+k → embed a minimal local stub preserving the observable contract; add an import-swap comment → cross-wave forward reference: attempting to import from a boundary that does not yet exist, treating "future work" as present
+**Context:** Task 21 integration tests needed a job-coroutine from Task 23 (same or later wave, not yet committed). Rather than skipping or marking tests as blocked, the agent embedded a minimal stub matching the documented DB-gate behavior with a one-line comment indicating the real import path for when the function ships.
+**Pattern:** When a task's tests depend on a function from a later wave, embed a minimal local stub that mirrors the documented contract. Add one comment: `# replace with: from module import fn when task N ships`. Do not skip the tests or block on the dependency — the stub preserves test intent without waiting.
+**Scope:** universal
+**Category:** sequencing
