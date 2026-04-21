@@ -2156,3 +2156,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When specifying completion protocols for autonomous workers, close the protocol with an explicit termination statement: "Only these N steps. Do not add any further commits, messages, or actions." Without it, executors fill the undefined tail with what seems helpful, overstepping role boundaries.
 **Scope:** universal
 **Category:** communication
+
+### 2026-04-21 mvp-booking-flow / session 6: bulk tool assumed complete without post-verify
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** completion assumption without verification
+**Triad:** after applying a bulk-operation tool to a large file set → verify with the tool's check/dry-run mode before committing → assuming bulk application covered all targets without checking
+**Context:** A bulk reformatter was applied to the whole codebase and committed. Two files were missed silently, causing a subsequent gate check to fail — triggering an extra fix round and QA re-run.
+**Pattern:** After any bulk operation (format pass, mass rename, migration), immediately verify with the tool's check mode before staging. Commit only after check exits 0. Never assume bulk = complete.
+**Scope:** universal
+**Category:** sequencing
