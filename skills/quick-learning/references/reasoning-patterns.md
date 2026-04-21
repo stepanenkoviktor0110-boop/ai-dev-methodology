@@ -2145,3 +2145,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a task's tests depend on a function from a later wave, embed a minimal local stub that mirrors the documented contract. Add one comment: `# replace with: from module import fn when task N ships`. Do not skip the tests or block on the dependency — the stub preserves test intent without waiting.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-04-21 mvp-booking-flow / session 6: extra action past protocol terminus
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** permissive gap assumption
+**Triad:** autonomous worker receives a step-by-step completion protocol without explicit scope termination → explicitly bound the protocol with a "these N steps only, no additional steps" statement → permissive gap assumption: executor treats the gap between "not listed" and "not prohibited" as permission
+**Context:** A worker was given a 3-step commit protocol (implement → review-reports → done). Without an explicit "no other commits" statement, the worker added a 4th "session complete" commit — a step belonging to the orchestrator's role, not the worker's.
+**Pattern:** When specifying completion protocols for autonomous workers, close the protocol with an explicit termination statement: "Only these N steps. Do not add any further commits, messages, or actions." Without it, executors fill the undefined tail with what seems helpful, overstepping role boundaries.
+**Scope:** universal
+**Category:** communication
