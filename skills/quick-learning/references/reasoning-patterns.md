@@ -2079,3 +2079,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When implementing a conventional format for a commercial category (pricing, product spec, comparison, discount), do NOT auto-apply the category's typographic kit (strikethrough, discount arrows, % badges, CTA buttons, SKU tables). First check the surrounding voice: editorial/personal? Neutral typographic variants required — prices as simple typography with a middot separator, subscriber price as a color-differentiated inline phrase, no strike/arrow. Content category ≠ typographic category.
 **Scope:** universal
 **Category:** design-taste
+
+### 2026-04-21 mvp-booking-flow / session 1: partial staging before auto-fix hook
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** partial staging before auto-fix hook
+**Triad:** preparing commit when recently-edited files have unstaged changes and auto-fixing hooks are active → verify `git diff --name-only` is empty before committing; re-stage all modified files if not → auto-fix hooks stash unstaged changes, apply fixes, then roll back on stash conflict — silently undoing all fixes and forcing re-diagnosis
+**Context:** Files were staged for commit but working-tree still held modified versions; auto-fixing hook stashed unstaged changes, applied fixes, then rolled back the stash due to conflict — requiring two extra commit attempts and a re-staging cycle.
+**Pattern:** Before any commit involving auto-fixing hooks, confirm all modified files are fully staged (working tree clean for those files). If the commit fails with a stash-conflict message, do not re-run fixes piecemeal — stage everything first, then retry.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-04-21 mvp-booking-flow / session 1: silent dependency assumption
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** silent dependency assumption
+**Triad:** writing code or a task that calls a function/service/utility defined elsewhere in the codebase → grep the actual call-site signature and injected dependencies of that function before wiring it up → silent dependency assumption: assuming the target is self-contained or already injected based on its name alone, without verifying how the surrounding system provides its dependencies
+**Context:** In wave-3 FSM storage tasks, a helper was referenced by name as if it accepted only domain-level arguments. The actual implementation required a `bot` instance injected through a `deps` container that the calling code never assembled. The omission was invisible until integration — the function silently failed to resolve its dependency at runtime.
+**Pattern:** Before writing any call to a function or service across a module boundary, grep its actual definition: what arguments does it take, what does it inject or import, what preconditions must be satisfied? Name-based inference ("this looks like a pure utility") is unreliable — the real signature may carry injected state (bot, db, config, context). Check the signature, not the name.
+**Scope:** universal
+**Category:** information-gathering
