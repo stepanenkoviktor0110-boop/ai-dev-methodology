@@ -1998,3 +1998,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When adding a new enum/state value, list every layer that independently enforces validity for that value (schema constraints, external validators, serialization schemas) and update all of them. Implementation in one layer does not imply consistency across others.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-04-22 kulminiator / session 1: test encodes bug as spec
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** test-snapshot of bug
+**Triad:** fixing logic covered by an existing test → check whether the test asserts *current* (buggy) output and update it to assert *intended* output → assuming an existing passing test validates correct behavior
+**Context:** A bug in the ordering logic was fixed, but an existing test was asserting on the exact buggy output. The fix was correct; CI failed because the test was a snapshot of the wrong behavior, not a spec of the right one.
+**Pattern:** When fixing a bug, grep for tests that cover the same function. If the test asserts on a specific output that was produced by the bug, the test is wrong — update it to assert on the intended behavior, not the current one. A passing test is not evidence of correct behavior; it is only evidence that behavior hasn't changed.
+**Scope:** universal
+**Category:** problem-decomposition
