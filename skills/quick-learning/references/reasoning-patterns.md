@@ -1976,3 +1976,25 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** problem-decomposition
 
+
+### 2026-04-22 kulminiator / session fix-constraint: reflection DDL non-determinism
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** abstraction-idempotency assumption
+**Triad:** migration uses reflection-based tool for constraint changes → write explicit DDL guaranteeing output order → tool's reflection reorders metadata silently, breaking idempotency tests
+**Context:** Used the framework's recommended migration helper without checking whether it guarantees stable schema output across repeated apply cycles.
+**Pattern:** When a migration must be idempotent (round-trippable), write explicit DDL rather than relying on reflection-based helpers. Reflection-inferred output is implementation-dependent and may reorder constraints silently between runs.
+**Scope:** universal
+**Category:** tool-selection
+
+### 2026-04-22 kulminiator / session fix-constraint: enum value not cross-checked against DB constraint
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** code-schema enum drift
+**Triad:** service writes enum-like value to a constrained column → enumerate all callers and cross-check against constraint's allowed set before writing migration → service code and DB schema written in separate steps without verifying they enumerate the same set
+**Context:** The service layer wrote a value that was never added to the DB CHECK constraint, causing silent transaction failures in production.
+**Pattern:** Before writing any schema migration with an enum constraint, grep every caller that writes that column and verify the constraint's allowed set covers all values actually written by code.
+**Scope:** universal
+**Category:** information-gathering
