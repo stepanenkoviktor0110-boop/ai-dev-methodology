@@ -1977,24 +1977,24 @@ Patterns that apply to any project, any stack, any domain.
 **Category:** problem-decomposition
 
 
-### 2026-04-22 kulminiator / session fix-constraint: reflection DDL non-determinism
+### 2026-04-22 kulminiator / session fix-constraint: tool guarantee assumed without contract check
 
 **Seen:** 1
 **Adapted:** —
-**Cognitive Error:** abstraction-idempotency assumption
-**Triad:** migration uses reflection-based tool for constraint changes → write explicit DDL guaranteeing output order → tool's reflection reorders metadata silently, breaking idempotency tests
-**Context:** Used the framework's recommended migration helper without checking whether it guarantees stable schema output across repeated apply cycles.
-**Pattern:** When a migration must be idempotent (round-trippable), write explicit DDL rather than relying on reflection-based helpers. Reflection-inferred output is implementation-dependent and may reorder constraints silently between runs.
+**Cognitive Error:** tool-trust assumption
+**Triad:** relying on a tool for a correctness property (ordering, determinism, idempotency) → verify the tool's documented contract for that property before depending on it → using a tool assumes it guarantees the property you need without checking whether it actually does
+**Context:** Chose the framework's recommended helper without verifying whether it actually guarantees the output stability required for round-trip correctness.
+**Pattern:** Before depending on a tool for a specific correctness property, check whether the tool explicitly contracts that property. "Works in practice" is not the same as "guaranteed by the tool."
 **Scope:** universal
 **Category:** tool-selection
 
-### 2026-04-22 kulminiator / session fix-constraint: enum value not cross-checked against DB constraint
+### 2026-04-22 kulminiator / session fix-constraint: single-layer completion on cross-boundary state
 
 **Seen:** 1
 **Adapted:** —
-**Cognitive Error:** code-schema enum drift
-**Triad:** service writes enum-like value to a constrained column → enumerate all callers and cross-check against constraint's allowed set before writing migration → service code and DB schema written in separate steps without verifying they enumerate the same set
-**Context:** The service layer wrote a value that was never added to the DB CHECK constraint, causing silent transaction failures in production.
-**Pattern:** Before writing any schema migration with an enum constraint, grep every caller that writes that column and verify the constraint's allowed set covers all values actually written by code.
+**Cognitive Error:** single-layer completion
+**Triad:** introducing a new state/value that must be valid across multiple independent system boundaries → enumerate every boundary that enforces or validates that value and update all before marking done → treating one layer as "done" without checking that other layers accept the new value
+**Context:** A new state value was added to the service layer but the independent validation layer (DB constraint) was never updated — a silent rejection at runtime was the only signal something was missed.
+**Pattern:** When adding a new enum/state value, list every layer that independently enforces validity for that value (schema constraints, external validators, serialization schemas) and update all of them. Implementation in one layer does not imply consistency across others.
 **Scope:** universal
-**Category:** information-gathering
+**Category:** problem-decomposition
