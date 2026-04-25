@@ -2009,3 +2009,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When fixing a bug, grep for tests that cover the same function. If the test asserts on a specific output that was produced by the bug, the test is wrong — update it to assert on the intended behavior, not the current one. A passing test is not evidence of correct behavior; it is only evidence that behavior hasn't changed.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-04-25 sheets-append-fix / session 1: Smart-insert fallback assumption
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** silent fallback trust
+**Triad:** using a tool's auto-detection insert → compute explicit destination independently and pass it directly → silent-fallback assumption (what the tool does when detection fails is usually worse than intended)
+**Context:** relied on a library's "auto-detect table boundary" to append rows; when detection failed the library silently fell back to inserting at the anchor position, corrupting existing data.
+**Pattern:** when a write/insert tool auto-detects its target location, compute the destination explicitly before calling it and pass the result directly. Never let the tool decide alone when the fallback behavior is destructive.
+**Scope:** universal
+**Category:** tool-selection
+
+### 2026-04-25 sheets-append-fix / session 1: Repair before verifying current state
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** pre-repair state blindness
+**Triad:** intent to apply a repair for a known broken state → read actual current state and verify it matches the expected broken pattern before touching anything → double-damage when state already partially recovered
+**Context:** assumed the system was in broken state X and applied a repair designed for X; the state had already partially self-recovered, so the repair created a new problem on top of what remained.
+**Pattern:** before any corrective action, read the current state explicitly and confirm it matches the damage you intend to fix. If it doesn't match — stop, re-diagnose, then decide.
+**Scope:** universal
+**Category:** information-gathering
