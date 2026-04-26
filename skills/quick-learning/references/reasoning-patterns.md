@@ -2053,3 +2053,36 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** when a gap between spec and working implementation is discovered late in the release cycle, first evaluate the cost of rework vs. the cost of shipping with a documented delta. If the delta is minor and stakeholder can accept/reject at demo, update the spec and defer rework rather than blocking the release.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-04-26 beboss-parser / post-stage-2 polish: blind CSS iteration
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** blind-CSS reflex
+**Triad:** iterating CSS/visual without rendered output → take a screenshot via headless browser (playwright/puppeteer) BEFORE each change and compare side-by-side; one round costs minutes, blind round costs trust → blind-CSS reflex: dictating layout rules without ever seeing the result, accumulating !important and overrides that don't fix the actual problem
+**Context:** during a UI polish session I shipped 14 versions of CSS (?v=1 → ?v=14) without ever rendering the page. Each user complaint produced another guess: padding tweak, !important wrapper, grid override. By v=8 the user said "no alignment between elements", and only then I admitted I had no visual ground truth. Should have stopped at v=2.
+**Pattern:** the moment a task involves "make X look right", install a feedback loop with rendered screenshots before writing CSS. If installation is impossible (sandbox restrictions), say so to the user and ask them to screenshot — do not proceed by guessing.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-26 beboss-parser / password rotation: deploy.sh overwrote prod-only edit
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** deploy-resync trap
+**Triad:** rotating a secret directly on production while local copy still has the old value → change LOCAL first (the source synced by deploy), THEN deploy — never edit prod-only when deploy.sh syncs the file → deploy-resync trap: any subsequent unrelated deploy silently overwrites the prod-only edit with the stale local value
+**Context:** I changed admin password by editing /opt/beboss-parser/.env on the VPS via a Python regex through SSH. The local .env still had the old hash. Several CSS deploys later, deploy.sh had tar-uploaded the local .env back, replacing the new prod hash with the old one. User couldn't log in until I detected the resync by comparing sha256 of both copies.
+**Pattern:** for files synced by deploy (.env, config files, secrets), the local copy IS the source of truth. Always edit local first and then deploy, regardless of which side feels more direct. Before any "edit on prod" instinct, ask: is this file in the deploy bundle? If yes — local-first.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-26 beboss-parser / Python writes CRLF, bash chokes on .env
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** CRLF surprise
+**Triad:** rewriting a config file via Python on Windows → open the file in binary mode (`open(path, 'rb')`/`'wb'`) when preserving exact byte content matters; or explicitly `newline=''` on text mode → CRLF surprise: Python text mode silently translates `\n`↔`\r\n` based on platform, which breaks shell parsers that read the file as bytes (env files, while-read loops)
+**Context:** I rewrote .env via `python -c "open('.env').read(); ...; open('.env','w').write(p)"` on Windows. Python's default text mode translated existing LF to CRLF on write. deploy.sh's `while IFS= read -r line` parser captured the trailing `\r` as part of values; DEPLOY_HOST validation `^[a-zA-Z0-9._-]+$` failed because of the embedded `\r`. Fixed by `sed -i 's/\r$//' .env`.
+**Pattern:** on Windows, when writing files that will be parsed line-by-line by Unix tools (bash, jq, env loaders), use `open(path, 'rb'/'wb')` and handle bytes explicitly, OR `open(path, 'w', newline='')` to suppress newline translation.
+**Scope:** universal
+**Category:** information-gathering
