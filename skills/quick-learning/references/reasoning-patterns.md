@@ -2031,3 +2031,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** before any corrective action, read the current state explicitly and confirm it matches the damage you intend to fix. If it doesn't match — stop, re-diagnose, then decide.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-26 beboss-parser / session 5: legacy data not in test scope
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** happy-path fixture assumption
+**Triad:** new code handles a value that pre-existing records store in an older or unnormalized format → include at least one fixture row in legacy format alongside the happy-path row → happy-path fixture assumption: tests cover only data written by new code, missing real-world pre-existing variants
+**Context:** a bugfix was deployed without a regression test for the specific data pattern (legacy DB rows without timezone suffix) that caused the production failure; the test suite covered only data created by new code.
+**Pattern:** when writing tests for code that reads from persistent storage, always include at least one fixture row representing the oldest/unnormalized variant that real production data may contain. A passing test suite on fresh data is not evidence of correctness on legacy data.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-04-26 beboss-parser / session 5: spec-compliance reflex before ship
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** spec-compliance reflex
+**Triad:** review finds a discrepancy between implementation and spec, but the feature works as intended → assess cost vs. benefit before reworking; if delta is minor, update the spec and schedule stakeholder confirmation instead of blocking the release → spec-compliance reflex: automatic impulse to fix code when working implementation diverges from written spec
+**Context:** audit found that sort UX was implemented as a dropdown rather than click-on-column-header as written in spec; correct resolution was to update the spec document and bring it to stakeholder demo, not to rewrite the feature before shipping.
+**Pattern:** when a gap between spec and working implementation is discovered late in the release cycle, first evaluate the cost of rework vs. the cost of shipping with a documented delta. If the delta is minor and stakeholder can accept/reject at demo, update the spec and defer rework rather than blocking the release.
+**Scope:** universal
+**Category:** scope-management
