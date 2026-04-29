@@ -2086,3 +2086,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** on Windows, when writing files that will be parsed line-by-line by Unix tools (bash, jq, env loaders), use `open(path, 'rb'/'wb')` and handle bytes explicitly, OR `open(path, 'w', newline='')` to suppress newline translation.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-04-29 employee-positions / session 1: cross-task production change leaves test doubles stale
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** partial mutation bias
+**Triad:** adding a new external call to an existing module → scan all tests that mock that module's dependencies for stale doubles → partial mutation bias: local production change assumed not to break tests that don't exercise the new call directly
+**Context:** one task added a new db call to an existing module. A subsequent task discovered that existing tests for that module failed because the test mock object did not include the new db method. The tests were nominally passing before but became stale the moment the production code diverged from the mock's shape.
+**Pattern:** when adding a new dependency call to a module that already has test mocks, immediately locate all mock objects for that module's dependencies and update them to include the new call — even if the test doesn't test the new path. A mock that partially represents the real interface is a time-delayed failure.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-04-29 employee-positions / session 1: spec instruction contradicts established reference
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** authority by recency
+**Triad:** task spec instruction contradicts an established reference document → treat the established reference as authoritative and flag the spec instruction as a hypothesis to verify → authority by recency: assuming the most recently written document is the most authoritative, even when an older reference explicitly documents why the new approach fails
+**Context:** a tech-spec prescribed a deployment command. Project reference docs explicitly documented that the same command had an encoding bug causing failures. The agent correctly deferred to the project reference. The issue: the contradiction required a runtime decision rather than being caught during spec authoring.
+**Pattern:** when a task instruction conflicts with an established reference, the reference wins unless the task explicitly acknowledges and overrides it with reasoning. Recency alone is not authority. Flag the conflict, use the reference, and note it as a spec update candidate.
+**Scope:** universal
+**Category:** information-gathering
