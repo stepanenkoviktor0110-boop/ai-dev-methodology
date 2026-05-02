@@ -2141,3 +2141,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** whenever a fallback path exists for a missing or unregistered dependency, emit a named warning-level log event at the entry of that branch before executing the fallback. Silent graceful degradation is indistinguishable from correct operation; the log is the only signal that the system is running in a degraded configuration. Convergent findings across independent reviewers are a reliable indicator that the pattern matters.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-05-02 ai-booking-dialog / session 4: test infrastructure built for unimplemented behavior
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** infrastructure readiness assumed behavior
+**Triad:** test helper built for a behavior not yet implemented in production → either defer the helper until production exists, or gate it with an explicit "not yet assertable" marker → silent coverage illusion from orphan test infrastructure
+**Context:** a test helper (fake bot with reaction-tracking fields) was built and wired into fixtures, but no assertion was made because the production code does not yet send reactions. The infra passed CI and looked like coverage, but the behavior gap was only visible on careful review. Three review rounds were needed to surface this as a production gap (not a test gap).
+**Pattern:** before building test infrastructure for a behavior, verify the behavior exists in production. If the behavior doesn't exist yet, choose one of two options: (a) defer the infrastructure entirely, or (b) add an explicit `# FUTURE: assert X when behavior ships` comment with a TODO-linked ticket. Orphan infrastructure with no assertion is indistinguishable from coverage to casual readers.
+**Scope:** universal
+**Category:** scope-management
+
+### 2026-05-02 ai-booking-dialog / session 4: metric pressure drives unbounded scope expansion
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** metric pressure disguises scope creep
+**Triad:** a quantitative completion target (coverage %, test count) drives continuous addition of new deliverables beyond original scope → set an explicit scope ceiling before starting; any addition beyond plan requires a go/no-go check → metric pressure disguises scope creep as quality work
+**Context:** the task planned 1 shared fake + 11 integration test files; the actual delivery was 13 files. The expansion happened incrementally to satisfy a ≥85% coverage gate. Each new file introduced new patterns, which generated new reviewer findings (8 high in round 1, 8 high in round 2), requiring 3 review rounds (maximum). The metric was achieved but the review cost was 3× the plan.
+**Pattern:** before starting any task with a quantitative quality gate (coverage %, error count, performance target), set an explicit scope ceiling: "I will add at most N new files/modules." When the ceiling is reached before the gate is met, stop and surface the tradeoff rather than expanding silently. Metric pressure feels like quality work but is a form of scope creep that compounds review load.
+**Scope:** universal
+**Category:** scope-management
