@@ -2119,3 +2119,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** when wrapping an async callable in any generic adapter (partial application, lambda, decorator, proxy) before passing it to a dispatch or scheduling system, explicitly verify that the adapter preserves the coroutine-detection property the system relies on. If not, use a thin `async def` wrapper or the system's native async-aware binding API instead.
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-05-02 ai-booking-dialog / session 3: concurrency assertion proves existence, not interleaving
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** existence proof ≠ ordering guarantee
+**Triad:** writing a test that claims to verify two operations run concurrently → assert that the second operation started before the first finished (ordering check), not merely that both ran → existence proof ≠ ordering guarantee: asserting both operations completed is consistent with sequential execution
+**Context:** a test titled "parallel gather" asserted `len(started) >= 1` and `len(finished) >= 1` to verify that two coroutines ran in parallel. Both assertions pass trivially even if the implementation is purely sequential — at least one call will always start and finish. The test's docstring claimed to prove "both started before either finished" but the assertions did not verify interleaving at all. Caught in review round 1.
+**Pattern:** when writing a test for concurrent or parallel behavior, the assertion must verify ordering or interleaving — not just existence. A count-based assertion (`len >= 1`) proves that a call happened; it does not prove that two calls overlapped. Use ordering records (event sequence lists, timestamps, asyncio.Event barriers) and assert that all-started precedes any-finished.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-05-02 ai-booking-dialog / session 3: graceful fallback without observability signal
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** graceful degradation masks wiring failure
+**Triad:** implementing a fallback path for a missing optional dependency → emit a warning-level log event before taking the fallback, naming the unregistered dependency → graceful degradation masks wiring failure: silent fallback makes production misconfiguration invisible until metrics are manually checked
+**Context:** a routing helper caught a RuntimeError from a dependency registry (client not registered) and silently fell back to legacy behavior. No log was emitted. Both code-reviewer and security-auditor independently flagged this as a convergent finding: a production deploy where the dependency was never wired would serve all users in degraded mode with zero signal in logs. The fix was a single warning log line before the fallback branch.
+**Pattern:** whenever a fallback path exists for a missing or unregistered dependency, emit a named warning-level log event at the entry of that branch before executing the fallback. Silent graceful degradation is indistinguishable from correct operation; the log is the only signal that the system is running in a degraded configuration. Convergent findings across independent reviewers are a reliable indicator that the pattern matters.
+**Scope:** universal
+**Category:** problem-decomposition
