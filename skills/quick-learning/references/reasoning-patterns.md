@@ -2108,3 +2108,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** when a task instruction conflicts with an established reference, the reference wins unless the task explicitly acknowledges and overrides it with reasoning. Recency alone is not authority. Flag the conflict, use the reference, and note it as a spec update candidate.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-05-02 ai-booking-dialog / session 2: wrapper strips async-ness from callable
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** wrapper-strips-async assumption
+**Triad:** wrapping async callable in generic adapter before passing to dispatch system → verify the wrapper preserves coroutine identity via dispatch system's detection mechanism → assuming generic wrapper is transparent to async-ness introspection
+**Context:** an async function was wrapped in `functools.partial` to pre-fill arguments, then registered with a job scheduler. The scheduler uses `iscoroutinefunction()` to decide whether to await the callable — `functools.partial` does not propagate `__wrapped__` or `__call__` coroutine flags, so the scheduler ran it as a blocking callable, silently losing the async execution model.
+**Pattern:** when wrapping an async callable in any generic adapter (partial application, lambda, decorator, proxy) before passing it to a dispatch or scheduling system, explicitly verify that the adapter preserves the coroutine-detection property the system relies on. If not, use a thin `async def` wrapper or the system's native async-aware binding API instead.
+**Scope:** universal
+**Category:** tool-selection
