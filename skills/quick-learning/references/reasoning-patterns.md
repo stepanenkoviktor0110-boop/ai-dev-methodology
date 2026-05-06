@@ -2163,3 +2163,15 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** before starting any task with a quantitative quality gate (coverage %, error count, performance target), set an explicit scope ceiling: "I will add at most N new files/modules." When the ceiling is reached before the gate is met, stop and surface the tradeoff rather than expanding silently. Metric pressure feels like quality work but is a form of scope creep that compounds review load.
 **Scope:** universal
 **Category:** scope-management
+
+
+### 2026-05-06 kulminiator BL-004+BL-006 / session 1: planning before reading the referenced spec entry
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** approach before reading prior decisions
+**Triad:** the task references a backlog/spec item by ID and you are about to draft a plan or pick an approach → read the referenced item in full before drafting; treat its Description/Decisions as binding constraints, not suggestions → first-instinct simplifications quietly re-litigate decisions that were already made and recorded.
+**Context:** the user task pointed to an item in the backlog by its ID. The first plan picked an "obvious simpler" implementation (reuse an ambient profile field) without opening the backlog entry, which already contained an explicit product decision that mandated a different, larger flow. The reduced plan was approved by the user, then thrown out after one read of the backlog and rewritten end-to-end via task updates. No code was wasted, but the planning round was. The cost was bounded only because no implementation had started; had the simplification reached code, the wasted work would have been proportional to plan depth.
+**Pattern:** when a task description references a backlog/spec/decision artefact by identifier (BL-N, RFC-N, ADR-N, ticket id, etc.), open and read that artefact in full before drafting the plan or picking an approach. Treat its description, decisions, and acceptance criteria as inputs, not as background reading. The "simple" path that contradicts a recorded decision is not actually simpler — it is the same work plus a redo round.
+**Scope:** universal
+**Category:** information-gathering
