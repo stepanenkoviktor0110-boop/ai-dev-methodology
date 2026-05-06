@@ -9,7 +9,7 @@ description: |
   acceptance criteria wording) — that is quality-validator's scope.
 
   Use when: user-spec is ready and needs feasibility review before approval.
-model: opus
+model: sonnet
 color: yellow
 allowed-tools: Read, Write, Glob, Grep
 ---

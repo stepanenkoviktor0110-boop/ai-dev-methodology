@@ -5,7 +5,7 @@ description: |
   comparison table and registry entries into Project Knowledge, returns a
   one-line summary. Used by stack-research skill to keep the orchestrator's
   context window clean.
-model: inherit
+model: sonnet
 color: blue
 allowed-tools: Read, Write, Edit, Glob
 ---

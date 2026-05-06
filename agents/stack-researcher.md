@@ -4,7 +4,7 @@ description: |
   Researches one stack element (library, API, service, tool) against official
   documentation and returns a focused structured report. Used by stack-research
   skill inside project-planning and tech-spec-planning.
-model: inherit
+model: sonnet
 color: blue
 allowed-tools: Read, Write, WebFetch, WebSearch, mcp__context7__resolve-library-id, mcp__context7__query-docs
 ---

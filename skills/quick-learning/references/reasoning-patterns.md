@@ -2175,3 +2175,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** when a task description references a backlog/spec/decision artefact by identifier (BL-N, RFC-N, ADR-N, ticket id, etc.), open and read that artefact in full before drafting the plan or picking an approach. Treat its description, decisions, and acceptance criteria as inputs, not as background reading. The "simple" path that contradicts a recorded decision is not actually simpler — it is the same work plus a redo round.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-05-06 rebuild-site-no-tilda-01-skeleton / session 3: named-element computed style ≠ painter
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** named-element painter bias
+**Triad:** investigating why two rendered outputs differ → sample at the differing coordinate and walk the full painter stack at that point, not just inspect computed styles of named/semantic elements → avoid assuming semantic containers are the source of paint
+**Context:** When two visual outputs disagreed, I queried `getComputedStyle` of named/semantic containers (`body`, `header`, `footer`) and concluded the source side had transparent containers. This led to a wrong plan (build target without that paint layer). The actual paint was emitted by an intermediate non-semantic wrapper several levels deep — invisible to selector-driven inspection.
+**Pattern:** for any output-comparison task (visual diff, audio diff, plot diff, log diff), do NOT enumerate named entities and read their attributes as ground truth. Sample at the **coordinate where outputs differ** and walk the full source stack at that coordinate, top-down. Semantic names mislead — they describe what the author meant, not what the renderer drew. The fix is one extra call (`elementsFromPoint`, raster-pixel sample, equivalent point-query in the target medium) and saves at least one wrong plan.
+**Scope:** universal
+**Category:** information-gathering

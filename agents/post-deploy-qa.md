@@ -5,7 +5,7 @@ description: |
   Executes AVP via MCP tools on live environment, verifies all acceptance
   criteria (user-spec + tech-spec), picks up deferred criteria from pre-deploy QA.
   Returns JSON report.
-model: opus
+model: sonnet
 color: yellow
 skills:
   - post-deploy-qa

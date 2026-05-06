@@ -4,7 +4,7 @@ description: |
   Pre-deploy acceptance testing agent.
   Runs test suite and verifies acceptance criteria.
   Returns JSON report.
-model: opus
+model: sonnet
 color: yellow
 skills:
   - pre-deploy-qa

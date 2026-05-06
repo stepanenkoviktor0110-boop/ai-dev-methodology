@@ -5,7 +5,7 @@ description: |
   If given code files — audits code for vulnerabilities.
   If given tech-spec — reviews security decisions in architecture.
   Orchestrator specifies what to check and provides file paths.
-model: inherit
+model: opus
 color: red
 skills:
   - security-auditor
