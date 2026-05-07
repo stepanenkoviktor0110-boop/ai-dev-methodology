@@ -2186,3 +2186,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** for any output-comparison task (visual diff, audio diff, plot diff, log diff), do NOT enumerate named entities and read their attributes as ground truth. Sample at the **coordinate where outputs differ** and walk the full source stack at that coordinate, top-down. Semantic names mislead — they describe what the author meant, not what the renderer drew. The fix is one extra call (`elementsFromPoint`, raster-pixel sample, equivalent point-query in the target medium) and saves at least one wrong plan.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-05-07 rebuild-site-no-tilda-02a / session 1: fidelity-dimension conflation
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** fidelity-dimension conflation
+**Triad:** brief asks to "match exactly" / "1:1 with" / "replicate" an external reference → enumerate fidelity axes (content / behavior / structure / visual / layout / assets / data-model) and confirm with the requester which apply → assuming "exactly" covers all axes uniformly
+**Context:** "Match X exactly" is treated as one-dimensional, but fidelity is a vector. The builder defaults to maximum fidelity along all axes, then either overbuilds on irrelevant axes (wasted work) or picks the wrong axis to optimize and is forced into a mid-build pivot when the requester corrects them. In this session the same task ran through three layout strategies (modern → pixel-perfect → hybrid) before settling — each pivot threw away ~30 minutes of work — because "1:1 с live" was assumed to mean visual-pixel fidelity when the requester actually meant content/asset fidelity with modern layout.
+**Pattern:** before starting any "match X" work, enumerate fidelity axes and ask which apply. Partial fidelity is the norm, not the exception — most "exactly" requests cover only 2–3 of 6+ axes. The cost of one clarifying exchange before code is tiny compared to one mid-build pivot.
+**Scope:** universal
+**Category:** scope-management
+
+### 2026-05-07 rebuild-site-no-tilda-02a / session 1: surface-proxy for content complexity
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** surface-proxy fallacy
+**Triad:** sizing work from a derived/structural artefact (catalog, index, schema, block-map, extraction summary, file list) → open at least one sample of the actual content the artefact represents before sizing → assuming the artefact's surface metadata (line count, key count, file size) correlates with the semantic complexity of what it describes
+**Context:** A spec author sized a page as "simple, 34 lines of extraction" — but those 34 lines were a structural map of layout blocks, not the content. The actual content turned out to be a 10-card tariff grid with prices, programs, and order codes — the heaviest page in the slice. The sizing was off by one slice classification (light → heavy), forcing a mid-slice scope shift. Index/catalog/schema files describe shape, not substance; their cardinality is uncorrelated with the complexity of what they index.
+**Pattern:** before sizing or scoping work from a derived artefact (catalog, glossary, schema, extraction summary, file index, block map), open one sample of the underlying content. If the structural artefact and the actual content disagree on complexity, trust the content. Surface metadata is a category error stand-in for the work.
+**Scope:** universal
+**Category:** information-gathering
