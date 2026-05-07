@@ -2208,3 +2208,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** before sizing or scoping work from a derived artefact (catalog, glossary, schema, extraction summary, file index, block map), open one sample of the underlying content. If the structural artefact and the actual content disagree on complexity, trust the content. Surface metadata is a category error stand-in for the work.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-05-07 iiko-integration / session 2: audit-write skip on error path
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** audit-write skip on rethrow
+**Triad:** function whose success path performs both a state mutation and an audit/log write, with branches that throw or short-circuit before the audit-write → in every error branch, emit the same audit record (with failure marker) the success branch emits, before propagating the error → audit-write skip on error path: success branch establishes "every invocation leaves one audit record" invariant; throw-before-audit silently breaks it
+**Context:** Aggregator function wrote a SyncLog record on the success path after performing the main mutation. One error branch (duplicate-key) was correctly handled and wrote a FAILED log. A second error branch — non-duplicate exceptions from the upstream call — re-threw without writing the log. Reviewer flagged: "every run must leave exactly one audit record so operators can reconstruct what the cron/scheduler actually did". The success path implicitly defines this invariant; any error path that exits before reaching the write silently violates it. The author's mental model was "happy path writes log; on duplicate I write FAILED log; other exceptions are programmer errors so let them propagate" — but propagation skips the audit, leaving operators blind to the failed run.
+**Pattern:** when a function's success path does (mutate state, write audit), treat the audit-write as an unconditional invariant of "function was invoked", not a success-only side-effect. Wrap the success path in try; in catch, write a structured audit record with the failure reason, then re-throw. Apply specifically to: cron jobs, scheduled aggregators, webhook receivers, batch processors — anything where operators reconstruct history from log records and a missing record looks identical to "never ran".
+**Scope:** universal
+**Category:** recovery
