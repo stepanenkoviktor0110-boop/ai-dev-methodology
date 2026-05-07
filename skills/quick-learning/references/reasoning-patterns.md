@@ -2219,3 +2219,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** when a function's success path does (mutate state, write audit), treat the audit-write as an unconditional invariant of "function was invoked", not a success-only side-effect. Wrap the success path in try; in catch, write a structured audit record with the failure reason, then re-throw. Apply specifically to: cron jobs, scheduled aggregators, webhook receivers, batch processors — anything where operators reconstruct history from log records and a missing record looks identical to "never ran".
 **Scope:** universal
 **Category:** recovery
+
+### 2026-05-07 iiko-integration / session 3: review findings not propagated to next task's spec
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** review-debt amnesia across plans
+**Triad:** drafting the spec for task N+1 of a multi-task feature where task N has just exited a review cycle with non-trivial findings → before writing N+1, enumerate the recurring themes from the previous task's review-fix commits and deviation log (logging shape, input-bounds, dedup of constants, environmental constraints) and pre-bake them as explicit AC/constraints in N+1 → review-finding recurrence: each task's spec is drafted as if from scratch, so the same reviewer comment surfaces task after task and each task pays the round-2 fix tax independently
+**Context:** Across five consecutive tasks in the same feature, code/security/test reviewers raised the same families of findings each round: missing structured logging on error paths, missing input-bound caps, duplicated constants/queries between sibling modules, and one environmental constraint (test runner has no DOM environment) was rediscovered in two consecutive task plans. Each task fixed its own issue in round 1 of review, but the next task's spec was written without inheriting those fixes as defaults, so the reviewer surfaced the same comment again. The cost is invisible per-task (one extra commit) but compounds over a feature: N tasks × ~3 recurring findings = N round-2 cycles that could have been zero. The cognitive error is treating each task's plan as a self-contained unit when they share a reviewer, a code area, and a fix vocabulary.
+**Pattern:** before drafting any task's spec inside a multi-task feature, open the previous task's review reports and deviation entries; extract the recurring fix-themes (not the task-specific bugs); add a "carryover constraints" section to the new spec that lists them as explicit pre-conditions/AC. Treat review-fix commits as authoritative input to the next plan, equal in weight to the original tech-spec. The signal that this is needed: the previous task closed with a fix-round commit on themes that are not unique to that task's code path.
+**Scope:** universal
+**Category:** sequencing
