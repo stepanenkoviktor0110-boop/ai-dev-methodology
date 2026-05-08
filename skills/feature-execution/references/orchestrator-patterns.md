@@ -167,3 +167,12 @@ When an autonomous worker receives a step-by-step completion protocol without ex
 
 **55. Массовая операция над файлами — верифицируй до коммита:**
 When after applying a bulk-operation tool to a large file set → verify with the tool's check/dry-run mode before committing, to avoid completion assumption without verification: bulk assumed complete without checking.
+
+**56. Применение фикса к «известному сломанному» состоянию — перечитай текущее состояние:**
+When about to apply a repair targeting a known broken pattern → read actual current state and confirm it still matches the expected broken pattern before mutating, to avoid double-damage when state has already partially recovered or been changed out-of-band since the diagnosis.
+
+**57. Источник синхронизации vs downstream — мутируй только источник:**
+When two stores hold the same value and one syncs into the other (deploy script, replication, build pipeline) → mutate only the source-of-sync; direct edits to the downstream are silently overwritten on the next sync, to avoid resync-trap: change appears to take effect, then disappears on next sync cycle.
+
+**58. Верификационный цикл по случаям через долгоживущий рантайм — свежий инстанс на случай:**
+When a verification loop iterates multiple cases through a long-lived runtime instance whose state the act-under-test mutates → default to one fresh runtime instance per case; reuse only when each case is purely additive read-only, to avoid cross-case state leakage: earlier case's mutations contaminate later case's observed result.
