@@ -1976,3 +1976,36 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** problem-decomposition
 
+
+### 2026-05-09 rebuild-site-no-tilda-06-paykeeper / verification: cyrillic JSON in inline bash mangles payload
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** shell expansion through cyrillic-bearing string
+**Triad:** AC smoke-check via curl with non-ASCII (cyrillic/CJK) characters in JSON body → write payload to a heredoc-backed file and post via `--data-binary @file` (not `--data "..."` inline) → encoding-mangling assumption: trusting bash double-quoted string to deliver UTF-8 verbatim through variable expansion
+**Context:** During end-to-end verification of /api/forms/order, the first valid payload returned `Неизвестный тариф` even though `serviceName` matched the registry verbatim. Hex-dump of the inline `$PAYLOAD` showed cyrillic bytes intact in echo, but bash variable expansion mangled them on the way to curl. Switching to `cat > /tmp/p.json <<EOF` + `--data-binary @/tmp/p.json` made the same payload pass on first try.
+**Pattern:** When testing an API with cyrillic/CJK strings in JSON via curl, never embed the body inline (`--data "$VAR"` or `--data '{...}'`). Write the body to a heredoc-backed temp file (`cat > /tmp/p.json << 'EOF' ... EOF`) and post with `--data-binary @/tmp/p.json`. Heredoc + `-binary` is the only stable path for non-ASCII payloads on Windows/cygwin bash.
+**Scope:** universal
+**Category:** tool-selection
+
+### 2026-05-09 rebuild-site-no-tilda-06-paykeeper / verification: read validators+registry before AC smoke sequence
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** payload guessing from spec wording
+**Triad:** about to run a series of curl/HTTP smoke-checks against an API → read every zod/joi validator and every closed-set registry (enums, slug tables, code maps) the route depends on, then assemble the first valid payload from those sources → spec-as-payload-source: assuming user-spec wording reflects field types and exact enum values when validators are the actual contract
+**Context:** First valid `/api/forms/order` smoke-call took 3 retries: `Checkbox:"on"` (validator wanted `z.literal(true)`), `child_class` wording mismatch (free-form OK), `serviceName:"ШКОЛА 1-11 — 1-4 классы"` (registry stored `"За пользование платформой"`). All three could have been read directly from `src/lib/validators/order.ts` and `src/content/orderCodes.ts` before the first request.
+**Pattern:** Before running a smoke-check sequence against any API route, open the route's validator files and any closed-set registries it queries (enums, slug tables, code lookups). Assemble the first request from those exact values, not from user-spec/tech-spec narrative wording. Narrative is allowed to drift; validators are the contract.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-05-09 rebuild-site-no-tilda-06-paykeeper / verification: psql `\d "Table"` before ad-hoc SELECT
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** ORM-field-as-DB-column assumption
+**Triad:** about to run an ad-hoc psql/sqlite SELECT against a production-like DB managed by an ORM → first run `\d "Table"` (or equivalent introspection) and pick column names from there, not from ORM model fields → naming-parity assumption: trusting that `model.fieldName` matches the DB column name 1:1
+**Context:** Tried `SELECT id, "paykeeperId", "serviceName", "priceRub" FROM "Order"` based on Prisma model intuition. The actual columns are `paykeeperRaw` (jsonb holding `{paymentId, paymentUrl}`) and `orderCode`/`items`/`total` — there is no `paykeeperId` or `priceRub` column. PSQL `ERROR: column "paykeeperId" does not exist` after the query already cost a roundtrip. `\d "Order"` would have surfaced the real schema in one command.
+**Pattern:** Before issuing any ad-hoc psql/sqlite SELECT or UPDATE against a DB managed by an ORM, run `\d "Table"` (psql) or `.schema Table` (sqlite) first. ORMs frequently rename, jsonb-pack, or split fields. Read the actual column list, then write the query.
+**Scope:** universal
+**Category:** information-gathering
