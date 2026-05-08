@@ -182,5 +182,5 @@ When escalating:
 
 ## Learned Patterns
 
-**Lazy load:** Full orchestrator patterns in [orchestrator-patterns.md](references/orchestrator-patterns.md) (34 rules).
+**Lazy load:** Full orchestrator patterns in [orchestrator-patterns.md](references/orchestrator-patterns.md).
 Read at Phase 2 start when executing waves. Audit agents use [learned-patterns.md](references/learned-patterns.md) separately.

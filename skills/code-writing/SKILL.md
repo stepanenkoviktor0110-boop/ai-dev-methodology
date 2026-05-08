@@ -149,7 +149,7 @@ Load only for audit wave and retrospective — not during code writing.
 - When скрипт с дорогостоящей инициализацией (auth flow, DB connection) создаёт объект внутри цикла → вынести init за цикл и указать явно в spec, to предотвратить дублирование auth flow и N лишних round-trips
 - When кнопка делает async-запрос (destructive action или оптимистичный UI) → добавить disabled+loading state на время запроса AND .catch() восстанавливающий state при ошибке — до первого review, to предотвратить fix-раунд на предсказуемый UX concurrency guard
 - When расширение API-ответа новым полем → grep тесты на exact-equality assertions для этого endpoint, to не допустить отложенного тест-фейла в следующей сессии
-- When задача требует повторного чтения файла, файл не менялся → прочитать файл один раз в начале, не читать повторно, to не расходовать токены на повторное чтение неизменного файла
+- When файл не менялся с момента первого чтения → не читать повторно, to экономить токены
 - When несколько git репо в одной bash сессии → всегда указывать `git -C /path/repo` вместо надежды на рабочую директорию, to избежать silent failures от команд из неправильного репо
 - When нужно изучить внешнее репо (GitHub) или прочитать >5 файлов подряд в главной сессии → делегировать сканирование Explore subagent'у одним вызовом, to не исчерпать контекст главной сессии
 - When компонент хранит типизированные async данные, UI переключает режим/таб → сбрасывать данные в начале каждого async-запроса и проверять тип перед обращением к типо-специфичным полям, to предотвратить runtime ошибку из промежуточного рендера со stale типизированными данными
@@ -159,7 +159,7 @@ Load only for audit wave and retrospective — not during code writing.
 - When выбор JS scroll/animation библиотеки для SSR-фреймворка → предпочесть CSS-native решение (sticky, scroll-snap) вместо JS-управляемого pin/scroll, to избежать конфликта JS-плагина с SSR layout-моделью и последующего рефакторинга
 - When архитектурное решение изменилось в ходе реализации → обновить architecture.md/patterns.md немедленно, не в конце сессии, to не передать следующей сессии устаревшую документацию.
 - When соседние секции имеют разный backgroundColor при общем overlay-фоне → сделать все секции transparent, базовый цвет — только на wrapper/overlay, to убрать жёсткий шов на границе секций.
-- When добавление нового prop к JSX-элементу через Edit → читать весь JSX-элемент перед добавлением, проверять существующие props, to не создавать дублирующиеся props.
+- When добавление prop к JSX через Edit → прочитать весь элемент и проверить существующие props, to не создавать дубликаты.
 - When сервис отвечает мгновенно локально, но медленно снаружи → проверить все вызовы на уровне module import — сетевые, I/O, внешние API; вынести в background thread, to убрать блокировку worker startup.
 - When серверный код должен инициировать auth flow (reset password, verify email) → вызвать серверный API auth-библиотеки, не писать токен в БД вручную, to обеспечить совпадение токенов с форматом который валидирует клиентская часть.
 - When таблица с overflow-x-auto + sticky колонкой → не ставить промежуточный div между scroll-контейнером и table — sticky ломается в Safari, to корректное sticky-поведение колонки во всех браузерах.
@@ -167,14 +167,14 @@ Load only for audit wave and retrospective — not during code writing.
 - When d3 `.each()` на SVG элементах отрисованных React → lookup по data-* атрибутам вместо bound data, to предотвратить crash от undefined datum.
 - When делегирование write-задачи sandboxed-инструменту → проверить write permissions тестовой операцией до полного промта, to не терять время на failed delegation + ручную реализацию.
 - When VPS нужен публичный URL → перед выбором tunnel-сервиса проверить outbound connectivity VPS (HTTPS? SSH?), to не тратить попытки на несовместимые решения.
-- When задача требует написания кода, рефлекс — начать писать напрямую → написать sketch.md (root cause + what must work) и делегировать кодогенерацию Codex ДО начала написания кода, to соблюдать установленный workflow и не тратить ресурс пользователя на ручную остановку.
+- When рефлекс — начать писать код напрямую → сначала sketch.md (root cause + what must work) и делегировать кодогенерацию Codex, to соблюдать workflow.
 - When JS frontend хранит список в in-memory state → POST мутирует один элемент → после успешного POST обновить запись в state синхронно (state[key] = newValue), to не допустить stale display при последующем re-render.
 - When batch endpoint валидирует каждый элемент и возвращает 400 если хоть один неизвестен → изменить на "skip unknowns, return known" (partial success), to не ломать весь batch из-за одного невалидного элемента.
 - When same parameter/field name used across any boundary (SQL JOIN, API, function call) → verify both sides agree on the identifier's semantic domain, to avoid name-match semantics-mismatch where identical names mask different meanings.
 - When стилевой модуль импортирует файл содержащий глобальные селекторы через @use → выносить переменные в отдельный partial без глобальных правил, модули @use только partial, to предотвратить purity error сборщика из-за non-local селекторов в модуле
 - When jsdom integration-тест использует history.replaceState с абсолютным URL → использовать window.location.hash или относительный путь вместо абсолютного URL, to избежать SecurityError в jsdom test environment
-- When визуальный баг в SVG/Canvas layout → вывести координаты нод через unit-тест до написания фикса, to не итерировать вслепую 5+ раз
-- When нужно проверить визуальный результат из CLI без браузера → Playwright скриншот через dev server + Read tool, to не деплоить 4 раза ради проверки глазами
+- When визуальный баг в SVG/Canvas layout → вывести координаты нод через unit-тест до фикса, to не итерировать вслепую
+- When нужна визуальная проверка из CLI → Playwright скриншот dev server + Read tool, to не деплоить ради проверки глазами
 - When баг в визуальном поведении, код кажется "неправильным" → сначала читать project-knowledge (domain glossary, patterns), потом код, to не делать ложных выводов из реализации, противоречащих спеке
-- When составление промта для внешнего AI-агента с указанием API-сигнатур → верифицировать каждую сигнатуру через inspect.signature() или docs ДО отправки промта, to не передавать неверные факты вызывающие fix round в сгенерированном коде
+- When промт для внешнего AI-агента содержит API-сигнатуры → верифицировать каждую через inspect.signature() или docs до отправки, to не вызвать fix round из-за неверных фактов
 - When настройка bind-адреса процесса внутри контейнера для ограничения внешнего доступа → применять сетевое ограничение на уровне port mapping хоста, внутри контейнера слушать на 0.0.0.0, to не сделать сервис недостижимым из-за применения ограничения на неверном уровне абстракции

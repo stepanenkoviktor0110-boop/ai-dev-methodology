@@ -2,36 +2,34 @@
 
 > Loaded by audit agents and retrospective only. Orchestrator loads only Promoted Patterns (in SKILL.md).
 
-- When adding auth flow to imported data -> verify credentials existence AND isActive flag explicitly in the integration spec, to avoid missing auth discovered at user verification
-- When an external service returns an unexpected result during research -> run escalating diagnostics (parameters -> curl -> re-read docs) before declaring a blocker
-- When output format requirements arrive iteratively -> agree on complete output structure with a mockup before writing code, to avoid rewriting implementation on each clarification
-- When an external system returns empty results -> enumerate and check all available channels/endpoints before concluding data is absent
-- When speccing a complex project with server-side actions -> include performance timing baseline in the MVP scope to detect degradation before it reaches production
-- When diagnosing performance problems on a low-traffic server -> check default timeout/connection pool/cache limits in configuration before optimizing code
-- When planning file sync between two repo versions -> launch code-research to classify diff depth before writing scope, to avoid describing a mechanical sync that requires manual review
-- When a feature combines client-only storage with server-side automation -> verify data-access layer compatibility before making architecture decisions, to avoid a storage-layer conflict mid-spec
-- When spec narrows a criterion discussed in the interview (A or B -> only A) -> add to Technical Decisions: decided NOT to include B, because... to avoid extra validation rounds
-- When adding a metric to a dashboard without explicit time horizon -> clarify with user: launch / daily / all-time, before writing spec
-- When proposing hosting/stack for a new project -> clarify deployment region and regulatory constraints BEFORE proposing solutions, to avoid rewriting the architectural stack after discussion
-- When completing the Implementation Tasks section -> check for Files-to-modify overlap within each wave, to prevent merge conflicts during parallel execution
-- When designing a feature with user file uploads to disk -> explicitly describe the file delivery mechanism (protected API, not static) in Architecture, to prevent IDOR through unauthorized direct file access
-- When a feature reads methodology files via GitHub Contents API -> verify whether those files are committed in the target repositories BEFORE writing AC, to avoid data unavailable for all projects due to .gitignore
-- When writing curl commands in AVP for authenticated endpoints -> include auth header AND add a test without-key -> 401 to avoid false QA pass with broken authorization
-- When config contains a whitelist/filter for limiting processing -> clarify at which pipeline stage the filter is applied and move it before the resource-intensive operation
-- When asked to remove X from repository -> clarify: git untrack only (git rm --cached + .gitignore) or physical deletion from disk, to avoid destroying local files with a git operation
-- When needing to obtain configuration from a provider (DNS, settings) -> ask the client first whether they have access to the provider's control panel, to avoid waiting for support response when the client can get the data themselves
-- When a tech-spec decision narrows or defers a requirement from user-spec -> check whether that requirement appears in the user-spec AC BEFORE writing the Decision, to avoid introducing scope reduction without explicit user agreement
+- When adding auth flow to imported data -> verify credentials existence AND isActive flag in the integration spec.
+- When an external service returns an unexpected result during research -> escalate diagnostics (parameters -> curl -> re-read docs) before declaring a blocker.
+- When output format requirements arrive iteratively -> agree on complete output structure with a mockup before writing code.
+- When an external system returns empty results -> enumerate all available channels/endpoints before concluding data is absent.
+- When speccing a complex project with server-side actions -> include performance timing baseline in MVP scope.
+- When diagnosing performance on a low-traffic server -> check default timeout/connection pool/cache limits before optimizing code.
+- When planning file sync between two repo versions -> launch code-research to classify diff depth before writing scope.
+- When a feature combines client-only storage with server-side automation -> verify data-access layer compatibility before architecture decisions.
+- When spec narrows an interview criterion (A or B -> only A) -> record in Technical Decisions: decided NOT to include B, because...
+- When adding a metric to a dashboard without explicit time horizon -> clarify with user: launch / daily / all-time, before writing spec.
+- When proposing hosting/stack -> clarify deployment region and regulatory constraints BEFORE proposing solutions.
+- When completing Implementation Tasks -> check Files-to-modify overlap within each wave to prevent merge conflicts.
+- When a feature has user file uploads to disk -> describe protected-API delivery (not static) in Architecture, to prevent IDOR.
+- When a feature reads methodology files via GitHub Contents API -> verify those files are committed in target repos BEFORE writing AC (.gitignore risk).
+- When writing curl in AVP for authenticated endpoints -> include auth header AND a without-key -> 401 case, to avoid false QA pass.
+- When config contains a whitelist/filter -> clarify at which pipeline stage it applies and move it before the resource-intensive operation.
+- When asked to remove X from repository -> clarify: git untrack (git rm --cached + .gitignore) vs physical deletion.
+- When needing provider configuration (DNS, settings) -> ask client first whether they have control-panel access.
+- When a tech-spec decision narrows/defers a user-spec requirement -> check if it appears in user-spec AC BEFORE writing the Decision.
 - When a user rejects a proposed architectural simplification -> ask 'what distinction is lost by the simplification?' before continuing, to surface the missing key abstraction before implementation (triad #137)
 - When designing a system via a specific tool for another executor → verify that executor's toolset before fixing architecture, to avoid binding the architecture to the designer's tool rather than the executor's (triad #246)
 - When a classifier field groups radically different entity types in one table → check whether all types share the same attribute set, to avoid merging entities with different structures into one table (triad #247)
-- When a stakeholder names a specific technical component (platform, tool, config) as part of requirements → verify that component against current project documentation before fixing it in the spec, to avoid accepting stakeholder statements about technical state as truth without verification (triad #267)
+- When an external naming claim (stakeholder names a tech component, external doc names positional attributes, spec names a code symbol) is about to enter the spec → verify it against ground truth (project docs / code / grep) before recording, to avoid name-mirage from external assertions (triads #267, #287, #307)
 - When moving a task (script, module, pipeline) from one execution environment to another → enumerate all implicit environment dependencies (env vars, filesystem, network, runtime, auth model) before migrating, to avoid assuming that existence equals portability (triad #268)
 - When assigning a value to a named configuration field → trace how the consuming system actually reads and uses that value, to avoid conflating the field label with the machine contract (triad #279)
-- When an external document names positional attributes for an existing data structure → verify actual positions in code before accepting them into the spec, to avoid schema assumptions from external specs propagating as mirage (triad #287)
 - When writing concrete method call signatures in implementation hints for a task that uses an external dependency → check the actually installed package version before recording call signatures in hints, to avoid stale API guidance from training memory (triad #293)
 - When configuring data output that feeds a separate system → derive output field names directly from the consumer's parsing code, not from spec prose or convention, to avoid producer-side naming assumptions where consumer uses different names (triad #300)
 - When designing a background process with a pre-qualification gate and considering adding a time-based cancel → check if the pre-qualification gate already covers the failure case before adding a time limit, to avoid treating long-running inputs as stuck when scope check already excluded oversized inputs (triad #303)
-- When a spec names a specific code symbol (variable, constant, function) by name → grep the exact name before recording it in the spec, to prevent name-mirage from naming-convention assumptions (triad #307)
 - When the Architecture section describes placement of a new UI component → re-read the user-spec for explicit layout constraints before choosing placement, to avoid default-layout assumption that ignores an explicit prohibition from user-spec (triad #308)
 - When bulk-creating via API artifacts of a platform that has runtime-dynamic UI behaviors (dynamic filters, template-binding, context-aware behaviors) → create ONE instance via API, run the full end-to-end user scenario, only then scale, to avoid API/UI semantic divergence where structural equivalence in API ≠ behavioral equivalence at runtime (triad #309)
 - When writing a derivative planning artifact (user-spec from TZ, tech-spec from user-spec) whose upstream source contains explicit defaults for the same concept → before encoding each policy, grep the upstream source for the concept by name and reconcile with its explicit default, to avoid pre-recorded default erosion where a recent interview exchange silently overrides an explicit default already recorded in the source (triad #311)

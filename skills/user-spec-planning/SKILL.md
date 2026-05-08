@@ -99,7 +99,6 @@ Runs inside each cycle until scope fully covered:
 4. Stop when BOTH: all required items >= 85% AND every required item has non-empty value, no TBD, gaps empty or only conscious limitations
 5. Not done → step 1
 
-Scoring: detailed 80-95%, brief 50-70%, vague 20-40%, not mentioned 0%.
 Optional items: cover when user mentions relevant context or naturally connected to required items.
 
 ## Work Type Adaptations
@@ -149,7 +148,7 @@ If understanding changes significantly: update scores downward, reassess size S/
 - When user-spec explicitly excludes a capability in post-MVP -> before adding an analogous capability as a Decision check the exclusions list in user-spec, to prevent scope creep caught only at validation
 - When a task creates a UI component -> include entry point integration (import and render in App/page) in the spec's implementation notes, to not leave downstream tasks with a wrong assumption that the component is already wired in
 - When user-spec is for a style-only refactoring with full audit -> skip heavy validators or limit to lightweight validation, to not lose hours on stuck agents when architectural risk is zero
-- When пользователь описывает фичу знакомым термином (демо, шаблон, виджет) → спросить «кто потребитель и зачем ему это?» до технических деталей, to не потратить 3 батча интервью на выяснение реальной потребности.
+- When user describes a feature with a familiar term (demo, template, widget) → ask "who is the consumer and why do they need it?" before technical details, to avoid spending 3 interview batches discovering the real need
 - When a stakeholder confirms a proposed decomposition as a whole → validate each element separately by asking targeted questions per item, to avoid bundle confirmation bias where a group "yes" does not equal per-element validation
 - When user-spec imports an external framework/chain and the user names only a subset of its components → open the framework's entry-point (README, main manifest) and enumerate its own dependencies before fixing AC, to avoid user-subset completeness illusion where the user's list is accepted as final scope while the chain requires more
 - When review surfaces a deviation from spec but the delivered behavior still meets the underlying intent → weigh rework cost against actual value before mandating a fix; if the gap is minor, amend the spec and confirm with stakeholders instead of blocking delivery, to avoid spec-compliance reflex driving unnecessary rework

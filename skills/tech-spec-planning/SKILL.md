@@ -150,31 +150,31 @@ After fixes → commit `chore(techspec): validation round {N} — {summary}` →
 
 ## Promoted Patterns
 
-- **Верифицируй целевые файлы перед описанием операции (Seen: 2):** Когда spec описывает трансформацию "удалить X из N файлов" или "заменить Y" — grep по каждому файлу перед тем как зафиксировать тип операции. Файл без X требует add, не replace. Ошибка типа операции обнаруживается только при выполнении задачи.
-- **Верифицируй API response shapes live-вызовом (Seen: 2):** При интеграции с внешним API — перенести в спек ВСЕ коды ответа, формат данных, edge cases. Перед включением response shapes из code-research — live API call для проверки. Один вызов дешевле propagation миража через pipeline.
-- **Верифицируй файловые пути через ls/glob (Seen: 2):** Перед написанием путей в tech-spec — проверить через ls/glob, не из памяти или architecture docs. Docs описывают намерение, а не реальность. Перед записью "call sites функции X в файле Y" в Files to modify — grep по имени функции, подтвердить что вызовы реально существуют в указанном файле.
+- **Верифицируй целевые файлы перед описанием операции (Seen: 2):** Spec описывает "удалить X из N файлов" / "заменить Y" — grep каждый файл перед фиксацией типа операции. Файл без X требует add, не replace.
+- **Верифицируй API response shapes live-вызовом (Seen: 2):** Перед включением response shapes из code-research в спек — live API call. Перенеси все коды ответа, формат, edge cases. Один вызов дешевле миража через pipeline.
+- **Верифицируй файловые пути и call sites через ls/grep (Seen: 2):** Пути в tech-spec — через ls/glob, не из памяти/docs. Перед записью "call sites функции X в файле Y" — grep подтверждает существование вызовов.
 
 ## Learned Patterns
 
 Full pattern history: [references/learned-patterns.md](references/learned-patterns.md)
 Load only for audit wave and retrospective — not during spec planning.
 
-- When a proposal involves project-scope migration to reduce global overhead → first clarify whether the resource is universal or domain-specific, to avoid breaking universal-access requirements.
-- When tech-spec contains a production default (run time, port, limit) → explicitly verify the value with the user during spec/task phase, to avoid late correction cascading across multiple files.
-- When user requests «проверь соответствие первоисточнику» → fetch the source first, then apply corrections, to avoid inventing data.
-- When spec contains explicit permission matrix for one destructive operation (delete) → verify ALL analogous destructive operations (deactivate, activate, reset, role change) against the same matrix, to find authorization gaps before implementation.
-- When user-spec AVP contains URLs/endpoints written from memory → grep/verify each URL+method in the codebase before approving user-spec, to prevent URL mirage from propagating into tech-spec skeptic pass.
-- When spec defines GET=admin+manager and PUT=manager-only on an endpoint where existing guard allows both roles → explicitly describe creation of a new guard for PUT in the task, to prevent auth gap discovered only at security audit.
-- When запуск task-creator агентов → проверить runner (jest/vitest/pytest) и тест-директории, передать явно в каждый бриф, to предотвратить генерацию неработающих TDD Anchor путей.
-- When написание depends_on для audit wave задач → перечислить ВСЕ задачи, создающие аудируемые файлы (не только последнюю волну), to гарантировать существование всех файлов к моменту аудита.
-- When вопрос об инфраструктуре, деплое или production URL → читать decisions.md (changelog) ДО project-knowledge docs, to не дать ответ из устаревшего статичного снимка.
-- When tech-spec Data Models содержит UPDATE SQL для существующей таблицы → reality-checker сверяет SQL против реального route.ts ища пропущенные существующие параметры, to предотвратить тихую потерю данных.
-- When Wave 1 создаёт shared module с named exports, Wave 2 потребляет его → перечислить ВСЕ export-символы явно в брифе Wave 1 и передать точную строку импорта в каждый Wave 2 бриф, to предотвратить naming divergence.
-- When планирование агрегации из log-таблицы по колонке добавленной ALTER TABLE → проверить заполненность исторических строк, не только наличие колонки, to не получить пустую агрегацию из "наполненной" таблицы.
-- When бриф task-creator содержит compatibility constraint (ES5/legacy) + файл уже использует конкретный HTTP-паттерн → явно указать разрешённые API с примером строки из существующего кода, to предотвратить выбор устаревшего API вопреки code style.
-- When трансформация структурированных данных (items, checklist, AC) в прозаический документ (spec, report, Solution) → перед написанием пройтись по каждому item источника, отметить что попал в целевой документ, to не потерять обсуждённые темы при смене формата представления.
-- When tech-spec содержит публичный POST endpoint без авторизации → применить security checklist: CSRF/Origin, input sanitization (XSS+injection), IP extraction source, rate-limit, security headers, to не добавлять security decisions только после аудита.
-- When test-reviewer возвращает fail в фазе tech-spec, ссылаясь на отсутствие тестов в файлах → признать false fail; указывать в промпте "проверь план, а не файлы", to не тратить раунд ревалидации на проблему формулировки промпта.
-- When задача касается N≥3 незнакомых интерфейсов → верифицировать каждый интерфейс до генерации, to избежать O(N) фактических ошибок, каждая стоит review round.
-- When планирование рефакторинга на основе файловой структуры или пользовательской диагностики → верифицировать через code research что каждый артефакт реально используется (рендерится, импортируется) до включения в scope, to не планировать работу над мёртвым кодом и не строить спек на ложных предпосылках.
-- When формирование списка решений для обсуждения с пользователем (tech-spec) → фильтровать каждое решение: «изменится ли поведение продукта для пользователя?» — если нет, принять самостоятельно, to не тратить раунды коммуникации на чисто технические решения.
+- When proposal involves project-scope migration → clarify whether the resource is universal or domain-specific before, to avoid breaking universal-access requirements.
+- When tech-spec contains a production default (run time, port, limit) → explicitly verify the value with the user, to avoid late correction cascading across files.
+- When user requests «проверь соответствие первоисточнику» → fetch the source first, then apply corrections.
+- When spec contains permission matrix for one destructive operation (delete) → verify ALL analogous destructive operations (deactivate, reset, role change) against the same matrix.
+- When user-spec AVP contains URLs/endpoints from memory → grep/verify each URL+method in codebase before approving, to prevent URL mirage propagating into skeptic pass.
+- When endpoint role-matrix differs from existing guard (e.g. GET=admin+manager, PUT=manager-only on shared guard) → describe creation of a new guard in the task, to prevent auth gap.
+- When запуск task-creator агентов → проверить runner (jest/vitest/pytest) и тест-директории, передать явно в каждый бриф, чтобы не генерить неработающие TDD Anchor пути.
+- When depends_on для audit wave → перечислить ВСЕ задачи, создающие аудируемые файлы (не только последнюю волну).
+- When вопрос об инфраструктуре, деплое или production URL → читать decisions.md (changelog) ДО project-knowledge docs.
+- When tech-spec Data Models содержит UPDATE SQL для существующей таблицы → reality-checker сверяет SQL против реального route.ts, ища пропущенные существующие параметры.
+- When Wave 1 создаёт shared module с named exports, Wave 2 потребляет → перечислить ВСЕ export-символы и передать точную строку импорта в каждый Wave 2 бриф, чтобы избежать naming divergence.
+- When планирование агрегации из log-таблицы по колонке из ALTER TABLE → проверить заполненность исторических строк, не только наличие колонки.
+- When бриф task-creator содержит compatibility constraint (ES5/legacy) + файл уже использует HTTP-паттерн → указать разрешённые API с примером строки из кода, чтобы не выбрать устаревший API.
+- When трансформация структурированных данных (items, checklist, AC) в прозу (spec, report, Solution) → пройтись по каждому item источника, отметить что попал в целевой документ.
+- When tech-spec содержит публичный POST endpoint без авторизации → применить security checklist: CSRF/Origin, input sanitization, IP source, rate-limit, security headers.
+- When test-reviewer возвращает fail в tech-spec, ссылаясь на отсутствие тестов в файлах → признать false fail; в промпте указывать "проверь план, а не файлы".
+- When задача касается N≥3 незнакомых интерфейсов → верифицировать каждый до генерации, чтобы избежать O(N) ошибок.
+- When планирование рефакторинга по файловой структуре или диагностике → верифицировать code research что каждый артефакт реально используется (рендерится, импортируется), чтобы не строить спек на мёртвом коде.
+- When формирование списка решений для обсуждения с пользователем → фильтр «изменится ли поведение продукта?» — если нет, принять самостоятельно.

@@ -4,7 +4,7 @@
 > Details in quick-learning triad-index.
 
 **1. Серверные операции — проверяй preconditions:**
-Перед deploy/restart/подключением → verify: занятость целевого порта, push state (`git log origin..HEAD`), ручная проверка подключения до автоматических попыток, количество процессов на порту. Серверные проблемы имеют физические причины (порт занят, ISP-блок, hung process) — проверяй их до дебага логики. Сервис недоступен с нескольких независимых сетей при открытом порте = проблема провайдера → туннель или смена IP. В deploy script — явно завершать зависшие процессы перед перезапуском сервиса, чтобы orphan-процессы не блокировали порт. Аутентификация по ключу падает при корректных ключах — проверить права на домашнюю директорию пользователя.
+Перед deploy/restart/подключением verify: порт, push state (`git log origin..HEAD`), ручная проверка подключения, количество процессов на порту. Серверные проблемы имеют физические причины (порт занят, ISP-блок, hung process) — проверяй до дебага логики. Сервис недоступен с нескольких сетей при открытом порте = проблема провайдера → туннель/смена IP. В deploy script явно завершать зависшие процессы перед restart. Auth по ключу падает при корректных ключах — проверить права на home-dir.
 
 **2. Пользовательские инструкции — уточняй scope:**
 "Не нужен" → уточни: UI или вся функциональность (API, DB)? "X здесь, а не там" → добавь в новое место, убери только из названного. Неоднозначное название → покажи варианты, спроси. При нескольких похожих метриках/счётчиках — явно сопоставить термин пользователя с конкретной метрикой до ответа, не подменять один другим по схожести. Диагностический вопрос ≠ запрос на действие. Task file > prompt для значений.
@@ -13,7 +13,7 @@
 Изменён элемент из группы → примени к каждому sibling. Синхронизация файлов → проверь index-файлы. Hotfix вне плана → добавь в audit wave. Новый marker в промте → опиши во всех секциях. DRY-нарушение в N задачах → extraction-задача в audit. Validation добавлена в route → немедленно grep по имени поля во всех route-файлах, убедиться что structurally-similar endpoints имеют ту же validation. Смена домена → grep hardcoded CORS/CSRF/allowed_origins в кодовой базе и обновить ВСЕ до деплоя, иначе молчаливый 403 после переключения. Частный случай: пользователь изменил ранее принятое решение, зафиксированное в нескольких артефактах (spec, decisions, task) → сначала перечислить ВСЕ места захвата, затем синхронизировать одним заходом, чтобы reviewer не флажил phantom-противоречия из устаревших sibling-документов.
 
 **4. Не подтверждай без проверки реальности:**
-"Это работает?" → grep в коде до ответа. Pipeline ok но экспорт упал → алерт на N consecutive 0. Тесты зелёные но покрытие иллюзорно → ad-hoc fix немедленно. Pre-existing failures → проверь working tree (git stash). Задача помечается done только после проверки реального эффекта в системе, а не по наличию промежуточного артефакта (файл создан ≠ фича работает).
+"Это работает?" → grep до ответа. Pipeline ok но экспорт упал → алерт на N consecutive 0. Тесты зелёные но покрытие иллюзорно → ad-hoc fix. Pre-existing failures → проверь working tree (git stash). Done только после проверки реального эффекта (файл создан ≠ фича работает; graceful fallback с success ≠ полнота — count/sample ключевых полей).
 
 **5. Планирование задач — валидируй зависимости:**
 depends_on=[N] в той же wave → проверить wave(dep) < wave(task). Фильтр ко всем колонкам → таблица тип→поведение до кода. Endpoint с resource_id без user_id → проверка роли target-user. Off-by-one в индексах → подставить числа вручную. State-файл → путь от якоря (db_path.parent), не от CWD.
@@ -40,7 +40,7 @@ When запуск async инструмента/агента с неизвест�
 When визуальная фича с несколькими экранами/блоками → показать один экран/блок полностью → дождаться одобрения → следующий, to получить ранний фидбэк на каждый экран до следующего.
 
 **13. Баг после деплоя — upstream сначала:**
-When фикс задеплоен → баг воспроизводится → проверить upstream-инфраструктуру до повторного анализа кода, to не тратить ещё один цикл деплоя на не тот слой. Билд/деплой ОК но 4xx → сначала проверять настройки платформы (framework detection, access policies, маппинг веток), не дебажить код/DNS.
+When фикс задеплоен и баг воспроизводится, или билд/деплой ОК но 4xx → проверить upstream-инфраструктуру (настройки платформы, framework detection, access policies, маппинг веток) до повторного анализа кода/DNS, to не тратить цикл деплоя на не тот слой.
 
 **14. Внешний агент (Codex) — полный diff:**
 When делегирование точечных правок внешнему агенту (Codex) → проверить полный git diff после завершения, не только целевые файлы, to поймать непрошеные изменения до коммита.
@@ -114,14 +114,11 @@ When стейкхолдер даёт явную директиву о режим
 **37. Регистрация нового компонента в разделяемом пространстве — перечисли занятые:**
 When регистрация нового компонента в разделяемом пространстве ресурсов → перед выбором идентификатора перечислить уже занятые в целевом окружении, to избежать clean-slate assumption и конфликта имён.
 
-**38. Graceful fallback сообщает success — проверь полноту:**
-When операция с graceful fallback (warn + default) сообщает success → после завершения проверить полноту результата (не только отсутствие ошибок), count/sample ключевых полей, to избежать silent degradation trust: отсутствие ошибки ≠ полнота результата.
-
 **39. Расхождение документация/состояние — фиксируй сразу:**
 When обнаружено расхождение между документацией и наблюдаемым состоянием → добавить disambiguation note в deliverable в момент обнаружения, до передачи ревьюерам, to не тратить validation round на факт уже известный автору.
 
-**40. Batch артефакты под давлением — прогони мысленно каждый:**
-When multiple artifacts generated in batch under time pressure → run mental execution of each artifact before declaring done, to избежать completion pressure suppresses verification: batch creation creates compound error debt.
+**40. Batch артефакты/операции — верифицируй каждый до коммита:**
+When multiple artifacts generated in batch (под давлением или массовой операцией над файлами) → run mental execution of each artifact, или verify через tool's check/dry-run mode, до declaring done/коммита, to избежать compound error debt от batch без верификации.
 
 **41. Большой deliverable после многошаговой работы — предложи следующий шаг:**
 When large deliverable produced after extended multi-step work → proactively offer the natural completion action without waiting for request, to избежать completion assumption bias: producing output feels like finishing, but delivery is a separate step.
@@ -164,9 +161,6 @@ When designing a session workflow that plans multi-agent review rounds using int
 
 **54. Автономный исполнитель без явного окончания — добавь терминатор:**
 When an autonomous worker receives a step-by-step completion protocol without explicit scope termination → close the protocol with explicit termination: "only these N steps, no additional actions", to avoid permissive gap assumption: executor treats gap between not-listed and not-prohibited as permission.
-
-**55. Массовая операция над файлами — верифицируй до коммита:**
-When after applying a bulk-operation tool to a large file set → verify with the tool's check/dry-run mode before committing, to avoid completion assumption without verification: bulk assumed complete without checking.
 
 **56. Применение фикса к «известному сломанному» состоянию — перечитай текущее состояние:**
 When about to apply a repair targeting a known broken pattern → read actual current state and confirm it still matches the expected broken pattern before mutating, to avoid double-damage when state has already partially recovered or been changed out-of-band since the diagnosis.
