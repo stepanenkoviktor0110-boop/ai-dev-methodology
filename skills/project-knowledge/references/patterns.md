@@ -16,7 +16,7 @@ Coding conventions, development workflow, and project-specific practices.
 
 **Work artifacts:** All per-feature work goes in `work/{feature-name}/`. This directory is local only (in `.gitignore` or committed per feature). Source of truth for active feature work.
 
-**Knowledge system:** Patterns go to `quick-learning/references/reasoning-patterns.md` as triads (Goal / Context / Decision). Promoted to skills when `Seen >= 4`. Never write patterns directly into skills without the quick-learning promotion cycle.
+**Knowledge system:** Patterns added via `/quick-learning` only — never write directly into skills, bypass breaks the promotion cycle (see architecture.md → Key Components → Quick-learning system for the buffer/promotion mechanics).
 
 ---
 
@@ -62,7 +62,7 @@ No automated tests. The "tests" are functional: invoke a skill, observe Claude's
 
 ### Skill Promotion Rule
 
-Reasoning pattern promoted from `reasoning-patterns.md` into a skill's body only after `Seen >= 4` (appeared in 4 independent sessions). Lower threshold allowed for critical safety patterns.
+Promotion threshold is `Seen >= 4` (see architecture.md → Quick-learning system). Lower threshold allowed only for critical safety patterns.
 
 ### Codex Adaptation Rule
 

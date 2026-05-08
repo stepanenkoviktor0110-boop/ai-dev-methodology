@@ -1,7 +1,6 @@
 # Project Context
 
-## Purpose
-This file provides high-level project overview for AI agents. Helps agents understand WHAT we're building and WHY.
+High-level project overview — WHAT we're building and WHY.
 
 ---
 

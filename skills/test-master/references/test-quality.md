@@ -1,40 +1,8 @@
-# Test Quality Requirements
+# Test Quality — Mocking Strategy
 
-## What Makes a BAD Test
+For BAD/GOOD test examples and the "mock 3+ deps = wrong test type" rule, see [test-quality-review.md](test-quality-review.md).
 
-**Tests nothing:**
-```typescript
-expect(true).toBe(true)
-```
-
-**Tests only that mock was called:**
-```typescript
-expect(api.call).toHaveBeenCalled()  // Without checking result
-```
-
-**No assertions:**
-```typescript
-render(<Component />)  // Just renders, checks nothing
-```
-
-## What Makes a GOOD Test
-
-**Tests actual result:**
-```typescript
-expect(calculateTotal(100, 0.2)).toBe(80)
-```
-
-**Tests real state change:**
-```typescript
-cart.add({ id: 1 })
-expect(cart.items).toHaveLength(1)
-```
-
-## Rule: Excessive Mocking = Wrong Test Type
-
-If mocking 3+ dependencies → use integration or E2E test instead.
-
-## Mocking Strategy
+## Mocking Strategy by Level
 
 ### Unit Tests
 - **Mock:** Database, API calls, file system, time

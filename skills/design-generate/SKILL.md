@@ -179,17 +179,11 @@ Read [collage-workflow.md](references/collage-workflow.md) for full collage gene
 
 ## Final Check
 
-Before finishing, verify:
-- [ ] All generated HTML files use design tokens from tokens.json (no hardcoded color/spacing values)
+All phase Checkpoints satisfied; additionally confirm:
 - [ ] HTML files use preview-template.html as base (includes CSP meta tag)
-- [ ] SVG files render the same layout as HTML with embedded colors
-- [ ] File names match `/^[a-z0-9-]+$/` pattern
-- [ ] `.design-system/pages/` directory contains the generated files
 - [ ] User has been shown where to find the files
-- [ ] Before/after collage saved to `.design-system/collages/` (if user confirmed final variant)
-- [ ] Intermediate artifacts (SVGs, draft HTMLs) cleaned up — only final HTML + collage remain
-- [ ] Taste-profile прочитан (если `.design-system/taste-profile.md` существует) и предпочтения применены в Phase 2 и Phase 3
-- [ ] Two-layer description сгенерировано и сохранено в `.design-system/pages/{name}.description.md`
+- [ ] Before/after collage saved to `.design-system/collages/` (if user confirmed final variant); intermediate artifacts cleaned up
+- [ ] Two-layer description сохранено в `.design-system/pages/{name}.description.md`
 
 ## Learned Patterns
 

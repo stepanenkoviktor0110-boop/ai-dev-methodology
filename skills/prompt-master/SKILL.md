@@ -50,10 +50,6 @@ After:
   Use plain language accessible to non-technical readers.
 ```
 
-### Examples over rules
-
-1-3 canonical examples transfer knowledge more efficiently than paragraphs of description. Show the desired output — let the model generalize from the pattern.
-
 ### Compress
 
 Remove filler ("could you please", "I would like you to", "make sure to"). Shorter prompts often perform equally well or better — less noise means stronger signal per token.

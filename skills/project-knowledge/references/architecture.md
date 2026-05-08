@@ -1,7 +1,6 @@
 # Architecture
 
-## Purpose
-Technical architecture overview for AI agents. Helps agents understand HOW the system is built.
+Technical architecture overview — HOW the system is built.
 
 ---
 

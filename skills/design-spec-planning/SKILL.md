@@ -146,13 +146,9 @@ Optional items: cover when user mentions relevant context or when naturally conn
 
 ## Self-Verification
 
-Before finishing, verify:
-- [ ] All phases (0-4) completed
+All phase Checkpoints satisfied; additionally confirm:
 - [ ] design-spec.md filled with real content (no placeholders, no template markers)
 - [ ] Screens table has at least one entry with type, content, and priority
 - [ ] User flows section describes at least one complete path (or noted as single-screen project)
-- [ ] DS Status section reflects actual `.design-system/tokens.json` presence
 - [ ] designer-experience.md was read by project category (or noted as empty/missing)
-- [ ] User approved, frontmatter status: approved
-- [ ] interview.yml metadata.status: completed
 - [ ] Suggested `/design-plan` as next step

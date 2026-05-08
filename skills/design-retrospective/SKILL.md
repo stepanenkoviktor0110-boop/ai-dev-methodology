@@ -228,18 +228,10 @@ Present the prompt to user in a code block for easy copy-paste.
 
 ## Self-Verification
 
-Before finishing, verify:
-- [ ] `.design-system/` existence checked (refused if missing)
-- [ ] Session feedback collected and categorized
-- [ ] Each lesson has all 5 fields (Problem, Cause, Solution, Technical, Rule)
-- [ ] No duplicate lessons added
+All phase Checkpoints satisfied; additionally confirm:
+- [ ] Each lesson has all 5 fields (Problem, Cause, Solution, Technical, Rule), no duplicates added
 - [ ] Rules are actionable (not vague advice like "делать лучше")
-- [ ] Promotion count is across all entries, not per session
-- [ ] Already-promoted rules not duplicated in `design-principles.md`
-- [ ] Next-session prompt is self-contained (no references to "this conversation")
-- [ ] Next-session prompt includes taste-profile summary (or "не сформирован" if missing)
-- [ ] taste-profile.md содержит все обязательные секции (Цветовые предпочтения, Типографика, Стиль и смелость, Антипаттерны, История изменений)
-- [ ] Experience запись добавлена append-only (существующие записи в designer-experience.md не перезаписаны)
+- [ ] Promotion count is across all entries, not per session; already-promoted rules not duplicated
+- [ ] Next-session prompt is self-contained (no references to "this conversation") and includes taste-profile summary (or "не сформирован")
 - [ ] Конфликтующие предпочтения помечены "пересмотрено" с датой в Истории изменений
-- [ ] Edge cases обработаны: missing/corrupted taste-profile, missing designer-experience, missing category section
-- [ ] All file writes target `.design-system/` in the project (not skill directory), experience writes target `shared/design-references/`
+- [ ] All file writes target `.design-system/` in the project (not skill directory); experience writes target `shared/design-references/`

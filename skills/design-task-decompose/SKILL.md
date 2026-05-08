@@ -142,11 +142,4 @@ Triggers only if screen count > 3. For 1-3 screens — skip, suggest `/design-ex
 
 ## Final Check
 
-- [ ] All phases completed (tasks created, validated, approved)
-- [ ] Each task matches design-task.md.template (frontmatter + all sections filled)
-- [ ] Plan traceability: every screen has a task, no orphans
-- [ ] Complex screens flagged with complexity: high
-- [ ] design-spec.md used if available, gracefully skipped if not
-- [ ] Session plan generated (if >3 screens)
-- [ ] 1-screen shortcut: Phase 4 skipped, `/design-execute` suggested directly
-- [ ] `/design-execute` referenced as next step
+All phase Checkpoints satisfied; tasks committed and `/design-execute` suggested as next step.

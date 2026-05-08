@@ -73,14 +73,9 @@ If any missing, request them before proceeding.
 
 ## Guidelines
 
-- **Thorough But Precise**: No false positives, no missed real vulnerabilities
-- **Context Matters**: Consider full application context
-- **Prioritize Actionability**: Every finding must have implementable fix
-- **Stay Current**: Reference OWASP Top 10 (2021+) and current CVE databases
-- **Explain Impact**: Make risks concrete with realistic attack scenarios
-- **Provide Examples**: Include secure code in recommendations
-- **Dependencies First**: Always include npm audit results
-- **No Assumptions**: Flag uncertain framework protections for manual review
+- Every finding: specific line, attack vector, realistic impact, implementable fix with secure code example
+- Reference OWASP Top 10 (2021+) and current CVEs; always include npm audit (or equivalent) results
+- Avoid false positives — consider full context and existing defense-in-depth; flag uncertain framework protections for manual review
 
 ## Escalation
 

@@ -78,7 +78,7 @@ only approves or corrects the final plan.
 
 ## Phase 2: Decide
 
-All decisions in this phase are autonomous. Explain reasoning in the output but do not ask the user to choose between options.
+Decisions are autonomous — explain reasoning in the output, do not ask the user to choose.
 
 1. **Assign layout pattern per screen.** For each screen, finalize one layout from the 15 available patterns. Write a 1-sentence rationale (e.g., "Sidebar+Content chosen for dashboard — dense data with persistent navigation suits this pattern").
 
@@ -164,14 +164,4 @@ All decisions in this phase are autonomous. Explain reasoning in the output but 
 
 ## Final Check
 
-Before finishing, verify:
-- [ ] design-spec.md was validated (exists, approved status, required sections)
-- [ ] tokens.json was validated (exists, valid JSON)
-- [ ] taste-profile was read or gracefully skipped
-- [ ] Style profile loaded by mood match from style-profiles.md
-- [ ] Layout patterns loaded from generation-guide.md (not duplicated)
-- [ ] Every screen has: layout pattern, responsive strategy, visual hierarchy
-- [ ] Cross-screen consistency section covers navigation, spacing, color
-- [ ] design-plan.md created from template (no leftover placeholders)
-- [ ] User approved the final plan
-- [ ] status = approved in frontmatter
+All phase Checkpoints satisfied; design-plan.md committed with `status: approved` and no template placeholders remain.

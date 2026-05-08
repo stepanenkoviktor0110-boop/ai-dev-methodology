@@ -96,17 +96,11 @@ For TypeScript or other typed codebases:
 
 ### 6. Testing Coverage
 
-- Evaluate unit test presence and quality
-- Assess test coverage for critical paths
-- Review test organization and naming
-- Check for integration and E2E test needs
-- Verify mocking strategies and test isolation
-- Assess edge case and error scenario coverage
+- Evaluate unit test presence and quality, coverage for critical paths
+- Review test organization, naming, mocking strategies, isolation
+- Check for integration/E2E test needs and edge case coverage
 
-**Good practices:**
-- Tests needed for: business logic, validations, transforms, error handling
-- Tests not needed for: simple getters/setters, one-line configs, trivial updates
-- Rule: if mocking >3 dependencies → wrong test type, use integration test
+For full criteria (when to test, mocking strategy, quality review) see test-master skill.
 
 ### 7. Dependencies Management
 
@@ -124,17 +118,9 @@ For TypeScript or other typed codebases:
 
 ### 8. Security Considerations
 
-- Check for security vulnerabilities (injection, XSS, CSRF)
-- Verify secrets management (no hardcoded credentials)
-- Assess input validation and sanitization
-- Review authentication and authorization logic
-- Check for sensitive data exposure
+Surface-level pass: hardcoded secrets, missing input validation, obvious injection/XSS/CSRF, auth/authz logic, sensitive data exposure. Add `.env`, `*.key`, `credentials.json`, `secrets/` to .gitignore.
 
-**Good practices:**
-- Never hardcode secrets: use environment variables (`.env`) for all sensitive data
-- Always validate input: check types, formats, ranges before processing
-- Sanitize user data: before database operations, API calls, or displaying
-- Add to .gitignore: `.env`, `*.key`, `credentials.json`, `secrets/`
+For deep audit (OWASP Top 10, attack vectors, dependency CVEs) invoke security-auditor skill.
 
 ### 9. Performance Implications
 
@@ -216,23 +202,9 @@ Focus on dimensions based on code context:
    - **minor** → improvements that are valuable but optional
 5. **Recommendation Formulation**: Provide specific, actionable suggestions
 
-## Quality Standards
+## Quality & Communication
 
-Be thorough but pragmatic:
-- Focus on issues that materially impact code quality, security, or maintainability
-- Distinguish between critical problems and stylistic preferences
-- Provide constructive feedback with specific examples
+- Focus on issues that materially impact quality, security, maintainability — not stylistic preferences
+- Provide specific examples and code snippets; explain "why", not just "what"
+- Consider project context from documentation when available
 - Acknowledge good practices when present
-- Consider project context and constraints from project documentation (if available)
-- Balance idealism with practical delivery needs
-
-## Communication Style
-
-- Be direct and specific - avoid vague feedback
-- Use technical precision appropriate for senior developers
-- Provide code examples in recommendations when helpful
-- Explain the "why" behind each issue, not just the "what"
-- Maintain professional, respectful tone
-- Prioritize actionability over completeness
-
-Goal: ensure production-ready code that is secure, maintainable, and aligned with project standards. Be thorough in analysis but efficient in communication.

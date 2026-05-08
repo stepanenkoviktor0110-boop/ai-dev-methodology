@@ -83,7 +83,7 @@ Full test suites, integration tests, builds belong in CI.
 
 ## Phase 6: Testing Infrastructure
 
-Set up test framework, create smoke test: 1-2 tests verifying setup works (import main module, check environment).
+Set up test framework, create smoke test (1-2 tests verifying setup works: import main module, check environment).
 
 **Checkpoint:** test command passes.
 
@@ -93,7 +93,7 @@ Update project-knowledge references (append, don't overwrite):
 - `deployment.md` — required environment variables
 - `patterns.md` (Git Workflow section) — pre-commit hooks and what they check
 
-Commit:
+Before commit verify `git status` shows no `.env` files (only `.env.example`), then commit:
 ```
 chore: setup project infrastructure
 
@@ -104,8 +104,6 @@ chore: setup project infrastructure
 - Configure .gitignore and .env.example
 [- Setup Docker (if applicable)]
 ```
-
-Verify before commit: `git status` shows no `.env` files (only `.env.example`).
 
 ## Final Validation
 

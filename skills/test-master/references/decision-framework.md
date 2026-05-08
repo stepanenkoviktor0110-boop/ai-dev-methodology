@@ -2,18 +2,7 @@
 
 ## Should I write unit tests?
 
-**YES if:**
-- Function has business logic
-- Function makes decisions
-- Function transforms data
-- Function handles errors
-- Task specifies testing
-
-**NO if:**
-- Simple getter/setter
-- One-line text change
-- Trivial config update
-- No code written (research/docs)
+See [unit-tests.md](unit-tests.md) "When to Write Unit Tests" for full YES/NO criteria.
 
 ## Should I write integration tests?
 
@@ -30,18 +19,7 @@
 
 ## Should I write E2E tests?
 
-**YES if:**
-- Feature has >5 tasks
-- Feature touches critical flows
-- Feature has breaking changes
-- User explicitly requests
-- Tech Spec specifies E2E tests
-
-**NO if:**
-- Small feature (<3 tasks)
-- Non-critical functionality
-- Well covered by unit + integration tests
-- Time/cost constraints
+See [e2e-tests.md](e2e-tests.md) "When E2E Tests Are Written" for full criteria.
 
 ## When to Prioritize E2E Over Unit Tests
 

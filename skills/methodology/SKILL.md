@@ -229,7 +229,7 @@ Completed features are archived to `work/completed/{feature}/`.
 
 ## Key Principles
 
-- **Spec before code.** User Spec → Tech Spec → Tasks → Code. Code starts only after specs are approved.
+- **Spec before code.** User Spec → Tech Spec → Tasks → Code.
 - **Research stack before deciding.** Before stack decisions in `project-planning` (shallow, comparing candidates) and `tech-spec-planning` (deep, chosen element), a BLOCKING gate requires `/stack-research` for critical elements — external APIs, services, non-whitelisted libraries. No memory-based decisions on critical stack.
 - **Validate at every stage.** User spec (2), tech spec (5), tasks (2), code (3 reviewers + smoke), audit wave (3 holistic auditors), QA (pre-deploy + post-deploy). Max 3 fix iterations each.
 - **Commit after each result.** Planning: draft → validation rounds → approval. Execution: code (tests pass) → review fixes → status. Not after every action.

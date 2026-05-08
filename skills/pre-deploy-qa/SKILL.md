@@ -47,10 +47,10 @@ For each criterion — provide evidence (test name, code path, log output).
 
 After test suite passes, verify that tests actually exercise the feature:
 
-- For each file in the feature's scope (from tech-spec "Files to modify"): verify a corresponding test exists. Feature code without any test → severity `critical`
-- If project has coverage tooling configured (jest --coverage, pytest --cov, vitest --coverage) — run it. Coverage of feature files dropping below project threshold → severity `critical`
-- For each acceptance criterion with status `passed` — verify the linked test actually exercises the relevant code path, not just an import check or mock-only test. Test that doesn't actually test the feature behavior → severity `major`
-- Edge cases mentioned in user-spec (error handling, boundary values, empty states) — verify they have corresponding tests. Missing edge case test for M/L features → severity `major`
+- Each file in the feature's scope (from tech-spec "Files to modify") must have a corresponding test. Feature code without any test → `critical`.
+- If project has coverage tooling (jest --coverage, pytest --cov, vitest --coverage), run it. Coverage of feature files below project threshold → `critical`.
+- For each `passed` acceptance criterion, the linked test must exercise the actual code path (not just an import check or mock-only test). Otherwise → `major`.
+- Edge cases mentioned in user-spec (error handling, boundary values, empty states) must have corresponding tests. Missing edge case test for M/L features → `major`.
 
 ## Severity Classification
 

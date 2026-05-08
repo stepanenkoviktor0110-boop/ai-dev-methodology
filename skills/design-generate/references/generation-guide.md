@@ -2,7 +2,6 @@
 
 ## Table of Contents
 
-- [Page Assembly Process](#page-assembly-process)
 - [Layout Selection Guide](#layout-selection-guide)
 - [Basic Layout Patterns](#basic-layout-patterns)
 - [Advanced Grid Patterns](#advanced-grid-patterns)
@@ -12,15 +11,6 @@
 - [SVG Generation](#svg-generation)
 - [Device Frames](#device-frames)
 - [Iterating on Designs](#iterating-on-designs)
-
-## Page Assembly Process
-
-1. **Parse request** — identify page type, sections, components needed
-2. **Select layout** — choose layout pattern based on page type
-3. **Place components** — fill layout regions with design system components
-4. **Add content** — use real content if provided, realistic placeholders otherwise
-5. **Generate HTML** — assemble into preview-ready HTML file
-6. **Generate SVG** — convert the same layout to static SVG
 
 ## Layout Selection Guide
 
@@ -118,20 +108,7 @@ CSS: `display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh;`
 
 ## Advanced Grid Patterns
 
-For advanced layouts, apply techniques from [grid-techniques.md](grid-techniques.md) — 10 non-standard grid systems with CSS examples, each with rationale and best-use scenarios.
-
-Summary of available techniques:
-
-1. **Golden Ratio** — page divided by φ=1.618, recursive proportions. Portfolios, editorial.
-2. **Fibonacci Sequence** — spacing/sizing scale based on 3-5-8-13-21-34. Design systems, type scales.
-3. **Broken Grid** — strict grid with 1-2 intentional violations. Creative, fashion, agencies.
-4. **Van de Graaf** — medieval book margins (1:1.5:2:3), text block = 4/9 page. Long-form, book-style.
-5. **Ratio Grid** — aspect-ratio based cards (16:9, 4:3, 1:1, 3:4). Galleries, media sites.
-6. **Optical Margin Alignment** — visual corrections beyond mathematical alignment. Typography, icons.
-7. **Diagonal Layout** — diagonal section boundaries via clip-path. Tech startups, sports.
-8. **Typographic Grid** — all dimensions derived from line-height. Content sites, publishing.
-9. **Bento Grid** — asymmetric multi-size blocks (Apple-style). Product features, SaaS.
-10. **Swiss Grid** — strict 12-column grid with color fields. Branding, cultural institutions.
+For advanced layouts, apply techniques from [grid-techniques.md](grid-techniques.md) — 10 non-standard grid systems with CSS examples, rationale, and best-use scenarios. Names appear in the selection table above.
 
 ## Responsive Behavior
 
@@ -229,9 +206,4 @@ Generate separate files: `{name}-mobile.html`, `{name}-desktop.html`.
 
 ## Iterating on Designs
 
-After presenting the initial result:
-- "Bigger" / "smaller" — adjust spacing and font sizes
-- "More contrast" — darken text, increase color differences
-- "Simpler" — reduce components, whitespace up
-- "More detail" — add secondary info, icons, metadata
-- Apply change → regenerate both HTML and SVG
+Iteration rules live in SKILL.md Phase 4.3 — apply requested change, regenerate both HTML and SVG.

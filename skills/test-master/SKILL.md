@@ -29,8 +29,7 @@ description: |
 | **Integration** | All API endpoints, DB ops, external services | End of feature (per Tech Spec) | [integration-tests.md](references/integration-tests.md) |
 | **E2E** | Top 3-5 critical flows, large features (>5 tasks) | After deploy to dev | [e2e-tests.md](references/e2e-tests.md) |
 
-Skip unit tests for: simple getters, one-line changes, trivial config.
-Every API endpoint and DB write must have an integration test.
+Every API endpoint and DB write must have an integration test. For YES/NO criteria per type, see [decision-framework.md](references/decision-framework.md).
 
 ## Decision & Quality
 

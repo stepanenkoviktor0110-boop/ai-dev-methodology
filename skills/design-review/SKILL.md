@@ -21,15 +21,6 @@ Scan changed UI files against project design tokens. Output concrete recommendat
 
 **Skip silently** if either condition fails. No error, no message — just proceed with the rest of the workflow.
 
-### Decision Framework
-
-| Condition | Action |
-|-----------|--------|
-| tokens.json exists AND UI files changed | Run review |
-| tokens.json exists, no UI files changed | Skip silently |
-| No tokens.json, UI files changed | Skip silently |
-| No tokens.json, no UI files changed | Skip silently |
-
 ## What to Read
 
 Read only `.design-system/tokens.json` from the project. This gives you:

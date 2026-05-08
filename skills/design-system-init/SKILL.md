@@ -173,14 +173,8 @@ Report results. Fix any failures before finishing.
 
 ## Final Check
 
-Before finishing, verify:
-- [ ] All 4 phases completed
-- [ ] `tokens.json` is valid JSON with colors, typography, spacing, radii, shadows, breakpoints
-- [ ] Every component HTML uses CSS custom properties (no hardcoded values)
-- [ ] Contrast ratios >= 4.5:1 for all text/background pairs
-- [ ] All file names in `.design-system/` match `/^[a-z0-9-]+$/` (excluding extensions)
+Phase 4 verifications passed; additionally confirm:
 - [ ] `.design-system/README.md` reflects actual contents
-- [ ] User confirmed palette, typography, spacing choices during interview
 - [ ] designer-experience.md был прочитан по категории проекта (или отмечено как пустой/отсутствующий)
 - [ ] style-profile использован: предложения по палитре и типографике учитывают рецепты из соответствующего профиля
 - [ ] taste-profile.md прочитан при update-сценарии (или отмечен как отсутствующий)

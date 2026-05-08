@@ -169,23 +169,4 @@ Report to user:
 
 ## Quick Path
 
-If drift detection finds 0 items:
-```
-Documentation is up to date. Session closed.
-```
-
-No commit needed, no questions asked.
-
-## Self-Verification
-
-- [ ] Session diff collected (git log + changed files)
-- [ ] Drift checklist loaded (or generated if missing)
-- [ ] Changed files cross-referenced against checklist
-- [ ] PK sections verified against actual source state (not just "file changed")
-- [ ] Drift report shown to user (or "no drift" confirmed)
-- [ ] User approved updates before writing
-- [ ] Only affected sections updated (no unnecessary rewrites)
-- [ ] Drift checklist updated if new mappings discovered
-- [ ] Feature archived if applicable
-- [ ] Changes committed and pushed
-- [ ] Report delivered
+If drift detection finds 0 items: report "Documentation is up to date. Session closed." — no commit, no questions.

@@ -35,22 +35,7 @@ Write unit tests **when justified**:
 
 ### Excessive Mocking = Wrong Test Type
 
-If you need to mock 3+ dependencies to test something, consider:
-- Integration test (test with real dependencies)
-- E2E test (test in real environment)
-
-**Bad - testing mocks:**
-```typescript
-jest.mock('../db')
-jest.mock('../api')
-jest.mock('../cache')
-it('should process', () => {
-  process()
-  expect(db.save).toHaveBeenCalled()  // Tests mock, not behavior
-})
-```
-
-**Better:** Integration test with real dependencies.
+If you need to mock 3+ dependencies, switch to integration or E2E test. See [test-quality-review.md](test-quality-review.md) Category 5 for examples.
 
 ### UI Components with Complex State
 

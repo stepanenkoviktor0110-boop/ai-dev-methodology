@@ -107,14 +107,6 @@ After configuring, update project-knowledge references. Append to existing conte
 
 ## Decision Framework
 
-**Add deploy job?**
-YES if: deployment target defined, user requests it, stable main branch.
-NO if: early development, manual deploys preferred, manual review step needed (Chrome Web Store).
-
-**Use matrix strategy?**
-YES if: NPM package, cross-platform library.
-NO if: single-environment app, internal tool.
-
-**Add staging?**
-YES if: dev branch exists, multi-developer team.
-NO if: solo + main-only, Vercel preview deploys sufficient.
+- **Add deploy job:** yes when deployment target defined, user requests it, main is stable. No for early development, manual-deploy preference, or platforms requiring manual review (Chrome Web Store).
+- **Matrix strategy:** yes for NPM packages and cross-platform libraries. No for single-environment apps and internal tools.
+- **Staging environment:** yes when a dev branch exists or multi-developer team. No for solo + main-only (Vercel preview deploys are sufficient).

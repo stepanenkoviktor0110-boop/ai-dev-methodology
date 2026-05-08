@@ -14,15 +14,11 @@ description: |
 
 Maintain project documentation in `.claude/skills/project-knowledge/references/`. Audit for bloat, edit files, check consistency, track status.
 
-For creating documentation from scratch (new project or empty docs), use `project-planning` skill.
-
 ## Documentation Principles
 
 These rules apply to ALL documentation operations (audit, edit, create).
 
-**Goal: open docs → understand the project without reading code.** What is this project, how it's structured, what it does, where to find key things, how to deploy, where are logs. A high-level navigation guide.
-
-**Describe what exists, what it does, and why.** High-level overview of components, how they work together, decisions made (why this stack, why this architecture), operational details (server addresses, deploy procedures, log locations, env var names). Skip what's obvious from reading the code itself — function signatures, implementation details, generic framework behavior.
+**Goal: open docs → understand the project without reading code.** Describe what exists, what it does, and why: high-level component overview, decisions made (why this stack, why this architecture), operational details (server addresses, deploy procedures, log locations, env var names). Skip what's obvious from reading the code itself — function signatures, implementation details, generic framework behavior.
 
 **No code blocks, no pseudocode.** Link to source files: `[auth.ts:45-67](src/auth/jwt.ts#L45-L67)`. Code in docs gets outdated and bloats context.
 

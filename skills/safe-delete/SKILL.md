@@ -21,9 +21,7 @@ Run `git status`, `git log origin/<branch>..HEAD`, `git remote -v` in parallel.
 | Uncommitted changes | any exist | — |
 | Unpushed commits | any exist | — |
 | Remote reachable | fetch fails | — |
-| Untracked files | — | any exist (will be LOST) |
-
-If untracked files found — list each one, warn about permanent loss, **wait for user confirmation** before continuing.
+| Untracked files | — | any exist (will be LOST) — list each, warn, wait for user confirmation |
 
 ## Step 2: Documentation
 

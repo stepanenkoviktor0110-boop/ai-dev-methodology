@@ -43,17 +43,14 @@ Execute each step from AVP section in tech-spec:
 
 ### 2. Acceptance Criteria Verification
 
-Verify all acceptance criteria from user-spec and tech-spec on live environment. This catches criteria that pre-deploy QA could not verify without a live system.
+Verify all acceptance criteria from user-spec and tech-spec against live behavior, including criteria pre-deploy QA could not check without a live system.
 
-1. Read pre-deploy QA report (`logs/working/qa-report.json`) — check `deferredToPostDeploy` section
-2. For each deferred criterion — follow the verification steps specified in the pre-deploy report
-3. Also re-check all acceptance criteria from user-spec and tech-spec against live behavior
-4. For each criterion:
+1. Read pre-deploy QA report (`logs/working/qa-report.json`) → `deferredToPostDeploy` section. For each deferred criterion, follow the verification steps specified there.
+2. Re-check all remaining acceptance criteria from user-spec and tech-spec against live behavior.
+3. For each criterion record:
    - **passed** — verified on live environment, evidence provided
    - **failed** — live behavior does not meet the criterion
-   - **blocked** — cannot verify due to external conditions (no data, third-party service down). Provide a concrete manual verification plan for the user: what to check, when, how
-
-A `blocked` criterion requires user follow-up before the feature can count as fully verified.
+   - **blocked** — cannot verify due to external conditions (no data, third-party service down). Provide a concrete manual verification plan: what to check, when, how. Blocked criteria require user follow-up before the feature counts as fully verified.
 
 **Checkpoint:** All acceptance criteria verified, or marked `blocked` with manual verification plan.
 

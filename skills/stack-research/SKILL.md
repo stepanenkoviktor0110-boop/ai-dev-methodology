@@ -110,7 +110,7 @@ Comparison: .claude/skills/project-knowledge/references/stack-comparison-img2img
 Registry updated: paged-js
 ```
 
-The caller opens `stack-comparison-{slug}.md` when it needs to compare candidates, or reads specific registry entries when writing Decisions. The orchestrator itself has seen NONE of the content.
+The caller opens `stack-comparison-{slug}.md` when it needs to compare candidates, or reads specific registry entries when writing Decisions.
 
 ## Practical Limits
 
@@ -128,6 +128,5 @@ The caller opens `stack-comparison-{slug}.md` when it needs to compare candidate
 
 - Does NOT make recommendations. Caller decides.
 - Does NOT fill missing info from memory. Docs-only.
-- Does NOT load report contents into the orchestrator's context. That is the aggregator's job.
 - Does NOT research whitelisted libraries unless caller explicitly asks.
 - Does NOT re-research an element at an unchanged version, except for new focus questions.

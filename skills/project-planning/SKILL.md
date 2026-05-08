@@ -132,7 +132,7 @@ Before making any stack decision, classify every candidate under consideration:
 
 After gate passes (either researched or skipped), read the resulting comparison table / registry entries and use them as the **authoritative source** when proposing decisions. Do NOT mix memory-based claims with researched facts.
 
-### 2.3 Checkpoint
+### 2.4 Checkpoint
 
 Move to Phase 3 when:
 - Tech stack (frontend, backend, database, key dependencies) approved by user

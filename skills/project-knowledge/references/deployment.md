@@ -1,6 +1,5 @@
 # Deployment & Operations
 
-## Purpose
 How the methodology is distributed, installed, and updated.
 
 ---
