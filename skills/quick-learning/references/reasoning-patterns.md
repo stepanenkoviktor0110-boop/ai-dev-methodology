@@ -2009,3 +2009,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before issuing any ad-hoc psql/sqlite SELECT or UPDATE against a DB managed by an ORM, run `\d "Table"` (psql) or `.schema Table` (sqlite) first. ORMs frequently rename, jsonb-pack, or split fields. Read the actual column list, then write the query.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-05-11 admin-storage / Session 1: framework's `server-only` marker breaks raw-Node tests
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** missed import-time framework guard
+**Triad:** about to run unit tests via a raw runtime test runner (node:test, vitest in node mode, plain mocha) against modules that import a framework's `server-only` / `client-only` marker package → invoke the runner with the framework's bundler-condition flag (e.g. `node --conditions=react-server`) so the marker resolves to its no-op subpath → keep the marker's production safety guarantee without removing the import or stubbing the package
+**Context:** First `npx tsx --test src/lib/storage/storage.test.ts` failed at module load with `Error: This module cannot be imported from a Client Component module` — the `server-only` package throws unconditionally at import time and only resolves to an empty module under the `react-server` conditional export. Initial reflex was to drop `import 'server-only'` from the adapter, which would have removed exactly the build-time safety the marker exists for. Fix was one flag: `npx tsx --conditions=react-server --test ...`. Three tests passed immediately.
+**Pattern:** When a test runner crashes at import on a module that contains a framework marker (`server-only`, `client-only`, `react-server-dom`, similar), don't remove or stub the marker — check the package's `exports` map for a condition (usually `"react-server"` or `"workerd"` or `"edge-light"`) that resolves to an empty module, and pass that condition to the runner (`--conditions=...`). Document the test command in patterns.md so it isn't rediscovered each session.
+**Scope:** universal
+**Category:** information-gathering
