@@ -2009,3 +2009,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before issuing any ad-hoc psql/sqlite SELECT or UPDATE against a DB managed by an ORM, run `\d "Table"` (psql) or `.schema Table` (sqlite) first. ORMs frequently rename, jsonb-pack, or split fields. Read the actual column list, then write the query.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-05-12 admin-storage / session 2: parser-canonical form discards security-relevant input
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** canonical-form blindness
+**Triad:** writing a whitelist/validator check using a parser's canonicalized view of untrusted input → enumerate which properties the parser silently elides (default values, case folding, equivalent encodings, percent-decoding, port-default stripping) and cross-check against the raw input on every elision that matters for the guard → canonical-form blindness: trusting that the parsed surface (`obj.field`) faithfully reflects the attacker's raw intent, when the parser has already normalized the difference away
+**Context:** Wrote `isValidBucketUrl` checking `parsed.port !== ''` to reject URLs with explicit ports. WHATWG `URL` normalizes `:443` to `port === ''` for `https:` because 443 is the default — the literal "reject `https://host:443/...`" requirement silently passed when the test ran. Caught by a unit test that explicitly carried the `:443` case forward from the spec. Fix added a raw-string regex `/^https:\/\/[^/?#]*:\d+/` alongside the parsed-port check. Same class of bug as Unicode NFC normalization hiding homograph attacks, case-insensitive email parsers losing plus-aliases, or trailing-dot DNS labels being silently dropped before a hostname compare.
+**Pattern:** When a whitelist or security guard reads a property off a parsed/canonical representation of attacker-controlled input, list every property of the raw input that the parser is documented to normalize (defaults, case, percent-encoding, Unicode form, trailing tokens, equivalent literals). For each normalization that touches a property the guard relies on, add a raw-input check alongside the parsed one. Don't assume the parser preserves raw intent — by design, it doesn't.
+**Scope:** universal
+**Category:** information-gathering
