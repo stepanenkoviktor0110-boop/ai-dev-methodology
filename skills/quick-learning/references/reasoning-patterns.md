@@ -2020,3 +2020,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a whitelist or security guard reads a property off a parsed/canonical representation of attacker-controlled input, list every property of the raw input that the parser is documented to normalize (defaults, case, percent-encoding, Unicode form, trailing tokens, equivalent literals). For each normalization that touches a property the guard relies on, add a raw-input check alongside the parsed one. Don't assume the parser preserves raw intent — by design, it doesn't.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-05-12 admin-page-content-editing / session 1: new-storage default bias
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** new-storage default bias
+**Triad:** about to introduce a new storage layer to make a build-time artifact editable → enumerate the in-place mutation alternative (server-side rewrite of the existing artifact) and reject it on explicit operational tradeoffs → skipping the simpler alternative because "user wants editing" sounds like automatic justification for new persistence
+**Context:** Designed a user-spec around migrating content from a build-time artifact into a new persistence model, then a validator flagged that the in-place mutation alternative (server action rewrites the existing artifact + revalidates) was never even discussed. The alternative may still lose to the new model on tradeoffs, but skipping the comparison hides the reasoning and inflates the spec.
+**Pattern:** When the requested capability is "let user edit X" and X currently lives in a build-time artifact (file, config, code constant), the default move is not "design a new storage model" — it is "compare in-place mutation vs. new storage explicitly." Spell out the cons of in-place mutation (deploy-overwrite, dev/prod divergence, transactional atomicity) and the cons of new storage (migration cost, dual sources during rollout). Pick on those tradeoffs, document the choice. Skipping the comparison is the error, not the choice itself.
+**Scope:** universal
+**Category:** problem-decomposition
