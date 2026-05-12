@@ -2031,3 +2031,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When the requested capability is "let user edit X" and X currently lives in a build-time artifact (file, config, code constant), the default move is not "design a new storage model" — it is "compare in-place mutation vs. new storage explicitly." Spell out the cons of in-place mutation (deploy-overwrite, dev/prod divergence, transactional atomicity) and the cons of new storage (migration cost, dual sources during rollout). Pick on those tradeoffs, document the choice. Skipping the comparison is the error, not the choice itself.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-05-12 admin-page-content-editing / session 1: vague-quantifier blind spot
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** vague-quantifier blind spot
+**Triad:** user replies with collective/numeric reference ("both", "all", "the rest", "first and third") → before acting, verify the cardinality and identity of the reference match the offered set → avoid acting on guessed interpretation when the count silently mismatches
+**Context:** I offered three simplifications and the user replied "оба" (= "both"). "Both" implies 2, the offered set was 3 — I had to stop and ask "which two" before proceeding. The cognitive error was treating the collective word as if it obviously mapped onto my mental anchor of "the main ones" instead of detecting the count mismatch.
+**Pattern:** When user reply uses a collective ("all", "both", "the rest", "everything") or positional/numeric ("first and third", "those two") reference, treat it as a precondition that must be checked, not as a confirmation. Cross-check: does the cardinality of the word match the cardinality of options offered? If "both" but I offered 3 — mismatch, ask. If "all" but options were heterogeneous — verify each by enumeration. The trap is silent self-binding: filling in the gap with the most plausible-feeling subset of options, then acting and discovering the mismatch only when the user corrects mid-execution.
+**Scope:** universal
+**Category:** communication
