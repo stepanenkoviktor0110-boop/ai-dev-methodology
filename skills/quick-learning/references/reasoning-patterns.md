@@ -2042,3 +2042,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When user reply uses a collective ("all", "both", "the rest", "everything") or positional/numeric ("first and third", "those two") reference, treat it as a precondition that must be checked, not as a confirmation. Cross-check: does the cardinality of the word match the cardinality of options offered? If "both" but I offered 3 — mismatch, ask. If "all" but options were heterogeneous — verify each by enumeration. The trap is silent self-binding: filling in the gap with the most plausible-feeling subset of options, then acting and discovering the mismatch only when the user corrects mid-execution.
 **Scope:** universal
 **Category:** communication
+
+### 2026-05-13 content-card-armenia / session 1: spec-over-example authority bias
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** spec-over-example authority bias
+**Triad:** about to add a new element drawn from a system spec when validated working artifacts already exist → enumerate what elements are present in validated artifacts; treat that set as the active subset → reading spec as complete instruction without checking which choices existing practitioners validated into use
+**Context:** Brand CSS defined decorative pastel circle shapes (.shape-circle, .shape-ball, etc.) as available components. I added a lavender circle to a new card. But existing approved cards in the same series used none of these shapes — photo + panel only. User rejected the circle immediately. The spec listed what's possible; the approved cards showed what's chosen. I read the spec, skipped the examples.
+**Pattern:** When both a spec/schema/API and existing validated artifacts are available, the artifacts define the active subset of the spec — what the owner actually chose. Before adding a new element from the spec, enumerate what's present in validated artifacts. Introduce something new only when it is absent from all artifacts or the spec explicitly marks it as a recommended default. The error is treating the spec as a complete instruction set while ignoring the implicit rejection encoded in what existing artifacts do NOT use.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-05-13 b24u-playbook-kstore / session 1: label-scope conflation on destructive controls
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** label-scope conflation
+**Triad:** about to click a destructive control in a third-party system whose label names a narrow target → snapshot the full configuration layer the button can touch (not just what the label suggests) before clicking → mistaking the button's *named* scope (the words in its label) for its *actual* destructive scope
+**Context:** In an admin UI the button "Удалить все данные сканирования" (Delete all scan data) implied scope = website-scanner pages. I clicked expecting only the broken-encoding scan data to disappear. The button actually wiped the entire RAG store for that client: the website scan, the YML feed configuration, the URL of the feed, every embedding, and (likely) manual KB records too. Recovery is not possible from my side — the feed URL was nowhere snapshotted. The cognitive error was anchoring on the label's narrow noun ("scan data") instead of treating it as one possible scope among several. My own rule "v0 snapshot before any work" was applied only to the prompt artifact, not extended to every layer the next destructive action could touch.
+**Pattern:** Before any destructive control in a system you don't own, do not infer scope from the label. Open one round of verification first: read the confirmation dialog in full, list every data layer that *could* be in scope (not what you assume), and snapshot each layer (URLs, IDs, contents, counts) into a local file. Only then click. The label of a destructive button is marketing copy, not a scope guarantee — operators often bundle related state under one "delete all" for cleanliness, and the broader scope is invisible until the action is irreversible. Treat any "Delete all X" or "Clear X" as potentially deleting "X and everything that depends on X" until proven otherwise by snapshot.
+**Scope:** universal
+**Category:** scope-management
