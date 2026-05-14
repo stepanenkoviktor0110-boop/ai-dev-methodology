@@ -2086,3 +2086,37 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a system exposes both an admin/test endpoint and a separate production endpoint for the same logical operation, treat them as **different test surfaces**, not redundant ones. The admin endpoint typically bypasses caches/queues/middlewares; the production endpoint goes through them. After every change that affects the production endpoint's input (prompt, knowledge base, feature flag, config), the verification step is on the production endpoint, and it must include explicit cache invalidation if the platform provides it. If no invalidation API exists, wait out the documented TTL OR start the test from a session/identity that has no cached context. The trap is declaring a multi-minute regression "fixed" because the admin test returned new behavior, while real users still see the old.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-05-14 new-sources-integration / session 1: null result without completeness probe
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** unverified null result confidence
+**Triad:** "no references found" used as precondition for irreversible action → before trusting absence, deliberately search for a case known to match and confirm it's found → absent result without completeness proof: tool ran without error but silently skipped files, producing false safety signal
+**Context:** A search command returned "no matches" across source files. Results were taken at face value and used to justify deleting assets. Spot-checking later revealed the search had silently omitted most source files due to unsupported glob syntax — the tool produced no errors, only incomplete output.
+**Pattern:** Before using a "no references found" result as justification for a destructive action, run a completeness probe: search for an identifier you *know* exists and confirm the tool finds it. If the probe fails, the search tool is untrustworthy for this task.
+**Scope:** universal
+**Category:** tool-selection
+
+### 2026-05-14 new-sources-integration / session 1: OS-level detach vs agent background task
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** agent-scope persistence assumption
+**Triad:** subprocess must outlive current agent turn → spawn at OS level (detached, output redirected to file) not as agent-managed background task → agent-owned subprocess lifetime = agent turn lifetime (tool timeout)
+**Context:** A dev server was started via the agent's "run in background" mechanism. The process reported "Ready" and requests returned 200. Minutes later, the user found the server dead — the agent's background-task runner had killed it at the 2-minute tool timeout. The server needed to stay alive across the rest of the session, but the background-task system is designed for short one-off commands, not persistent daemons.
+**Pattern:** When a process must persist beyond the current agent turn (dev server, file watcher, long-running daemon), use OS-level spawn with explicit output redirect — do NOT use the agent's background-task API. The agent's background mechanism carries an implicit lifetime ceiling equal to the tool timeout. The recognition signal is: "I will need to interact with this process later in the session." That signal means OS detach, full stop.
+**Scope:** situational
+**Situation:** agent runtime with both OS process spawn capability and a background-task API with implicit timeout
+**Category:** tool-selection
+
+### 2026-05-14 new-sources-integration / session 1: asset path stored as literal string
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** extension-neutral path assumption
+**Triad:** replacing a static asset whose URL/path is stored as a literal string in persistent storage → keep original filename+extension for the new file, OR grep all storage for the old path and update atomically → format change looks like a file swap but is actually a reference-breaking rename
+**Context:** An image was converted from JPG to WebP and saved under the new extension at the same directory. The URL path stored in the database still pointed to the old `.jpg` filename. The image appeared to render in the smoke test (the old file was still present), but after the old file was removed the page broke. The assumption was "I'm just swapping the binary content, not the address" — but the extension is part of the address.
+**Pattern:** Before replacing a static asset, treat its URL/path as a first-class stored value: grep every persistence layer (DB, seed scripts, config files, test fixtures) for the exact path string. If any reference exists, the filename+extension is frozen — either preserve them in the new file, or update all references atomically as part of the same change. The cognitive trap is "format conversion = content swap"; it is actually "content swap + rename", and the rename half has external dependents.
+**Scope:** universal
+**Category:** information-gathering
