@@ -49,6 +49,28 @@ function findClientDirFromPath(filePath) {
   return parts.slice(0, idx + 2).join('/');
 }
 
+// Walk clientDir + 1 level of session subdirectories, collecting matching files.
+// Supports both flat (clients/<X>/file.md) and nested (clients/<X>/<session>/file.md) layouts.
+function listFilesInClient(clientDir) {
+  const out = []; // [{ dir, name }]
+  if (!fs.existsSync(clientDir)) return out;
+  let entries;
+  try { entries = fs.readdirSync(clientDir, { withFileTypes: true }); } catch { return out; }
+  for (const e of entries) {
+    if (e.isFile()) {
+      out.push({ dir: clientDir, name: e.name });
+    } else if (e.isDirectory() && !e.name.startsWith('_') && e.name !== 'snapshots') {
+      const sub = path.join(clientDir, e.name);
+      try {
+        for (const f of fs.readdirSync(sub, { withFileTypes: true })) {
+          if (f.isFile()) out.push({ dir: sub, name: f.name });
+        }
+      } catch {}
+    }
+  }
+  return out;
+}
+
 function activeClient(cwdPath) {
   const root = path.join(cwdPath, 'clients');
   if (!fs.existsSync(root)) return null;
@@ -101,17 +123,16 @@ function computeBlockReason(input) {
 
     // A1: prompt / special-instructions need pipeline pre-artefacts (baseline + facts/diag)
     if (/^(system-prompt|special-instructions)-v/i.test(fileName) && clientDir && fs.existsSync(clientDir)) {
-      let files = [];
-      try { files = fs.readdirSync(clientDir); } catch {}
-      const hasBaseline = files.some((f) => /^baseline-/i.test(f));
-      const hasFactsOrDiag = files.some((f) => /^(facts|diagnostics)-/i.test(f));
+      const allFiles = listFilesInClient(clientDir);
+      const hasBaseline = allFiles.some((f) => /^baseline-/i.test(f.name));
+      const hasFactsOrDiag = allFiles.some((f) => /^(facts|diagnostics)-/i.test(f.name));
       if (!hasBaseline) {
-        return `Шаг 2 пайплайна B24U не выполнен: в "${clientDir}" нет baseline-*.md. ` +
+        return `Шаг 2 пайплайна B24U не выполнен: в "${clientDir}" (включая поддиректории сессий) нет baseline-*.md. ` +
           `Снять baseline кабинета "как есть" (templates/cabinet-snapshot-template.md) ` +
           `до правки промпта. См. .claude/skills/b24u-platform/SKILL.md → Шаг 2.`;
       }
       if (!hasFactsOrDiag) {
-        return `Шаги 3-6 пайплайна B24U не выполнены: в "${clientDir}" нет facts-*.md ` +
+        return `Шаги 3-6 пайплайна B24U не выполнены: в "${clientDir}" (включая поддиректории) нет facts-*.md ` +
           `или diagnostics-*.md. Сначала собери факты сайта (Шаг 3) и диагностику фида/поиска ` +
           `(Шаг 4) до правки промпта (Шаг 7). См. SKILL.md.`;
       }
@@ -132,12 +153,15 @@ function computeBlockReason(input) {
       }
 
       // A2.b: writing v<N> (N>=1) requires v<N-1> already on disk as backup.
+      // Search in clientDir AND its session subdirectories (supports nested layout).
       if (n >= 1) {
-        const prev = path.join(clientDir, `${prefix}-v${n - 1}${ext}`);
-        if (!fs.existsSync(prev)) {
-          return `Нельзя писать "${fileName}" без предыдущей версии "${prefix}-v${n - 1}${ext}" ` +
-            `на диске — резервная копия предыдущей версии обязательна. ` +
-            `Сначала сохрани текущее состояние как ${prefix}-v${n - 1}${ext}, потом создавай v${n}.`;
+        const prevName = `${prefix}-v${n - 1}${ext}`;
+        const allFiles = listFilesInClient(clientDir);
+        const prevExists = allFiles.some((f) => f.name.toLowerCase() === prevName.toLowerCase());
+        if (!prevExists) {
+          return `Нельзя писать "${fileName}" без предыдущей версии "${prevName}" ` +
+            `где-либо в "${clientDir}" (или его сессионных поддиректориях) — резервная копия предыдущей версии обязательна. ` +
+            `Сначала сохрани текущее состояние как ${prevName}, потом создавай v${n}.`;
         }
       }
     }
