@@ -2120,3 +2120,24 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before replacing a static asset, treat its URL/path as a first-class stored value: grep every persistence layer (DB, seed scripts, config files, test fixtures) for the exact path string. If any reference exists, the filename+extension is frozen — either preserve them in the new file, or update all references atomically as part of the same change. The cognitive trap is "format conversion = content swap"; it is actually "content swap + rename", and the rename half has external dependents.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-05-19 sqlite-foundation / session 1: alternate entry point omits invariant setup
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** twin-path invariant drift
+**Triad:** module exposes a primary acquire path and a secondary swap/inject path for the same managed resource → replay the primary path's full invariant-establishing setup on every instance entering the secondary path (not just the primary one) → twin-path invariant drift: secondary entry treated as a plain field assignment while primary entry runs setup, so injected instances silently bypass invariants the rest of the code assumes
+**Context:** A lazy singleton factory applied required configuration (foreign-key enforcement, journaling mode) on first acquire. A sibling setter for test/test-double injection only stored the reference. Code and tests that ran against an injected instance silently lost the invariant; a cascade test only "passed" because it never actually exercised the invariant, and the gap was caught only when a downstream task reused the setter in a stricter test.
+**Pattern:** Whenever a module offers more than one way to seat the same managed resource (factory + setter, constructor + replace, register + override), extract the invariant-establishing setup into a single function and call it from every entry path. Treat any branch that stores a reference without running setup as a defect by default, even when current callers happen to pre-configure their instance.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-05-19 sqlite-foundation / session 1: API accepts multiple call shapes, tests use both
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** polymorphic-callsite drift
+**Triad:** function intentionally accepts multiple call shapes (positional + options object, varargs + array, sync + async) and the test file is the first place to exercise it broadly → pick one canonical shape per test file and use it at every callsite; document the rejected shapes in a single comment near the function, not by example in tests → polymorphic-callsite drift: mixing shapes across callsites in one file looks like coverage of both shapes but is actually inconsistency that hides which shape is the contract
+**Pattern:** When implementing or testing a function whose signature accepts multiple shapes, choose one canonical shape and grep every callsite in the file to make them uniform before declaring the file done. Lean against the multi-shape signature itself: prefer narrowing the API to one shape unless an external caller demonstrably needs the alternative. Mixed shapes in the same file are a smell — they signal that the author wrote each callsite from scratch instead of from a mental contract.
+**Scope:** universal
+**Category:** communication
