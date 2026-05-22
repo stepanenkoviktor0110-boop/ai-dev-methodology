@@ -2141,3 +2141,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When implementing or testing a function whose signature accepts multiple shapes, choose one canonical shape and grep every callsite in the file to make them uniform before declaring the file done. Lean against the multi-shape signature itself: prefer narrowing the API to one shape unless an external caller demonstrably needs the alternative. Mixed shapes in the same file are a smell — they signal that the author wrote each callsite from scratch instead of from a mental contract.
 **Scope:** universal
 **Category:** communication
+
+### 2026-05-22 sqlite-foundation / session 2: bulk transformation silently drops non-conforming items
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** transformation-lens deletion bias
+**Triad:** task framed as "convert every X in collection C to shape Y" applied to a heterogeneous collection → before the conversion pass, enumerate items that do NOT fit shape Y and explicitly mark them as preserve-as-is; after the pass, diff the item count → items that resist the framing transformation get silently dropped because the lens makes them invisible, not because the author judged them removable
+**Context:** A refactor task was framed as "convert these test files from fixture-pattern A to fixture-pattern B". The files also contained a small number of tests whose value was orthogonal to the fixture pattern — they tested a different concern (a security guard against a missing env var). Those orthogonal tests didn't fit the conversion template, and instead of being preserved unchanged they were silently dropped from the rewrite. A reviewer caught the missing test by name and the loss was only recoverable because the original file still existed in git history.
+**Pattern:** When a task is framed as a bulk transformation over a collection (convert all X to Y, migrate all routes to new auth, rewrite all components in new style), do not assume the collection is homogeneous. Before transforming, list items that don't fit the transformation template and declare each one's fate explicitly: keep as-is, transform differently, or delete with reason. After transforming, compare item counts (and ideally identifying labels like test names) between the before and after states. The transformation lens defines what's visible; whatever doesn't fit the lens becomes invisible — and invisible is one keystroke from gone.
+**Scope:** universal
+**Category:** scope-management
