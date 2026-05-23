@@ -2152,3 +2152,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a task is framed as a bulk transformation over a collection (convert all X to Y, migrate all routes to new auth, rewrite all components in new style), do not assume the collection is homogeneous. Before transforming, list items that don't fit the transformation template and declare each one's fate explicitly: keep as-is, transform differently, or delete with reason. After transforming, compare item counts (and ideally identifying labels like test names) between the before and after states. The transformation lens defines what's visible; whatever doesn't fit the lens becomes invisible — and invisible is one keystroke from gone.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-05-22 admin-S5-cleanup / session 1: dead-code claim based on single-method reference search
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** single-lens reference search
+**Triad:** an earlier audit declares an artifact unused based on searching for its exported symbol name → before relying on that "unused" verdict, also search for the artifact's module/path string and any dynamic/lazy access patterns (string imports, reflection, config-driven loaders, plugin registries) → single-lens reference search: identifier grep misses callers that reach the artifact through a different surface (string, reflection, dynamic dispatch), producing a confident false-negative on dead code
+**Context:** A prior session's audit concluded a content module was unused by grepping for its export symbol. The follow-up cleanup planned to delete it on that basis. A direct read of the seeder script showed the module was actively loaded via a string-path dynamic import — invisible to the symbol grep — and deletion would have broken the seed pipeline. The "unused" verdict was technically reproducible (the grep really did return only the file itself) but the grep was the wrong instrument for the claim.
+**Pattern:** When inheriting a "dead code" claim from an earlier review, treat it as a hypothesis, not a fact, until you've checked at least one additional reference channel beyond identifier search. Languages with dynamic imports, reflection, plugin discovery, config-driven loading, or string-based dispatch routinely hide real callers from symbol grep. Apply the same skepticism to your own dead-code claims before encoding them into a delete operation: name the surfaces you searched and the surfaces you did not.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-05-22 admin-S5-cleanup / session 1: numeric baseline carried from archived report into new spec
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** archive-as-current bias
+**Triad:** a new spec references a quantitative threshold (test count, coverage %, p95 latency, error budget) borrowed from a completed/archived prior session's report → re-measure the metric on the current branch before encoding it into the new spec's acceptance criteria → archive-as-current bias: numbers from closed sessions feel authoritative because they were verified once, but the branch has drifted (tests deleted, infra changed, schema migrated) and the stale number turns acceptance criteria into a guaranteed-failure or guaranteed-pass assertion
+**Context:** Two specs (user and tech) both pinned the post-feature test count to the S5 close report's figure plus the new test delta. A fact-check validator ran the actual test suite on the current branch and found the baseline had drifted by ~20 tests — a downstream QA task using the stale threshold would have failed against a perfectly healthy build. The number felt safe because it was a measured, reported figure; the drift came from changes made after the report was archived.
+**Pattern:** Treat any numeric threshold borrowed from a closed-session document as expired. Either re-measure on the working branch before encoding it, or rewrite the criterion as a relative one ("baseline + delta", "no regression vs. pre-feature run") that recomputes itself at execution time. Past metrics are not facts about the present state — they are facts about the past state, and the branch has moved.
+**Scope:** universal
+**Category:** information-gathering
