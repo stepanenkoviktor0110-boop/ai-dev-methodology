@@ -2002,12 +2002,13 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-05-09 rebuild-site-no-tilda-06-paykeeper / verification: psql `\d "Table"` before ad-hoc SELECT
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
-**Cognitive Error:** ORM-field-as-DB-column assumption
-**Triad:** about to run an ad-hoc psql/sqlite SELECT against a production-like DB managed by an ORM → first run `\d "Table"` (or equivalent introspection) and pick column names from there, not from ORM model fields → naming-parity assumption: trusting that `model.fieldName` matches the DB column name 1:1
-**Context:** Tried `SELECT id, "paykeeperId", "serviceName", "priceRub" FROM "Order"` based on Prisma model intuition. The actual columns are `paykeeperRaw` (jsonb holding `{paymentId, paymentUrl}`) and `orderCode`/`items`/`total` — there is no `paykeeperId` or `priceRub` column. PSQL `ERROR: column "paykeeperId" does not exist` after the query already cost a roundtrip. `\d "Order"` would have surfaced the real schema in one command.
-**Pattern:** Before issuing any ad-hoc psql/sqlite SELECT or UPDATE against a DB managed by an ORM, run `\d "Table"` (psql) or `.schema Table` (sqlite) first. ORMs frequently rename, jsonb-pack, or split fields. Read the actual column list, then write the query.
+**Cognitive Error:** naming-parity assumption
+**Triad:** about to write queries/extractors against an external system (DB, API) using field names from docs/models/specs → first run live introspection (`\d "Table"`, `databases.retrieve`, equivalent) and pick names from actual schema → naming-parity assumption: trusting that doc/model names match the live schema 1:1
+**Context (Seen 1, 2026-05-09):** Tried `SELECT id, "paykeeperId", "serviceName", "priceRub" FROM "Order"` based on Prisma model intuition. The actual columns are `paykeeperRaw` (jsonb holding `{paymentId, paymentUrl}`) and `orderCode`/`items`/`total` — there is no `paykeeperId` or `priceRub` column. PSQL `ERROR: column "paykeeperId" does not exist` after the query already cost a roundtrip. `\d "Order"` would have surfaced the real schema in one command.
+**Context (Seen 2, 2026-05-23 notion-data-import sketch):** Wrote a Notion-to-SQLite importer with property-name heuristics like `findByName(props, ['Организ', 'Org'])` based on the spec `freelance-os-spec.md`. After import all 22 movements had `org_id: null`. The actual Notion property in the Движения database is `Контрагент (орг)`, not `Организация` — the spec was outdated. A single `notion.databases.retrieve(movementsDbId)` printout at the start would have shown the real property names in seconds; instead the discovery came from inspecting `raw_props` of imported rows post-hoc, requiring a fix-import cycle.
+**Pattern:** Before issuing any query/extractor against an external system (DB via ORM, third-party API, spreadsheet, file format) where field/property names are read from a secondary source (model, spec, docs), run a live introspection call once and confirm the names. Specs drift, ORMs rename, third-party schemas evolve — the live source is the only one that matches the data you'll receive.
 **Scope:** universal
 **Category:** information-gathering
 
