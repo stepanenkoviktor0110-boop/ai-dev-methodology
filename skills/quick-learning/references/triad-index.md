@@ -15,7 +15,7 @@ One line per unique triad. Source of truth for similarity matching and Seen coun
 | 6 | post-deploy verification с пользователем | планировать 2-4 итерации UX-правок как норму | не считать UX-корректировки проблемой процесса | universal | 1 | Universal | feature-execution |
 | 7 | PROMOTED → task-decomposition | проверять все cross-references после генерации задач | — | — | 2 | — | task-decomposition |
 | 8 | AC для markdown-only фич | формулировать через наличие конкретных артефактов | сделать AC автоматически проверяемыми | universal | 1 | Universal | task-decomposition |
-| 9 | PROMOTED → feature-execution | субагент не завершает задачу → lead выполняет напрямую | — | — | 2 | — | feature-execution |
+| 9 | PROMOTED → feature-execution | субагент не завершает задачу → lead выполняет напрямую | — | — | 3 | — | feature-execution |
 | 10 | ревью нашло паттерн ошибки (не разовый баг) | добавить предупреждение в промт следующего teammate | предотвратить повторение ошибки в следующих задачах | situational | 1 | Situational | feature-execution |
 | 11 | PROMOTED → code-writing | assertions на output-формат, не на input-атрибуты | — | — | 2 | — | code-writing |
 | 12 | security/code audit в multi-task feature | вести known-issues.md, аудитор читает перед ревью | не тратить время на повторный репорт известных проблем | situational | 1 | Situational | feature-execution |
