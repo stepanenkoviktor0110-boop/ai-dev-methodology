@@ -2177,6 +2177,28 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
+### 2026-05-23 admin-S5-cleanup / decomposition: host-shell default bias in generated verify commands
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** host-shell default bias
+**Triad:** generating shell/CLI commands into a downstream artifact (task file, runbook, AVP, smoke check) → check the execution host's actual shell at decision time and emit each command in that shell's native syntax → host-shell default bias: defaulting to the dominant-platform dialect (usually Unix `grep`/`find`/`rm -rf`/`&` background) without re-reading project context that has already declared a different shell
+**Context:** Multiple parallel generators each emitted Unix-shell commands for verify-smoke and QA steps even though the project context (working directory, prior session notes, CLAUDE.md) explicitly identified Windows + PowerShell with a non-ASCII path. The reality-checker had to flag the same dialect mismatch independently in 3 different artifacts before it surfaced systemically — each generator was reasoning in isolation about "what shell is normal here" instead of "what shell does this host actually use."
+**Pattern:** When emitting any shell command into a downstream artifact, treat the host-shell identity as a hard precondition: state it (or confirm it from context) before the first command and bind every subsequent command to it. Do not let an upstream spec written in Unix dialect propagate verbatim — translate at the generator boundary. The signal that this was missed: the same dialect mismatch appears in many independent artifacts and is found by a downstream cross-cutting reviewer, not by the generator itself.
+**Scope:** universal
+**Category:** tool-selection
+
+### 2026-05-23 admin-S5-cleanup / decomposition: template-mandate false-positive amplification
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** template-mandate amplification
+**Triad:** a multi-artifact validator flags the same "missing required reference" across many artifacts based on a template's mandatory-field list → before generating fix work, verify the referenced thing actually exists in the project; if absent, declare the requirement N/A once at the project level rather than as N findings across N artifacts → template-mandate amplification: a template requirement that is unsatisfiable in this project gets reproduced as a separate finding per artifact, making a project-conditional gap look like systemic non-compliance
+**Context:** A template-compliance validator demanded each task file link to `project.md` and `architecture.md` — files that do not exist in this project (it uses a different documentation layout under `docs/`). The same finding appeared on every task across two validation rounds, consuming fix-mode rounds that added irrelevant references. The orchestrator needed an extra pass before recognizing the finding as a project-level false positive, not N independent artifact bugs.
+**Pattern:** When the same template-driven finding repeats across multiple artifacts and points at a single referenced resource, escalate from per-artifact fix to project-level existence check before iterating. If the referenced resource doesn't exist in the project, record the exception once (in the validator prompt or as a feature-level note) and stop iterating on individual artifacts. The signal: validator findings cluster on one missing reference, not on artifact-specific quality issues.
+**Scope:** universal
+**Category:** recovery
+
 ### 2026-05-23 category-breakdown-ui / session 1: cross-product inflation when expanding multiple arrays
 
 **Seen:** 1
