@@ -1982,9 +1982,10 @@ Patterns that apply to any project, any stack, any domain.
 **Seen:** 1
 **Adapted:** —
 **Cognitive Error:** shell expansion through cyrillic-bearing string
-**Triad:** AC smoke-check via curl with non-ASCII (cyrillic/CJK) characters in JSON body → write payload to a heredoc-backed file and post via `--data-binary @file` (not `--data "..."` inline) → encoding-mangling assumption: trusting bash double-quoted string to deliver UTF-8 verbatim through variable expansion
-**Context:** During end-to-end verification of /api/forms/order, the first valid payload returned `Неизвестный тариф` even though `serviceName` matched the registry verbatim. Hex-dump of the inline `$PAYLOAD` showed cyrillic bytes intact in echo, but bash variable expansion mangled them on the way to curl. Switching to `cat > /tmp/p.json <<EOF` + `--data-binary @/tmp/p.json` made the same payload pass on first try.
-**Pattern:** When testing an API with cyrillic/CJK strings in JSON via curl, never embed the body inline (`--data "$VAR"` or `--data '{...}'`). Write the body to a heredoc-backed temp file (`cat > /tmp/p.json << 'EOF' ... EOF`) and post with `--data-binary @/tmp/p.json`. Heredoc + `-binary` is the only stable path for non-ASCII payloads on Windows/cygwin bash.
+**Triad:** sending structured payload with non-ASCII or quote-containing strings via CLI/script → use a serializer or file, never manual string interpolation → encoding-mangling assumption: trusting manual string building to produce valid structured data through variable expansion
+**Context:** (1) curl AC smoke-check: inline `--data "$VAR"` mangled cyrillic — fix: heredoc file + `--data-binary @file`. (2) PowerShell Telegram test: manual `"{...\"$msg\"...}"` truncated message at embedded quote — fix: `@{text=$msg} | ConvertTo-Json` serializes safely.
+**Pattern:** Never build JSON by hand when payload contains user-controlled or non-ASCII strings. Bash: heredoc file + `--data-binary @file`. PowerShell: `ConvertTo-Json`. Node/Python: `JSON.stringify`/`json.dumps`. Serializer is the only safe path — manual interpolation breaks on first embedded quote or non-ASCII byte.
+**Seen:** 2
 **Scope:** universal
 **Category:** tool-selection
 
@@ -2172,5 +2173,27 @@ Patterns that apply to any project, any stack, any domain.
 **Triad:** a new spec references a quantitative threshold (test count, coverage %, p95 latency, error budget) borrowed from a completed/archived prior session's report → re-measure the metric on the current branch before encoding it into the new spec's acceptance criteria → archive-as-current bias: numbers from closed sessions feel authoritative because they were verified once, but the branch has drifted (tests deleted, infra changed, schema migrated) and the stale number turns acceptance criteria into a guaranteed-failure or guaranteed-pass assertion
 **Context:** Two specs (user and tech) both pinned the post-feature test count to the S5 close report's figure plus the new test delta. A fact-check validator ran the actual test suite on the current branch and found the baseline had drifted by ~20 tests — a downstream QA task using the stale threshold would have failed against a perfectly healthy build. The number felt safe because it was a measured, reported figure; the drift came from changes made after the report was archived.
 **Pattern:** Treat any numeric threshold borrowed from a closed-session document as expired. Either re-measure on the working branch before encoding it, or rewrite the criterion as a relative one ("baseline + delta", "no regression vs. pre-feature run") that recomputes itself at execution time. Past metrics are not facts about the present state — they are facts about the past state, and the branch has moved.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-05-23 category-breakdown-ui / session 1: cross-product inflation when expanding multiple arrays
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** multiple-expansion cross-product blindness
+**Triad:** writing a diagnostic aggregation query that expands two independent list-valued fields from the same record in a single pass → expand each list in an isolated subquery, aggregate there, then join the results → multiple-expansion cross-product blindness: when two arrays are expanded in the same FROM scope, every row from the first joins every row of the second, silently multiplying sums by the count of the other array
+**Context:** A verification query joined two jsonb array expansions (items and payments) in the same FROM clause to compute both items_sum and payments_sum per order. The resulting numbers were inflated (some exactly double, others higher), matching a cross-product. The query looked correct because both expansions were needed and no explicit JOIN keyword was written — the Cartesian product was implicit in the comma-separated FROM list.
+**Pattern:** When a single record carries multiple independent lists and you need aggregates from each, never expand both lists in the same query scope. Expand each list in its own CTE or subquery, aggregate independently, then join the scalar results. A plausible-looking output with some values exactly double (or N×) the expected is the diagnostic signal — not a data error, but a query structure error.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-05-23 category-breakdown-ui / session 1: assuming external arrays contain only active records
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** implicit active-record assumption
+**Triad:** iterating an external source's array to compute aggregates (sums, counts, category totals) → before writing the aggregation loop, inspect one real sample for soft-delete or status flags that mark logically-excluded records → implicit active-record assumption: third-party data arrays often retain voided/cancelled/deleted entries in-place with a flag, rather than removing them — treating the full array as active silently inflates every aggregate
+**Context:** An aggregation pipeline iterated items from external order payloads and summed their amounts into category buckets. The external source marked voided items with a non-null `deleted` field rather than removing them from the array. The pipeline had no filter for this flag, so deleted items were counted as revenue. The error was invisible in code review (no obvious bug) and only surfaced during a numeric cross-check: category totals exceeded payment totals with no other explanation.
+**Pattern:** Before writing an aggregation loop over external array data, look at one real payload and enumerate every field that could mark a record as logically excluded (deleted, voided, cancelled, status = X, active = false). Add explicit guard conditions for each. The signal that this check was missed: aggregate results exceed a known control total with no structural explanation.
 **Scope:** universal
 **Category:** information-gathering
