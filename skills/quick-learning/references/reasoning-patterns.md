@@ -2210,6 +2210,17 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
+### 2026-05-24 notion-data-foundation / session 1: illustrative pseudocode treated as authoritative contract
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** illustrative-code authority bias
+**Triad:** task description contains both illustrative pseudocode and executable tests that contradict each other → treat the executable test as the authoritative contract; use pseudocode only to understand intent, not as an implementation target → illustrative-code authority bias: code appearing in the same spec block feels like the contract, but only machine-verifiable tests define the real acceptance boundary
+**Context:** A task scaffold included pseudocode showing `mapRow` returning `raw_props` as a parsed object (`parseJsonSafe(...)`), but the test file asserted `JSON.parse(updated.raw_props)` — implying `raw_props` is a string at the repository boundary. Following the pseudocode would have broken the tests. The agent correctly resolved the conflict by treating the test contract as authoritative.
+**Pattern:** When a task description contains both illustrative pseudocode and executable tests, and they contradict each other, the tests win. Pseudocode in a spec is a communication aid — it expresses the author's intent but was not run and may contain errors. The test suite is the machine-verifiable contract. Before implementing from pseudocode, check whether the TDD anchors already encode a different contract.
+**Scope:** universal
+**Category:** information-gathering
+
 ### 2026-05-23 category-breakdown-ui / session 1: assuming external arrays contain only active records
 
 **Seen:** 1
