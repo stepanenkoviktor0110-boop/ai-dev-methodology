@@ -13,6 +13,17 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
+### 2026-05-24 notion-data-foundation / session 2: parallel-rediscovery escalation gap
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** parallel-rediscovery escalation gap
+**Triad:** second independent task rediscovers a system gap already noted out-of-scope by an earlier task → stop and escalate to spec/decision level (add Decision entry, file follow-up task) instead of applying a second local workaround → parallel-rediscovery escalation gap
+**Context:** When task A documents a gap as "out of scope observation" and task B independently hits the same gap and adds its own local workaround, the spec layer never learns about it — every subsequent task pays the same investigation+workaround cost and the gap silently expands.
+**Pattern:** On the second independent encounter of the same gap, halt local workaround. Promote the issue to a spec-level Decision or a dedicated follow-up task before continuing. Two unrelated discoveries are a signal of structural miss, not coincidence.
+**Scope:** universal
+**Category:** scope-management
+
 ### 2026-04-14 menu-editor / session 1: runtime readiness conflation
 
 **Seen:** 1
