@@ -2034,3 +2034,25 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** problem-decomposition
 
+### 2026-05-31 admin-legacy-submissions-import / tech-spec planning: skim-cite line drift
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** skim-cite line drift
+**Triad:** about to cite a `file:line` pointer inside a spec/decision/audit document → open the file at that exact line right before writing the citation and confirm the line contains the claim's substance; if the surrounding evidence is a few lines away, cite that line instead → skim-cite line drift: binding a numeric pointer to a memorable nearby context line read minutes earlier, so the citation points at adjacent material that does NOT carry the claim
+**Context:** Tech-spec cited `docs/discoveries.md:92, 234` as evidence for the static `form_name → kind` mapping. Skeptic validator opened the file: line 234 is `- Дата + время` (a field-list bullet), while the actual evidence "«Cart» (Tilda shopping cart), также есть «myform»" lives at line 239. Two separate scans during research had memorised the section but not anchored each cited line. Also cited `src/app/admin/(panel)/submissions/page.tsx:35` with a partial query description that omitted `include: { order: true }` and `take: 200` present at that exact line — line was right, substance was incomplete. Both became critical findings, fixable but avoidable: re-opening each pointer at write time costs ~2 seconds per citation and converts a critical mirage into zero rework.
+**Pattern:** When writing a citation of the form `file:line` (or `file:line-range`), the writing step itself must be a read of that exact range. Reading "near it" earlier in the session does not transfer — between scan and citation the writer fills the gap from working memory, and working memory snaps to whichever line was visually salient (header, opening line of a section), not the line that holds the claim. The rule is mechanical: type the path, open the file at that offset, paste/quote the actual content into the writing buffer, only then commit the citation. Applies to skeptic-bound docs (tech-specs, audits, reviews) where wrong line refs surface as named critical findings.
+**Scope:** universal
+**Category:** verification
+
+### 2026-05-31 admin-legacy-submissions-import / user-spec planning: parallel-spec count drift
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** parallel-spec count drift
+**Triad:** writing a spec that describes a fixture/dataset alongside expected-count acceptance criteria (e.g. `inserted=N`, `skipped=M`) → walk the fixture row-by-row once and derive every expected count from that walk; write fixture description and AC counts from a single derivation pass, not as two independent prose acts → parallel-spec count drift: fixture description and AC numbers are composed independently in adjacent paragraphs, neither references the other's arithmetic, so a 6-row fixture with at most 3 valid inserts ends up paired with `inserted=4` and no one notices until a downstream validator does the addition
+**Context:** User-spec v1 described "CSV из 6 строк: по 1 на kind + 1 дубль + 1 unknown form + 1 без phone" and in the same section asserted `inserted = 4` under "по 1 на каждый kind + 1 валидная edge-case строка". The fictional 4th valid row never existed in the fixture description — math was `3 valid + 1 dup + 1 unknown + 1 missing = 3 inserts max`. Same drift hit `/admin/submissions` Playwright step (`kind=callback → 1, enrollment → 1, order → 1` summed to 3, not 4). Quality-validator caught both as critical contradictions in round 1.
+**Pattern:** Whenever a spec contains both a structured input description (fixture, table, list of cases) and downstream numeric assertions about that input (counts, sums, success/failure splits), derive all numbers from a single literal walk of the input — ideally in scratchpad form before either prose is written, then paste the derived counts into every place they appear. Each independent re-prose of the numbers is a fresh opportunity to drift. The rule scales: fixture + AC, sample-payload + expected-response, mock-data + assertion — any spec with structured input plus derived counts.
+**Scope:** universal
+**Category:** verification
+
