@@ -2012,3 +2012,25 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
+### 2026-05-31 admin-page-content-editing-S6 / session 1: re-derive-in-test fallacy
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** re-derive-in-test fallacy
+**Triad:** writing a test for a transformation/derivation step inside a larger pipeline → invoke the pipeline (or the smallest exported unit that owns the derivation) and assert on its output → vacuous-test: re-computing the same derivation by hand inside the test body and asserting the hand-computed value equals itself, never executing the unit under test
+**Context:** Task 3 Test U was supposed to verify the action's "derive tel:/mailto: from display" rule but the test body manually called `derivePhoneHref`/`deriveMailtoHref` on the inputs and asserted those results — the action itself was never invoked, so any regression in the action's wiring would pass. Caught by test-reviewer, replaced with Test P that calls the action and asserts on the persisted record.
+**Pattern:** When a test claims to verify behaviour B of unit U, the test body must call U and assert against U's observable output. If the test reproduces B's logic locally to build the expected value, that's fine — but the assertion target must still be U's output, not the locally-recomputed value. Red flag: test passes even if U's body is replaced with `throw new Error()`.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-05-31 admin-page-content-editing-S6 / session 1: framework-bound code test seam
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** test-runtime compatibility oversight
+**Triad:** planning a test for code that imports framework-only modules (routing, request context, build hooks) under a minimal test runner → at plan time extract the framework-free core into a separately-exported pure function and plan tests against that core, leaving the framework shell as a thin uncovered wrapper → discovery-during-coding: assume the test runner can load every import the production module pulls in, then hit "module crashes on import" mid-task and pay an unplanned refactor + extra review round
+**Context:** Task 3 planned tests directly against `actions.ts` (a Next server action). At implementation time `next/navigation` crashed the tsx/node:test runtime and `mock.module` was unavailable under tsx CJS — forcing an unplanned split into `action-core.ts` (pure pipeline taking an injected `PrismaLike`) + `actions.ts` (framework shell). The split was the right shape; the cost was that it surfaced as a deviation instead of being designed up front.
+**Pattern:** When task code will couple to framework-only imports (routing, request context, build/runtime hooks) AND tests run under a minimal runner that can't load those imports, design the seam during planning: pure core function with injectable side-effect surfaces (DB, redirect, revalidate) + thin framework shell. Decide this from the imports the production code will need, not after the first test crash.
+**Scope:** universal
+**Category:** problem-decomposition
+
