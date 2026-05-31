@@ -170,3 +170,12 @@ When two stores hold the same value and one syncs into the other (deploy script,
 
 **58. Верификационный цикл по случаям через долгоживущий рантайм — свежий инстанс на случай:**
 When a verification loop iterates multiple cases through a long-lived runtime instance whose state the act-under-test mutates → default to one fresh runtime instance per case; reuse only when each case is purely additive read-only, to avoid cross-case state leakage: earlier case's mutations contaminate later case's observed result.
+
+**59. Collective/numeric reference in user reply — verify cardinality:**
+When user reply uses a collective or numeric reference ("both", "all", "the rest", "first and third") to select from offered options → verify cardinality and identity of the reference match the offered set before acting; on mismatch, ask, to avoid vague-quantifier blind spot: filling in the most plausible subset silently instead of detecting the count mismatch.
+
+**60. Polymorphic callsite — unify in single test file:**
+When function intentionally accepts multiple call shapes and a single test file is the first broad consumer → pick one canonical shape per file and grep all callsites to unify before declaring the file done, to avoid polymorphic-callsite drift: mixed shapes across callsites in one file look like coverage of both but actually hide which shape is the contract.
+
+**61. Validator повторяет одно и то же про отсутствующий ресурс — project-level exception:**
+When multi-artifact validator repeatedly flags the same missing required reference based on a template mandate → before fix-iteration, verify the referenced resource exists in the project; if absent, record exception once at project level instead of N artifact findings, to avoid template-mandate amplification: a template requirement unsatisfiable in this project reproduces as N separate findings, masking a project-conditional gap as systemic non-compliance.
