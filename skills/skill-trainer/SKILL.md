@@ -146,6 +146,23 @@ Collect all patterns from the target skill's write target (either SKILL.md "Lear
 ...
 ```
 
+## Phase 6.5: Quality Check (post-embedding)
+
+For each skill that received auto-applies — spawn one Agent in parallel.
+
+Полный чек-лист, агент-промпт и формат вывода: `references/quality-checklist.md`.
+
+Двухуровневая проверка:
+1. **General compliance** — каждый агент вызывает существующий `skill-checker` агент (size, structure, references, checkpoints). Не дублируем.
+2. **Skill-trainer-specific** — items A1-A3 (size discipline) + B1-B6 (rule quality на новых правилах).
+
+Soft gate:
+- All pass → silent, proceed to Phase 7
+- Only warnings → одна строка в финальном Report
+- Any failed → показать сводку, спросить: починить / записать в known-issues / игнорировать
+
+> Checkpoint: quality issues либо починены, либо явно отложены пользователем.
+
 ## Phase 7: Commit
 
 After all changes across all skills:
@@ -178,4 +195,6 @@ Skill Trainer: обработано {N} триад.
 - [ ] Disputes shown one at a time, not as a batch
 - [ ] reasoning-patterns.md entries removed in a single pass after all decisions, count verified
 - [ ] Quick-ref cards regenerated for modified skills
-- [ ] Final report shown
+- [ ] Phase 6.5 quality check executed for every modified skill (skill-checker + trainer-specific items)
+- [ ] Quality findings handled (fixed / known-issues / explicitly ignored) before commit
+- [ ] Final report shown (includes quality summary line)
