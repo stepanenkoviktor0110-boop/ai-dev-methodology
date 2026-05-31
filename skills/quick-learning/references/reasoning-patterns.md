@@ -2056,3 +2056,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When the target scope is finite and known, after the first discovery listing run a second enumeration with a different tool and reconcile the counts; do not treat the first list as authoritative until the cross-check passes.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-05-31 admin-legacy-submissions-import / session 2: spec-shape inheritance for external integration
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** spec-shape inheritance bias
+**Triad:** spec drafted for integration with external data source where shape comes from informant's description (counts, format, schema, retention) → probe ONE live sample from the source BEFORE accepting those shape claims into spec/user-spec → trust informant's recall about external data shape, build abstractions for variability that may not exist
+**Context:** Spec assumed 853 archival rows, CSV/XLSX with RU/EN aliases, three form variants, hash dedup fallback, win-1251 fallback — based on what user remembered from cabinet UI. Live navigation in 10 minutes revealed: 30-day retention (40 actual rows), fixed UTF-8 EN schema, single form variant, always-present stable ID. Mapper built for hypothetical variability needed full rewrite (~150 LOC removed, 3 fix rounds wasted on tests for paths that don't exist in reality).
+**Pattern:** When spec proposes integration with an external system the user has access to but you don't, refuse to draft data-shape assumptions from their description. Instead: navigate to source (live UI / API / file export) for one sample BEFORE drafting user-spec. The informant remembers UI behavior, not data dump format — those diverge.
+**Scope:** universal
+**Category:** information-gathering
