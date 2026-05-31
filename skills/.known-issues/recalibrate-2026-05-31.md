@@ -47,6 +47,14 @@ Retained (5 files, prohibitions or unrelated business knowledge):
 
 ## Phase 1 — Skill discovery
 | Skill | Lines | references/ | Status |
+| framer-motion | 270 | no | FAIL |
+| methodology | 212 | no | WARN |
+| ui-styling | 256 | yes | DELETED (Phase 0.2 follow-up) |
+| ui-ux-pro-max | 531 | no | DELETED (Phase 0.2 follow-up) |
+| design | 223 | yes | DELETED (Phase 0.2 follow-up) |
+All other 45 skills: <200 lines, OK.
+
+Scope for Phase 2: framer-motion, methodology (2 skills, single wave).
 
 ## Phase 2 — Audit findings (skipped)
 
