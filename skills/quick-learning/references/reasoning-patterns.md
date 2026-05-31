@@ -2045,3 +2045,14 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** verification
 
+
+### 2026-05-31 recalibrate-all / session 1: discovery-tool exhaustiveness assumption
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** discovery-tool exhaustiveness assumption
+**Triad:** bulk operation driven by a discovery-tool list over a finite known scope → cross-check the returned count via an independent enumeration before treating the list as exhaustive → silent truncation lets hidden entries through and forces re-doing the bulk step downstream
+**Context:** Initial Glob over a 16-name doomed-skills set returned 50 entries; 7 of the doomed skills lived on disk but were silently absent from the returned listing. The orphan-map and deletion plan were built from the partial output. The gap surfaced only at Phase 1 enumeration via a different tool (PowerShell Get-ChildItem), forcing an extra Phase 0.2 follow-up commit.
+**Pattern:** When the target scope is finite and known, after the first discovery listing run a second enumeration with a different tool and reconcile the counts; do not treat the first list as authoritative until the cross-check passes.
+**Scope:** universal
+**Category:** information-gathering
