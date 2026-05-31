@@ -7,7 +7,7 @@ description: |
 
   Signal-gated: skips clean sessions automatically (zero cost).
 
-  Automatic trigger: called by feature-execution, do-task, and design-generate (context exhaustion).
+  Automatic trigger: called by feature-execution and do-task (context exhaustion).
 
   Use when: "quick learning", "быстрый анализ", "что улучшить в процессе",
   "извлеки паттерн", "запиши урок сессии", "analyze session patterns"
