@@ -51,7 +51,17 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
 
    **Design tokens (conditional).** Read `.design-system/tokens.json` as passive reference IF: file exists, <50 KB, valid JSON, AND task touches UI files (`.css`/`.scss`/`.tsx`/`.html`/`.vue`/`.svelte`). Silent skip if any condition unmet.
 
-3. **Analyze & Review Approach**
+3. **Design Context (UI only — conditional)**
+
+   Apply IF task touches UI: создаёт/правит `.css`/`.scss`/`.tsx`/`.jsx`/`.vue`/`.svelte`/`.html`, или собирает новый компонент/страницу. Skip для bugfix/refactor без визуальных изменений.
+
+   a. **CIP brief (always for UI).** Запустить CLI из `CLAUDE.md → CIP / UI Design CLI` с query=индустрия/контекст, brand=имя проекта. Output (palette/typography/style/anti-patterns) держать в рабочем контексте — план и верстка должны на него опираться.
+
+   b. **Deep reasoning (conditional).** Если задача = новый продукт / нестандартный домен / multi-stack И CIP-данных недостаточно → `Skill(ui-ux-pro-max:ui-ux-pro-max)` для 161 industry-правил и stack-specific guidelines.
+
+   c. **Execution principles (new-from-scratch only).** Если задача = «build new UI component/page» (не правка) → `Skill(frontend-design:frontend-design)` перед версткой — для bold aesthetic и защиты от generic-AI-эстетики.
+
+4. **Analyze & Review Approach**
    - Grep usages of code to modify, read files that will change
    - Verify solution follows project patterns, identify reusable code
    - If modifying existing code, run existing tests for baseline
