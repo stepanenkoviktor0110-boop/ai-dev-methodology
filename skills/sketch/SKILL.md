@@ -64,6 +64,11 @@ Start coding only after the user explicitly approves sketch.md.
 
 ## Phase 5: Code
 
+**Design Context (UI sketches only).** If the sketch involves UI (component/page/visual prototype), run before writing markup. Skip for non-UI sketches (CLI tools, scripts, backend logic). Keep output in working context only — no file, no user report.
+
+- **CIP brief.** Run PowerShell: `& "C:\Users\natel\AppData\Local\Python\bin\python.exe" "C:\Users\natel\.claude\plugins\cache\ui-ux-pro-max-skill\ui-ux-pro-max\2.5.0\.claude\skills\design\scripts\cip\search.py" "<industry/context>" --cip-brief -b "<sketch-name>"`. Output (palette/typography/style/anti-patterns) informs implementation.
+- **Execution principles.** Invoke `Skill(frontend-design:frontend-design)` before writing markup — sketches are new-from-scratch by definition, so this is unconditional for UI sketches.
+
 Write code directly into `work/{sketch-name}/`.
 
 Rules for this phase:
@@ -92,6 +97,7 @@ Ask the user:
 ## Self-Verification
 
 - [ ] `work/{sketch-name}/sketch.md` created and approved by user
+- [ ] Design Context loaded for UI sketches (CIP brief + frontend-design)
 - [ ] Code implements exactly the "What must work" slice — nothing more
 - [ ] Prototype committed
 - [ ] Decision gate reached: user chose develop or archive
