@@ -5,6 +5,7 @@ description: |
   skills/agents ecosystem, quality gates.
 
   Use when: "изучи методологию", "изучи глобальную папку", "как работает методология",
+  "what is the pipeline", "покажи пайплайн", "расскажи о процессе разработки",
   "how does the methodology work", "explain the workflow"
 
   For infrastructure tasks, use infrastructure-setup or deploy-pipeline skills.
