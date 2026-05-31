@@ -1555,17 +1555,6 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** problem-decomposition
 
-### 2026-04-07 cron-uses-panel-settings / session 1: sketch-first перед кодом — не кодировать напрямую в main-сессии
-
-**Seen:** 1
-**Adapted:** —
-**Triad:** задача требует написания кода, рефлекс — начать писать напрямую → написать sketch.md (root cause + what must work) и делегировать Codex ДО начала кода → соблюдать установленный workflow
-**Context:** Задача fix cron: я начал писать `__main__.py` напрямую. Пользователь остановил: "почему это делаешь ты, когда ты должен оформить документацию и делегировать программирование кодексу?"
-**Scope:** situational
-**Situation:** проект использует sketch → Codex delegation workflow для кодогенерации
-**Category:** scope-management
-**Category:** tool-selection
-
 ### 2026-04-08 panel-settings-display-bug / session 1: deploy-and-retest reveals infrastructure layer as root cause
 
 **Seen:** 1
@@ -1579,7 +1568,7 @@ Patterns that apply to any project, any stack, any domain.
 
 **Seen:** 1
 **Adapted:** —
-**Triad:** delegating point edits to external agent (Codex) → review full git diff after agent completes, not just target files → catch unintended changes before commit
+**Triad:** delegating point edits to external agent → review full git diff after agent completes, not just target files → catch unintended changes before commit
 **Context:** Codex was given 6 precise Tailwind class replacements with explicit "don't touch anything else" instruction, but also changed the Yandex Maps iframe URL — an unrelated modification that had to be reverted.
 **Scope:** universal
 **Category:** tool-selection

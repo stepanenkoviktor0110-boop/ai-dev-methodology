@@ -24,6 +24,11 @@
 - quick-learning/references/quick-ref-feature-execution.md — 2 Codex bullets removed, list renumbered
 
 ## Phase 0.4 — Triad retention
+- triad-index #226 v1 (codex delegation reflex): deleted (Codex-specific, no coherent rule without it)
+- triad-index #226 v2 (full diff after delegation): kept, "(Codex)" stripped
+- triad-index #241 (audit/review): deleted (Codex-specific)
+- reasoning-patterns.md: triad #226 v1 block deleted, triad #226 v2 rewritten generic
+- Historical Context paragraphs mentioning Codex left intact (frozen reasoning records, not active rules)
 
 ## Phase 0.5 — Memory retention
 
