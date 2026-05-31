@@ -65,24 +65,14 @@ Inventory of what's installed and ready on this machine. **Not a prescribed stac
 
 ### CIP / UI Design CLI
 
-Детерминированный data-source для UI-задач (плагин ui-ux-pro-max, search.py). Дёшево, в контекст возвращается structured design system: palette, typography, style, anti-patterns под индустрию.
+UI design intelligence от плагина `ui-ux-pro-max` — детерминированный data-source: palette, typography, style, anti-patterns под индустрию. Шелл — PowerShell (`& "<python>" "<script>" "<query>" <flags>`).
 
-- **Python:** `C:\Users\natel\AppData\Local\Python\bin\python.exe` (системный `python` — App-Store stub, exit 49).
+- **Python:** `C:\Users\natel\AppData\Local\Python\bin\python.exe` (not via `uv`, not system `python` alias).
 - **Script:** `C:\Users\natel\.claude\plugins\cache\ui-ux-pro-max-skill\ui-ux-pro-max\2.5.0\.claude\skills\design\scripts\cip\search.py`
 
-**PowerShell:**
-```
-& "C:\Users\natel\AppData\Local\Python\bin\python.exe" "C:\Users\natel\.claude\plugins\cache\ui-ux-pro-max-skill\ui-ux-pro-max\2.5.0\.claude\skills\design\scripts\cip\search.py" "<query>" --cip-brief -b "<Brand>"
-```
+Режимы: `--cip-brief -b "<Brand>"` (основной), `--domain {deliverable,style,industry,mockup} "<query>"` (точечный поиск), `--json` (машинно-парсимо).
 
-**Bash:** `"$LOCALAPPDATA/Python/bin/python.exe" "$USERPROFILE/.claude/plugins/cache/ui-ux-pro-max-skill/ui-ux-pro-max/2.5.0/.claude/skills/design/scripts/cip/search.py" ...`
-
-**Режимы:**
-- `--cip-brief -b "<Brand>"` — полный CIP-бриф (основной режим)
-- `--domain {deliverable,style,industry,mockup} "<query>"` — точечный поиск
-- `--json` — машинно-парсимый output
-
-**Скиллы, использующие этот CLI:** code-writing (UI-ветка), sketch, content-card, design-spec, design-plan.
+Скиллы-потребители: code-writing, sketch, content-card, design-spec, design-plan.
 
 ### Not installed on this machine
 

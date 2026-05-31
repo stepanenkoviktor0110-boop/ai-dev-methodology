@@ -53,13 +53,13 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
 
 3. **Design Context (UI only — conditional)**
 
-   Apply IF task touches UI: создаёт/правит `.css`/`.scss`/`.tsx`/`.jsx`/`.vue`/`.svelte`/`.html`, или собирает новый компонент/страницу. Skip для bugfix/refactor без визуальных изменений.
+   Apply IF task touches UI files (`.css`/`.scss`/`.tsx`/`.jsx`/`.vue`/`.svelte`/`.html`) or creates a new component/page. Skip for bugfix/refactor without visual changes. Keep output in working context only — no file, no user report.
 
-   a. **CIP brief (always for UI).** Запустить CLI из `CLAUDE.md → CIP / UI Design CLI` с query=индустрия/контекст, brand=имя проекта. Output (palette/typography/style/anti-patterns) держать в рабочем контексте — план и верстка должны на него опираться.
+   - **CIP brief (always for UI).** Run PowerShell: `& "C:\Users\natel\AppData\Local\Python\bin\python.exe" "C:\Users\natel\.claude\plugins\cache\ui-ux-pro-max-skill\ui-ux-pro-max\2.5.0\.claude\skills\design\scripts\cip\search.py" "<industry/context>" --cip-brief -b "<Brand>"`. Output (palette/typography/style/anti-patterns) informs plan and implementation.
 
-   b. **Deep reasoning (conditional).** Если задача = новый продукт / нестандартный домен / multi-stack И CIP-данных недостаточно → `Skill(ui-ux-pro-max:ui-ux-pro-max)` для 161 industry-правил и stack-specific guidelines.
+   - **Deep reasoning (conditional).** If task = new product / non-standard domain / multi-stack → invoke `Skill(ui-ux-pro-max:ui-ux-pro-max)` for 161 industry rules and stack-specific guidelines.
 
-   c. **Execution principles (new-from-scratch only).** Если задача = «build new UI component/page» (не правка) → `Skill(frontend-design:frontend-design)` перед версткой — для bold aesthetic и защиты от generic-AI-эстетики.
+   - **Execution principles (new-from-scratch only).** If task creates a UI file that does not yet exist in the codebase (not an edit to an existing file) → invoke `Skill(frontend-design:frontend-design)` before writing markup — for bold aesthetic and protection from generic-AI design.
 
 4. **Analyze & Review Approach**
    - Grep usages of code to modify, read files that will change
@@ -137,6 +137,7 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
 - [ ] Smoke verification executed (if task had Smoke/User checks)
 - [ ] Each reviewer finding evaluated; findings log table produced; reports saved
 - [ ] Design tokens used via CSS custom properties for UI files (if tokens.json was loaded)
+- [ ] Design Context loaded for UI tasks (CIP brief run; ui-ux-pro-max / frontend-design invoked where applicable)
 
 
 ## Promoted Patterns
