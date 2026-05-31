@@ -61,9 +61,6 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
 
 ## Phase 2: Implementation (TDD)
 
-**Codex delegation** (when `codex_mode: true` and task is Codex-eligible — see do-task for criteria):
-Code generation is handled by Codex via do-task Codex-First Path. This skill's Phase 2 is skipped — go directly to Phase 3 (post-work) to run tests, lint, and reviews on Codex output. If Codex failed and Claude is doing fallback — proceed with TDD below as normal.
-
 1. **Write Tests First**
 
    Read [testing-guide.md](references/testing-guide.md) before writing tests.
@@ -167,7 +164,6 @@ Load only for audit wave and retrospective — not during code writing.
 - When d3 `.each()` на SVG элементах отрисованных React → lookup по data-* атрибутам вместо bound data, to предотвратить crash от undefined datum.
 - When делегирование write-задачи sandboxed-инструменту → проверить write permissions тестовой операцией до полного промта, to не терять время на failed delegation + ручную реализацию.
 - When VPS нужен публичный URL → перед выбором tunnel-сервиса проверить outbound connectivity VPS (HTTPS? SSH?), to не тратить попытки на несовместимые решения.
-- When рефлекс — начать писать код напрямую → сначала sketch.md (root cause + what must work) и делегировать кодогенерацию Codex, to соблюдать workflow.
 - When JS frontend хранит список в in-memory state → POST мутирует один элемент → после успешного POST обновить запись в state синхронно (state[key] = newValue), to не допустить stale display при последующем re-render.
 - When batch endpoint валидирует каждый элемент и возвращает 400 если хоть один неизвестен → изменить на "skip unknowns, return known" (partial success), to не ломать весь batch из-за одного невалидного элемента.
 - When same parameter/field name used across any boundary (SQL JOIN, API, function call) → verify both sides agree on the identifier's semantic domain, to avoid name-match semantics-mismatch where identical names mask different meanings.

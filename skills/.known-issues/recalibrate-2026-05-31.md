@@ -15,6 +15,13 @@
 - design-spec: referenced by user-spec-planning/SKILL.md:145 as active workflow step — no plugin equivalent (planning skill)
 
 ## Phase 0.3 — Codex retention (generic delegation kept)
+- feature-execution/references/orchestrator-patterns.md:14 — rule kept, "Codex" stripped → "внешний агент"
+- code-writing/SKILL.md — Codex-only Phase 2 block deleted; rule line 170 deleted (Codex-only delegation)
+- feature-execution/SKILL.md — Codex mode block (1.6), Codex-First Routing block, 2 Codex bullets in Promoted Patterns deleted
+- feature-execution/references/codex-routing.md — entire file deleted (Codex-specific)
+- feature-execution/references/orchestrator-patterns.md:79 — pattern 25 deleted (Codex-specific)
+- do-task/skill.md — Codex-First Path deleted; Claude Path renamed to plain execute
+- quick-learning/references/quick-ref-feature-execution.md — 2 Codex bullets removed, list renumbered
 
 ## Phase 0.4 — Triad retention
 

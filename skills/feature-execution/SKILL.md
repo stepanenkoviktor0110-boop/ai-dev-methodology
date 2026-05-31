@@ -31,11 +31,6 @@ Before starting, read [quick-ref-feature-execution.md](../quick-learning/referen
 
 1. Read `work/{feature}/tech-spec.md` and `work/{feature}/user-spec.md`
 1.5. Read `work/{feature}/logs/session-plan.md` if it exists. Parse session boundaries: which waves belong to which session. If file does not exist — treat all waves as one session (backward compatibility).
-1.6. **Codex mode** (opt-in, skip if `codex_mode` absent or false in checkpoint.yml):
-   - Set at feature start via `--codex` flag → writes `codex_mode: true` to checkpoint.yml
-   - Read and cache `~/.claude/skills/quick-learning/references/triad-index.md` for prompt injection
-   - Read and cache `.claude/skills/project-knowledge/references/patterns.md` if file exists and < 2KB
-   - If `codex_mode: false` or absent → standard Claude-only flow, skip all "Codex mode" blocks below
 2. Read frontmatter of all task files in `work/{feature}/tasks/` — extract fields:
 
    | Field | Purpose |
@@ -63,11 +58,6 @@ Before starting, read [quick-ref-feature-execution.md](../quick-learning/referen
 
 1. Find tasks for current wave: `status: planned`, all `depends_on` tasks are `done`
 2. Update frontmatter: `status: planned` → `status: in_progress`
-
-### Codex-First Routing (skip if `codex_mode: false`)
-
-   **Lazy load:** Read [codex-routing.md](references/codex-routing.md) for full Codex routing logic.
-   Summary: classify each task as Claude-only or Codex-eligible → build XML prompt → send to Codex → test → fallback to Claude on failure.
 
 3. For each task, spawn **teammate + reviewers** using prompt templates from [prompt-templates.md](references/prompt-templates.md).
    Read that file once at Phase 2 start, then use templates for all tasks in the wave.
@@ -170,8 +160,6 @@ When escalating:
 - **Спорные решения ДО генерации:** Артефакт > 200 строк → сначала список решений с вариантами → утверждение → генерация. Один раунд вместо серии переделок.
 - **Субагент не завершил → выполни напрямую:** Не ретраить субагент при внешней блокировке (права, permission). Lead делает сам через Write/Edit.
 - **Верифицируй результат в реальной среде** (Seen: 4): После деплоя — curl/лог/проверка. Не объявлять "готово" без подтверждения работы. Для cron — лог через 5 мин. При READY/200 OK — дополнительно grep уникальный маркер или component name из нового коммита, чтобы убедиться что платформа промоутила именно новую сборку.
-- **Codex: один файл за раз** (Seen: 1): Codex зависает при генерации множества файлов одним ответом. Промт должен содержать `<completeness_contract>` с инструкцией писать файлы по одному.
-- **Codex: тесты прогоняет Claude** (Seen: 1): Codex sandbox не может запускать vitest/vite (spawn EPERM на Windows). Тесты всегда запускать локально после получения результата от Codex.
 
 ## Self-Verification
 
