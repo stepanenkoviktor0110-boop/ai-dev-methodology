@@ -31,6 +31,19 @@
 - Historical Context paragraphs mentioning Codex left intact (frozen reasoning records, not active rules)
 
 ## Phase 0.5 — Memory retention
+Deleted (5 files, positive/operational Codex usage):
+- d-----6/memory/feedback_codex-for-execution.md
+- d-----9/memory/feedback_codex_delegation.md
+- d-----9/memory/feedback_codex_agent_status.md
+- SuperJob/memory/feedback_codex_delegation.md
+- d-----14/memory/feedback_codex_default.md
+
+Retained (5 files, prohibitions or unrelated business knowledge):
+- d-----8/memory/feedback_delegate_code_to_codex.md — meta-cancellation of codex rule
+- d-----10/memory/feedback_no_codex.md — "Codex отключён навсегда"
+- d-----12/memory/feedback_no_codex_delegation.md — "Никогда не делегировать Codex"
+- d-----6/memory/feedback_never_use_codex.md — "Никогда не использовать Codex"
+- d-----6/memory/project_codex_pipeline_product.md — business knowledge (user's product named "Codex pipeline", body is about ChatGPT add-on, not Codex tool usage)
 
 ## Phase 1 — Skill discovery
 | Skill | Lines | references/ | Status |
