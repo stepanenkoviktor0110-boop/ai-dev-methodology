@@ -2242,3 +2242,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before writing an aggregation loop over external array data, look at one real payload and enumerate every field that could mark a record as logically excluded (deleted, voided, cancelled, status = X, active = false). Add explicit guard conditions for each. The signal that this check was missed: aggregate results exceed a known control total with no structural explanation.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-05-31 admin-page-content-editing-S6 / session 1: skipped-link drilling blindness
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** skipped-link drilling blindness
+**Triad:** refactoring a boundary node to push data through pass-through wrappers to a deep leaf → enumerate the actual component chain (grep wrapper's direct children, then their children) and list every intermediate node as touched-file before assuming source→leaf reach → assuming data flows source→leaf directly, forgetting intermediate wrappers that must be modified to forward the new prop
+**Context:** writing tech-spec for a Server Component (source) that needed to feed data to a deep Client Component (leaf); skipped the intermediate wrapper that sits between them; tech-spec listed source+leaf in Files to Modify but not the wrapper, caught only by skeptic validator
+**Pattern:** before declaring "source passes prop X to leaf Y" in a refactor plan, grep `<Y` in source — if not found directly, follow each `<WrapperN` in source and recurse, building the full chain. Every node in the chain must appear in Files to Modify with explicit "drill prop X through" instruction.
+**Scope:** universal
+**Category:** information-gathering
