@@ -2067,3 +2067,38 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When spec proposes integration with an external system the user has access to but you don't, refuse to draft data-shape assumptions from their description. Instead: navigate to source (live UI / API / file export) for one sample BEFORE drafting user-spec. The informant remembers UI behavior, not data dump format — those diverge.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-05-31 partner-cabinet-prototype / session 1: bypassing tooling-integrated workflow
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** workflow-bypass tooling loss
+**Triad:** task has a dedicated workflow that integrates required tooling → invoke that workflow instead of improvising its steps from memory → doing it manually silently skips the integrated tooling the workflow would have fired
+**Context:** Started building UI directly (hand-styling, ad-hoc CLI calls) instead of invoking the skill that has the design data-source baked into its process; the integrated tooling never fired and the user had to correct twice ("why weren't the plugins used? they're wired into the dev skills").
+**Pattern:** Before starting work that has a dedicated workflow/skill owning the required tooling, invoke that workflow rather than reproducing its steps from memory. Integrations live inside the workflow's process — skipping the workflow silently skips them, even if you remember some of the tools individually.
+**Scope:** universal
+**Category:** tool-selection
+
+### 2026-05-31 partner-cabinet-prototype / session 1: blind retry on stalled transfer
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** blind-variant retry
+**Triad:** a network transfer's control channel succeeds (connect/auth/command) but the data transfer stalls → capture the actual protocol response to localize the cause before trying more variants → keep swapping modes/flags blindly while the real failure point stays unidentified
+**Context:** FTP upload looped through plain/FTPS, sandbox on/off, NAT and TLS-reuse tweaks — all timing out. Only after capturing the raw PASV reply (port reachable) and the curl error (cert-IP mismatch, then data-channel stall) did the cause localize; a sibling project also showed the working method was a different transport entirely (static pages, not FTP).
+**Pattern:** When control succeeds but data stalls, stop cycling variants and capture the actual protocol response (negotiation reply, exact client error, reachability probe) to pinpoint the failing layer. Also check whether a sibling/related project already solved the same delivery with a different transport before investing in the failing one.
+**Scope:** universal
+**Category:** recovery
+
+---
+
+### 2026-06-01 kstore-feed-expansion / session 1: Measure observable before destructive abort
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** stall-by-assumption (unmeasured)
+**Triad:** about to abort a long-running process you believe is stuck or too slow → read its real elapsed time / progress from the system before aborting → treating silence or a guessed duration as "hung" when the ground truth is one query away
+**Context:** Decided a background job had run ~50 min and stalled, and killed it — then the very check that should have come first showed it had run only 17 min and was still progressing. Lost the run and had to restart. The estimate that drove a destructive, work-discarding action was never verified against the directly-queryable fact (process creation time, log timestamps).
+**Pattern:** Before any destructive recovery move (kill, restart, rollback) justified by "it's been too long" or "it's stuck", first read the actual metric the claim rests on — process age, last-progress timestamp, output tail. A non-emitting process is not evidence of a hung one. Let measurement, not a time-estimate, authorize discarding recoverable work.
+**Scope:** universal
+**Category:** recovery
