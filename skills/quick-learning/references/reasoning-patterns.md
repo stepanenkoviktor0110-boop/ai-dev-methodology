@@ -2081,12 +2081,12 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-05-31 partner-cabinet-prototype / session 1: blind retry on stalled transfer
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Cognitive Error:** blind-variant retry
-**Triad:** a network transfer's control channel succeeds (connect/auth/command) but the data transfer stalls → capture the actual protocol response to localize the cause before trying more variants → keep swapping modes/flags blindly while the real failure point stays unidentified
-**Context:** FTP upload looped through plain/FTPS, sandbox on/off, NAT and TLS-reuse tweaks — all timing out. Only after capturing the raw PASV reply (port reachable) and the curl error (cert-IP mismatch, then data-channel stall) did the cause localize; a sibling project also showed the working method was a different transport entirely (static pages, not FTP).
-**Pattern:** When control succeeds but data stalls, stop cycling variants and capture the actual protocol response (negotiation reply, exact client error, reachability probe) to pinpoint the failing layer. Also check whether a sibling/related project already solved the same delivery with a different transport before investing in the failing one.
+**Triad:** an operation fails identically across surface variants (transport mode, shell, wrapper, flags) → capture the actual underlying response (protocol reply, config, helper chain) to localize the failing layer before trying more variants → keep swapping the surface blindly while the real failure point stays unidentified
+**Context:** (1) FTP upload looped through plain/FTPS, sandbox on/off, NAT and TLS-reuse tweaks — all timing out; only capturing the raw PASV reply + curl error localized the cause. (2) 2026-06-03 tenant-isolation/session 2: a `git push` to a GitHub mirror failed identically with `/dev/tty` across bash → PowerShell → `git credential approve` — three surface variants of the same path — before reading `git config` revealed the credential-helper chain answers from the *active* CLI account; switching the active account (programmatic cred source) fixed it instantly. Identical failure across cosmetic variants meant the cause was in the shared underlying layer, not the surface.
+**Pattern:** When an operation fails the *same way* across surface variants (different shell/wrapper/mode/flags), the variation is not the variable — stop re-attempting and read the actual underlying mechanism (protocol reply, exact client error, config/credential chain, reachability probe) to pinpoint the failing layer. For interactive-prompt failures in a non-interactive context specifically: the prompt path can never succeed without a TTY, so supply the credential from an existing programmatic source (stored token, active-account switch) instead of retrying. Also check whether a sibling/related project already solved it differently.
 **Scope:** universal
 **Category:** recovery
 
