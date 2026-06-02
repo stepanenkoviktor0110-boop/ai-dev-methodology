@@ -2102,3 +2102,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before any destructive recovery move (kill, restart, rollback) justified by "it's been too long" or "it's stuck", first read the actual metric the claim rests on — process age, last-progress timestamp, output tail. A non-emitting process is not evidence of a hung one. Let measurement, not a time-estimate, authorize discarding recoverable work.
 **Scope:** universal
 **Category:** recovery
+
+### 2026-06-02 cabinet-auth-core / session 1: test relies on ambient shared state a sibling case tore down
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** ambient-state inheritance assumption
+**Triad:** a case in a suite reads from shared external state (schema, seeded store, global resource) it did not establish itself → make each case self-establish the precondition it depends on (or assert it) rather than inheriting it from execution order → assuming the state another case left behind still holds when that other case's teardown reverts it
+**Context:** A test module assumed the external schema was present, but a sibling module that runs first reverts the schema to base in its own teardown; the inheriting module then ran against a torn-down precondition. The dependency on "what state the previous case leaves" was implicit and order-fragile.
+**Pattern:** A case must not depend on shared external state established (or left intact) by another case. Make the precondition self-established in a setup the case owns, or assert it is present and fail loud if not. Treat any reliance on sibling execution order or on another case's teardown not reverting a resource as a defect, not a convenience — teardown that restores baseline will silently break the inheriting case.
+**Scope:** universal
+**Category:** sequencing
+
+### 2026-06-02 cabinet-auth-core / session 1: own a seam instead of patching a dependency's unpatchable internal
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** universal-patchability assumption
+**Triad:** need to observe or override a call into a third-party/native object whose method resists interception (read-only, native/compiled, frozen attribute) → route the call through a thin wrapper you own and intercept that → assuming every callable can be monkeypatched in place the way an ordinary attribute can
+**Context:** Tried to spy on a dependency's verify call directly, but it is a read-only native (C-extension) method that cannot be reassigned on the instance. The interception strategy assumed the target behaved like a plain reassignable Python attribute.
+**Pattern:** When a test or override needs to intercept a call into a dependency, do not assume the target method is patchable in place — native/compiled, read-only, or frozen members reject reassignment. Design a thin wrapper function in your own module that forwards to the dependency, call the wrapper everywhere internally, and intercept the wrapper. Owning the seam removes the dependency on the third party's interceptability.
+**Scope:** universal
+**Category:** tool-selection
