@@ -2124,3 +2124,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a test or override needs to intercept a call into a dependency, do not assume the target method is patchable in place — native/compiled, read-only, or frozen members reject reassignment. Design a thin wrapper function in your own module that forwards to the dependency, call the wrapper everywhere internally, and intercept the wrapper. Owning the seam removes the dependency on the third party's interceptability.
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-06-02 cabinet-auth-core / session 2: verify a fixer's green claim independently
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** delegated-verification trust bias
+**Triad:** a downstream worker reports "checks pass / linter clean" after targeted edits to syntax-sensitive constructs → run the check yourself before accepting the report → treating another worker's self-reported green as equivalent to an independently confirmed pass
+**Context:** A round-2 fixer edited an exception clause, introduced a Python-3 SyntaxError (dropped parentheses), yet self-reported "11 passed, ruff clean". The error was caught only because an independent pre-commit hook ran before the lead committed — not because the fixer's claim was doubted.
+**Pattern:** After a worker reports "checks pass" following any small edit to syntax-sensitive constructs (exception handlers, decorators, type annotations, f-strings), run the relevant check yourself before committing. Self-reports of green status are evidence, not proof; the smaller and more surgical the edit, the easier a syntax error hides behind a high-confidence report.
+**Scope:** universal
+**Category:** recovery
