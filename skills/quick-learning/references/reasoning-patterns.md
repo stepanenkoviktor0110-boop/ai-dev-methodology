@@ -2146,3 +2146,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When verifying that a structure enforces a constraint by detecting a token, first locate the region that actually enforces it (the predicate / restricting clause / deny path) and search only there. A token appearing in a non-enforcing region — output/projection, ordering, labels, comments, metadata — must not satisfy the check. Presence-anywhere ≠ enforcement-in-position; this also means traversing into nested/joined sub-structures so a branch isn't skipped entirely.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-06-02 tenant-isolation / session 1: prove a framework callback by firing it through the framework, not a direct call
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** framework-contract bypass
+**Triad:** verifying a callback the framework invokes for you (event listener, hook, IRQ/webhook handler) → exercise it by triggering the real framework dispatch, never by hand-calling it with fabricated arguments → assuming a green direct-call test proves the callback fires in production
+**Context:** A guard registered as a framework event listener had the wrong signature (one extra parameter vs what the framework actually passes), so it crashed on the first real invocation and never fired in production — yet 18 unit tests passed because each called the listener directly with hand-built arguments matching the wrong signature. Only an end-to-end test through a real engine exposed it.
+**Pattern:** When a unit of code is a callback the framework calls for you (event listeners, lifecycle hooks, signal/interrupt handlers, webhook entrypoints), its contract — arity, argument order, registration — is owned by the framework, and a direct invocation re-asserts your own assumed contract rather than testing it. At least one test must trigger the callback through the genuine dispatch path so a signature or registration mismatch fails loudly. Direct-call tests verify the body; only framework-fired tests verify it is reachable.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-06-02 tenant-isolation / session 1: match the measurement's scope to the unit being judged
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** measurement-scope mismatch
+**Triad:** a quantitative gate (completeness %, pass rate, error count) is computed by a command whose input set is narrower than the unit being judged → align the measurement's scope with the artifact under judgment before reading the number as a verdict → treating a low number from a partial measurement as a property of the whole
+**Context:** A coverage gate ran a command scoped to only a subset of the test suite, reporting 54% on a module that the full suite actually covers at 100% — nearly triggering a false "needs fixes" verdict. The instrument measured a fraction of the exercising tests but the number was read as the module's true coverage.
+**Pattern:** Before acting on a quantitative gate, confirm the measurement's input set is the same scope as the thing the gate judges. A metric computed over a narrow slice (one test category, one directory, one time window) is not a property of the whole and can be arbitrarily low while the whole passes. When a metric looks alarmingly bad, suspect a scope mismatch in the measuring command before concluding the artifact is deficient.
+**Scope:** universal
+**Category:** information-gathering
