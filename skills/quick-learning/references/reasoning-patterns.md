@@ -2135,3 +2135,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** After a worker reports "checks pass" following any small edit to syntax-sensitive constructs (exception handlers, decorators, type annotations, f-strings), run the relevant check yourself before committing. Self-reports of green status are evidence, not proof; the smaller and more surgical the edit, the easier a syntax error hides behind a high-confidence report.
 **Scope:** universal
 **Category:** recovery
+
+### 2026-06-02 tenant-isolation / session 1: scope a constraint-check to the enforcing region, not the whole structure
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** non-restricting presence bias
+**Triad:** building/verifying a check that a structure enforces a constraint by detecting a token → identify the region that actually enforces the constraint (the restricting/predicate part) and search only there → counting a token found in a non-enforcing region as if it enforced the constraint
+**Context:** A guard verifying that a query restricts results by a scope column scanned the whole statement (projection list, ORDER BY, labels), so a statement that merely selected the column but never filtered on it passed the guard — a silent leak. The detection conflated "the token appears in the structure" with "the token constrains the structure."
+**Pattern:** When verifying that a structure enforces a constraint by detecting a token, first locate the region that actually enforces it (the predicate / restricting clause / deny path) and search only there. A token appearing in a non-enforcing region — output/projection, ordering, labels, comments, metadata — must not satisfy the check. Presence-anywhere ≠ enforcement-in-position; this also means traversing into nested/joined sub-structures so a branch isn't skipped entirely.
+**Scope:** universal
+**Category:** problem-decomposition
