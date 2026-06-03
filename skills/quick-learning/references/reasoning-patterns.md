@@ -2170,7 +2170,7 @@ Patterns that apply to any project, any stack, any domain.
 **Category:** information-gathering
 
 ### 2026-06-03 cabinet-tenants-api / session 1: verify a reviewer's factual claim before applying its fix
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Cognitive Error:** authority over verification
 **Triad:** a reviewer confidently asserts a specific verifiable fact is wrong and proposes a correction → run the cheapest direct check that settles the fact before acting on the finding → confidence-transfer bias: a finding's assertive tone is mistaken for its being verified
@@ -2178,3 +2178,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a review finding hinges on a specific, cheaply-checkable fact (a name, a signature, which of two near-identical ecosystem variants applies), run the direct check yourself before applying the fix — assertiveness is not evidence. If two reviewers disagree on such a fact, the one who ran the check wins; do the check first, not after the revert.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-06-03 cabinet-tenants-api / session 2: scope uniqueness constraints to the isolation boundary
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** isolation-scope uniqueness mismatch
+**Triad:** adding a uniqueness constraint for a value that belongs to an entity scoped within an isolation boundary (per-owner, per-tenant, per-namespace) → scope the unique constraint to that same boundary, not globally → applying a global constraint on a scoped attribute turns a correctness rule into a cross-boundary information channel
+**Context:** A tech-spec required a unique contact_email on a scoped entity. The implementer created a global partial unique index. A global index lets one scope detect, via a 409 collision response, that an email exists under a different scope — the anti-enumeration property the spec was trying to enforce. The lead changed it to a per-scope composite index (owner_id, email), so the 409 can only fire within the same isolation boundary.
+**Pattern:** When a uniqueness constraint applies to a value that conceptually belongs to a scoped collection (per-tenant, per-owner, per-namespace), the constraint's scope must match the isolation boundary of the collection — not the global table. A global unique index on a per-scope attribute silently creates a cross-scope side channel: any requester can probe whether a value exists in another scope by attempting an insert and observing the 409. The same reasoning applies to any error response, cache miss, or timing signal observable across isolation boundaries.
+**Scope:** universal
+**Category:** problem-decomposition
