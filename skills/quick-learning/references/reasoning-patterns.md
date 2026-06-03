@@ -2170,7 +2170,7 @@ Patterns that apply to any project, any stack, any domain.
 **Category:** information-gathering
 
 ### 2026-06-03 cabinet-tenants-api / session 1: verify a reviewer's factual claim before applying its fix
-**Seen:** 2
+**Seen:** 3
 **Adapted:** —
 **Cognitive Error:** authority over verification
 **Triad:** a reviewer confidently asserts a specific verifiable fact is wrong and proposes a correction → run the cheapest direct check that settles the fact before acting on the finding → confidence-transfer bias: a finding's assertive tone is mistaken for its being verified
@@ -2200,3 +2200,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before sending a batch of decisions out for approval, run each one through any standing authority rule the stakeholder has already given you. Asking is not automatically the safe choice: when a prior instruction has delegated a class of decisions to you, escalating them is itself a deviation — it ignores the instruction, adds latency, and signals you didn't internalize it. Decide what you own, surface only what the rule genuinely reserves, and state the decisions made (with the criteria applied) rather than asking for a vote.
 **Scope:** universal
 **Category:** communication
+
+### 2026-06-04 cabinet-bots-api / session 1: template branch exhaustiveness
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** happy-path anchoring
+**Triad:** adapting a conditional structure (guard, dispatcher, switch) from a template by mirroring its explicitly present branches → enumerate every possible input value/case for the target context and verify each is handled; branches absent from the template must receive an explicit handler or an explicit deny/error default → copying visible branches is mistaken for exhaustive coverage; unlisted cases fall through to implicit pass or wrong branch (fail-open)
+**Context:** A scope-guard was implemented by mirroring an existing template's two-branch conditional. The template only demonstrated super_admin and partner cases, so those two were copied verbatim. No other roles were mentioned in the template, but they existed in the system — they silently fell through to implicit pass (fail-open), a security regression caught by code and security review in round 1. The "mirror verbatim" instruction covered structure but not branch exhaustiveness.
+**Pattern:** When adapting a conditional structure from a template, treat the template's branches as examples, not as an exhaustive enumeration. Before writing the final handler, list every value/role/case that can reach the conditional in the target context and verify each one is covered by an explicit branch or a safe default. Any case not in the template either needs its own branch or an explicit fail-closed default — never rely on an implicit fall-through.
+**Scope:** universal
+**Category:** scope-management
