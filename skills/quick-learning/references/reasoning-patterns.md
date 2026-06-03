@@ -2168,3 +2168,13 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before acting on a quantitative gate, confirm the measurement's input set is the same scope as the thing the gate judges. A metric computed over a narrow slice (one test category, one directory, one time window) is not a property of the whole and can be arbitrarily low while the whole passes. When a metric looks alarmingly bad, suspect a scope mismatch in the measuring command before concluding the artifact is deficient.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-06-03 cabinet-tenants-api / session 1: verify a reviewer's factual claim before applying its fix
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** authority over verification
+**Triad:** a reviewer confidently asserts a specific verifiable fact is wrong and proposes a correction → run the cheapest direct check that settles the fact before acting on the finding → confidence-transfer bias: a finding's assertive tone is mistaken for its being verified
+**Context:** A reviewing pass asserted a named runtime attribute was wrong and proposed a plausible replacement; the correction was applied on trust, and a later pass that actually executed a one-line check proved the original was right — costing a full rework cycle to revert.
+**Pattern:** When a review finding hinges on a specific, cheaply-checkable fact (a name, a signature, which of two near-identical ecosystem variants applies), run the direct check yourself before applying the fix — assertiveness is not evidence. If two reviewers disagree on such a fact, the one who ran the check wins; do the check first, not after the revert.
+**Scope:** universal
+**Category:** information-gathering
