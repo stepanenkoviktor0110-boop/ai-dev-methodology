@@ -2189,3 +2189,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a uniqueness constraint applies to a value that conceptually belongs to a scoped collection (per-tenant, per-owner, per-namespace), the constraint's scope must match the isolation boundary of the collection — not the global table. A global unique index on a per-scope attribute silently creates a cross-scope side channel: any requester can probe whether a value exists in another scope by attempting an insert and observing the 409. The same reasoning applies to any error response, cache miss, or timing signal observable across isolation boundaries.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-06-03 cabinet-bots-api / session 1: apply the standing decision-authority rule before escalating forks
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** default-to-ask bias
+**Triad:** about to present a batch of technical/scope fork-decisions to the stakeholder for a vote → first filter each fork through any standing decision-authority rule you were given; decide the ones the rule assigns to you, escalate only what it reserves → treating "present options for approval" as the safe default even when an explicit prior instruction already made those forks yours to decide
+**Context:** Holding an explicit standing rule ("decide tech/scope forks autonomously by simplicity/efficiency/growth; escalate only process/logic"), I still assembled four such forks into a question batch and asked the stakeholder to choose — who corrected me to apply the rule and proceed. The "ask before acting" reflex overrode a directive that had already delegated exactly these decisions to me, costing a round-trip and contradicting a stated preference.
+**Pattern:** Before sending a batch of decisions out for approval, run each one through any standing authority rule the stakeholder has already given you. Asking is not automatically the safe choice: when a prior instruction has delegated a class of decisions to you, escalating them is itself a deviation — it ignores the instruction, adds latency, and signals you didn't internalize it. Decide what you own, surface only what the rule genuinely reserves, and state the decisions made (with the criteria applied) rather than asking for a vote.
+**Scope:** universal
+**Category:** communication
