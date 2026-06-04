@@ -369,6 +369,28 @@ Patterns that apply to any project, any stack, any domain.
 **Situation:** Hero или full-bleed секция с фото, поверх которой размещаются текст или UI-блоки
 **Category:** design-process
 
+### 2026-06-05 cabinet-shell-login / session 1: spec-over-code illusion
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** spec-over-code illusion
+**Triad:** оркестратор готовит бриф для исполнителя, опираясь на текст спека → прочитать реальный целевой код ДО формирования контракта в промте → не передавать контракт противоречащий живой реализации
+**Context:** Спек Task 3/4/6 описывал поведение api.js (что refresh/login возвращают), но живой api.js не персистил токены — AuthContext обязан делать это явно. Аналогично: AuthContext не был экспортирован в живом файле. Lead прочитал реальный код до спавна агентов и скорректировал контракты в промтах; без этого агенты молча сломали бы bootstrap и тесты.
+**Pattern:** Перед передачей контракта из спека исполнителю — прочитать реальный целевой файл и сверить заявленное поведение с кодом. Если расхождение найдено — скорректировать бриф до спавна, задокументировать как deviation.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-06-05 cabinet-shell-login / session 1: fix locality illusion
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** fix locality illusion
+**Triad:** исполнитель применяет фикс в задаче N (добавляет/меняет контракт) → немедленно проверить downstream-задачи и зафиксировать обязательство в review note перед завершением → не передавать несогласованный контракт silent dependency следующим волнам
+**Context:** Task 3 добавила новый код ошибки SESSION_INIT_FAILED. Task 4 (LoginScreen) должна была маппировать его в пользовательское сообщение — но это не было указано в исходном спеке Task 4. Фикс в Task 3 породил downstream-обязательство; оно было пронесено через round-2 review note RR-1 и корректно реализовано в Task 4. Без propagation — Task 4 молча проигнорировала бы новый код.
+**Pattern:** Когда фикс в задаче N изменяет публичный контракт (добавляет код, меняет сигнатуру, добавляет export) — перед завершением задачи явно перечислить downstream-задачи и добавить в review notes обязательство для каждой из них.
+**Scope:** universal
+**Category:** sequencing
+
 ### 2026-03-30 design-v2 / session 1: Редизайн = независимый выбор layout, не наследование структуры
 
 **Seen:** 1
