@@ -2233,3 +2233,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** A plan's explicit ordered chain is not the complete ordering. An item described as "independent / parallel / anytime" often still carries a conditional gate ("before X", "until Y exists", "prior to launch"). Before committing to the next step, evaluate each not-yet-done side item's trigger against the step you are about to take: if your step is or causes that trigger, the side item is a hard prerequisite and jumps ahead of it. Compose separately-stated facts ("G before X" + "step E is X") into the constraint rather than treating each as a standalone note.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-06-04 cabinet-auth-hardening / session 1: a pass/fail check piped into a filter reports the filter's status, not the check's
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** pipe-masked failure status
+**Triad:** a verification command whose exit status decides "did it pass" is piped into a trailing filter/formatter/pager → read the meaningful command's own exit status (run it unpiped, or inspect the specific stage) → reading the pipeline's exit status as the verdict, when that status comes from the trailing stage which almost always succeeds
+**Context:** I ran a gate as `verify_cmd | tail` and trusted the reported green exit code as "all passed." The exit code was the trailing filter's (always 0), so the verifier's real failure was hidden — I nearly declared the work done on top of failing checks.
+**Pattern:** When a command's exit status is the thing you are trusting (a test run, a build, a linter gate), do not pipe it into a filter/pager and read the pipeline's status — the shell returns the last stage's status, and filters/formatters succeed almost unconditionally. Capture the verifier's own status (run it unpiped, redirect to a file then read, or check the specific stage) before believing a green result.
+**Scope:** universal
+**Category:** tool-selection
+
+### 2026-06-04 cabinet-auth-hardening / session 1: a new shared-store side-effect on a hot path breaks the isolation of every existing test that hits it
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** shared-side-effect isolation blindness
+**Triad:** a frequently-exercised operation gains a new read/write against a shared mutable store that the existing test suite already drives → retrofit per-case isolation for that store into the base/shared test fixture and re-run the WHOLE suite, not just the new cases → assuming the new behavior only affects its own new tests, missing that every pre-existing case that hits the path now accumulates global state
+**Context:** A hot endpoint gained a dependency on a shared counter store. I verified the new feature's own tests, but every pre-existing test that called the endpoint now incremented the same global counters (all from one host id); across the full suite the counter crossed a threshold and unrelated later tests got throttled responses → intermittent, order/volume-dependent failures far from the change.
+**Pattern:** When production code adds a side-effect against a shared mutable store (cache, counter, rate-limit, queue) to a path that existing tests already exercise, the blast radius is the whole suite, not the new tests. Retrofit per-test isolation for that store (reset/flush or override it in the base test client/fixture, tolerant of the store being absent) and run the FULL suite — flakiness from the new shared dependency surfaces in unrelated siblings, not in the cases you added.
+**Scope:** universal
+**Category:** scope-management
