@@ -2255,3 +2255,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When production code adds a side-effect against a shared mutable store (cache, counter, rate-limit, queue) to a path that existing tests already exercise, the blast radius is the whole suite, not the new tests. Retrofit per-test isolation for that store (reset/flush or override it in the base test client/fixture, tolerant of the store being absent) and run the FULL suite — flakiness from the new shared dependency surfaces in unrelated siblings, not in the cases you added.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-06-04 pasyakin-pdf / session 1: recurrence is a systemic signal, not bad luck
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** recurrence-as-noise retry loop
+**Triad:** identical failure recurs across ≥2 attempts → stop and fix the behaviour that generates it → retrying the symptom (and apologizing) expecting a different outcome
+**Context:** When the same failure happened more than once, I repeated the action and apologized instead of treating the repetition itself as proof of a fixable root cause.
+**Pattern:** On the second identical occurrence of a failure, stop retrying — the repetition is evidence of a systemic generator, not bad luck. Diagnose and change the behaviour/config that produces it, then resume; one root fix beats N symptom retries.
+**Scope:** universal
+**Category:** recovery
