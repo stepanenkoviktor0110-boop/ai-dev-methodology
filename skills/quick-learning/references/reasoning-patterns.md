@@ -2266,3 +2266,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** On the second identical occurrence of a failure, stop retrying — the repetition is evidence of a systemic generator, not bad luck. Diagnose and change the behaviour/config that produces it, then resume; one root fix beats N symptom retries.
 **Scope:** universal
 **Category:** recovery
+
+### 2026-06-04 pasyakin-pdf / session 1: shared mutable workspace, two actors
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** shared-workspace concurrency blindness
+**Triad:** two or more actors operate on one shared mutable workspace simultaneously → isolate each into its own copy/branch or serialize them, and checkpoint (commit/save) work immediately → assuming each actor's unsaved changes are private when the workspace is actually shared
+**Context:** Two agent sessions ran on one shared working tree; one session's unsaved changes sat in the same space as the other's, fragile and silently overwritable, producing a false sense of "parallel branches" when it was really one mutable surface.
+**Pattern:** When more than one actor can mutate a single shared workspace, either give each its own isolated copy/branch or serialize them — never both edit live. Checkpoint (commit/save) work the moment it is verified; unsaved state in a shared space is one stray operation away from being clobbered by a concurrent actor.
+**Scope:** universal
+**Category:** recovery
