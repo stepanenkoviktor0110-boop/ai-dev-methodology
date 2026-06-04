@@ -2000,3 +2000,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before issuing any query/extractor against an external system (DB via ORM, third-party API, spreadsheet, file format) where field/property names are read from a secondary source (model, spec, docs), run a live introspection call once and confirm the names. Specs drift, ORMs rename, third-party schemas evolve — the live source is the only one that matches the data you'll receive.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-06-04 pasyakin-system / session B: override-precedence beats mode flag
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** override-precedence blindness
+**Triad:** changing behavior by flipping a high-level mode/environment selector while a more-specific explicit override is pinned → find which layer actually resolves the value and change it there, not just the mode selector → assuming the broad mode switch wins over a narrower explicit override that silently takes priority
+**Context:** Tried to point a test run at the test datastore by setting the environment-mode flag, but the run still hit the development datastore — because a runtime-level explicit connection override (set once for the default mode) silently superseded the per-mode config file, so flipping the mode flag changed nothing until the override itself was changed.
+**Pattern:** When a high-level mode/environment selector fails to change behavior, stop re-flipping it and ask which configuration layer actually resolves the value. Explicit overrides (env vars, CLI flags, connection strings) take precedence over mode-keyed config files; to change behavior you must edit the override layer, not the mode selector. First action on such a mismatch: trace the resolution order, don't assume the broadest knob wins.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-06-04 pasyakin-system / session B: premature aggregation defeats planned separation
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** premature aggregation
+**Triad:** goal is several independently-scoped final outputs, but one available action captures the whole accumulated workspace at once → finalize each unit with explicit boundaries; never run the catch-all aggregate step before the units are separated → assuming a scope-less bulk action will respect intended granularity
+**Context:** The plan was to produce several separate, individually-labelled finalizations, but a wide catch-all capture step was run first and then a scope-less finalize swept the entire accumulated workspace into one undifferentiated output, forcing an undo-and-redo to recover the intended boundaries.
+**Pattern:** When the goal is N independently-scoped outputs, do not perform an aggregating/catch-all step before the units are separated — it collapses the granularity the plan depends on. Finalize each unit with an explicit boundary (named scope/pathspec/selection); reserve any "all at once" action for when one combined output is genuinely intended. A scope-less bulk action will not infer your intended divisions.
+**Scope:** universal
+**Category:** sequencing
