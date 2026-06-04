@@ -151,7 +151,7 @@ After fixes → commit `chore(techspec): validation round {N} — {summary}` →
 ## Promoted Patterns
 
 - **Верифицируй целевые файлы перед описанием операции (Seen: 2):** Spec описывает "удалить X из N файлов" / "заменить Y" — grep каждый файл перед фиксацией типа операции. Файл без X требует add, не replace.
-- **Верифицируй API response shapes live-вызовом (Seen: 2):** Перед включением response shapes из code-research в спек — live API call. Перенеси все коды ответа, формат, edge cases. Один вызов дешевле миража через pipeline.
+- **Верифицируй API response shapes live-вызовом (Seen: 2):** Перед включением response shapes из code-research в спек — live API call. Перенеси все коды ответа, формат, edge cases. Один вызов дешевле миража через pipeline. Это касается и shape, унаследованного из словесного описания информанта (counts, format, schema, retention): получи ОДИН живой сэмпл из источника до фиксации claim'ов в user-spec/tech-spec — информант помнит UI-поведение, а не формат data-dump, и абстракции строятся под изменчивость, которой может не быть (spec-shape inheritance bias) (triad #377).
 - **Верифицируй файловые пути и call sites через ls/grep (Seen: 2):** Пути в tech-spec — через ls/glob, не из памяти/docs. Перед записью "call sites функции X в файле Y" — grep подтверждает существование вызовов.
 
 ## Learned Patterns

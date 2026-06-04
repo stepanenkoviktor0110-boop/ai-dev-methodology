@@ -34,7 +34,7 @@ When сервис с free tunnel перезапустился → считать
 When task-файл содержит явный запрет ("NEVER X"), реализация нарушает запрет → grep по запрещённому паттерну в изменённых файлах ДО коммита, to не тратить review round на нарушение явного спрета из спека.
 
 **11. Async агент — старт и мониторинг:**
-When запуск async инструмента/агента с неизвестным временем выполнения → сообщить пользователю ожидаемое время ДО запуска + мониторить прогресс + при молчании >5 мин алертить; при отсутствии новых записей в лог — убить и перезапустить, to не допустить, что пользователь ждёт в неведении и не тратить 15+ мин на зависшую задачу.
+When запуск async инструмента/агента с неизвестным временем выполнения → сообщить пользователю ожидаемое время ДО запуска + мониторить прогресс + при молчании >5 мин алертить; при отсутствии новых записей в лог — убить и перезапустить, to не допустить, что пользователь ждёт в неведении и не тратить 15+ мин на зависшую задачу. Inverse-abort guard: перед тем как прервать долгий процесс, который кажется зависшим/слишком медленным, прочитать его реальное прошедшее время / прогресс из системы ДО kill — не принимать тишину или угаданную длительность за зависание, когда ground truth в одном запросе (stall-by-assumption). (triad #380)
 
 **12. Визуальная фича — по одному экрану:**
 When визуальная фича с несколькими экранами/блоками → показать один экран/блок полностью → дождаться одобрения → следующий, to получить ранний фидбэк на каждый экран до следующего.
@@ -138,8 +138,8 @@ When a heavyweight multi-phase process is invoked on a lightweight deliverable (
 **47. Преамбула обещает ресурсы — верифицируй демонстрацию:**
 When the preface of a multi-section deliverable declares a resource/convention as part of the approach → before declaring done, walk every preface declaration and verify at least one concrete later section actually exercises it, to avoid declaration-demonstration gap: shipping a deliverable that promises resources/conventions it never demonstrates.
 
-**48. Делегирование падает с permission error — пробей все слои:**
-When delegation fails with a permission/access error → enumerate ALL permission layers (config trust, OS ACL, sandbox identity) and probe adjacent paths in the same hierarchy to identify the actual failing layer, to avoid single-layer trust assumption: fixing the first found layer and hitting the same failure from a second.
+**48. Операция падает одинаково при разных вариантах вызова — локализуй сбойный слой:**
+When an operation fails identically across surface variants (a permission/access error, or the same failure under different transport modes, shells, wrappers, flags) → read the actual underlying response/mechanism (config trust, OS ACL, sandbox identity, protocol reply, credential-helper chain) and probe adjacent paths in the same hierarchy to localize the actual failing layer before trying more surface variants, to avoid single-layer trust assumption and blind surface-cycling: fixing the first found layer (or rotating the call surface) while the real failure point stays unknown. (triad #379)
 
 **49. Неожиданное изменение состояния — сначала спроси человека:**
 When state in a shared system turns out to be unexpectedly changed (flag reset, config zeroed, data gone) → first ask the operator directly "did you touch this manually?" — before investigating automated mutation paths, to avoid human-as-last-resort bias: hunting a phantom code-mutator while ignoring out-of-band human intervention.
@@ -166,7 +166,7 @@ When about to apply a repair targeting a known broken pattern → read actual cu
 When two stores hold the same value and one syncs into the other (deploy script, replication, build pipeline) → mutate only the source-of-sync; direct edits to the downstream are silently overwritten on the next sync, to avoid resync-trap: change appears to take effect, then disappears on next sync cycle.
 
 **58. Верификационный цикл по случаям через долгоживущий рантайм — свежий инстанс на случай:**
-When a verification loop iterates multiple cases through a long-lived runtime instance whose state the act-under-test mutates → default to one fresh runtime instance per case; reuse only when each case is purely additive read-only, to avoid cross-case state leakage: earlier case's mutations contaminate later case's observed result.
+When a verification loop iterates multiple cases through a long-lived runtime instance whose state the act-under-test mutates → default to one fresh runtime instance per case; reuse only when each case is purely additive read-only, to avoid cross-case state leakage: earlier case's mutations contaminate later case's observed result. Reader-side variant (ambient-state inheritance): when a case reads shared external state (schema, seeded store, global resource) it did not establish itself → make each case self-establish (or assert) its precondition rather than inherit it from execution order, so a sibling's teardown reverting that state cannot silently break it. (triad #381)
 
 **59. Collective/numeric reference in user reply — verify cardinality:**
 When user reply uses a collective or numeric reference ("both", "all", "the rest", "first and third") to select from offered options → verify cardinality and identity of the reference match the offered set before acting; on mismatch, ask, to avoid vague-quantifier blind spot: filling in the most plausible subset silently instead of detecting the count mismatch.
@@ -176,3 +176,18 @@ When function intentionally accepts multiple call shapes and a single test file 
 
 **61. Validator повторяет одно и то же про отсутствующий ресурс — project-level exception:**
 When multi-artifact validator repeatedly flags the same missing required reference based on a template mandate → before fix-iteration, verify the referenced resource exists in the project; if absent, record exception once at project level instead of N artifact findings, to avoid template-mandate amplification: a template requirement unsatisfiable in this project reproduces as N separate findings, masking a project-conditional gap as systemic non-compliance.
+
+**62. Воркер заявил «checks pass» после правок синтаксис-чувствительных конструкций — перепроверь сам:**
+When a downstream worker reports "checks pass / linter clean" after making targeted edits to syntax-sensitive constructs (exception clauses, decorators, type annotations) → run the check yourself before accepting the claim; never rely solely on the worker's self-report for syntax-correctness, to avoid delegated-verification trust bias. (triad #383)
+
+**63. Batch fork-решений на голосование — отфильтруй через правило полномочий:**
+When about to present a batch of technical/scope fork-decisions to the stakeholder for a vote → filter each fork through any standing decision-authority rule you were given; decide the ones it assigns to you, escalate only what it reserves, and state the decisions made, to avoid default-to-ask bias. (triad #389)
+
+**64. Off-chain пункт «можно когда угодно, но до X» — проверь, не есть ли шаг сам X:**
+When picking the next step from a plan that shows a main ordered chain plus a side item flagged "independent / can be done anytime, but before X" → before committing to the next step, test whether that step itself is (or triggers) X; if so, the off-chain prerequisite is a hard gate and must come first, to avoid deferred-prerequisite trigger blindness. (triad #391)
+
+**65. Идентичный сбой повторяется ≥2 раз — чини источник, не инстанс:**
+When an identical failure recurs across >=2 attempts → stop retrying; diagnose and fix the behaviour/config that generates it, not the instance, to break the symptom-retry loop with one root fix. (triad #395)
+
+**66. Несколько актёров в одном shared workspace — изолируй и чекпойнти:**
+When two or more actors operate on one shared mutable workspace at once → isolate each into its own copy/branch or serialize, and checkpoint work the moment it is verified, to stop concurrent actors silently clobbering each other's unsaved state. (triad #396)
