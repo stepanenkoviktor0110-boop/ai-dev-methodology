@@ -2160,7 +2160,7 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-06-02 tenant-isolation / session 1: match the measurement's scope to the unit being judged
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Cognitive Error:** measurement-scope mismatch
 **Triad:** a quantitative gate (completeness %, pass rate, error count) is computed by a command whose input set is narrower than the unit being judged → align the measurement's scope with the artifact under judgment before reading the number as a verdict → treating a low number from a partial measurement as a property of the whole
@@ -2211,3 +2211,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When adapting a conditional structure from a template, treat the template's branches as examples, not as an exhaustive enumeration. Before writing the final handler, list every value/role/case that can reach the conditional in the target context and verify each one is covered by an explicit branch or a safe default. Any case not in the template either needs its own branch or an explicit fail-closed default — never rely on an implicit fall-through.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-06-04 cabinet-bots-api / session 1: weight stakeholder recollection over a null search before reporting absence
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** absence-of-evidence as proof
+**Triad:** about to tell a stakeholder that an artifact/feature "doesn't exist" — especially when they recall creating it → treat their firsthand recollection as strong counter-evidence and run a cheap exhaustive sweep of the whole tree (filename + content) before concluding absence, not just the locations you consider canonical → reading a null result from a partial / canonical-only search as proof of non-existence, discounting the stakeholder's recollection
+**Context:** Asked how many of something the project had, I searched the locations I treated as canonical (the knowledge base, the main spec, the backlog), found no enumerated list, and reported "there is no fixed/documented one." The stakeholder pushed back — "we definitely planned that." A broad filename+content sweep of the whole repo then immediately surfaced the canonical document, sitting in a directory I hadn't searched. My null result came from a too-narrow scope, and I had weighted it above the stakeholder's direct memory.
+**Pattern:** A negative search result is evidence of absence only as strong as the search was exhaustive. Before reporting that something "doesn't exist," run the cheapest broad check first — a whole-tree filename sweep plus a content sweep — not just the handful of locations you consider the natural home. When a stakeholder recalls creating the thing, treat that recollection as the stronger signal: it almost always means the artifact exists somewhere you didn't look, so widen the search rather than concluding absence. Report "I didn't find it in X/Y/Z" (scoped, falsifiable), never a bare "it doesn't exist," until the search space is genuinely exhausted.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-06-04 cabinet-bots-api / session 2: an "independent" item gated "before X" is a hard gate when the next step is X
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** deferred-prerequisite trigger blindness
+**Triad:** picking the next step from a plan that shows a main ordered chain plus a side item flagged "independent / can be done anytime, but before X" → before committing to the next step, test whether that step itself is (or triggers) X; if so, the off-chain prerequisite is a hard gate and must come first → anchoring on the explicit chain and treating a conditionally-gated side item as freely deferrable, without checking that the chosen step fires its condition
+**Context:** A roadmap listed an execution chain (…→D→E→F) plus a separate item G marked "technically independent, do before public exposure of the API." I had both facts available — G must precede public exposure, and E is the slice that first stands the API up for a browser (= public exposure) — but read them in isolation and recommended E as the next step. The stakeholder caught that G must come before E. The two facts were never composed into the implied ordering constraint G→E.
+**Pattern:** A plan's explicit ordered chain is not the complete ordering. An item described as "independent / parallel / anytime" often still carries a conditional gate ("before X", "until Y exists", "prior to launch"). Before committing to the next step, evaluate each not-yet-done side item's trigger against the step you are about to take: if your step is or causes that trigger, the side item is a hard prerequisite and jumps ahead of it. Compose separately-stated facts ("G before X" + "step E is X") into the constraint rather than treating each as a standalone note.
+**Scope:** universal
+**Category:** sequencing
