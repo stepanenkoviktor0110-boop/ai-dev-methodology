@@ -2089,3 +2089,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When the obvious way to run a check would push a secret onto a logged or observable surface, that constraint forbids *exposing the secret* — not *verifying the behavior*. Don't declare the verification impossible. Relocate the computation to the context that already holds the secret legitimately (the host/session/environment where it lives), run the assertions there, and emit back only non-sensitive results: HTTP codes, counts, pass/fail booleans, structural shape. You still prove the behavior end-to-end; the secret never enters your transcript. Reserve "blocked, need human" for cases where no such already-trusted context exists.
 **Scope:** universal
 **Category:** recovery
+
+### 2026-06-05 pasyakin-system / session D: satisfying the loudest facet of a "match-exactly" spec and reporting the whole as done
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** salient-facet-as-whole
+**Triad:** a deliverable is judged against a "match the reference exactly" criterion whose fidelity spans several independent facets (one obvious, several subtle) → before declaring done, enumerate every facet the criterion covers and verify each against the reference independently → confirming the most-visible facet and reporting the entire criterion as met
+**Context:** Corrected the most salient aspect of an "exact match" requirement and announced the whole goal achieved, while several quieter aspects of the same requirement were never even checked — the owner had to point out they were missing.
+**Pattern:** "Match X exactly" is not one check; X has facets. Before claiming done, decompose the criterion into its independent dimensions and verify each against the reference. Satisfying the dimension that's easiest to see (and easiest to confirm) creates a false sense of completion that collapses the moment someone inspects a quieter dimension. The louder the one you fixed, the more suspicious you should be that you stopped early.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-06-05 pasyakin-system / session D: dismissing an owned artifact as unusable because its format looked opaque
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** opaque-format-as-unusable
+**Triad:** the convenient path to needed reference data is gated/failed, while you also hold an owned artifact that contains the same data in a proprietary/binary/opaque format → attempt to decode the owned artifact before declaring the task blocked or scoping it down → equating "the easy access path failed" and "this data looks like an unreadable blob" with "the data is unavailable"
+**Context:** The obvious route to the source-of-truth data was access-gated; a file already in hand held the same data but in an opaque binary format, so it was mentally written off as unusable and the dependent work was nearly scoped down — until prompted, no attempt was made to parse it.
+**Pattern:** A gated or failed access path means that *path* is unavailable, not that the *data* is. Before declaring blocked, check whether something you already possess carries the same information, and actually attempt to decode it even if the format looks proprietary or binary — most are container-based (zip) or use documented codecs and yield to a standard parser. Treat "I don't have access" and "this is an opaque blob" as hypotheses to test, not conclusions.
+**Scope:** universal
+**Category:** information-gathering
