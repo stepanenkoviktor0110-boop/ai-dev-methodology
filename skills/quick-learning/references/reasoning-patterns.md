@@ -109,10 +109,10 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-03-26 shift-confirmation: Ошибки повторяются между волнами
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
-**Triad:** ревью нашло паттерн ошибки (не разовый баг) → добавить предупреждение в промт следующего teammate → предотвратить повторение ошибки в следующих задачах
-**Context:** В Task 1 ревьюер нашёл `confirmationStatus: string` вместо enum. Исправили. В Task 4 — ровно та же ошибка. Агент Task 4 не знал о находке Task 1, т.к. каждый teammate с чистым контекстом.
+**Triad:** ревью ИЛИ git-история выявили уже-отклонённый подход/паттерн ошибки на этом месте → вписать находку или историю отклонения в промт делегируемого агента → предотвратить повторение ошибки/переизобретение отклонённого подхода в следующих задачах
+**Context:** В Task 1 ревьюер нашёл `confirmationStatus: string` вместо enum. Исправили. В Task 4 — ровно та же ошибка. Агент Task 4 не знал о находке Task 1, т.к. каждый teammate с чистым контекстом. (Seen 2, 2026-06-05 cabinet-clients-list/s2) Делегировал fixer-у тест для async-throw пути, не вписав в бриф, что прежний подход — `process`-listener на unhandledRejection — уже убирали в Session 1 из-за флакости; агент с чистым контекстом переизобрёл ровно его, потребовался лишний раунд ревью. Уже-отклонённый подход живёт в git-истории/соседнем коде, а не только в находке ревью текущей сессии.
 **Scope:** situational
 **Situation:** multi-agent feature execution с несколькими волнами
 **Category:** communication
@@ -2078,3 +2078,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a task feels well-scoped, the impulse is to jump straight to asking the human the open questions. But the human is the most expensive and slowest source — and often the answer is already recorded in cheaper available ones (documentation, knowledge base, prior decisions, the artifact/code itself). Before composing any question for a person, exhaust those first: read what exists, then ask only the genuine residual gaps. A clear-feeling goal is not license to skip the read — being confident about *what* to build says nothing about whether the *details* are already documented.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-06-05 cabinet-clients-list / session 2: verifying a behavior gated behind a secret without leaking it
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** secret-exposure dead-end bias
+**Triad:** a verification step's obvious path would force a secret/credential into a logged or observable surface (tool-call argument, transcript, command echo) → relocate the assertion to the context where the secret already legitimately lives and surface only non-secret outputs (status codes, counts, booleans) → secret-exposure dead-end: conflating "I must not expose the secret" with "I cannot verify the behavior"
+**Context:** A live verification needed a credential to authenticate; the obvious automation path would have written the plaintext secret into a logged tool-call argument, and the first instinct was to treat the whole check as un-runnable rather than moving it to where the secret was already available.
+**Pattern:** When the obvious way to run a check would push a secret onto a logged or observable surface, that constraint forbids *exposing the secret* — not *verifying the behavior*. Don't declare the verification impossible. Relocate the computation to the context that already holds the secret legitimately (the host/session/environment where it lives), run the assertions there, and emit back only non-sensitive results: HTTP codes, counts, pass/fail booleans, structural shape. You still prove the behavior end-to-end; the secret never enters your transcript. Reserve "blocked, need human" for cases where no such already-trusted context exists.
+**Scope:** universal
+**Category:** recovery
