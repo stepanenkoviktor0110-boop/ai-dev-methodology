@@ -2067,3 +2067,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** A summary you wrote of a canonical source (rule, spec, brief, memory, decision record) is lossy and is NOT the source. The moment you reuse that summary in a new artifact instead of re-deriving from the original, drift compounds — wording softens, conditions drop, and meaning can invert across enough hops (a private telephone game with your own paraphrase). Before pasting a carried-forward restatement, open the canonical source and re-derive; treat the prior compression as disposable scaffolding. Symptom to recognize: a slogan/boilerplate line that travels unchanged between documents and that you can no longer trace, word-for-word, to its origin.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-06-05 cabinet-clients-list / session 1: ask-before-read inversion in planning interview
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** premature-inquiry bias
+**Triad:** about to query a human/authority to clarify a task before consulting the recorded context already available to you → first exhaust the cheap available sources (docs, knowledge base, prior records), reserve human questions for genuine gaps those sources don't close → premature-inquiry bias: spending interaction on questions already answered by available context, treating a clear-feeling scope as license to skip the read
+**Context:** Started composing clarifying questions for the stakeholder before reading the available recorded context; several questions duplicated answers already written down, and the stakeholder had to point out the unread source.
+**Pattern:** When a task feels well-scoped, the impulse is to jump straight to asking the human the open questions. But the human is the most expensive and slowest source — and often the answer is already recorded in cheaper available ones (documentation, knowledge base, prior decisions, the artifact/code itself). Before composing any question for a person, exhaust those first: read what exists, then ask only the genuine residual gaps. A clear-feeling goal is not license to skip the read — being confident about *what* to build says nothing about whether the *details* are already documented.
+**Scope:** universal
+**Category:** information-gathering
