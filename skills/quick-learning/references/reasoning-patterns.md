@@ -2042,5 +2042,17 @@ Patterns that apply to any project, any stack, any domain.
 **Triad:** goal is several independently-scoped final outputs, but one available action captures the whole accumulated workspace at once → finalize each unit with explicit boundaries; never run the catch-all aggregate step before the units are separated → assuming a scope-less bulk action will respect intended granularity
 **Context:** The plan was to produce several separate, individually-labelled finalizations, but a wide catch-all capture step was run first and then a scope-less finalize swept the entire accumulated workspace into one undifferentiated output, forcing an undo-and-redo to recover the intended boundaries.
 **Pattern:** When the goal is N independently-scoped outputs, do not perform an aggregating/catch-all step before the units are separated — it collapses the granularity the plan depends on. Finalize each unit with an explicit boundary (named scope/pathspec/selection); reserve any "all at once" action for when one combined output is genuinely intended. A scope-less bulk action will not infer your intended divisions.
+**Seen again:** 2026-06-05 cabinet-shell-login / session 3 — a scoped `git add <paths>` followed by a *bare* `git commit` swept in unrelated work already sitting in the index from a prior session (including a real secret wrongly placed in a tracked file). The scoped add does not unstage what was pre-staged; the bare commit is the scope-less catch-all that aggregates the whole index. Corrective: inspect `git diff --cached --stat` (the actual staged set, the explicit boundary) before committing, and scan swept-in files for secrets/scope-creep.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-06-05 cabinet-shell-login / session 3: piped-stdin script self-consumption
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** piped-stdin script self-consumption
+**Triad:** a script is delivered to an interpreter through that interpreter's own stdin (pipe / heredoc / `interp -s < file`) → isolate every inner command that itself reads stdin by redirecting its input from an empty source → assuming the no-interaction flag prevents an inner command from consuming the rest of the script
+**Context:** A verify script fed to a remote interpreter via its stdin produced empty output with a success exit code; the first inner command that reads stdin silently consumed the remainder of the script, so after it the interpreter hit EOF and every later line never ran — and the no-TTY flag did not prevent the stdin consumption.
+**Pattern:** When a script reaches an interpreter through that interpreter's own stdin (a pipe, a heredoc, `interp -s < file`), the script body and inner commands share one stdin stream. Any inner command that reads stdin (DB clients, container-exec, `read`, pagers) will swallow the rest of the script, leaving later lines unexecuted while the exit code stays 0 — and a "no-interaction/no-TTY" flag does NOT stop this. Redirect each stdin-reading inner command from an empty source so it cannot steal the remaining script. Symptom to recognize: a piped-to-shell script that exits 0 with truncated/empty output and silently skipped trailing logic.
+**Scope:** universal
+**Category:** tool-selection
