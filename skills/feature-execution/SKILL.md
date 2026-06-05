@@ -19,6 +19,16 @@ Before starting, read [quick-ref-feature-execution.md](../quick-learning/referen
 ## Phase 1: Initialization
 
 0. Check `work/{feature}/logs/checkpoint.yml`:
+   - **`status: awaiting_user` → STOP barrier (session boundary reached, waiting for user).**
+     This state means the previous session ended cleanly and the next session must be user-initiated.
+     Do NOT auto-continue into the next wave — that is exactly the bug this barrier prevents
+     (a truncated session-boundary message must never roll forward into Phase 2).
+     - If the user's current input **explicitly** names the next session or its waves/tasks
+       (e.g. "Session 2", "waves 3–6", pasted next-session prompt) → treat as explicit start:
+       clear `status` (set to `running`), then proceed with the resume logic below from `next_wave`.
+     - Otherwise (empty re-entry, auto-resume after compaction/output truncation) → do NOT proceed.
+       Output: "Предыдущая сессия завершена на границе. Промт следующей сессии:
+       `work/{feature}/logs/next-session-prompt.md`. Подтвердите запуск следующей сессии." and END.
    - `last_completed_wave > 0` → this is a resume after context compaction.
      Read checkpoint, then read `work/{feature}/decisions.md` to confirm what was actually completed.
      For tasks in the resumed wave: if a task has a decisions.md entry, it completed — update its
@@ -104,27 +114,35 @@ When lead spawns an agent outside the original execution plan (to fix audit find
 3. Update task frontmatter: `status: in_progress` → `status: done` (or `done_with_concerns` if teammate reported concerns — preserve the `concerns:` field from decisions.md entry into task frontmatter)
 4. Git commit: `chore: complete wave {N} — update task statuses and decisions`. Code is already committed by teammates.
 5. Update `work/{feature}/logs/checkpoint.yml`: set `last_completed_wave`, update task statuses, set `next_wave`.
-   At session boundary: explicitly commit checkpoint.yml even if no code changed in the last wave — next session must start with accurate state.
+   At session boundary: also set `status: awaiting_user` (the STOP barrier read by Phase 1 step 0) so a
+   truncated boundary message can never auto-roll into the next wave. For a non-boundary wave keep
+   `status: running`. Explicitly commit checkpoint.yml even if no code changed in the last wave — next
+   session must start with accurate state including the barrier flag.
 6. **Session boundary check** (skip if session-plan.md does not exist):
    Read session-plan.md. If current wave is the **last wave of current_session**:
    a00. **Update project-knowledge** (before generating the next-session prompt): check if roles, architecture, or business rules changed during this session — update the relevant `.claude/skills/project-knowledge/` docs so the next session does not re-ask what was already discussed.
    a0. **Quick Learning (subagent, background).** Spawn a subagent to run [quick-learning](../quick-learning/SKILL.md). Pass it: feature path, current session number, path to decisions.md. The subagent runs in the **background** while you proceed with the session report. When it finishes, show the user its one-line summary. Do NOT read the quick-learning SKILL.md yourself — the subagent loads it independently in its own context.
-   a. Increment `current_session` in checkpoint.yml.
+   a. Set `status: awaiting_user` in checkpoint.yml FIRST (before anything below), then increment
+      `current_session`. Make the increment **idempotent**: only increment if `current_session` still
+      equals the session that just finished — a re-entry that finds the barrier already set must NOT
+      increment again. Order matters: the barrier is written before the prompt is generated, so even if
+      generation or the final message is truncated, the STOP state is already durable on disk.
    b. Generate next-session prompt from template `~/.claude/shared/work-templates/session-prompt.md.template`:
       - Fill: feature name, description (first line of tech-spec Description), completed sessions/waves, next session's waves and tasks, context files from session-plan.md.
       - Apply prompt-master principles to the generated prompt before saving: make it concrete (specific files, wave numbers, task names), remove filler phrases, lead with the goal, not the context.
    c. Save prompt to `work/{feature}/logs/next-session-prompt.md` (overwrite each time).
-   d. Present to user:
+   d. Present to user — **do NOT paste the full prompt inline** (a long inline prompt is what gets
+      truncated mid-text). Keep the final message SHORT and point to the saved file:
       ```
-      Сессия {N} из {total} завершена.
+      Сессия {N} из {total} завершена. Барьер выставлен — следующая волна автоматически не стартует.
 
-      Рекомендую начать новую сессию Claude Code и вставить этот промт:
-
-      ---
-      {generated prompt content}
-      ---
+      Промт следующей сессии сохранён целиком: `work/{feature}/logs/next-session-prompt.md`
+      Открой файл, скопируй промт и вставь в новую сессию Claude Code.
       ```
-   e. **STOP execution.** Do not proceed to next wave. End the session here.
+      (If the user explicitly asks to see the prompt in chat, only then print it — but the file is the
+      source of truth, never a half-typed chat block.)
+   e. **STOP execution.** Do not proceed to next wave. End the session here. The barrier (`status:
+      awaiting_user`, step a) is the durable guarantee — this text instruction alone is not relied upon.
 
    If current wave is NOT a session boundary → proceed to Phase 2 for next wave.
 7. Next wave → Phase 2

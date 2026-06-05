@@ -12,6 +12,10 @@ team_name: {feature}
 last_completed_wave: 0
 total_waves: 0
 
+# Execution barrier. running = normal; awaiting_user = session boundary reached, Phase 1 must NOT
+# auto-continue into the next wave (prevents a truncated boundary message rolling forward).
+status: running
+
 # Format: task_number: status (planned | in_progress | done)
 # Example:
 #   1: done
