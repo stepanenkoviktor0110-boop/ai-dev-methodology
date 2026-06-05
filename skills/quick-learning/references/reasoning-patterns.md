@@ -2056,3 +2056,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a script reaches an interpreter through that interpreter's own stdin (a pipe, a heredoc, `interp -s < file`), the script body and inner commands share one stdin stream. Any inner command that reads stdin (DB clients, container-exec, `read`, pagers) will swallow the rest of the script, leaving later lines unexecuted while the exit code stays 0 — and a "no-interaction/no-TTY" flag does NOT stop this. Redirect each stdin-reading inner command from an empty source so it cannot steal the remaining script. Symptom to recognize: a piped-to-shell script that exits 0 with truncated/empty output and silently skipped trailing logic.
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-06-05 cabinet-shell-login / session 3: self-paraphrase as canonical
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** self-paraphrase as canonical
+**Triad:** about to reuse a previously self-authored condensed restatement of a canonical rule/spec/instruction in a new artifact → re-derive from the canonical source each time, treating your own prior compression as disposable not authoritative → paraphrase-as-canonical drift: a lossy self-restatement reused verbatim accumulates meaning-drift (even inversion) because the shortcut, not the source, becomes the de-facto reference
+**Context:** A condensed one-line restatement of a canonical instruction was copied forward across several artifacts over multiple sessions; nobody re-checked it against the source, and the compression had silently inverted part of the original meaning (it claimed authority over a class of decisions the source actually reserved for escalation).
+**Pattern:** A summary you wrote of a canonical source (rule, spec, brief, memory, decision record) is lossy and is NOT the source. The moment you reuse that summary in a new artifact instead of re-deriving from the original, drift compounds — wording softens, conditions drop, and meaning can invert across enough hops (a private telephone game with your own paraphrase). Before pasting a carried-forward restatement, open the canonical source and re-derive; treat the prior compression as disposable scaffolding. Symptom to recognize: a slogan/boilerplate line that travels unchanged between documents and that you can no longer trace, word-for-word, to its origin.
+**Scope:** universal
+**Category:** information-gathering
