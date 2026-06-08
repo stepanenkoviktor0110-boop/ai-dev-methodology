@@ -2133,3 +2133,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a spec names a mechanism for catching errors, map the full set of execution contexts where the error can originate before committing to test structure or implementation. A mechanism valid for synchronous/render paths is often silently invalid for async/event-handler paths. Make the context verification explicit: "does this mechanism's catch boundary intercept throws from *this specific execution path*?" Discovering the mismatch during review rather than design wastes at least one review round and may require restructuring tests that were already green.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-06-08 cabinet-sources-api / decompose: task-creator imports a conventionally-named code symbol into a generated smoke snippet without verifying the module's real exports
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** convention-variant symbol invention
+**Triad:** a task-creator (or anyone) writes a verification/smoke/QA snippet that imports a code symbol from a project module → grep the module's actual exports and confirm the exact symbol name exists before emitting the snippet; never assume a conventionally-named sibling (e.g. a synchronous variant of an async-only export) exists → convention-variant invention: a runtime ImportError silently turns the smoke check into a no-op, so a broken or missing migration/route passes verification unnoticed
+**Context:** Two generated tasks (pre-deploy QA + deploy runbook) both wrote `from app.db.session import engine_sync` for a table-presence migration smoke. The module exports only an async `engine` (AsyncEngine) — `engine_sync` never existed; it was invented because table inspection is *conventionally* done with a sync engine. On the VPS the snippet would have ImportErrored, making the migration-presence check a silent no-op. Reality-checker flagged it as critical in both tasks; fix was to use the real `engine` via `async with engine.begin()` or the Alembic CLI (`alembic current`).
+**Pattern:** A smoke/QA snippet that ImportErrors does not fail loudly as "wrong check" — it fails as "check never ran", which reads as green if the surrounding step swallows the error or the snippet is the whole check. Before referencing any importable symbol in generated verification code, grep the source module for the exact name. Especially distrust "conventional sibling" symbols — a sync twin of an async export, a `*_sync`/`*_async` pair, a `get_X` next to an `X` — these feel obviously-present but are exactly where invention by convention happens. Sibling of [[verify file paths not guess]] and the QA-curl-endpoint pattern: same goal (no broken verification artifact pointing at a non-existent thing), different artifact (importable code symbol, not a path or URL).
+**Scope:** universal
+**Category:** information-gathering
