@@ -1034,10 +1034,10 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-04-02 moneymaker / session 2 (tech-spec): Решение, сужающее утверждённый AC — проверить до написания
 
-**Seen:** 2
+**Seen:** 3
 **Adapted:** —
-**Triad:** tech-spec decision сужает или откладывает требование из user-spec → перед написанием Decision проверить наличие этого требования в AC и таблице проверки user-spec → не вводить scope reduction без явного согласования с пользователем
-**Context:** Tech-spec Decision 6 отложил "free-form rate update" в Phase 2, мотивируя тем что это "не в AC". Completeness-validator вернул CRITICAL: AC явно есть. (Seen 2: panel-next-run — Decision 4 изменил код ответа batch с 409 на 200+skipped; таблица проверки в user-spec указывала 409. Поймал skeptic.)
+**Triad:** tech-spec decision сужает или откладывает требование из user-spec → перед написанием Decision проверить AC user-spec; если отклонение согласовано — обновить AC user-spec в том же шаге, не оставлять рассинхрон → не вводить scope reduction без согласования и не оставлять upstream-доку противоречащей
+**Context:** Tech-spec Decision 6 отложил "free-form rate update" в Phase 2, мотивируя тем что это "не в AC". Completeness-validator вернул CRITICAL: AC явно есть. (Seen 2: panel-next-run — Decision 4 изменил код ответа batch с 409 на 200+skipped; таблица проверки в user-spec указывала 409. Поймал skeptic.) (Seen 3: cabinet-sources-api — tech-spec Decision 5 отложил product_feed.auth; отклонение БЫЛО согласовано с владельцем, но AC user-spec не обновили → completeness FAIL + skeptic + security сошлись на конфликте доков. Урок: даже согласованное отклонение требует синка upstream-AC в том же шаге.)
 **Scope:** universal
 **Category:** scope-management
 
