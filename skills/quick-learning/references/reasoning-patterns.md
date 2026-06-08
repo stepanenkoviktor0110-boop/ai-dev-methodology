@@ -2122,3 +2122,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a connection between two endpoints degrades intermittently and both ends check out, that is precisely the signal to look *between* them, not to keep blaming them. Promote the shared transport — ISP/route, a DPI/filtering layer, a tunnel/VPN, MTU — to a first-class hypothesis early, and consult provider advisories / known-issue notices before iterating fixes on either end or asking the user to mutate endpoint state. Repeated identical retries against the symptom can also actively worsen the situation (rate-limits, bans). "Both ends are healthy" should redirect the search to the path, not deepen the endpoint hunt.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-06-08 cabinet-clients-list / session 1: spec names error-catching mechanism without verifying execution-context scope
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** catching-mechanism scope assumption
+**Triad:** a spec assigns a specific error-catching mechanism (boundary, handler, wrapper) to handle a failure case → before writing tests or implementation, verify that the mechanism operates in EVERY execution context where the failure can originate (sync vs async, render vs event handler, call stack vs microtask) → category default anchoring: assuming the named mechanism covers all contexts because it covers the obvious one
+**Context:** A task spec stated that a specific catching mechanism handles a named error case. Two paths triggered the same error — one synchronous (caught correctly by the mechanism) and one asynchronous (throws outside the mechanism's catch tree). The assumption was not questioned until reviewers flagged the test strategy as flawed; fixing required a different propagation technique plus cleanup guards.
+**Pattern:** When a spec names a mechanism for catching errors, map the full set of execution contexts where the error can originate before committing to test structure or implementation. A mechanism valid for synchronous/render paths is often silently invalid for async/event-handler paths. Make the context verification explicit: "does this mechanism's catch boundary intercept throws from *this specific execution path*?" Discovering the mismatch during review rather than design wastes at least one review round and may require restructuring tests that were already green.
+**Scope:** universal
+**Category:** problem-decomposition
