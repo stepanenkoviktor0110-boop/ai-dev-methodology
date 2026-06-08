@@ -2111,3 +2111,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** A gated or failed access path means that *path* is unavailable, not that the *data* is. Before declaring blocked, check whether something you already possess carries the same information, and actually attempt to decode it even if the format looks proprietary or binary — most are container-based (zip) or use documented codecs and yield to a standard parser. Treat "I don't have access" and "this is an opaque blob" as hypotheses to test, not conclusions.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-06-08 cabinet-ml-bootstrap / session 2 (deploy): blaming both endpoints for a fault that lives in the path between them
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** endpoint-blame tunnel vision
+**Triad:** access to a remote endpoint degrades intermittently while both ends verify healthy → treat the shared transport between them (ISP/route, DPI/filtering, tunnel/VPN, MTU) as a first-class suspect and check provider known-issue notices before iterating endpoint-side fixes or asking the user to mutate endpoint state → attributing a path-layer fault to the two endpoints (target load, host ban, credentials, target config)
+**Context:** A connection to a remote service kept failing intermittently while both the client config and the server were independently verified healthy (one call even succeeded, showing the target idle). Instead of suspecting the link between them, I cycled through endpoint-side hypotheses — server resource pressure, host-level IP ban, credentials, MTU — and pushed the user through endpoint-side actions (reboot, reconfigure), before the real cause surfaced as an external transport-layer block the provider had already announced.
+**Pattern:** When a connection between two endpoints degrades intermittently and both ends check out, that is precisely the signal to look *between* them, not to keep blaming them. Promote the shared transport — ISP/route, a DPI/filtering layer, a tunnel/VPN, MTU — to a first-class hypothesis early, and consult provider advisories / known-issue notices before iterating fixes on either end or asking the user to mutate endpoint state. Repeated identical retries against the symptom can also actively worsen the situation (rate-limits, bans). "Both ends are healthy" should redirect the search to the path, not deepen the endpoint hunt.
+**Scope:** universal
+**Category:** information-gathering
