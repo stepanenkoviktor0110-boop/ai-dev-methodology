@@ -81,10 +81,10 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-04-01 employee-cabinet / session 1: Субагент сообщает о блокере — верифицировать самостоятельно
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Triad:** субагент сообщает о блокере (build failure, missing dep, broken env) как причине незавершённой задачи → запустить ту же команду самостоятельно → не принимать диагноз агента как факт без проверки
-**Context:** Task 5 агент заявил "pre-existing build failure (missing admin/timesheets route, unrelated)" и пометил это как не-блокер. Верификация показала: build проходил нормально, никакого pre-existing failure не было. Диагноз агента был ложным.
+**Context:** Task 5 агент заявил "pre-existing build failure (missing admin/timesheets route, unrelated)" и пометил это как не-блокер. Верификация показала: build проходил нормально, никакого pre-existing failure не было. Диагноз агента был ложным. (Seen 2: 2026-06-09 cabinet-sources-api — агент Wave 4 вернул бессвязный финальный отчёт, оставив свой реальный результат незакоммиченным; lead обнаружил это через git-состояние, а не по отчёту.)
 **Scope:** universal
 **Category:** recovery
 
@@ -2142,5 +2142,16 @@ Patterns that apply to any project, any stack, any domain.
 **Triad:** a task-creator (or anyone) writes a verification/smoke/QA snippet that imports a code symbol from a project module → grep the module's actual exports and confirm the exact symbol name exists before emitting the snippet; never assume a conventionally-named sibling (e.g. a synchronous variant of an async-only export) exists → convention-variant invention: a runtime ImportError silently turns the smoke check into a no-op, so a broken or missing migration/route passes verification unnoticed
 **Context:** Two generated tasks (pre-deploy QA + deploy runbook) both wrote `from app.db.session import engine_sync` for a table-presence migration smoke. The module exports only an async `engine` (AsyncEngine) — `engine_sync` never existed; it was invented because table inspection is *conventionally* done with a sync engine. On the VPS the snippet would have ImportErrored, making the migration-presence check a silent no-op. Reality-checker flagged it as critical in both tasks; fix was to use the real `engine` via `async with engine.begin()` or the Alembic CLI (`alembic current`).
 **Pattern:** A smoke/QA snippet that ImportErrors does not fail loudly as "wrong check" — it fails as "check never ran", which reads as green if the surrounding step swallows the error or the snippet is the whole check. Before referencing any importable symbol in generated verification code, grep the source module for the exact name. Especially distrust "conventional sibling" symbols — a sync twin of an async export, a `*_sync`/`*_async` pair, a `get_X` next to an `X` — these feel obviously-present but are exactly where invention by convention happens. Sibling of [[verify file paths not guess]] and the QA-curl-endpoint pattern: same goal (no broken verification artifact pointing at a non-existent thing), different artifact (importable code symbol, not a path or URL).
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-06-09 cabinet-sources-api / session 1: неожиданные off-task артефакты делегата приняты за мусор
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** unexpected-as-erroneous
+**Triad:** делегированный исполнитель оставил неожиданные коммиты/изменения, не относящиеся к выданной задаче (а реальный результат — незакоммиченным) → осмотреть содержимое и ценность артефакта до отката/очистки; реальный результат верифицировать через состояние системы, не по отчёту → unexpected-as-erroneous: счесть удивившие off-task артефакты мусором и снести легитимную работу
+**Context:** Делегированный агент ушёл с задачи: сделал два коммита на постороннюю тему и вернул бессвязный финальный отчёт, оставив свой настоящий результат незакоммиченным и непрогнанным. Инстинкт «откатить чужие неожиданные коммиты как мусор» уничтожил бы качественную, корректную работу; инстинкт «доверять отчёту» пропустил бы невыполненную задачу.
+**Pattern:** Когда исполнитель (агент или человек) оставляет после себя удивляющие артефакты — коммиты/файлы/изменения вне согласованного скоупа — сначала исследуй их содержимое и ценность, и только потом решай про откат: неожиданное ≠ ошибочное. Параллельно не путай наличие отчёта с выполненной работой — верифицируй фактический результат через состояние системы (git log/diff, прогон тестов), а не по словам исполнителя. Две ловушки тянут в противоположные стороны (снести лишнее vs. поверить на слово), и обе закрываются одним движением: посмотреть на реальное состояние до любого необратимого действия. Sibling of [[Субагент сообщает о блокере — верифицировать самостоятельно]].
 **Scope:** universal
 **Category:** information-gathering
