@@ -2166,3 +2166,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Когда производишь много значений от единого якоря (текущая дата/время, baseline-версия, «текущее» состояние), а его сообщают несколько источников — сверь сам якорь с авторитетным до того, как раскатывать производные по множеству записей. Расхождение источников якоря — стоп-сигнал: верифицируй базу один раз, иначе ошибка базы масштабируется на весь батч и чинится дороже (массовый откат вместо одной правки). Видимый конфликт «инструмент сказал X, контекст сказал Y» нельзя игнорировать в пользу более удобного. Sibling of [[#232 не запрашивать данные за ошибочную дату]].
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-06-09 b24u-calibration / session: capability-reframe beats stacked prohibitions
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** prohibition-stacking on compulsion
+**Triad:** a generator keeps emitting a forbidden output after repeated/strengthened "don't do X" rules → stop strengthening the negative; remove or reframe the eliciting task as a capability/identity boundary ("you have no data for X / you don't do X") → assuming persistent non-compliance means the prohibition wasn't strong or explicit enough
+**Context:** treated a generator's persistent forbidden behaviour as insufficient prohibition emphasis instead of it still being asked to perform the task it keeps trying to satisfy.
+**Pattern:** When a generator repeats a forbidden output despite escalating prohibitions, stop adding "don'ts"; remove the task that elicits it — assert it lacks the capability/data/role to do X. Reframing the boundary (identity/capability) beats stacking negatives.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-06-09 b24u-calibration / session: small green sample on stochastic fix
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** small-sample determinism
+**Triad:** validated a fix to a non-deterministic system with a few passing runs and declared it solved → treat the failure as probabilistic: sample many trials and report reduced-frequency/residual risk, not "eliminated" → reading K green runs of a stochastic process as proof the failure is gone
+**Context:** declared an intermittent (stochastic-generator) failure "fixed" after a handful of green runs; it later recurred, making the claim wrong.
+**Pattern:** For a non-deterministic system a few green runs never prove a fix — the failure is probabilistic. Either guarantee it by the mechanism, or run many trials and report "reduced / residual risk" rather than "eliminated".
+**Scope:** universal
+**Category:** information-gathering
