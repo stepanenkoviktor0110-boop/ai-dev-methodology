@@ -130,6 +130,11 @@ When lead spawns an agent outside the original execution plan (to fix audit find
    b. Generate next-session prompt from template `~/.claude/shared/work-templates/session-prompt.md.template`:
       - Fill: feature name, description (first line of tech-spec Description), completed sessions/waves, next session's waves and tasks, context files from session-plan.md.
       - Apply prompt-master principles to the generated prompt before saving: make it concrete (specific files, wave numbers, task names), remove filler phrases, lead with the goal, not the context.
+   b2. **Executor-calibration pass (mandatory, before saving).** Re-read the generated prompt as the executor who will run the next session *from* it — not as its author. Answer three questions explicitly:
+      - **What already works** — keep it.
+      - **What is missing for effective work** — gaps that would force the next session to re-ask, re-derive, or guess: unresolved technical forks, infra/dependency risks (a named tool that isn't installed yet, RAM/latency budget on shared infra), test strategy when local infra is partial (no DB/vector store/external service locally), a concrete definition-of-done acceptance anchor, reusable primitives/files to point at instead of reinventing.
+      - **What is excess / confusing / contradictory / over-constraining** — deploy mechanics front-loaded at spec-start (belongs to the deploy wave), parameters locked that the spec itself should decide, irrelevant remarks, duplication.
+      Then **revise the draft** to close the gaps and cut the noise. **Resolve any technical fork surfaced here autonomously** (simplicity / efficiency / growth) — do not defer it into the prompt as an open question for the user; only genuinely process/irreversible/scope items get escalated. Keep the decision-patterns block intact. The saved prompt is the post-calibration version, not the first draft.
    c. Save prompt to `work/{feature}/logs/next-session-prompt.md` (overwrite each time).
    d. Present to user — **do NOT paste the full prompt inline** (a long inline prompt is what gets
       truncated mid-text). Keep the final message SHORT and point to the saved file:
