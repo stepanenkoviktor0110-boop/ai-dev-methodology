@@ -2188,3 +2188,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** For a non-deterministic system a few green runs never prove a fix — the failure is probabilistic. Either guarantee it by the mechanism, or run many trials and report "reduced / residual risk" rather than "eliminated".
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-06-09 ml-deploy / session 1: seek discriminating evidence for same-symptom causes
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** confirmatory over diagnostic evidence
+**Triad:** multiple distinct causes produce one identical symptom → obtain the single observation whose value differs across the hypotheses → confirmation-gathering that never separates the candidates
+**Context:** One symptom was explainable by several distinct causes, and the instinct was to collect more evidence consistent with every hypothesis instead of the one observation that tells them apart.
+**Pattern:** When several causes produce the same symptom, find the observation whose outcome would differ across the hypotheses and obtain exactly that; piling up evidence compatible with all candidates feels like progress but never discriminates. (Here: identical "service unreachable" could be a host-side failure or an on-path block — probing from vantage points that vary only the suspected on-path segment separated them in one shot.)
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-06-10 bitrix-hot-funnel / session 1: equal-to-limit row count is a truncation signal, not a complete set
+
+**Seen:** 1
+**Adapted:** -
+**Cognitive Error:** capped result read as exhaustive
+**Triad:** a list/query returns a row count equal to the endpoint default or page limit -> treat equal-to-limit as truncation: paginate or tighten the filter before concluding -> reading a silently capped page as the full set and drawing a negative conclusion from absence
+**Context:** A multi-key list call returned exactly the endpoint page limit, the tail rows were silently dropped, and that gap was read as the entity having none and reported as fact.
+**Pattern:** When a result count lands exactly on a known default or page limit, suspect truncation before drawing any conclusion - especially a negative one (X has none). Paginate to exhaustion, or narrow with server-side filters so the set fits one page; never let absence in a capped page stand as evidence of true absence.
+**Scope:** universal
+**Category:** information-gathering
