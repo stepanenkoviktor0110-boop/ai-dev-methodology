@@ -10,6 +10,9 @@
 //      blocks unless clients/<active>/snapshots/<today>-before-*.md exists.
 //   C) Bash rm/Remove-Item on anything inside clients/<X>/ except snapshots/:
 //      blocks unless today's pre-snapshot exists.
+//   D) Bash `git commit` whose message claims completion (настроено/готово/…)
+//      while the active client's onboarding-checklist.md still has empty statuses:
+//      blocks — нельзя объявлять «готово» при незакрытых шагах пайплайна.
 //
 // Universal rule: to delete or replace anything (prompts, feeds, instructions,
 // services, any client artefact), a backup must exist first.
@@ -108,6 +111,25 @@ function hasTodaySnapshot(clientDir) {
   } catch { return false; }
 }
 
+// Count onboarding-checklist.md step rows whose status cell (last column) is empty.
+// Table row: | <step> | <шаг> | <что не проскочить> | <статус> |
+// Step rows have col[0] matching a step id (0, 1, 10.5, 10.7, 11, ✓). Returns -1 if no checklist.
+function openChecklistSteps(clientDir) {
+  const fp = path.join(clientDir, 'onboarding-checklist.md');
+  if (!fs.existsSync(fp)) return -1;
+  let text;
+  try { text = fs.readFileSync(fp, 'utf8'); } catch { return -1; }
+  let open = 0;
+  for (const line of text.split('\n')) {
+    if (line[0] !== '|') continue;
+    const cells = line.split('|').slice(1, -1).map((c) => c.trim());
+    if (cells.length < 4) continue;
+    if (!/^(\d+(\.\d+)?|✓)$/.test(cells[0])) continue; // skip header/separator
+    if (cells[cells.length - 1] === '') open++;
+  }
+  return open;
+}
+
 function computeBlockReason(input) {
   const tool = input.tool_name || '';
   const ti = input.tool_input || {};
@@ -192,6 +214,26 @@ function computeBlockReason(input) {
           `до клика. Универсальное правило: чтобы что-то удалить/заменить — резервная копия обязательна. ` +
           `Урок Kstore 2026-05-13: "Удалить все данные сканирования" удалила и фид-конфиг ` +
           `вместе с эмбеддингами — восстановление невозможно.`;
+      }
+    }
+  }
+
+  // CASE D: git commit claiming completion while checklist has open steps.
+  if (tool === 'Bash') {
+    const cmd = String(ti.command || '');
+    if (/\bgit\s+commit\b/i.test(cmd)) {
+      const claimsDone = /(настроен|готов|заверш|сдан|закончен|done|ready|complete|finish)/i.test(cmd);
+      if (claimsDone) {
+        const ac = activeClient(cwd);
+        if (ac) {
+          const open = openChecklistSteps(ac.dir);
+          if (open > 0) {
+            return `Коммит заявляет «готово/настроено», но в "${ac.name}/onboarding-checklist.md" ` +
+              `ещё ${open} шаг(ов) с пустым статусом. Закрой каждый явным DONE/N-A/DEFER ` +
+              `(SKILL.md → «Гейт пайплайна») ИЛИ переформулируй сообщение коммита без заявления о готовности. ` +
+              `Нельзя объявлять онбординг готовым при незакрытых шагах.`;
+          }
+        }
       }
     }
   }
