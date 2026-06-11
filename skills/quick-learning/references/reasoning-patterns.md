@@ -2210,3 +2210,24 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a result count lands exactly on a known default or page limit, suspect truncation before drawing any conclusion - especially a negative one (X has none). Paginate to exhaustion, or narrow with server-side filters so the set fits one page; never let absence in a capped page stand as evidence of true absence.
 **Scope:** universal
 **Category:** information-gathering
+### 2026-06-11 fizika-consultant-widget / session 1: green tests with loose mocks mask real attribute-name crashes
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** mock-autospec trust gap
+**Triad:** unit test verifies an object attribute via a loose mock (MagicMock/auto-create) → pin the test double to the real attribute path (use spec=, SecretStr, or direct assignment) → not recognising that a loose mock silently invents missing attributes, so tests are green while the production code crashes
+**Context:** A test patched a config object with MagicMock and accessed the wrong attribute name; the mock auto-created the missing attribute, the test stayed green, and the real AttributeError crash was invisible until manual code review caught the mismatch.
+**Pattern:** When writing tests that touch config/settings access via a mock, pin the mock to the real attribute path — use `spec=`, assign the actual attribute value, or use a real config instance with test env vars. A loose mock that auto-creates accessed attributes cannot disprove an attribute-name bug; green tests are not evidence of correct wiring.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-06-11 fizika-consultant-widget / session 1: test assertion that holds on every code path is vacuous
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** all-paths assertion bias
+**Triad:** writing a test assertion for conditional / data-dependent behavior → ask "does this assertion fail for any correct-but-wrong implementation?" before committing the test → not questioning whether an assertion actually discriminates between correct and incorrect output
+**Context:** A test for a format-selector function only asserted the absence of a format string that was never produced on any path through the function, making the test pass regardless of what the function did; it caught no regression.
+**Pattern:** Before committing a test assertion, ask: "Is there a wrong but plausible implementation that would still satisfy this assertion?" If yes, add a positive assertion that names the expected output explicitly. A test that holds on every code path provides false confidence — it costs a review round or misses a real regression.
+**Scope:** universal
+**Category:** problem-decomposition
