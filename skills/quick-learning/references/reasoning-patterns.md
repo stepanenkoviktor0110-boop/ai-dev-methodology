@@ -2231,3 +2231,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before committing a test assertion, ask: "Is there a wrong but plausible implementation that would still satisfy this assertion?" If yes, add a positive assertion that names the expected output explicitly. A test that holds on every code path provides false confidence — it costs a review round or misses a real regression.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-06-12 fizika-consultant-widget / session 2: strict-reject schema on uncontrolled external input
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** external-input schema tightness bias
+**Triad:** writing a validation schema for input received from an external system you do not control → parse permissively — accept and ignore unknown fields, validate only the fields you consume; test fixtures must mirror the real source's payload shape → applying strict-reject validation to an uncontrolled source so test fixtures (which lack extra fields) stay green while production payloads (which carry them) all fail silently
+**Context:** A message schema used strict-reject extra fields. Tests passed because fixtures contained only the minimal fields being consumed. Real external payloads always carry additional metadata fields — every real message raised a validation error in production, but nothing in the test suite caught it.
+**Pattern:** When writing a schema for input from a source you don't control, use permissive parsing: accept and silently ignore unknown fields, validate only the fields you actually consume. Pair this with at least one test fixture that mirrors the real payload shape (all fields the external source routinely sends), not an idealized minimal form. Strict-reject is only safe when you fully own both producer and consumer.
+**Scope:** universal
+**Category:** problem-decomposition
