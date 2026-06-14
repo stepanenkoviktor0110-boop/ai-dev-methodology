@@ -118,6 +118,13 @@ When lead spawns an agent outside the original execution plan (to fix audit find
    truncated boundary message can never auto-roll into the next wave. For a non-boundary wave keep
    `status: running`. Explicitly commit checkpoint.yml even if no code changed in the last wave — next
    session must start with accurate state including the barrier flag.
+5b. **Project tracker sync (if the project has one).** If the project's CLAUDE.md / project-knowledge
+   defines a dev-board or external tracker (a CRM/kanban card per feature/slice), sync it NOW to reflect
+   this wave's reality. The trigger is a **lifecycle-state change**, not a specific command: a deploy wave →
+   move the card to the live-test/verification stage; acceptance blocked or scope pivot → update the card
+   description. Do this proactively at the transition — the named command points (do-feature start, `/done`)
+   are a minimum, not the full set. Relying on memory instead of this explicit step is the known failure
+   mode that leaves the board stale and forces the owner to remind you.
 6. **Session boundary check** (skip if session-plan.md does not exist):
    Read session-plan.md. If current wave is the **last wave of current_session**:
    a00. **Update project-knowledge** (before generating the next-session prompt): check if roles, architecture, or business rules changed during this session — update the relevant `.claude/skills/project-knowledge/` docs so the next session does not re-ask what was already discussed.
