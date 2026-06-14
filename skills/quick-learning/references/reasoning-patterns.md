@@ -2242,3 +2242,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When writing a schema for input from a source you don't control, use permissive parsing: accept and silently ignore unknown fields, validate only the fields you actually consume. Pair this with at least one test fixture that mirrors the real payload shape (all fields the external source routinely sends), not an idealized minimal form. Strict-reject is only safe when you fully own both producer and consumer.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-06-14 fizika-consultant-widget / session 3: an LLM renders by the prompt's field spec, not the data you also pass
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** spec-governs-output blindness
+**Triad:** a model consistently omits or reshapes a field that IS present in the context you supplied → fix the explicit output spec (field list / format example) in the instruction, not the data → assuming data present in context will appear in the output, when the format clause governs what is emitted
+**Context:** A required field was passed in the per-item data but never appeared in the model's answers; effort first went to the data/runtime, when the real cause was that the instruction's explicit field list didn't mention the field, so the model rendered strictly by the list.
+**Pattern:** When an LLM reliably drops or reshapes a field you know is in the context, inspect and fix the prompt's explicit output spec (the enumerated fields / format example) before touching data or code. The model emits what the spec lists, not everything present in context — presence-in-context is necessary but not sufficient for presence-in-output.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-06-14 fizika-consultant-widget / session 3: bridge a blocked path via a third party both ends can reach
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** monolithic-block assumption
+**Triad:** one endpoint is unreachable while general connectivity still works → localize the block by probing each leg and direction independently (a known-good destination vs the blocked one, from each host), then route through a third party both sides can reach → reading the failure as "the network is down" and jumping to relocating the whole system
+**Context:** A direct path to a destination failed; the instinct was to move the system elsewhere, but general egress was fine — the block was specific to one destination, and a widely-reachable intermediary could reach both ends.
+**Pattern:** When a specific destination is unreachable but general connectivity works, first localize: probe a known-good destination vs the blocked one, from each host, in each direction — this isolates which leg is filtered. Then prefer bridging through a third party both sides can reach over relocating the system. Treating the failure as monolithic skips the cheap, targeted fix.
+**Scope:** universal
+**Category:** recovery
