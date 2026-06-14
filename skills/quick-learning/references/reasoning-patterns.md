@@ -2234,7 +2234,7 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-06-11 fizika-consultant-widget / session 1: test assertion that holds on every code path is vacuous
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Cognitive Error:** all-paths assertion bias
 **Triad:** writing a test assertion for conditional / data-dependent behavior → ask "does this assertion fail for any correct-but-wrong implementation?" before committing the test → not questioning whether an assertion actually discriminates between correct and incorrect output
@@ -2308,3 +2308,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a test mocks a dependency to set up a precondition for a branch under test, verify that the mocked return value is actually producible by the real dependency with realistic inputs. If the real system never produces that value for those inputs, the test is a phantom — rewrite it with real inputs that genuinely trigger the branch.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-06-14 fizika-generative-info / session 1: authored a content-correct artifact too large for its capacity-limited consumer
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** consumer-capacity blindness
+**Triad:** authoring an artifact that will be consumed by an agent with a known hard capacity limit → size and shape it to that limit at creation time → equating "content is correct" with "done" while ignoring that the consumer degrades past a size/density threshold
+**Context:** A generated instruction artifact was correct and passed every test, but was written at author-default verbosity for a consumer known to degrade above a capacity limit, forcing a separate compaction pass and review round afterward.
+**Pattern:** When the consumer of an artifact has a known hard capacity constraint (and degrades when overloaded), make "fits the consumer's budget" a creation-time acceptance criterion alongside correctness — do not rely on a later optimization pass. Passing functional tests does not prove the artifact is usable by a constrained consumer.
+**Scope:** universal
+**Category:** communication
