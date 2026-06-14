@@ -13,6 +13,17 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
+### 2026-06-14 fizika-subagent-router / session 2: over-correction overshoot
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** over-correction overshoot
+**Triad:** broadening a matching/classification rule to fix a missed case (false-negative) → before shipping, enumerate the adjacent inputs the widened rule now also matches and confirm none belongs in a different bucket → over-correction overshoot: widening a rule to catch one miss silently creates a false-positive on a near-neighbour
+**Context:** Fixed a misroute by adding a keyword/example to a matcher so the missed phrase would be caught; the broadened rule then also captured a sibling phrase that should have stayed in another bucket. Fixing a false-negative by widening introduces a false-positive on a near-neighbour unless the new coverage is enumerated.
+**Pattern:** When you widen a rule (regex, classifier example, permission glob, filter) to catch something it was missing, list the neighbouring inputs the wider rule now also matches and confirm each still routes correctly — a fix aimed at a miss overshoots onto adjacent cases.
+**Scope:** universal
+**Category:** scope-management
+
 ### 2026-04-14 menu-editor / session 1: runtime readiness conflation
 
 **Seen:** 1
