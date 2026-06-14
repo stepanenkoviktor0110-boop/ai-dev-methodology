@@ -2264,3 +2264,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a specific destination is unreachable but general connectivity works, first localize: probe a known-good destination vs the blocked one, from each host, in each direction — this isolates which leg is filtered. Then prefer bridging through a third party both sides can reach over relocating the system. Treating the failure as monolithic skips the cheap, targeted fix.
 **Scope:** universal
 **Category:** recovery
+
+### 2026-06-14 fizika-subagent-router / session 1: exact-string edit fails on look-alike unicode in generated text
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** visual-match ≠ byte-match
+**Triad:** an exact-string replacement fails on text that looks identical to the target → suspect invisible / look-alike unicode (non-breaking space, fancy arrows/dashes, zero-width) inserted by the generator and anchor on the smallest unique ASCII-only fragment → assuming visual equality of glyphs implies byte equality
+**Context:** A find-and-replace edit on machine-generated text was retried several times against the full visible line, on the assumption that what looked identical was byte-identical, when the generator had emitted look-alike unicode (non-breaking spaces and a non-ASCII arrow) inside it.
+**Pattern:** When an exact-string replacement fails on text that visually matches, stop re-sending the whole line — the byte mismatch will not change. Suspect invisible or look-alike unicode introduced by a generator or copy-paste (nbsp, fancy arrows/dashes, zero-width spaces). Anchor on the smallest unique ASCII-only substring, or normalize the file first. Each identical retry burns a round without addressing the cause.
+**Scope:** universal
+**Category:** tool-selection
