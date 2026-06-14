@@ -2275,3 +2275,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When an exact-string replacement fails on text that visually matches, stop re-sending the whole line — the byte mismatch will not change. Suspect invisible or look-alike unicode introduced by a generator or copy-paste (nbsp, fancy arrows/dashes, zero-width spaces). Anchor on the smallest unique ASCII-only substring, or normalize the file first. Each identical retry burns a round without addressing the cause.
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-06-14 fizika-subagent-router / session 1: accepting reviewer defect-finding without independent verification
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** reviewer-authority acceptance bias
+**Triad:** a reviewer or automated auditor reports a defect in completed work → independently reproduce or verify the finding (run the check yourself, consult the authoritative spec) before accepting it as valid → accepting a false-positive finding on reviewer authority without verification
+**Context:** A security-auditor reported a syntax construct as a Python 2 error; the lead accepted the finding would need to be fixed — but first verified by running the actual parser and test suite, discovering the construct is valid under the active Python version (PEP 758). Without verification the fix would have been unnecessary and potentially harmful.
+**Pattern:** When a reviewer or tool reports a defect, treat the report as a hypothesis, not a verdict. Reproduce or independently verify the finding (run the check, consult the canonical spec) before acting. This applies symmetrically to both "failing" and "passing" claims from any collaborator.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-06-14 fizika-subagent-router / session 1: test exercises a mocked code path that real inputs never reach
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** phantom precondition testing
+**Triad:** test mocks an upstream dependency to force a specific value and exercises a branch with it → verify that the mocked return value is actually reachable from real inputs through the dependency before committing the test → writing green tests for code paths that never occur in production
+**Context:** Tests mocked a parser/classifier to return a specific routing value, but the real parser already routed the trigger text to a different domain — making the mocked path unreachable in production. The tests were green but proved nothing about actual user behavior.
+**Pattern:** When a test mocks a dependency to set up a precondition for a branch under test, verify that the mocked return value is actually producible by the real dependency with realistic inputs. If the real system never produces that value for those inputs, the test is a phantom — rewrite it with real inputs that genuinely trigger the branch.
+**Scope:** universal
+**Category:** information-gathering
