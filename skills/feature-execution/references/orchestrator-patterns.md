@@ -191,3 +191,15 @@ When an identical failure recurs across >=2 attempts → stop retrying; diagnose
 
 **66. Несколько актёров в одном shared workspace — изолируй и чекпойнти:**
 When two or more actors operate on one shared mutable workspace at once → isolate each into its own copy/branch or serialize, and checkpoint work the moment it is verified, to stop concurrent actors silently clobbering each other's unsaved state. (triad #396)
+
+**67. Несколько независимо-скоупленных финальных выходов, но один catch-all шаг захватывает весь накопленный workspace — финализируй по единицам:**
+When goal is several independently-scoped final outputs but one available action captures the whole accumulated workspace at once → finalize each unit with explicit boundaries first; never run the catch-all aggregate step before the units are separated, to avoid premature aggregation that assumes a scope-less bulk action will respect intended granularity. (triad #398)
+
+**68. Верификация толкнула бы секрет на логируемую/наблюдаемую поверхность — перенеси проверку туда, где секрет уже живёт:**
+When a verification's obvious path would force a secret/credential into a logged or observable surface (tool-call arg, transcript, command echo) → relocate the assertion to the context where the secret already lives and emit only non-secret results (codes/counts/booleans), to avoid the secret-exposure dead-end: conflating "must not expose the secret" with "cannot verify the behavior". (triad #402)
+
+**69. Один endpoint недоступен при рабочей общей связности — локализуй блок по плечам:**
+When one endpoint is unreachable while general connectivity works → localize the block by probing each leg/direction independently (known-good vs blocked dest, each host), then bridge via a third party both ends can reach, to avoid the monolithic-block assumption: reading it as "network down" and relocating the whole system instead of the targeted cheap fix. (triad #416)
+
+**70. Артефакт для потребителя с жёстким лимитом ёмкости — закладывай лимит при создании:**
+When authoring an artifact for a consumer with a known hard capacity limit → size/shape it to that limit at creation and make "fits the consumer's budget" an acceptance criterion alongside correctness, to avoid consumer-capacity blindness: equating content-correct with done while the consumer degrades past a size/density threshold. (triad #421)
