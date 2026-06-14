@@ -2045,3 +2045,25 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
+
+### 2026-06-14 fizika-generative-info / session 2: surrogate-target confusion in path-specific tests
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** surrogate-target confusion
+**Triad:** writing a test for a specific execution path when a fallback/alternative path produces the same observable output → assert the path-activation observable (call count on the intended component, spy, state flag) in addition to the output → surrogate-target confusion: output present does not prove the intended path fired
+**Context:** Across two tasks, tests repeatedly asserted on mock-stub content or fallback values that are equally produced by both the target path and the fallback path. A test that passes when the fallback fires is not a test for the target path. Fixes required adding explicit call-count assertions (mock_gen.call_count >= 1) and spies on the function that activates the target path, not just checking the returned string.
+**Pattern:** When the tested path has a sibling fallback that produces the same or similar output, the output alone cannot distinguish which path fired. Assert the activation observable of the intended path — typically a mock call count, a spy invocation, or a state flag set only by that path — before asserting the output. Apply this check automatically whenever the function under test has more than one execution branch that returns the same type of result.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-06-14 fizika-generative-info / session 2: local-position phase inference
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** local-position phase inference
+**Triad:** an executor writing a handoff or next-phase plan for the orchestrator infers the session/phase boundary from the position of their own task → consult the authoritative session plan to find the actual phase boundary before writing the handoff → local-position inference: "my task is done" does not mean "the phase is done"
+**Context:** A subagent completing what it perceived as the last task overwrote the next-session prompt with a wrong framing ("Session 3 = only Task 6") when Task 6 was actually still in Session 2. The subagent inferred the session boundary from its own task number rather than from the session-plan document, requiring the orchestrator to detect and correct the misframing.
+**Pattern:** Any executor that writes a phase-transition artifact (handoff, next-session prompt, summary, release note) must first verify the boundary in the authoritative plan rather than deriving it from task position. The local task index is not a reliable proxy for the broader plan structure — the plan may interleave waves, defer tasks, or group multiple tasks into one session.
+**Scope:** universal
+**Category:** scope-management
