@@ -2067,3 +2067,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Any executor that writes a phase-transition artifact (handoff, next-session prompt, summary, release note) must first verify the boundary in the authoritative plan rather than deriving it from task position. The local task index is not a reliable proxy for the broader plan structure — the plan may interleave waves, defer tasks, or group multiple tasks into one session.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-06-16 bot-config-from-platform / session 1: delegated worker paused for review it could never receive
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** protocol-channel mismatch
+**Triad:** a delegated worker (subagent) following a "stop and ask for review" protocol mid-task, but its role has no channel to receive the answer → run delegated work to completion with all decisions pre-baked into the brief and an explicit "do not pause for review"; route any genuine open question to a fresh respawn, never an in-place wait → protocol-channel mismatch: applying an interactive protocol whose response channel does not exist in this role turns a pause into an unrecoverable deadlock
+**Context:** A coder subagent honored the global "one block at a time, stop for user review" rule and paused mid-task to ask a review question. But a subagent has no back-channel to receive a reply, so the pause was not a pause — it was a deadlock. The orchestrator had to abandon the stuck agent and respawn a fresh one with the decisions pre-baked and an explicit "do not stop for review" instruction. The interactive review protocol belongs to the top-level agent (which can talk to the user); a worker without that channel must never enter a wait state.
+**Pattern:** Before a role adopts any protocol that suspends execution awaiting an external response (review approval, confirmation, clarification), verify the role actually owns a channel to receive that response. A worker that lacks the channel must not inherit the "stop and ask" behavior — it must run to completion on pre-baked decisions, and any real ambiguity must be resolved by the delegator up front (or by a fresh respawn), not by an in-place wait. Generalizes beyond agents: any actor handed a coordination protocol designed for a different communication topology will deadlock where the assumed channel is absent. Sibling of [[verify inter-agent tooling availability before planning review rounds]] (planner-side: confirm the channel exists; this entry is worker-side: don't enter a wait the channel can't service).
+**Scope:** universal
+**Category:** communication
