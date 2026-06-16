@@ -2078,3 +2078,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before a role adopts any protocol that suspends execution awaiting an external response (review approval, confirmation, clarification), verify the role actually owns a channel to receive that response. A worker that lacks the channel must not inherit the "stop and ask" behavior — it must run to completion on pre-baked decisions, and any real ambiguity must be resolved by the delegator up front (or by a fresh respawn), not by an in-place wait. Generalizes beyond agents: any actor handed a coordination protocol designed for a different communication topology will deadlock where the assumed channel is absent. Sibling of [[verify inter-agent tooling availability before planning review rounds]] (planner-side: confirm the channel exists; this entry is worker-side: don't enter a wait the channel can't service).
 **Scope:** universal
 **Category:** communication
+
+### 2026-06-16 fizika-channel-abstraction / session 1: handoff looked complete to the author but had a contract hole
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** author-POV completeness blindness
+**Triad:** finalizing an instruction/spec a context-less party must act on alone → before delivering, re-read it in that party's role and enumerate what they'd be missing (input/output contracts, signatures, required fields, unresolved forks), then resolve in-place → author-POV completeness blindness: judging "complete" against context the consumer does not share
+**Context:** A handoff artifact read as complete from the author's side but omitted an interface detail (a callback's input contract and a required field) the executor needed; the gap stayed invisible until the artifact was re-read from the executor's perspective, which surfaced the exact point where they'd stall.
+**Pattern:** Before delivering any artifact a context-less party must act on alone (handoff, spec, API doc, task brief), simulate their reading: step into their role and list what they'd be missing — contracts, signatures, fields, decisions left open — then close those in place rather than leaving them to discover mid-work. Author-side review measures completeness against context the consumer lacks, so it systematically misses interface holes that look obvious to the author. Distinct from consumer-capacity blindness (size/budget) and producer-side naming assumption (derive names from consumer code): the corrective here is a perspective-swap verification pass, not a specific contract source.
+**Scope:** universal
+**Category:** communication
