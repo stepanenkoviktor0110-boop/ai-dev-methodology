@@ -2089,3 +2089,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before delivering any artifact a context-less party must act on alone (handoff, spec, API doc, task brief), simulate their reading: step into their role and list what they'd be missing — contracts, signatures, fields, decisions left open — then close those in place rather than leaving them to discover mid-work. Author-side review measures completeness against context the consumer lacks, so it systematically misses interface holes that look obvious to the author. Distinct from consumer-capacity blindness (size/budget) and producer-side naming assumption (derive names from consumer code): the corrective here is a perspective-swap verification pass, not a specific contract source.
 **Scope:** universal
 **Category:** communication
+
+### 2026-06-17 fizika-intent-interpreter / session 2: heaviest component on a budget-bounded subtask
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** capability-cost blindness
+**Triad:** reusing the most-capable component (or its richest mode) for a sub-task that has a tight latency/resource budget → match the component's working mode to the budget — switch off its heavy/optional work, or pick a lighter variant, before enlarging the budget → capability-cost blindness: treating "more capable" as strictly better while its extra work silently and variably consumes the budget
+**Context:** A powerful general component was reused for a small bounded sub-task on the "more capable is safer" default; its optional heavy work (variable, sometimes huge) intermittently consumed the whole budget, causing failures that looked like the budget being too small — so the first fix (enlarge the budget) only shifted the failure instead of removing it.
+**Pattern:** When a sub-task has a hard latency/size/resource ceiling, do not assume the most-capable component is the right default — its extra capability does optional, often nondeterministic work that spends the same ceiling. Match the mode to the task: disable the heavy/optional behavior or pick a lighter variant, and only then size the budget. Growing the budget to absorb the overhead treats the symptom; removing the unneeded overhead removes the cause. Verify the lighter mode against the source's own docs and reproduce it before relying on it.
+**Scope:** universal
+**Category:** tool-selection
