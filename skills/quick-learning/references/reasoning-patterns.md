@@ -2122,3 +2122,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When two layers enforce one invariant, they are not automatically redundant-but-safe — if their failure modes differ (one rejects, one degrades), they encode two different contracts and will silently conflict. Decide which observable outcome the spec requires, make a single layer the authority for that constraint, and delete the other layer's enforcement of it rather than leaving both. Stacked validators are safe only when their outcomes are identical; when they differ, more layers means more ambiguity, not more safety.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-06-18 fizika-widget-channel / session 2: probe-method artifact ≠ system defect
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** probe-artifact-as-defect conflation
+**Triad:** a post-deploy smoke probe returns a red result (error code / redirect / empty) → re-issue it with the method and flags the real consumer actually uses before concluding a defect → mistaking an artifact of the probe method for a fault in the system under test
+**Context:** A post-deploy smoke run flagged two endpoints as broken (one returned 405, one 307), but the red results were artifacts of the probe method — a HEAD request against a GET-only route, and a probe that did not follow the mount redirect — not real failures; re-running with GET and follow-redirects showed both correct.
+**Pattern:** When a smoke/health check comes back red, first check whether the probe itself was shaped like the real consumer: a HEAD where the client does GET, default flags that skip redirects/headers, a method the route never advertised. Re-issue the probe the way the actual caller hits it before logging a defect, opening a fix, or blocking a release. A red signal from a mismatched probe is noise; vary the probe before trusting the verdict.
+**Scope:** universal
+**Category:** tool-selection
