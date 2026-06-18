@@ -2100,3 +2100,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a sub-task has a hard latency/size/resource ceiling, do not assume the most-capable component is the right default — its extra capability does optional, often nondeterministic work that spends the same ceiling. Match the mode to the task: disable the heavy/optional behavior or pick a lighter variant, and only then size the budget. Growing the budget to absorb the overhead treats the symptom; removing the unneeded overhead removes the cause. Verify the lighter mode against the source's own docs and reproduce it before relying on it.
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-06-18 fizika-widget-channel / planning: cross-cutting wrapper attached at a shared boundary leaked to sibling routes
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** shared-boundary scope blindness
+**Triad:** attaching a cross-cutting behavior (filter/guard/header-adder/interceptor) at a shared boundary to serve one subset of consumers → verify the boundary's real coverage; if it spans the whole surface, attach the behavior at a narrower sub-boundary covering only the intended subset and add a check that the other consumers are unchanged → shared-boundary scope blindness: assuming a behavior added "for X" applies only to X when its attachment point covers all siblings
+**Context:** A cross-cutting wrapper was added at a shared entry boundary to serve one group of endpoints, on the assumption it only affected that group; the framework applied it to the whole surface, silently altering/disarming sibling endpoints that carried their own protection.
+**Pattern:** Before attaching cross-cutting behavior (auth, CORS, rate-limit, logging, headers) to serve a subset, confirm the attachment point's actual coverage. If it wraps the whole surface, move it to a scoped sub-boundary (sub-app / nested router / mount) covering only the intended subset, and add a regression check asserting the untouched siblings keep their prior behavior and protections. "I added it for X" is not "it applies only to X."
+**Scope:** universal
+**Category:** scope-management
