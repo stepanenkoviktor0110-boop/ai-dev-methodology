@@ -2111,3 +2111,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before attaching cross-cutting behavior (auth, CORS, rate-limit, logging, headers) to serve a subset, confirm the attachment point's actual coverage. If it wraps the whole surface, move it to a scoped sub-boundary (sub-app / nested router / mount) covering only the intended subset, and add a regression check asserting the untouched siblings keep their prior behavior and protections. "I added it for X" is not "it applies only to X."
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-06-18 fizika-widget-channel / session 1: two layers enforced the same constraint with disagreeing outcomes
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** redundant-gate authority blur
+**Triad:** two layers each independently enforce the same constraint but produce different observable outcomes (one rejects, the other clamps-and-continues) → name the contract the spec actually requires, make exactly one layer the sole authority for it, and remove enforcement from the other rather than keeping both → redundant-gate authority blur: stacking "defense-in-depth" validators that silently disagree on the observable result, with no layer designated as the canonical one
+**Context:** The same constraint was guarded at two layers — an upstream validator that hard-rejects and a downstream gate that clamps-and-continues — added independently as "defense in depth"; they disagreed on the observable outcome (reject vs accept-with-refusal), and only a test asserting the required contract exposed which behavior was canonical.
+**Pattern:** When two layers enforce one invariant, they are not automatically redundant-but-safe — if their failure modes differ (one rejects, one degrades), they encode two different contracts and will silently conflict. Decide which observable outcome the spec requires, make a single layer the authority for that constraint, and delete the other layer's enforcement of it rather than leaving both. Stacked validators are safe only when their outcomes are identical; when they differ, more layers means more ambiguity, not more safety.
+**Scope:** universal
+**Category:** problem-decomposition
