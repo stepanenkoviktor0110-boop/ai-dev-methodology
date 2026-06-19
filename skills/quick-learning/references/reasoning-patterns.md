@@ -1677,6 +1677,28 @@ Patterns that apply to any project, any stack, any domain.
 **Situation:** запуск test-reviewer в фазе tech-spec-planning (до implementation)
 **Category:** tool-selection
 
+### 2026-06-19 cabinet-dialogs / session 1: primary-user scope omission in auth-level tests
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** primary-user scope omission
+**Triad:** операция с несколькими уровнями авторизации — тесты проверяют privileged уровни, но не минимально-привилегированного реального потребителя → тестировать с наименее привилегированным уровнем первым — он и есть primary consumer → не пропустить scope-провал у фактического пользователя системы
+**Context:** Endpoint прошёл 8/8 тестов покрывавших super_admin и tenant_admin; partner-ветка (реальный пользователь кабинета) не была проверена и давала 500 из-за bare SELECT без scope — ошибку поймал только code-reviewer в раунде 1.
+**Pattern:** Когда endpoint имеет несколько уровней авторизации, первым делом тестируй с наименее привилегированным реальным пользователем — тем, кто будет использовать фичу в production. Privileged уровни — дополнительные тесты, не заменители.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-06-19 cabinet-dialogs / session 1: hang-scales-with-count bias in test infra
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** hang-scales-with-count bias
+**Triad:** процесс виснет и длительность зависания пропорциональна числу повторов, есть optional external resource → проверить connect timeout на этот ресурс до поиска логического бага → не тратить раунды на диагностику кода когда источник зависания — инфраструктурный timeout
+**Context:** Тест-сьют conversations API "висел" и время зависания росло с числом тестов. Root cause: async_client fixture создавала Redis-клиент без socket timeout; при недоступном Redis Windows ждала ~15с OS TCP timeout на каждую попытку — накопительное ожидание превышало kill threshold. Диагноз занял несколько итераций.
+**Pattern:** Зависание, длительность которого масштабируется с числом итераций/тестов, при наличии optional fail-open зависимости — первым шагом проверь connect/socket timeout этой зависимости, не код логики. Отсутствующий timeout в optional dependency — самая дешёвая гипотеза.
+**Scope:** universal
+**Category:** problem-decomposition
+
 ### 2026-04-09 demo-trees-sharing / session 1: Уточни потребителя до технических деталей
 
 **Seen:** 1
