@@ -2155,3 +2155,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a smoke/health check comes back red, first check whether the probe itself was shaped like the real consumer: a HEAD where the client does GET, default flags that skip redirects/headers, a method the route never advertised. Re-issue the probe the way the actual caller hits it before logging a defect, opening a fix, or blocking a release. A red signal from a mismatched probe is noise; vary the probe before trusting the verdict.
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-06-19 cabinet-dialogs / session 2: spec-count arithmetic drift
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** specification-over-measurement
+**Triad:** spec утверждает точное количество элементов в тестовом наборе → пересчитать фактические данные и ассертировать реальный count, не число из документа → принять числовой AC в документе за истину без проверки реальных данных
+**Context:** Task 6 spec написал "10 messages", но реальная fixture содержала 4 non-/new turns → 8 messages. Исполнитель правильно поймал расхождение, ассертировал 8 и зафиксировал deviation. Если бы ассертировал 10 из spec — тест был бы ложно красным или тихо зелёным с неправильной логикой.
+**Pattern:** When an acceptance criterion states an exact count ("N messages", "K records", "M lines"), do not trust the number in the document — count the actual test data before writing any assertion. A spec's arithmetic can drift from reality during editing without invalidating the rest of the spec. Measure first, then assert; a deviation from spec is a flag for the author, not a reason to force-fit the fixture.
+**Scope:** universal
+**Category:** information-gathering
