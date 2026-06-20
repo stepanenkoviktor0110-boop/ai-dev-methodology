@@ -2177,3 +2177,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a constraint you inherited or imposed forces a feature to deliver only part of its stated purpose, do not default to recommending the constraint-respecting degraded version. Name the conflict explicitly — "this boundary makes feature X only half-work; relaxing it costs Y" — and let the decision-owner weigh intent against constraint. The constraint is a means; the feature's purpose is the end. A half-feature that perfectly respects a self-imposed boundary is often worse than a whole feature that relaxes it cheaply.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-06-20 widget-constructor / session 1: self-guarding read-back blindness
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** self-guarding read-back blindness
+**Triad:** writing a test/verification that reads back state through the same access layer that enforces a contextual access guard (row-level security, scope/ownership filter, tenant isolation) → make the read-back query itself satisfy the guard's required predicate (carry the scope/owner key); never assert via an unscoped lookup → treating verification queries as exempt from the guard under test, so the check fails on the guard you are validating, not the behavior
+**Context:** In a tenant-guard test, the read-back `SELECT` had no `tenant_id` predicate. The guard (TenantScopeViolation) correctly fired on the verification query itself — the guard was alive and the production code was fine, but the test was written as if its own queries were exempt from the very isolation it was asserting. The failure pointed at the guard, not at the behavior under test.
+**Pattern:** When a test reads state back through an access layer that enforces a contextual guard (row-level security, ownership/scope filter, tenant isolation), the verification query is subject to that same guard — it is not exempt. Write read-backs guard-compatibly: carry the scope/owner predicate the guard requires. Otherwise an unscoped lookup trips the guard you are validating, and you will misread "guard works" as "behavior broken" and chase a phantom bug in correct production code.
+**Scope:** universal
+**Category:** information-gathering
