@@ -2166,3 +2166,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When an acceptance criterion states an exact count ("N messages", "K records", "M lines"), do not trust the number in the document — count the actual test data before writing any assertion. A spec's arithmetic can drift from reality during editing without invalidating the rest of the spec. Measure first, then assert; a deviation from spec is a flag for the author, not a reason to force-fit the fixture.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-06-20 widget-constructor / user-spec: constraint-preservation anchoring
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** constraint-preservation anchoring
+**Triad:** an inherited or self-imposed scope constraint forces the feature to deliver only part of its stated intent → name the constraint↔intent conflict and the cost of relaxing it as an explicit decision, instead of recommending the constraint-respecting half-version as the default → optimizing to honor the boundary over delivering the feature's purpose, shipping a half-feature that technically respects the constraint
+**Context:** user-spec said "don't touch the widget runtime". The "allowed domains" field could only half-work under that constraint — the server-side gate could read a managed list, but the browser CORS preflight stayed static, so a newly-added domain stayed blocked until an env change + restart. I recommended that half-version as an accepted MVP limitation; the owner had to push twice ("give both guards the live list") before I relaxed the constraint and delivered the field end-to-end via a small dynamic-CORS middleware — the genuinely simpler full solution.
+**Pattern:** When a constraint you inherited or imposed forces a feature to deliver only part of its stated purpose, do not default to recommending the constraint-respecting degraded version. Name the conflict explicitly — "this boundary makes feature X only half-work; relaxing it costs Y" — and let the decision-owner weigh intent against constraint. The constraint is a means; the feature's purpose is the end. A half-feature that perfectly respects a self-imposed boundary is often worse than a whole feature that relaxes it cheaply.
+**Scope:** universal
+**Category:** problem-decomposition
