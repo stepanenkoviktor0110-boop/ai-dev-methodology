@@ -2188,3 +2188,26 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a test reads state back through an access layer that enforces a contextual guard (row-level security, ownership/scope filter, tenant isolation), the verification query is subject to that same guard — it is not exempt. Write read-backs guard-compatibly: carry the scope/owner predicate the guard requires. Otherwise an unscoped lookup trips the guard you are validating, and you will misread "guard works" as "behavior broken" and chase a phantom bug in correct production code.
 **Scope:** universal
 **Category:** information-gathering
+
+
+### 2026-06-21 widget-constructor / session 2: field-default camouflage in fallback tests
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** field-default camouflage
+**Triad:** writing a test for fill/override logic where the model field has a static default value → verify the asserted value differs from the field's static default; if they are equal, force an input that makes the field unreachable without the logic under test → field-default camouflage: static default masks absent fill-logic, test passes green on broken code
+**Context:** Tests for per-field fallback logic asserted values (e.g. accent_color="#7B61FF") that happened to match the field's Pydantic static default. The fallback code could be entirely absent and the test would still pass, because Pydantic supplies the default before any override logic runs. The test-reviewer flagged this as major; fixes required using a settings value that differs from the model default, then asserting the settings-derived value.
+**Pattern:** Before finalizing a test for fill/override logic, ask: "Would this assertion still pass if the fill-logic were deleted?" If yes, the test is vacuous. Force the fixture so the expected value is only reachable via the logic under test — use a settings/config value that differs from the model field's static default, or patch the default itself. Apply this wherever the model has non-None static defaults and the logic supplies those same values.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-06-21 widget-constructor / session 2: handler-isolation blindness in layered processing
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** handler-isolation blindness
+**Triad:** multiple independent processing layers (middleware, hook, filter, handler) handle the same unit-of-work and each independently reads a shared data source → enumerate all reads across layers and deduplicate at the unit boundary → handler-isolation blindness: each layer looks self-contained when read locally, so cross-layer fetch duplication is invisible
+**Context:** A middleware and a route handler both called the same config-fetch function within the same request. When reading each component in isolation, both looked correct. The duplication only became visible during cross-component code review, flagged as a major finding. Fix: extract a shared helper and call it once per request, passing the result to downstream components.
+**Pattern:** When writing a processing layer (middleware, decorator, filter, handler) that reads shared data, check whether any other layer in the same unit-of-work boundary already fetches or will fetch the same source. Treat the unit-of-work (request, event, job) as the deduplication scope. Extract a single fetch point and pass the result; do not rely on each layer being self-contained — that assumption fails as soon as two layers read the same source.
+**Scope:** universal
+**Category:** problem-decomposition
