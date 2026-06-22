@@ -2211,3 +2211,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When writing a processing layer (middleware, decorator, filter, handler) that reads shared data, check whether any other layer in the same unit-of-work boundary already fetches or will fetch the same source. Treat the unit-of-work (request, event, job) as the deduplication scope. Extract a single fetch point and pass the result; do not rely on each layer being self-contained — that assumption fails as soon as two layers read the same source.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-06-22 widget-constructor / session 3: surface-local reimplementation drift
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** surface-local reimplementation drift
+**Triad:** one capability is delivered through multiple surfaces/adapters, each with its own presentation layer → hold its behavior/output identical everywhere, pick one surface as the reference and validate every other surface's actual output against it live → surface-local reimplementation drift: each adapter looks self-contained, so a surface silently reimplements or trims the shared behavior and diverges
+**Context:** A capability already working on a reference surface was exposed through a second surface that re-implemented its output rendering. The second surface silently diverged (it trimmed/omitted behavior the reference surface had), and the divergence was invisible to tests that ran only against the second surface in its own default condition — it surfaced only on live cross-condition verification. The reasoning error was treating each surface as independently "done" once its own checks passed, instead of holding all surfaces to one behavioral contract.
+**Pattern:** When one capability ships through several surfaces/adapters, make behavioral parity an explicit contract: designate one surface as the reference, keep the shared logic in one place, and validate every other surface's *actual* output against the reference — a surface that renders or handles the same input differently is a defect, not an acceptable variation. Same-surface tests cannot see parity gaps, so verify each surface live on identical inputs.
+**Scope:** universal
+**Category:** problem-decomposition
