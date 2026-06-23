@@ -2244,3 +2244,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a fact is asked to be fetched from a credential-gated or interactive source, first ask "is this same fact publicly observable?" Many infra/config facts (DNS records, nameservers, registration, TLS chain, public endpoints, open APIs) are queryable with zero auth. Exhaust the zero-auth observable path before requesting credentials, panel access, or an owner round-trip — reserve the gated source for facts that genuinely live only behind it. This also avoids an outward/risky action when a read-only public probe suffices.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-06-23 managed-widget-config / session 3: proxy-signal success conflation
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** proxy-signal trust
+**Triad:** confirming an action succeeded by reading a transformed/secondary signal (a piped or filtered output, a derived view, a downstream stage's status) → read the action's OWN outcome at its source, not the derived signal → proxy-signal trust: a downstream transform reports success while the underlying action failed, so the derived signal reads green over a real failure
+**Context:** An operation's result was judged from a secondary signal instead of the action itself. A command's exit status was read after it was piped through a filter, so the pipeline's exit (the last stage's) replaced the command's real exit and a hard failure read as success — a service had been removed but not recreated, yet "deployed" came back green. The same error in a different guise: a test asserting a value was *substituted* stood in for the value actually *behaving*, so a broken render passed. Both checks were green over a red action.
+**Pattern:** When confirming an action worked, read its outcome at the source, never through a transform that can mask failure. Don't judge a command by a piped/`tail`ed output — the pipeline's exit is the last stage's, not the command's (use pipefail or inspect the command's own status). Don't judge "it works" by "the value is present/substituted/exists" — assert the actual end behavior. A green derived signal sitting over a red action is worse than no check: it manufactures false confidence and you stop looking exactly when you should dig in.
+**Scope:** universal
+**Category:** information-gathering
