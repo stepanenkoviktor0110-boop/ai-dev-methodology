@@ -2222,3 +2222,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When one capability ships through several surfaces/adapters, make behavioral parity an explicit contract: designate one surface as the reference, keep the shared logic in one place, and validate every other surface's *actual* output against the reference — a surface that renders or handles the same input differently is a defect, not an acceptable variation. Same-surface tests cannot see parity gaps, so verify each surface live on identical inputs.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-06-23 zina-draft-review / session 1: post-mutation guard placement
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** post-mutation guard placement
+**Triad:** a transactional mutation is paired with an out-of-transaction state flip that signals "already done" → set the idempotency sentinel BEFORE issuing the mutation (optimistic lock), not after → post-mutation guard placement: the "done" signal sits after the commit, leaving a concurrency window where a concurrent caller passes the guard and duplicates the mutation
+**Context:** A function committed a DB mutation inside a transaction, then set an external state flag (out-of-transaction) to mark the operation complete. A concurrent call arriving between commit and flag-set would pass the guard and execute the mutation a second time. Both the implementing agent and a security reviewer classified the state update as non-security; it was caught only by code-review. The reasoning error was treating the "done" flag as a logging step rather than as a concurrency control boundary.
+**Pattern:** When a mutation guarded by an idempotency check also updates an out-of-transaction sentinel (cache key, file, in-memory flag), set the sentinel BEFORE issuing the mutation. If the mutation then fails, clear the sentinel (rollback the lock). Placing the sentinel after the commit creates a concurrency window proportional to commit latency — any concurrent caller that slips through will duplicate the mutation without any guard detecting it.
+**Scope:** universal
+**Category:** sequencing
