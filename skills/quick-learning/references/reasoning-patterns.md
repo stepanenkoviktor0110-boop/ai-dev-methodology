@@ -2233,3 +2233,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a mutation guarded by an idempotency check also updates an out-of-transaction sentinel (cache key, file, in-memory flag), set the sentinel BEFORE issuing the mutation. If the mutation then fails, clear the sentinel (rollback the lock). Placing the sentinel after the commit creates a concurrency window proportional to commit latency — any concurrent caller that slips through will duplicate the mutation without any guard detecting it.
 **Scope:** universal
 **Category:** sequencing
+
+### 2026-06-23 managed-widget-config / session 3: gated-source default
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** gated-source default
+**Triad:** asked to retrieve reference facts that live behind an authenticated/interactive surface (control panel, login, owner, support ticket) → first check whether the same facts are observable from a public/zero-auth source (registry, public lookup, exposed metadata) and derive them there before requesting credentials or access → gated-source default: treating the authenticated surface as the required source for facts that are in fact publicly observable, so you ask for access/credentials before checking
+**Context:** Asked "can't you just log into the hosting panel and grab the inputs?", the reflex options were (a) request credentials and drive the gated panel or (b) ask the owner to read it out. The actual unknowns — which TLD was registered, where the apex points, which nameservers — were all derivable from public DNS/whois with zero authentication. Checking the public source first closed every open fork (and revealed the apex already pointed at the target host) without touching the gated panel or spending an owner round-trip.
+**Pattern:** When a fact is asked to be fetched from a credential-gated or interactive source, first ask "is this same fact publicly observable?" Many infra/config facts (DNS records, nameservers, registration, TLS chain, public endpoints, open APIs) are queryable with zero auth. Exhaust the zero-auth observable path before requesting credentials, panel access, or an owner round-trip — reserve the gated source for facts that genuinely live only behind it. This also avoids an outward/risky action when a read-only public probe suffices.
+**Scope:** universal
+**Category:** information-gathering
