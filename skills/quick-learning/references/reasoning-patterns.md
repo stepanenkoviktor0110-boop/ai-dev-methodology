@@ -2247,7 +2247,7 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-06-23 managed-widget-config / session 3: proxy-signal success conflation
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Cognitive Error:** proxy-signal trust
 **Triad:** confirming an action succeeded by reading a transformed/secondary signal (a piped or filtered output, a derived view, a downstream stage's status) → read the action's OWN outcome at its source, not the derived signal → proxy-signal trust: a downstream transform reports success while the underlying action failed, so the derived signal reads green over a real failure
@@ -2255,3 +2255,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When confirming an action worked, read its outcome at the source, never through a transform that can mask failure. Don't judge a command by a piped/`tail`ed output — the pipeline's exit is the last stage's, not the command's (use pipefail or inspect the command's own status). Don't judge "it works" by "the value is present/substituted/exists" — assert the actual end behavior. A green derived signal sitting over a red action is worse than no check: it manufactures false confidence and you stop looking exactly when you should dig in.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-06-24 managed-widget-config / session 4: surface-layer fixation
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** surface-layer fixation
+**Triad:** an automatable operation routed through an interactive surface (form/UI) deterministically rejects valid programmatic input → drop one layer down and act against the API the surface itself calls, reusing its own auth → surface-layer fixation: persisting at the presentation layer when the operation is reachable deterministically beneath it
+**Context:** A control-panel form refused every programmatically-entered value — including provably-valid ones — because its client state never synced with injected input (anti-automation / framework-controlled inputs). Repeated attempts to satisfy the surface (retyping, native-setter events, alternate forms) all failed identically, which was itself the signal that the value wasn't the problem — the input layer was. The deterministic path was the API the form posts to: capture the surface's own in-memory auth token from its outgoing requests, then call that API directly.
+**Pattern:** When an interactive surface rejects valid programmatic input the same way regardless of the value, stop fighting the surface — the failure is the input layer, not your data. Operate against the layer beneath it (the API/endpoint the surface drives), reusing the surface's own session/token (intercept it from its requests if it's only in memory). A uniform rejection of all inputs, valid included, is the tell to switch layers rather than keep retrying the UI.
+**Scope:** universal
+**Category:** tool-selection
