@@ -2266,3 +2266,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When an interactive surface rejects valid programmatic input the same way regardless of the value, stop fighting the surface — the failure is the input layer, not your data. Operate against the layer beneath it (the API/endpoint the surface drives), reusing the surface's own session/token (intercept it from its requests if it's only in memory). A uniform rejection of all inputs, valid included, is the tell to switch layers rather than keep retrying the UI.
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-06-24 account-and-automation / session 1: shared-state ownership blindness
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** shared default treated as private
+**Triad:** about to bend a shared/global resource to the current context's need (or remove an unexpected element that "shouldn't" be there) → check who else depends on it + whether its current state is legitimate elsewhere, scope the fix to your context with a local override/guard, and re-verify any change to shared state actually persisted → shared-state-as-private: globalizing a context-scoped need (or assuming your mutation of shared state stuck) breaks other contexts and silently reverts because you don't own the default
+**Context:** Treated a machine-global shared resource as if the current project privately owned it — moved to set it as the global default and declared the change durable, without checking that other contexts depend on it (it was the legitimate default for dozens of them) or that my mutation had even persisted (it had already reverted). The unexpected "wrong" value was correct elsewhere; globalizing my project's preference would have broken the others.
+**Pattern:** Before mutating a shared/global default (system setting, shared account, env-wide state) to fit one context, check whether other contexts rely on it and whether its current value is legitimate there; an unexpected value is a signal to learn its purpose, not to eliminate it. Scope your need with a per-context override/guard instead of changing the global, and re-verify any change to shared state actually persisted — you do not own it, so it can be correct elsewhere and silently revert under you.
+**Scope:** universal
+**Category:** scope-management
