@@ -1304,12 +1304,12 @@ Patterns that apply to any project, any stack, any domain.
 
 ---
 
-### 2026-04-05 cert-report / session 2: SQL UPDATE с опциональным NOT NULL полем — использовать COALESCE
+### 2026-04-05 cert-report / session 2: запись в таблицу, выставляющая подмножество колонок — покрыть NOT NULL без default
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
-**Triad:** SQL UPDATE обновляет подмножество полей таблицы, часть полей имеет NOT NULL → использовать `COALESCE($N, column_name)` для полей не переданных в запросе → предотвратить constraint violation при частичном обновлении
-**Context:** Интеграционный тест PUT /api/admin/settings отправлял только cert-threshold поля без cert_recipients — handler передавал null в SQL UPDATE, нарушая NOT NULL constraint.
+**Triad:** операция записи выставляет лишь подмножество колонок существующей таблицы — частичный UPDATE ИЛИ новый прямой INSERT-путь (которого раньше не было, а старый помощник заполнял колонки неявно) → перечислить NOT NULL-колонки без server_default и явно покрыть каждую (COALESCE($N, column) на UPDATE; явное значение на INSERT) → предотвратить constraint violation от неполного набора полей
+**Context:** (1) Интеграционный тест PUT /api/admin/settings слал только cert-threshold поля без cert_recipients — handler передавал null в SQL UPDATE, нарушая NOT NULL constraint. (2) platform-answer-core: новый канал-агностичный `persist_answer_turn` делал прямой INSERT Message, но не ставил `dedup_key` (VARCHAR NOT NULL без default, который прежний `ingest_turn`-путь заполнял сам) — упало бы на уровне БД; всплыло только в раунде 3 валидации. Новый путь записи не наследует неявное заполнение полей старого.
 **Scope:** universal
 **Category:** problem-decomposition
 
@@ -2277,3 +2277,16 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Before mutating a shared/global default (system setting, shared account, env-wide state) to fit one context, check whether other contexts rely on it and whether its current value is legitimate there; an unexpected value is a signal to learn its purpose, not to eliminate it. Scope your need with a per-context override/guard instead of changing the global, and re-verify any change to shared state actually persisted — you do not own it, so it can be correct elsewhere and silently revert under you.
 **Scope:** universal
 **Category:** scope-management
+
+---
+
+### 2026-06-24 platform-answer-core / decompose: purpose-fit mistaken for contract-fit
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** purpose-fit ≠ contract-fit
+**Triad:** planning to reuse/extend an existing function for a NEW caller because its stated purpose matches the need → before committing the reuse, check the new caller can actually supply the callee's REQUIRED inputs (full signature, mandatory payload fields, the identity/context it assumes, the side effects it performs); if the callee needs context this caller cannot provide, add a focused new function instead of bending the reuse → purpose-fit mistaken for contract-fit: a function whose name/intent matches is assumed to fit, but its preconditions (required args, channel/identity context, "creates X" side effect) don't match what the new caller holds
+**Context:** The spec and every task-creator anchored on "generalize `ingest_turn` to persist the answer turn" — its purpose ("persist a dialogue turn") matched perfectly. But `ingest_turn` requires `channel_id` + a `DialogTurnIngest` payload (channel-specific: external_chat_id, user_name, is_new_session) and *creates/resolves* the conversation, while the channel-agnostic core already holds an existing `conversation_id` and none of the channel fields. The mismatch was in preconditions, not purpose. It surfaced only at reality-check round 2 (the implementor would have been blocked), costing an extra fix round plus a cascade (the new direct-INSERT path then exposed a NOT NULL `dedup_key` the old path filled implicitly). Resolution: a focused `persist_answer_turn(conversation_id, …)` primitive rather than overloading the reused function.
+**Pattern:** When you reach for an existing function to serve a new caller, "the purpose matches" is not enough — verify the new caller can satisfy the callee's full input contract: every required argument, every mandatory field of its payload types, the identity/scope context it assumes, and any side effect it performs (creates a row, resolves an entity, mutates shared state). If the callee demands context the new caller structurally lacks (e.g. channel identity for a channel-agnostic core), do not bend the reuse — write a small caller-shaped function. Check this at spec/decompose time by reading the callee's real signature and payload schema, not its name or one-line description; otherwise the gap detonates at implementation time as a hard block plus downstream cascades.
+**Scope:** universal
+**Category:** problem-decomposition
