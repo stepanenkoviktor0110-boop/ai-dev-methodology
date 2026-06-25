@@ -2290,3 +2290,16 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When you reach for an existing function to serve a new caller, "the purpose matches" is not enough — verify the new caller can satisfy the callee's full input contract: every required argument, every mandatory field of its payload types, the identity/scope context it assumes, and any side effect it performs (creates a row, resolves an entity, mutates shared state). If the callee demands context the new caller structurally lacks (e.g. channel identity for a channel-agnostic core), do not bend the reuse — write a small caller-shaped function. Check this at spec/decompose time by reading the callee's real signature and payload schema, not its name or one-line description; otherwise the gap detonates at implementation time as a hard block plus downstream cascades.
 **Scope:** universal
 **Category:** problem-decomposition
+
+---
+
+### 2026-06-26 fizika-all-filters / understanding-first: catch-all default IS the heavy action
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** default-branch-is-action bias
+**Triad:** a dispatcher/classifier/parser has a fall-through default branch, and that default IS the system's primary consequential action (the expensive/irreversible/destructive operation: run the search, execute, write, send) → invert the default so the consequential action requires an affirmative positive match (an explicit signal that it was actually requested), and route the unrecognized / fall-through case to a SAFE handler (clarify, no-op, lightweight reply) → default-branch-is-action bias: unrecognized or unclassifiable input silently triggers the heavy action because "everything else" falls into it, so the system acts when it should have asked or declined
+**Context:** The bot dumped a full catalog on "Привет" because the kind detector defaulted ALL unrecognized text to `select` (the retrieval/answer action); greetings, off-topic, and gibberish silently ran the heavy path. The symptom looked like a prompt/classifier-quality problem, but the root was structural: the fall-through branch of the dispatcher was the consequential action itself. A prior latency optimization had even removed the one gate that sometimes caught these, making the dump more direct. Fix: invert — the search runs only on an affirmative selection signal (a real criterion or an explicit availability ask); unrecognized input routes to conversational handlers (greeting/off-topic/unclear) that reply without acting.
+**Pattern:** When a routing/dispatch/parse layer has a catch-all "else" branch, check what that branch DOES. The default must be the safe option (ask for clarification, no-op, a cheap acknowledgement) — never the system's primary consequential action. Make the heavy/irreversible action fire only on an affirmative, positive match that the user actually asked for it; everything unmatched falls to the safe handler. Treat "the action is the fall-through default" as a design smell: unrecognized, malformed, or adversarial input will silently trigger the expensive path. Beware that performance optimizations which skip a routing stage also skip that stage's gating function.
+**Scope:** universal
+**Category:** problem-decomposition
