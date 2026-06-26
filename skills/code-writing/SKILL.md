@@ -138,6 +138,7 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
 - [ ] Each reviewer finding evaluated; findings log table produced; reports saved
 - [ ] Design tokens used via CSS custom properties for UI files (if tokens.json was loaded)
 - [ ] Design Context loaded for UI tasks (CIP brief run; ui-ux-pro-max / frontend-design invoked where applicable)
+- [ ] Visual/Layout QA пройден для UI (см. quick-ref-code-writing.md «Visual/Layout QA»): равные высоты/ширины, выравнивание в ряд, никаких стыков, шрифт-компаньон под кириллицу, цифры не в дисплей-шрифте без глифов — каждый пункт подтверждён замером рендера, не на глаз
 
 
 ## Promoted Patterns
