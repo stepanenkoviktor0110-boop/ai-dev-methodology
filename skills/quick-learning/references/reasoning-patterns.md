@@ -2314,3 +2314,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a task lands in a domain where hard-won constraints already exist as persisted notes/memories ("never do X", style rules, gotchas), don't treat them as a reference you'll consult when something looks off. Actively pull the whole constraint-set up front, convert it to a checklist, and apply it in a single pass before generating output. Known constraints resurfacing as separate correction rounds is the signature of consulting memory reactively instead of front-loading it.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-06-26 pasyakin-guide-polish / session 1: acknowledgment is not a fix for a recurring mechanical error
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** acknowledgment-as-fix
+**Triad:** you just made a mechanical/format error the counterpart flagged → install a concrete pre-emit check or switch procedures before acting again → letting a verbal "I'll be careful" stand in for an actual behavior change
+**Context:** Emitted the same malformed output several times in a row; each time acknowledged it and promised care, but changed nothing in the actual procedure, so the identical fault recurred and frustration escalated.
+**Pattern:** A recurring mechanical/format/output fault is not fixed by noticing it or promising to be careful — intention does not change generation. After the first flag, change the mechanism: add an explicit pre-send self-check, fall back to a known-good template/path, or slow down to verify the exact form before emitting. If the same error appears twice, treat "try harder" as already-failed and install a procedural guard instead. Repeating the apology without the guard is the tell.
+**Scope:** universal
+**Category:** recovery
+
+### 2026-06-26 pasyakin-guide-polish / session 1: a substitute that works can still mismatch on a secondary axis
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** presence-mistaken-for-parity
+**Triad:** adopting a stand-in/companion/fallback that satisfies the obvious requirement → measure parity on every axis where it sits beside the original before accepting → assuming "it functions" means "it matches"
+**Context:** Chose a script companion font because it rendered the missing glyphs (the obvious need), but it diverged ~20% in optical cap-height, so the substituted text shipped visibly larger than the text beside it.
+**Pattern:** When you adopt a substitute, companion, fallback, mock, or polyfill because it meets the obvious requirement, it has only passed ONE axis. If it appears beside the original (or must be interchangeable with it), measure parity on every shared dimension — size, weight, alignment, timing, format — not just "does it work." For fonts: cap-height/x-height via size-adjust. For mocks/APIs: behavior and return shape, not just presence. Functioning is the floor, not the proof of equivalence.
+**Scope:** universal
+**Category:** information-gathering
