@@ -2303,3 +2303,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a routing/dispatch/parse layer has a catch-all "else" branch, check what that branch DOES. The default must be the safe option (ask for clarification, no-op, a cheap acknowledgement) — never the system's primary consequential action. Make the heavy/irreversible action fire only on an affirmative, positive match that the user actually asked for it; everything unmatched falls to the safe handler. Treat "the action is the fall-through default" as a design smell: unrecognized, malformed, or adversarial input will silently trigger the expensive path. Beware that performance optimizations which skip a routing stage also skip that stage's gating function.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-06-26 pasyakin-admin-brand-styling / session 1: persisted constraints must be front-loaded, not consulted on a miss
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** passive-memory bias
+**Triad:** starting work in a domain with already-captured constraints → pull them into a pre-flight checklist applied in one pass before producing → letting saved knowledge stay a lookup you'll hit only after a miss
+**Context:** Produced design output and let each known brand constraint (monochrome, hairline, type-scale, no element seams, equal widths, numeric-font) surface one-by-one as user-correction rounds, even though they were already captured as persisted memories and in the reference's own source.
+**Pattern:** When a task lands in a domain where hard-won constraints already exist as persisted notes/memories ("never do X", style rules, gotchas), don't treat them as a reference you'll consult when something looks off. Actively pull the whole constraint-set up front, convert it to a checklist, and apply it in a single pass before generating output. Known constraints resurfacing as separate correction rounds is the signature of consulting memory reactively instead of front-loading it.
+**Scope:** universal
+**Category:** information-gathering
