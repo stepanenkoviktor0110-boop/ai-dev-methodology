@@ -203,3 +203,27 @@ When one endpoint is unreachable while general connectivity works → localize t
 
 **70. Артефакт для потребителя с жёстким лимитом ёмкости — закладывай лимит при создании:**
 When authoring an artifact for a consumer with a known hard capacity limit → size/shape it to that limit at creation and make "fits the consumer's budget" an acceptance criterion alongside correctness, to avoid consumer-capacity blindness: equating content-correct with done while the consumer degrades past a size/density threshold. (triad #421)
+
+**71. Probe вернул красный результат через convenience-метод — перепроверь методом реального потребителя:**
+When a smoke/health probe returns a red result (error code, redirect, empty body) via a convenience method or default flags → re-run with the method/flags the real consumer actually uses (GET not HEAD, follow redirects, real headers) before treating it as a system defect, to avoid logging a probe-method artifact as a real failure or burning a fix cycle on a non-bug. (triad #428)
+
+**72. Зависание масштабируется с числом повторов + есть optional external resource — проверь connect timeout:**
+When a hang scales with the number of repeats and an optional external resource is involved → check that resource's connect timeout before diagnosing the code, to avoid hang-scales-with-count bias: hunting an infrastructural timeout as a logical bug. (triad #429)
+
+**73. Scope-ограничение режет фичу до половины — назови конфликт constraint↔intent явным решением:**
+When an inherited or self-imposed scope constraint forces the feature to deliver only part of its stated intent → name the constraint-intent conflict and the cost of relaxing it as an explicit decision, instead of defaulting to the constraint-respecting half-version, to avoid constraint-preservation anchoring: shipping a half-feature by honoring the boundary over delivering the feature's purpose. (triad #431)
+
+**74. Одна способность через несколько surface/adapter — назначь reference и сверяй каждый surface вживую:**
+When one capability is delivered through multiple surfaces/adapters each with its own presentation layer → designate one surface as the reference, keep shared logic in one place, and validate every other surface's actual output against it live on identical inputs, to avoid surface-local reimplementation drift: an adapter silently reimplements/trims shared behavior and diverges. (triad #435)
+
+**75. Подтверждение успеха через transformed/secondary сигнал — читай результат у источника:**
+When confirming an action succeeded by reading a transformed/secondary signal (piped/filtered output, derived view, downstream stage status) → read the action's outcome at its source (use pipefail / inspect the command's own exit; assert end behavior, not "value present/substituted"), to avoid proxy-signal trust: a downstream transform reads green while the underlying action failed. (triad #438)
+
+**76. Автоматизируемая операция через interactive surface отвергает валидный ввод — спускайся на слой ниже:**
+When an automatable operation routed through an interactive surface (form/UI) deterministically rejects valid programmatic input → stop re-trying the surface and perform the operation against the layer beneath it (the API the surface itself calls), reusing the surface's own captured auth, to avoid surface-layer fixation: persisting at the presentation layer when the operation is reachable one layer down. (triad #439)
+
+**77. Только что выдал mechanical/format error, его отметили, ты обещал «быть внимательнее» — поставь конкретный pre-emit чек СЕЙЧАС:**
+When you just emitted a mechanical/format/output error, the counterpart flagged it, and you commit to "being careful" before acting again → install a concrete pre-emit check or switch to a known-good procedure NOW, because a recurring mechanical fault needs a mechanism change not heightened intention, to avoid acknowledgment-as-fix: a verbal "I'll watch it" treated as the fix while generation behavior is unchanged and the identical error recurs and escalates. (triad #444)
+
+**78. Пишешь handoff/next-phase план — не выводи границу фазы из позиции своей задачи:**
+When writing a handoff/next-phase plan → do NOT infer the session/phase boundary from your own task's position; consult the authoritative session plan to find the actual boundary, to avoid local-position phase inference ("my task is done" ≠ "the phase is done"). (triad #423)

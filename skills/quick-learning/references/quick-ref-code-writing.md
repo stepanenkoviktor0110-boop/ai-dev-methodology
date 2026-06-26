@@ -1,15 +1,15 @@
 # Quick Reference — Code Writing
 
-1. Unit-тесты с моками внешних процессов/API — минимум 1 live smoke run до объявления QA passed, иначе mock диверджит от реальности. (Seen: 4)
-2. Сложный скрипт на удалённом хосте через SSH — передавать файлом (не inline heredoc), запускать с unbuffered output. (Seen: 3)
-3. Передача файла на удалённый хост сложной SSH-командой, рвущей соединение — отправлять файл через stdin pipe вместо heredoc/SCP. (Seen: 3)
-4. Делегирование агенту/инструменту с неизвестными лимитами — проверить capability (права, RAM, write) тестовой операцией до полного промта. (Seen: 3)
-5. Маскируй секреты ДО выполнения команды — встраивать sed-маскировку или grep -c вместо вывода .env. (Seen: 2)
-6. Assertions на output-формат, не на input-атрибуты — для format-conversion функций читать реальный пример вывода перед написанием теста. (Seen: 2)
-7. Построение файлового пути из любых внешних данных — валидировать каждое значение против allowlist перед использованием. (Seen: 2)
-8. Config files с enum/nested полями — верифицировать все allowed values из официальной schema/docs включая nested objects. (Seen: 2)
-9. Промт для внешнего AI-агента с API-сигнатурами — верифицировать каждую через inspect.signature()/docs до отправки. (Seen: 2)
-10. Структурное ограничение нарушено в нескольких местах — после первого фикса просканировать весь артефакт на остальные вхождения. (Seen: 2)
+1. Unit tests with mocks for an external process/API — run at least 1 live smoke pass before declaring QA passed; mock diverges from reality. (Seen: 4)
+2. Complex script on a remote host via SSH — pass it as a file (not inline heredoc), run with unbuffered output. (Seen: 3)
+3. Passing a file/data to a remote host via a complex SSH command that drops the connection — send via stdin pipe instead of heredoc/SCP. (Seen: 3)
+4. Delegating to an agent/tool with unknown limits — verify capability (permissions, resources, RAM, write) with a test operation before the full prompt. (Seen: 3)
+5. Mask secrets BEFORE executing a command — embed sed-masking or grep -c instead of printing .env. (Seen: 2)
+6. Assertions on output format, not input attributes — for format-conversion functions read a real output example before writing the test. (Seen: 2)
+7. Building a file path from any external value — validate each value against an allowlist before use. (Seen: 2)
+8. Config files with enum/nested fields — verify all allowed values from the official schema/docs, including nested objects. (Seen: 2)
+9. Composing a prompt for an external AI agent with API signatures — verify each via inspect.signature()/docs before sending. (Seen: 2)
+10. A structural constraint is violated in several places — after the first fix, scan the whole artifact for the remaining occurrences. (Seen: 2)
 
 ## Visual/Layout QA (перед сдачей UI — проверять РЕНДЕР замером, не глазами)
 
