@@ -2078,3 +2078,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When you adopt a substitute, companion, fallback, mock, or polyfill because it meets the obvious requirement, it has only passed ONE axis. If it appears beside the original (or must be interchangeable with it), measure parity on every shared dimension — size, weight, alignment, timing, format — not just "does it work." For fonts: cap-height/x-height via size-adjust. For mocks/APIs: behavior and return shape, not just presence. Functioning is the floor, not the proof of equivalence.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-07-01 catalog-autoscan / session 1: a read taken during concurrent mutation is a snapshot, not the truth
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** concurrent-writer snapshot trust
+**Triad:** you dispatched concurrent agents/jobs that mutate-then-revert a shared file and you read it while they run → confirm the read against the committed/authoritative baseline (git show HEAD:file, the source of truth) before acting, especially before "fixing" an apparent defect → trusting a transient read of shared mutable state under active concurrent writers as ground truth
+**Context:** As orchestrator I spawned reviewer agents that litmus-test source by mutating it and reverting via `git checkout`. I read one file mid-mutation, saw an apparent bug (a hard-gate branch), and started fixing code that was already correct in committed HEAD — the anomaly was a reviewer's transient edit, not the real state.
+**Pattern:** When you have dispatched concurrent workers (agents, jobs, threads) that write-then-revert a shared resource, every read of that resource is racy: what you see may be a transient intermediate state, not the authoritative one. Before acting on a read — above all before "fixing" an apparent defect — confirm against the committed/authoritative baseline (`git show HEAD:file`, the DB of record, the canonical source), not the live working copy. Under active concurrent writers, a plausible-looking anomaly is more likely a snapshot artifact than a real defect. Distinct from the pre-existing-failures label case (verify a diagnostic label via git stash): here the racy signal is the file *content itself* while you hold live writers.
+**Scope:** universal
+**Category:** feature-execution
+
+### 2026-07-01 catalog-autoscan / session 1: unit-green modules are not a wired system
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** module-green mistaken for system-integrated
+**Triad:** a plan decomposes work into parallel per-module tasks, each with its own passing unit tests → schedule the integration/wiring step (orchestrator calls the modules and emits the end-to-end output) as its own explicit task with an end-to-end deliverable+test → assuming every module passing its units means the feature works end-to-end
+**Context:** Tasks built four sibling pipeline modules, each unit-green and review-clean, but nothing called them from the orchestrator — the scan still emitted raw pages, not the entity map. Every task met its own acceptance and the full suite was green, yet the feature didn't work; the wiring seam was nobody's deliverable and surfaced only as a test-reviewer's aside.
+**Pattern:** When a plan is decomposed by module, "every module done + unit-green" is not "the system works." The step that wires the modules into the running orchestrator and produces the real end-to-end output is easy to leave unowned — it is no single module's job, so no task's acceptance covers it, and the green suite hides its absence. Make the integration/wiring step an explicit task with an end-to-end (not per-module) deliverable and test. The tell: no task's acceptance criterion reads "the orchestrator produces the real output," only "module X does its part." Distinct from cross-task contract/signature gaps (#155/#200, about naming/exports) — here the contracts are fine; the *act of assembling* the pieces is unscheduled.
+**Scope:** universal
+**Category:** task-decomposition
