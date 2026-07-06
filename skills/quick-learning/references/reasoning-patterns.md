@@ -2122,3 +2122,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a plan is decomposed by module, "every module done + unit-green" is not "the system works." The step that wires the modules into the running orchestrator and produces the real end-to-end output is easy to leave unowned — it is no single module's job, so no task's acceptance covers it, and the green suite hides its absence. Make the integration/wiring step an explicit task with an end-to-end (not per-module) deliverable and test. The tell: no task's acceptance criterion reads "the orchestrator produces the real output," only "module X does its part." Distinct from cross-task contract/signature gaps (#155/#200, about naming/exports) — here the contracts are fine; the *act of assembling* the pieces is unscheduled.
 **Scope:** universal
 **Category:** task-decomposition
+
+### 2026-07-06 cabinet-leads / session 2: an instruction's stated justification is not verified fact
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** premise-inherited-as-fact
+**Triad:** an instruction states a blanket claim about existing convention/precedent to justify skipping a quality step → before accepting the justification, independently check the claim against the actual body it generalizes over → treating a stated premise as already-verified because it arrived embedded in the instruction
+**Context:** A task file justified shipping a new piece of UI logic with zero unit tests by asserting "this category of component isn't unit-tested in this project" — a claim that sounded like an established convention. A reviewer actually enumerated the comparable components and found only one (the nearest example the claim's author likely generalized from) lacked tests; six others plus the relevant test file had real coverage. The claim was a single-example generalization stated with the confidence of a project-wide rule, and it would have shipped untested logic (a client-side filter, an optimistic toggle) had it gone unchecked.
+**Pattern:** When an instruction (task file, spec, teammate's note) states a blanket claim about "how this project/codebase does X" to justify skipping a step, treat that claim as a hypothesis, not as given — even though it arrived pre-packaged as justification. Before acting on it, do the cheap check: enumerate the actual population the claim generalizes over (grep siblings, list comparable files) and confirm the claim holds for more than the one instance its author probably observed. A confidently-worded premise inside an instruction has not been verified merely because someone wrote it down.
+**Scope:** universal
+**Category:** information-gathering
