@@ -13,6 +13,28 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
+### 2026-07-06 cabinet-leads / session 1: latest-item tunnel vision
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** latest-item tunnel vision
+**Triad:** detection logic scans an accumulating sequence for a signal → check the full sequence built so far, including the just-added item, not only the newest or the last-seen snapshot → avoid missing a signal that arrived earlier in the sequence or in the update not yet reflected in the snapshot passed downstream
+**Context:** A gate that decided whether to escalate looked only at the most recent turn in a conversation, so a signal given two turns earlier (then followed by unrelated turns) was missed; separately, the same escalation was fed a pre-update snapshot of the conversation that excluded the very turn triggering the escalation, so a signal given in the current turn was invisible until the next one.
+**Pattern:** When writing logic that inspects an evolving sequence (message history, event log, form state) for a condition, default to scanning the entire accumulated sequence including whatever was just appended — not just the tail item and not a snapshot taken before the current update is merged in. Treat "did the signal appear anywhere so far" as the correct question, not "does the latest item contain the signal."
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-07-06 cabinet-leads / session 1: shared blast radius transaction
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** shared blast radius transaction
+**Triad:** an optional/secondary side effect is written in the same transaction as an already-completed primary operation → wrap the secondary side effect in its own nested transaction boundary (savepoint) inside a fail-open handler → prevent a secondary write's failure from rolling back the primary operation it shares a commit with
+**Context:** A best-effort side effect (auxiliary record extraction) was inserted before the final commit of a primary operation (persisting a reply already shown to the user); if the side effect's write failed, the failure would propagate to the shared commit and roll back the already-delivered primary result, not just the side effect.
+**Pattern:** When adding a best-effort or optional write inside the boundary of a transaction that also carries a primary/already-externally-visible operation, isolate the optional write in its own savepoint/nested transaction with independent fail-open handling — the primary commit must not be able to see, or be blocked by, the secondary write's failure.
+**Scope:** universal
+**Category:** recovery
+
 ### 2026-04-14 menu-editor / session 1: runtime readiness conflation
 
 **Seen:** 1
