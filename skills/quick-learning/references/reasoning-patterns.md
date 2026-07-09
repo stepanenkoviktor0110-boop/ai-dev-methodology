@@ -2133,3 +2133,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When an instruction (task file, spec, teammate's note) states a blanket claim about "how this project/codebase does X" to justify skipping a step, treat that claim as a hypothesis, not as given — even though it arrived pre-packaged as justification. Before acting on it, do the cheap check: enumerate the actual population the claim generalizes over (grep siblings, list comparable files) and confirm the claim holds for more than the one instance its author probably observed. A confidently-worded premise inside an instruction has not been verified merely because someone wrote it down.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-07-09 booking-integration / session 1: reproduce by reading an existing instance, not by guess-and-probe
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** guess-probe over existing exemplar
+**Triad:** must build a valid request/record for an opaque external system whose field-mapping is uncertain, and at least one valid instance already exists in that system → fetch one existing valid instance via the system's read endpoint and copy its concrete field values, instead of inferring the mapping from secondary descriptions (owner's labels, UI/URL structure, docs) and firing guessed combinations at the write endpoint → guess-and-probe against an opaque validator, which burns costly attempts and can silently settle on a wrong-but-accepted mapping
+**Context:** Building a create call for an external system, the id-to-field mapping was contested by three unreliable secondary sources (the data owner's labels, the visible URL structure, and the docs); I adjudicated between them by firing successive guessed combinations at the write endpoint — each a real, rate-limited, side-effectful call — until finally fetching one existing record via the read endpoint, whose materialized field values gave the mapping outright.
+**Pattern:** When you must reproduce a valid request/record for an opaque external system and a valid instance already exists there, don't infer the field mapping from secondary descriptions and iterate guesses against the write/validate endpoint — that loop is costly and a wrong mapping can be silently accepted as "valid." Fetch one existing valid instance via the read endpoint and copy its concrete field values; a materialized example is the ground-truth oracle for how to build a new one. The tell: you're about to send a second guessed variation to an endpoint that already answered the first with "incorrect." Distinct from live-schema introspection for field *names* (#352) — here the names are known; it's the *value-to-field mapping* that an existing instance resolves.
+**Scope:** universal
+**Category:** information-gathering
