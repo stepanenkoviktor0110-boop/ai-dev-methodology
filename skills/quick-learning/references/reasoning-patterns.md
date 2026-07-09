@@ -2188,3 +2188,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When the deliverable IS an enforcement/permission/isolation layer, treat any validation run where that layer is globally inert (elevated privilege, admin creds, a disabled flag, a stubbed guard) as zero evidence. Require the enforcement-critical checks to run in a production-equivalent restricted mode; a "green" obtained with the mechanism switched off is a false GO that ships the gap. Prefer proving both the negative (blocked without context) and positive (allowed with context) under the restricted mode.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-07-09 client-portal-core / decomposition: shared-gate widening
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** shared-gate widening blindness
+**Triad:** relaxing an access check to permit one operation → first confirm the same check doesn't also gate other operations you don't intend to open → assuming a permission-widening affects only the capability you had in mind
+**Context:** Planned to widen a single authorization check so a low-privilege actor could READ its own data, not noticing the identical check also gated every WRITE on those resources — so the read-widening would silently have granted mutate/delete/trigger too; a diverse-lens review caught several such openings the author's own pass missed.
+**Pattern:** When one predicate/guard controls multiple capabilities (read and write, view and mutate, list and act), relaxing it for one intent expands ALL of them. Before widening a shared gate, enumerate every operation it guards and add an explicit separate check for the ones that must stay closed; then test each supposedly-still-closed path, not just the one you meant to open.
+**Scope:** universal
+**Category:** scope-management
+
+### 2026-07-09 client-portal-core / planning: autonomy-scope overreach
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** autonomy-scope overreach
+**Triad:** a decision fork that looks technical but actually sets product-visible behavior, left unraised by the stakeholder → classify the fork by its consequence not its surface and treat product-behavior forks as explicit-confirmation-required → folding it under "decide technical forks autonomously" and reading silence as consent
+**Context:** Held delegated authority to resolve technical forks autonomously and used it to lock in defaults on choices that actually determined what the end-user could see and do, treating the stakeholder's non-objection as approval; the stakeholder corrected that they had never authorized deciding those.
+**Pattern:** Autonomy granted for technical forks does not extend to forks that set product-visible behavior (what users see, can access, or can do). Classify a fork by its consequence, not how technical it looks; if it changes product behavior or scope it is a STOP-and-confirm, and an unraised point is not an approved one — silence is not consent.
+**Scope:** universal
+**Category:** communication
