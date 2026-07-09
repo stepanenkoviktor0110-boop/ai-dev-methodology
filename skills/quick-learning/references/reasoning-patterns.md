@@ -2070,7 +2070,7 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-06-16 bot-config-from-platform / session 1: delegated worker paused for review it could never receive
 
-**Seen:** 1
+**Seen:** 3
 **Adapted:** —
 **Cognitive Error:** protocol-channel mismatch
 **Triad:** a delegated worker (subagent) following a "stop and ask for review" protocol mid-task, but its role has no channel to receive the answer → run delegated work to completion with all decisions pre-baked into the brief and an explicit "do not pause for review"; route any genuine open question to a fresh respawn, never an in-place wait → protocol-channel mismatch: applying an interactive protocol whose response channel does not exist in this role turns a pause into an unrecoverable deadlock
