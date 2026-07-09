@@ -2155,3 +2155,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Когда канал доставки заблокирован внешней инфраструктурой, отдели цель («результат должен быть доступен по URL/адресу») от канала («этот конкретный пайплайн»). Проверь, не отдаётся ли артефакт уже другим путём (raw/исходный endpoint, кэш, прямая отдача, альтернативный хост), и переключи потребителя туда — вместо серии попыток разблокировать канал. Порог: 2+ неудачные попытки разблокировки = стоп, искать обходной маршрут.
 **Scope:** universal
 **Category:** recovery
+
+### 2026-07-09 kak-zalit-trek / session 1: checkable external fact emitted from memory as verified
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** training-prior-as-verified-fact
+**Triad:** deliverable contains a cheaply-checkable claim about an external system → verify against the live source before presenting as fact → passing off a plausible-from-memory claim as established, verifying only after being challenged
+**Context:** Emitted procedural steps and service facts from training priors as if established, and only checked the live sources after the user asked "from memory or from real sites?" — the check then revealed material errors.
+**Pattern:** When a deliverable states a claim that is both checkable against a live authoritative source and available from prior knowledge, run the cheap live check BEFORE presenting it as fact, not after a challenge. Mark unverified content as hypothesis, not fact.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-07-09 kak-zalit-trek / session 1: artifact validated in its authoring environment breaks on delivery
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** authoring-environment affordance blindness
+**Triad:** validating a portable artifact while it sits in the environment that produced it → verify it detached, in a stand-in of the consumer's isolated environment → assuming ambient affordances (co-located files, running service, inherited state) will travel with the artifact
+**Context:** Declared a single-file deliverable ready while it silently depended on sibling asset files present only at author time; sent alone it would render with none of them.
+**Pattern:** Before calling a portable artifact done or self-contained, verify it detached from its authoring context — no co-located siblings, no running local server, no inherited state. If a consumer receives only the artifact, exercise it exactly that way.
+**Scope:** universal
+**Category:** information-gathering
