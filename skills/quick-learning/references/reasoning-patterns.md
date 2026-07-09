@@ -2210,3 +2210,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** Autonomy granted for technical forks does not extend to forks that set product-visible behavior (what users see, can access, or can do). Classify a fork by its consequence, not how technical it looks; if it changes product behavior or scope it is a STOP-and-confirm, and an unraised point is not an approved one — silence is not consent.
 **Scope:** universal
 **Category:** communication
+
+### 2026-07-10 raspisanie / session roster-rollout: empty primary view read as data absent
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** empty-view finality
+**Triad:** primary/current-state view returns empty or implausibly sparse against a reasonable expectation → ask why it is empty (periodic/lifecycle reset?) and check the entity's change-history/audit/derived representation before concluding absence → declaring the goal unreachable because the obvious view shows nothing
+**Context:** Concluded the target data did not exist because the current-state listing was near-empty, missing that the container had been reset by a periodic lifecycle process and the real data lived in the per-entity change-history.
+**Pattern:** When the obvious/current view returns empty or implausibly sparse and a domain expectation says it should be populated, do not conclude the data is absent. First ask whether the view was cleared by a periodic/lifecycle process, then look for a history/audit/derived representation that still holds it. An empty snapshot is not proof of absence — and a counterpart's "that can't be right" is a signal to check, not to defend the conclusion.
+**Scope:** universal
+**Category:** information-gathering
