@@ -1793,7 +1793,7 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-04-13 sheets-column-shift / session bugfix: downstream invariant blindspot
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Cognitive Error:** downstream invariant blindspot
 **Triad:** структурное изменение общего ресурса (добавление/удаление поля, колонки, слоя) → перечислить все downstream-операции которые предполагали старую структуру и явно протестировать их в новой → не оставлять неверифицированных структурных предположений
@@ -2175,5 +2175,16 @@ Patterns that apply to any project, any stack, any domain.
 **Triad:** validating a portable artifact while it sits in the environment that produced it → verify it detached, in a stand-in of the consumer's isolated environment → assuming ambient affordances (co-located files, running service, inherited state) will travel with the artifact
 **Context:** Declared a single-file deliverable ready while it silently depended on sibling asset files present only at author time; sent alone it would render with none of them.
 **Pattern:** Before calling a portable artifact done or self-contained, verify it detached from its authoring context — no co-located siblings, no running local server, no inherited state. If a consumer receives only the artifact, exercise it exactly that way.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-07-09 tenant-isolation-hardening / session 2: enforcement-inert validation
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** enforcement-inert validation
+**Triad:** validating that a newly-added enforcement/isolation mechanism actually works → run the enforcement-critical cases with the mechanism ACTIVE in the same privilege/mode as production, never under an account/flag that globally bypasses it → a green suite where the mechanism is globally disabled proves nothing (false GO)
+**Context:** A full test suite, a code audit, and a pre-deploy QA all passed and gave a GO, but the test environment connected with an elevated account that globally bypassed the very isolation mechanism being validated — so no case ever exercised enforcement; the gap only surfaced when the mechanism was turned on for real in production and immediately broke legitimate paths.
+**Pattern:** When the deliverable IS an enforcement/permission/isolation layer, treat any validation run where that layer is globally inert (elevated privilege, admin creds, a disabled flag, a stubbed guard) as zero evidence. Require the enforcement-critical checks to run in a production-equivalent restricted mode; a "green" obtained with the mechanism switched off is a false GO that ships the gap. Prefer proving both the negative (blocked without context) and positive (allowed with context) under the restricted mode.
 **Scope:** universal
 **Category:** information-gathering
