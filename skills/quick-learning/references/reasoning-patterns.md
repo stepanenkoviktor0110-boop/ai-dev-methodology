@@ -2144,3 +2144,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When you must reproduce a valid request/record for an opaque external system and a valid instance already exists there, don't infer the field mapping from secondary descriptions and iterate guesses against the write/validate endpoint — that loop is costly and a wrong mapping can be silently accepted as "valid." Fetch one existing valid instance via the read endpoint and copy its concrete field values; a materialized example is the ground-truth oracle for how to build a new one. The tell: you're about to send a second guessed variation to an endpoint that already answered the first with "incorrect." Distinct from live-schema introspection for field *names* (#352) — here the names are known; it's the *value-to-field mapping* that an existing instance resolves.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-07-09 sibvitr-b24u / session feed-deploy: Застрявший канал доставки vs уже доступный артефакт
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** channel fixation over goal
+**Triad:** нужный артефакт не доходит до потребителя из-за застрявшего build/deploy-канала (внешняя инфра — очередь раннеров, зависшая сборка) → отделить цель (артефакт должен быть достижим по адресу) от канала (конкретный пайплайн) и подать результат другим уже доступным маршрутом → форсировать заблокированный канал, когда тот же результат уже отдаётся в обход
+**Context:** Долго форсировал застрявший deploy-пайплайн (перезапуск, смена типа сборки, явный триггер), хотя тот же файл всё это время корректно отдавался другим маршрутом.
+**Pattern:** Когда канал доставки заблокирован внешней инфраструктурой, отдели цель («результат должен быть доступен по URL/адресу») от канала («этот конкретный пайплайн»). Проверь, не отдаётся ли артефакт уже другим путём (raw/исходный endpoint, кэш, прямая отдача, альтернативный хост), и переключи потребителя туда — вместо серии попыток разблокировать канал. Порог: 2+ неудачные попытки разблокировки = стоп, искать обходной маршрут.
+**Scope:** universal
+**Category:** recovery
