@@ -2103,7 +2103,7 @@ Patterns that apply to any project, any stack, any domain.
 
 ### 2026-07-01 catalog-autoscan / session 1: a read taken during concurrent mutation is a snapshot, not the truth
 
-**Seen:** 1
+**Seen:** 2
 **Adapted:** —
 **Cognitive Error:** concurrent-writer snapshot trust
 **Triad:** you dispatched concurrent agents/jobs that mutate-then-revert a shared file and you read it while they run → confirm the read against the committed/authoritative baseline (git show HEAD:file, the source of truth) before acting, especially before "fixing" an apparent defect → trusting a transient read of shared mutable state under active concurrent writers as ground truth
