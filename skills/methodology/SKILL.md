@@ -238,6 +238,14 @@ Completed features are archived to `work/completed/{feature}/`.
 - **Just-in-time context.** Read only what's needed. Task files list Context Files explicitly. Context7 MCP for library docs.
 - **Session planning.** Waves grouped into sessions by ~1200 LOC budget. At boundary → stop, generate next-session prompt. Audit + Final wave = last session.
 - **Checkpoint recovery.** `checkpoint.yml` persists after each wave. On context compaction → resume from next pending wave via checkpoint + decisions.md.
+- **Parallel features without breaking prod.** When 2-3 features run in parallel across
+  independent sessions, the `parallel-tracks` skill adds a cross-feature layer on top of the
+  per-feature pipeline: each feature is isolated on its own branch+worktree (one session =
+  one track), sessions coordinate only through shared repo files (`work/_train/`, not
+  memory), and tracks converge into `dev` **one at a time** through an integration train
+  (rebase → migration-head merge → PR/CI → merge → per-service deploy). feature-execution
+  auto-invokes it at feature start (isolation) and end (integration). This is what stops the
+  "race of commits" and the live-service breakage when parallel work is merged.
 
 ---
 

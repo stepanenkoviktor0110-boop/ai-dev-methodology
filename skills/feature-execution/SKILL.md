@@ -41,6 +41,13 @@ Before starting, read [quick-ref-feature-execution.md](../quick-learning/referen
 
 1. Read `work/{feature}/tech-spec.md` and `work/{feature}/user-spec.md`
 1.5. Read `work/{feature}/logs/session-plan.md` if it exists. Parse session boundaries: which waves belong to which session. If file does not exist — treat all waves as one session (backward compatibility).
+1.6. **Track isolation (parallel projects only).** If the project runs features in parallel
+   (the `parallel-tracks` skill applies / `scripts/train.py` exists), the feature must be
+   worked on its own branch+worktree, never on `dev` directly. If not already isolated
+   (current branch is `dev`/`main`), load the `parallel-tracks` skill and run its Part A
+   (`python scripts/train.py start <slice> --touches <zones>`), then continue from inside
+   the worktree. Relay any `COLLISION:` line to the user in plain language. Projects that
+   do not use parallel-tracks skip this step (unchanged behavior).
 2. Read frontmatter of all task files in `work/{feature}/tasks/` — extract fields:
 
    | Field | Purpose |
@@ -169,7 +176,13 @@ All waves done including Final Wave (QA, deploy if applicable, post-deploy verif
 2. Describe what to check manually (from execution plan "user checks" section)
 3. Issues found → fix → review → commit (max 3 rounds). If unresolved → escalate (see Escalation).
 4. All ok → finalize, shutdown team, delete `work/{feature}/logs/checkpoint.yml`
-5. Prompt user: "Фича завершена. Запусти `/done` для архивации и обновления документации."
+5. **Integration (parallel projects only).** If the project uses `parallel-tracks` and the
+   feature was worked on a `feature/<slice>` branch, it is NOT yet in `dev`. Load the
+   `parallel-tracks` skill and run its Part B (integration train) + Part C (per-service
+   deploy) — one word from the user, "собери", triggers this. Only after the track is
+   merged+deployed proceed to `/done`. Non-parallel projects skip this (feature is already
+   on the mainline).
+6. Prompt user: "Фича завершена. Запусти `/done` для архивации и обновления документации."
 
 ## Escalation
 
