@@ -2243,3 +2243,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** "Unreachable from here" is not "down." A single observer cannot distinguish a local route/egress block from a real outage — timeout (not refused) can be either. Before concluding the target is down, and before building recovery around that premise, confirm with an independent vantage (multi-node reachability service or a different network). A second observer disambiguates local-fault from target-fault in seconds.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-07-17 bitrix-lead-delivery / session 1: secret echoed into validation error message
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** context assumed safe by default
+**Triad:** constructing a validation/error message where a sensitive value (secret, credential, token) is in local scope for context → strip or replace the sensitive value before it enters the message string, treat any value in scope as leak-candidate until proven excluded → assuming a value is safe to interpolate into an outward-facing message just because it was convenient to reach in local scope
+**Context:** A validation error message included the raw secret value as context (which value failed and why) without treating the message string itself as an outward-facing channel; the value leaked into exception text (CWE-209-class exposure) and was only caught by a dedicated security review.
+**Pattern:** When building any message meant to be read outside the function (error text, log line, exception), do not assume a value is safe to include just because it is in local scope and useful for the message's meaning. Treat every outward-facing message as a channel that inherits whatever value touches it, and explicitly whitelist what may cross that boundary (e.g. only a host/identifier, never the secret itself) instead of writing the message first and hoping nothing sensitive leaked in.
+**Scope:** universal
+**Category:** problem-decomposition
