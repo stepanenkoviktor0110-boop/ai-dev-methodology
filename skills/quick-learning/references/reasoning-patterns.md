@@ -13,6 +13,28 @@ Patterns that apply to any project, any stack, any domain.
 
 <!-- Append universal patterns below -->
 
+### 2026-07-17 bitrix-lead-delivery / session 2: validation-enforcement disconnect
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** validation-enforcement disconnect
+**Triad:** a validate-then-use control resolves and checks an external target before a separate downstream step re-derives the same target independently → trace the data flow from the validation's output to the exact value the downstream call consumes, don't just confirm the check executed on the path → avoid check-ran-not-enforced bias, where a check's presence in the code path is mistaken for its result being binding
+**Context:** A resolve-and-validate step produced a vetted target value, but the connection layer one step later independently re-resolved the same target from scratch and discarded the vetted value — the check ran on every call yet enforced nothing, leaving a race window the code's own comment claimed was closed.
+**Pattern:** When a security or correctness control spans two steps (validate, then use), don't accept "the validation function is called" as proof of enforcement. Follow the specific value the validation produced through to the call site and confirm that exact value — not a fresh re-derivation — is what gets used.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-07-17 bitrix-lead-delivery / session 2: config locality blindspot
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** config locality blindspot
+**Triad:** a setting declared at a handler's own definition site is assumed to also govern behavior at every caller that logically depends on it → check whether the caller/producer path actually loads or evaluates that declaration, independent of whether the handler/consumer path does → avoid assuming a config value declared once propagates automatically to every code path that depends on its effect
+**Context:** A routing setting declared in a task's own definition was assumed to also control where a separate enqueuing caller sent work, but the caller never imports or evaluates that definition — the setting had zero effect on the caller's path, so work silently went to the wrong destination while the handler side worked correctly.
+**Pattern:** When a system has a declaration site and one or more independent invocation/caller sites, verify the setting's effect at each site separately — don't assume a caller inherits a callee's declared config just because they're logically related. If the caller doesn't load the declaration, pass the setting explicitly.
+**Scope:** universal
+**Category:** information-gathering
+
 ### 2026-07-06 cabinet-leads / session 1: latest-item tunnel vision
 
 **Seen:** 1
