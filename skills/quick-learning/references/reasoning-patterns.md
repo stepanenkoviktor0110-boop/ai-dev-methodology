@@ -2221,3 +2221,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When the obvious/current view returns empty or implausibly sparse and a domain expectation says it should be populated, do not conclude the data is absent. First ask whether the view was cleared by a periodic/lifecycle process, then look for a history/audit/derived representation that still holds it. An empty snapshot is not proof of absence — and a counterpart's "that can't be right" is a signal to check, not to defend the conclusion.
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-07-16 ai-platform / GH-runner deploy: sibling workflow reused as proven, had never run
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** presence-implies-proven
+**Triad:** about to reuse/mirror an existing script/workflow/config as a proven template for a new one → confirm it has actually executed successfully at least once (check run history/logs AND that its prerequisites — secrets, credentials, external state — exist), not just that it is present and looks complete → treating a never-executed artifact as validated and inheriting its latent unmet prerequisites
+**Context:** Mirrored a sibling deploy workflow as "the proven pattern" for a new deploy path. The first run failed at auth: the workflow had never actually run before, so the secret it depends on had never been set. "Written and looks complete" was mistaken for "known to work."
+**Pattern:** An artifact existing and looking finished is not evidence it works. Before leaning on it as a template or reusing its mechanism, confirm it has run successfully at least once (run history / logs) and that its prerequisites (secrets, tokens, external resources) are actually in place. A never-exercised path carries latent, unmet dependencies that surface only on first execution — verify provenance, don't infer it from presence.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-07-16 ai-platform / VPS "down" diagnosis: single local vantage read as global outage
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** single-vantage global inference
+**Triad:** a remote host/service is unreachable from your location (timeouts across ports) and you're about to conclude it is down/broken → get an independent external vantage (multi-node reachability probe / different network path) before concluding; if outside observers reach it, the fault is your local route, not the target → treating one observer's unreachability as the target's actual global state
+**Context:** SSH and HTTPS to a server both timed out from the work machine (same signature as a dead host), and the first instinct leaned "the server may be down." An external multi-node probe showed the server answered on all ports from every vantage including a same-country node — the block was only on the local egress route. A one-vantage negative had nearly driven a wrong recovery plan.
+**Pattern:** "Unreachable from here" is not "down." A single observer cannot distinguish a local route/egress block from a real outage — timeout (not refused) can be either. Before concluding the target is down, and before building recovery around that premise, confirm with an independent vantage (multi-node reachability service or a different network). A second observer disambiguates local-fault from target-fault in seconds.
+**Scope:** universal
+**Category:** information-gathering
