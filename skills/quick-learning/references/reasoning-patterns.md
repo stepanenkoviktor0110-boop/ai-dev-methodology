@@ -2276,3 +2276,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When building any message meant to be read outside the function (error text, log line, exception), do not assume a value is safe to include just because it is in local scope and useful for the message's meaning. Treat every outward-facing message as a channel that inherits whatever value touches it, and explicitly whitelist what may cross that boundary (e.g. only a host/identifier, never the secret itself) instead of writing the message first and hoping nothing sensitive leaked in.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-07-17 vk-channel-integration / session 2: "second line of defense" promised across a downstream that self-elevates
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** guarantee-scope overreach
+**Triad:** claiming a load-bearing protective guarantee covers an operation that then flows into a shared downstream stage which establishes its own broader-privilege context → anchor the guarantee to the boundary where untrusted input enters and produces its write, verify the enforcement actually reaches every step you promise, and correct the stated scope to match reality instead of dragging the narrow guard into shared core → assuming a protection spans the whole downstream when a shared self-elevating stage silently nullifies it past the entry point
+**Context:** An acceptance criterion promised the "second line of defense" (row-level isolation) held across the entire request downstream. In reality a shared core component opened its own elevated-privilege session for every channel, making the guard a no-op beyond the input boundary. The honest fix was to scope the claim to the untrusted-input→write boundary and reword the AC — not to force the narrow scoped guard through shared core (which would couple every unrelated caller and risk more than it protects).
+**Pattern:** A protective mechanism only holds where it is actually enforced. When the operation you are guarding flows into shared/common downstream that re-establishes its own broader-privilege context, that context nullifies your guard past the entry point — so a guarantee stated over "the whole request" is false. Anchor the guarantee to the boundary where untrusted input enters and produces its effect, trace that the enforcement reaches every step you promise, and rewrite the promised scope to match reality. Do not widen the narrow guard into shared core to make the over-broad promise true; that couples unrelated callers and adds risk. Reformulate the claim honestly instead.
+**Scope:** universal
+**Category:** problem-decomposition
