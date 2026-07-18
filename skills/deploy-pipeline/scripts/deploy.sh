@@ -92,15 +92,17 @@ fi
 # 2. backup before mutation
 if [ -n "$BACKUP_CMD" ]; then log "2. backup: $BACKUP_CMD"; bash -c "$BACKUP_CMD"; fi
 
-# 3. tag each service's CURRENT image :prev (the rollback point)
+# 3. tag each service's CURRENT image :prev (the rollback point). Derive the image NAME from the
+#    running container (.Config.Image) — works for both `image:` services AND build-only services
+#    (whose compose `image:` is empty; compose auto-names the built image <project>-<service>).
 declare -A IMG
 for SVC in $SPINE_SERVICES; do
   CID=$(docker compose ps -q "$SVC" 2>/dev/null || true)
   if [ -n "$CID" ]; then
-    IMGID=$(docker inspect --format '{{.Image}}' "$CID")
-    IMGREF=$(docker compose config --format json 2>/dev/null | python3 -c "import sys,json;print(json.load(sys.stdin)['services']['$SVC'].get('image',''))" 2>/dev/null || true)
-    IMG["$SVC"]="$IMGREF"
-    if [ -n "$IMGREF" ]; then docker tag "$IMGID" "${IMGREF%:*}:$PREV_TAG"; log "3. tagged $SVC current -> ${IMGREF%:*}:$PREV_TAG"; fi
+    IMGID=$(docker inspect --format '{{.Image}}' "$CID")          # sha of the running image
+    IMGNAME=$(docker inspect --format '{{.Config.Image}}' "$CID")  # compose-assigned name/tag
+    IMG["$SVC"]="$IMGNAME"
+    docker tag "$IMGID" "${IMGNAME%:*}:$PREV_TAG"; log "3. tagged $SVC ($IMGNAME) -> ${IMGNAME%:*}:$PREV_TAG"
   fi
 done
 
@@ -114,9 +116,9 @@ for SVC in $SPINE_SERVICES; do docker compose rm -sf "$SVC"; docker compose up -
 rollback() {
   echo "!! rolling back to :$PREV_TAG" >&2
   for SVC in $SPINE_SERVICES; do
-    REF="${IMG[$SVC]:-}"; [ -n "$REF" ] || continue
-    docker tag "${REF%:*}:$PREV_TAG" "$REF" 2>/dev/null || true
-    docker compose rm -sf "$SVC" || true; docker compose up -d --no-deps "$SVC" || true
+    NAME="${IMG[$SVC]:-}"; [ -n "$NAME" ] || continue
+    docker tag "${NAME%:*}:$PREV_TAG" "$NAME" 2>/dev/null || true   # point the compose image back to prev
+    docker compose rm -sf "$SVC" || true; docker compose up -d --no-build --no-deps "$SVC" || true
   done
   echo "!! rolled back — prod restored to previous image" >&2; exit 5
 }
@@ -161,11 +163,13 @@ else
     ssh -o BatchMode=yes "$SSH_HOST" \
       "REMOTE_DIR='$REMOTE_DIR' SPINE_SERVICES='$SPINE_SERVICES' PREV_TAG='$PREV_TAG' bash -seuo pipefail" <<'RB'
 cd "$REMOTE_DIR"
+# derive the image name from the (new) running container — same base name across builds, so the
+# :prev tag from step 3 restores build-only services too. No cross-session state needed.
 for SVC in $SPINE_SERVICES; do
-  REF=$(docker compose config --format json 2>/dev/null | python3 -c "import sys,json;print(json.load(sys.stdin)['services']['$SVC'].get('image',''))" 2>/dev/null || true)
-  [ -n "$REF" ] || continue
-  docker tag "${REF%:*}:$PREV_TAG" "$REF" 2>/dev/null || true
-  docker compose rm -sf "$SVC" || true; docker compose up -d --no-deps "$SVC" || true
+  CID=$(docker compose ps -q "$SVC" 2>/dev/null || true); [ -n "$CID" ] || continue
+  NAME=$(docker inspect --format '{{.Config.Image}}' "$CID")
+  docker tag "${NAME%:*}:$PREV_TAG" "$NAME" 2>/dev/null || true
+  docker compose rm -sf "$SVC" || true; docker compose up -d --no-build --no-deps "$SVC" || true
 done
 echo "rolled back after smoke failure — prod restored" >&2
 RB
