@@ -122,6 +122,27 @@ YAML/nginx, malformed env value, wrong feed, a forgotten manual step) on **any**
 per-project hand-coding. It works by knowing artifact *classes* generically and auto-detecting a
 repo's instances of them. Full model + rationale: [references/artifact-registry.md](references/artifact-registry.md).
 
+## Governing principle: fix the root, never bypass (this IS the pipeline)
+
+The entire purpose of this pipeline is to fix the **root — the mechanism** — and never to work
+around a consequence. This principle overrides convenience every time:
+
+- **No bypass exists, by design.** There is no `--skip-gate` flag, no "just this once". If a gate
+  is inconvenient because it's in the wrong place (e.g. Linux checks running on a non-Linux
+  operator box), you **move the gate** (run it on the target), you do not add a way past it. A gate
+  you can turn off when it's annoying is not a gate.
+- **A false gate is a defect in the CHECK — fix the check.** When a validator fails on valid input
+  (a site nginx snippet, a settings loader whose tool is absent), the answer is to make the check
+  correct/environment-aware (SKIP-with-reason for an environment gap; FAIL only for a real defect),
+  never to loosen, silence, or route around it.
+- **When the mechanism itself is what fails, fix the mechanism in the same pass.** A workaround that
+  leaves the mechanism broken is forbidden — it just relocates the failure to the next person.
+- **Never tighten a test to match buggy output**, never special-case a symptom, never patch a
+  single field/phrase when the class is what's wrong (see [[fix-causes]], [[fix-blocker-mechanism-always]]).
+
+If you catch yourself reaching for a bypass, stop: that friction is the mechanism telling you where
+its root defect is. Fix that.
+
 ## Parts
 
 - **[references/artifact-registry.md](references/artifact-registry.md)** — the universal taxonomy (7 MVP classes: compose, env-schema, shell, static-config, migration, reverse-proxy, runtime-behavior), each with a detector, a generic validator, and lifecycle wiring. Logic written **once**.

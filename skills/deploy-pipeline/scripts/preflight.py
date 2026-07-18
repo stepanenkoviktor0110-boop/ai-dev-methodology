@@ -191,17 +191,33 @@ def v_reverse_proxy(repo: Path, frag: dict) -> tuple[bool | None, str]:
         full = "events {" in text or "events{" in text or "http {" in text or "http{" in text
         dest = "/etc/nginx/nginx.conf" if full else "/etc/nginx/conf.d/zz_preflight.conf"
         rc, out = sh(
-            ["docker", "run", "--rm", "-v", f"{(repo / f)}:{dest}:ro",
-             "nginx:alpine", "nginx", "-t"],
+            [
+                "docker",
+                "run",
+                "--rm",
+                "-v",
+                f"{(repo / f)}:{dest}:ro",
+                "nginx:alpine",
+                "nginx",
+                "-t",
+            ],
             repo,
         )
         if rc != 0:
             low = out.lower()
             # A throwaway container lacks the real certs/upstreams/includes — those failures are
             # environment limits, not config defects. Only a genuine PARSE error is a real fail.
-            env_limit = any(s in low for s in (
-                "cannot load certificate", "no such file", "host not found in upstream",
-                "open()", "ssl_certificate", "upstream"))
+            env_limit = any(
+                s in low
+                for s in (
+                    "cannot load certificate",
+                    "no such file",
+                    "host not found in upstream",
+                    "open()",
+                    "ssl_certificate",
+                    "upstream",
+                )
+            )
             if env_limit:
                 skipped += 1
                 continue
