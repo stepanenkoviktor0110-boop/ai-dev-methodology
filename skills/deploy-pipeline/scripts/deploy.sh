@@ -68,9 +68,19 @@ echo "== deploy-safety: branch=$BRANCH services=[$SPINE_SERVICES] dry-run=$DRY =
 #        instead of the actual target state. CI (--all on Linux) remains the pre-merge gate.
 log "0. preflight → runs on target (post-checkout, pre-recreate); CI is the pre-merge gate"
 
-# --- 1. push branch to target (backup remote optional) ---
-log "1. push $BRANCH to target"
-run "git push '$SSH_HOST-vps' '$BRANCH' 2>/dev/null || git push vps '$BRANCH' 2>/dev/null || true"
+# --- 1. push branch to target's origin mirror (if the target deploys from a local bare mirror) ---
+# Many targets `git fetch` from THEIR OWN origin (often a local bare repo), NOT from GitHub. If that
+# mirror is stale, the on-target ancestry guard ABORTS (safe) — but the operator must know WHY. So a
+# missing/failed mirror push is a LOUD warning with the exact fix, never a silent `|| true` (that
+# silence is precisely what hides deploy drift — the recurring "fix is in git but not on prod").
+log "1. push $BRANCH to target mirror"
+if git remote get-url "$SSH_HOST-vps" >/dev/null 2>&1 || git remote get-url vps >/dev/null 2>&1; then
+  run "git push '$SSH_HOST-vps' '$BRANCH' 2>/dev/null || git push vps '$BRANCH' 2>/dev/null || echo '  WARN: mirror push FAILED — target will deploy whatever its own origin already has (guard is the net)'"
+else
+  log "  WARN: no mirror remote ('$SSH_HOST-vps' or 'vps') configured locally — target will deploy from ITS OWN origin."
+  log "        If that origin is a stale bare mirror the on-target guard ABORTS (prod untouched). To feed the mirror, add e.g.:"
+  log "        git remote add vps $SSH_HOST:/root/repos/<repo>.git   (then it fast-forwards the mirror each deploy)"
+fi
 
 # --- 2-7. remote: backup, tag :prev, build, recreate, health-gate, rollback-on-fail ---
 REMOTE_SCRIPT=$(cat <<'REMOTE'
