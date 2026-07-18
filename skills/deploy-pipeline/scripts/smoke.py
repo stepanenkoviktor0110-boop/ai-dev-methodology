@@ -131,9 +131,8 @@ def main() -> int:
             ok, detail = run_command(c, args.ssh, args.timeout)
         else:
             ok, detail = call_url(c, args.timeout)
-        print(
-            f"  [{'PASS' if ok else 'FAIL'}] {c.get('service', c.get('url') or c.get('command'))}: {detail}"
-        )
+        label = c.get("service") or c.get("url") or c.get("command")
+        print(f"  [{'PASS' if ok else 'FAIL'}] {label}: {detail}")
         failed += 0 if ok else 1
     if failed:
         print(f"SMOKE FAILED: {failed} anchor(s) — deploy will roll back", file=sys.stderr)
