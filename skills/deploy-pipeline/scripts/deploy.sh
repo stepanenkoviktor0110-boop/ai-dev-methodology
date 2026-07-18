@@ -156,9 +156,9 @@ fi
 # --- 6. post-deploy runtime-behavior smoke (deterministic anchors) → rollback handled by smoke exit ---
 log "6. post-deploy smoke (runtime-behavior anchors)"
 if [ "$DRY" = 1 ]; then
-  echo "  DRY: $PY $SKILL_DIR/smoke.py --manifest $MANIFEST"
+  echo "  DRY: $PY $SKILL_DIR/smoke.py --manifest $MANIFEST --ssh $SSH_HOST"
 else
-  "$PY" "$SKILL_DIR/smoke.py" --manifest "$MANIFEST" || {
+  "$PY" "$SKILL_DIR/smoke.py" --manifest "$MANIFEST" --ssh "$SSH_HOST" || {
     echo "!! smoke failed — triggering remote rollback" >&2
     ssh -o BatchMode=yes "$SSH_HOST" \
       "REMOTE_DIR='$REMOTE_DIR' SPINE_SERVICES='$SPINE_SERVICES' PREV_TAG='$PREV_TAG' bash -seuo pipefail" <<'RB'
