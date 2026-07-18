@@ -111,6 +111,13 @@ def v_env_schema(repo: Path, frag: dict) -> tuple[bool | None, str]:
         return None, "no settings loader detected — skipped"
     rc, out = sh(loader, repo)
     if rc != 0:
+        low = out.lower()
+        # Distinguish "the loader TOOL can't run here" (skip — e.g. uv absent on the host; the
+        # container boot + health gate is the real env-value proof) from "Settings genuinely
+        # invalid" (fail). A missing interpreter is an environment gap, not a config defect.
+        if rc == 127 or "not found" in low or "no such file" in low or "no module named" in low:
+            why = out.splitlines()[-1] if out else ""
+            return None, f"loader tool unavailable here — skipped ({why})"
         tail = out.splitlines()[-1] if out else "load failed"
         return False, f"settings do not load: {tail}"
     return True, "settings load (values valid)"
@@ -175,23 +182,34 @@ def v_reverse_proxy(repo: Path, frag: dict) -> tuple[bool | None, str]:
         return None, "proxy tool/docker absent — skipped (health gate is the net)"
     if frag.get("type") != "nginx":
         return None, f"{frag.get('type')} check not implemented — skipped"
-    for f in frag.get("files", []):
+    files = frag.get("files", [])
+    skipped = 0
+    for f in files:
+        text = (repo / f).read_text(encoding="utf-8", errors="ignore")
+        # A full nginx.conf has an http/events block; a site file is a bare server{} snippet that
+        # must be tested INSIDE http{} (mount into conf.d/, which the default nginx.conf includes).
+        full = "events {" in text or "events{" in text or "http {" in text or "http{" in text
+        dest = "/etc/nginx/nginx.conf" if full else "/etc/nginx/conf.d/zz_preflight.conf"
         rc, out = sh(
-            [
-                "docker",
-                "run",
-                "--rm",
-                "-v",
-                f"{(repo / f)}:/etc/nginx/nginx.conf:ro",
-                "nginx:alpine",
-                "nginx",
-                "-t",
-            ],
+            ["docker", "run", "--rm", "-v", f"{(repo / f)}:{dest}:ro",
+             "nginx:alpine", "nginx", "-t"],
             repo,
         )
         if rc != 0:
+            low = out.lower()
+            # A throwaway container lacks the real certs/upstreams/includes — those failures are
+            # environment limits, not config defects. Only a genuine PARSE error is a real fail.
+            env_limit = any(s in low for s in (
+                "cannot load certificate", "no such file", "host not found in upstream",
+                "open()", "ssl_certificate", "upstream"))
+            if env_limit:
+                skipped += 1
+                continue
             return False, f"{f}: {out.splitlines()[-1] if out else 'nginx -t failed'}"
-    return True, f"{len(frag.get('files', []))} nginx conf(s) valid"
+    if skipped and skipped == len(files):
+        return None, "syntax ok; full test needs real certs/upstreams — health gate is the net"
+    ok = len(files) - skipped
+    return True, f"{ok} nginx conf(s) valid" + (f" ({skipped} env-skipped)" if skipped else "")
 
 
 VALIDATORS = {

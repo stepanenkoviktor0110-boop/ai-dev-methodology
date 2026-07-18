@@ -62,15 +62,11 @@ PYEOF
 
 echo "== deploy-safety: branch=$BRANCH services=[$SPINE_SERVICES] dry-run=$DRY =="
 
-# --- 0. preflight (local, change-scoped) — the gate. Red here = prod is never touched. ---
-log "0. preflight"
-PF_ARGS=(--repo . --manifest "$MANIFEST")
-if [ -n "$DIFF_BASE" ]; then PF_ARGS+=(--diff-base "$DIFF_BASE"); else PF_ARGS+=(--all); fi
-if [ "$DRY" = 1 ]; then
-  echo "  DRY: $PY $SKILL_DIR/preflight.py ${PF_ARGS[*]}"
-else
-  "$PY" "$SKILL_DIR/preflight.py" "${PF_ARGS[@]}" || { echo "ABORT: preflight failed" >&2; exit 1; }
-fi
+# --- 0. preflight runs ON THE TARGET (Linux), inside the remote block after checkout — where the
+#        tools (bash/nginx/docker) and the REAL target .env/configs exist. Running it on the deploy
+#        operator's box would (a) false-fail on a non-Linux host and (b) validate repo artifacts
+#        instead of the actual target state. CI (--all on Linux) remains the pre-merge gate.
+log "0. preflight → runs on target (post-checkout, pre-recreate); CI is the pre-merge gate"
 
 # --- 1. push branch to target (backup remote optional) ---
 log "1. push $BRANCH to target"
@@ -84,15 +80,34 @@ log() { echo "[$(date -u +%H:%M:%S)] $*"; }
 
 # refuse to deploy a branch that does not contain the running commit (no silent rollback of newer prod)
 git fetch --all --quiet
-CUR=$(git rev-parse HEAD)
+CUR=$(git rev-parse HEAD); CUR_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if ! git merge-base --is-ancestor "$CUR" "origin/$BRANCH"; then
   echo "ABORT: origin/$BRANCH does not contain current prod $CUR — would roll back." >&2; exit 3
 fi
 
-# 2. backup before mutation
-if [ -n "$BACKUP_CMD" ]; then log "2. backup: $BACKUP_CMD"; bash -c "$BACKUP_CMD"; fi
+# 1b. check out the new code. Running containers still use their OLD baked images, so prod is
+#     unaffected until recreate — this is safe and lets preflight validate the real new tree.
+git checkout -B "$BRANCH" "origin/$BRANCH"
+log "checked out: $(git log --oneline -1)"
 
-# 3. tag each service's CURRENT image :prev (the rollback point). Derive the image NAME from the
+# 2. PREFLIGHT ON TARGET — validate the new tree + the REAL target .env/configs, before ANY mutation.
+#    Runs here (Linux) not on the operator's box: the tools and actual target state live here. A
+#    failure aborts with prod fully intact (nothing rebuilt/recreated yet); we just restore the tree.
+if [ -f deploy/deploy-safety/preflight.py ]; then
+  log "2. preflight (on target)"
+  if ! python3 deploy/deploy-safety/preflight.py --repo . --manifest "$MANIFEST_NAME" --all; then
+    echo "ABORT: preflight failed on target — restoring tree, prod untouched" >&2
+    git checkout -B "$CUR_BRANCH" "$CUR" >/dev/null 2>&1 || git checkout -f "$CUR" >/dev/null 2>&1 || true
+    exit 4
+  fi
+else
+  log "2. preflight skipped (no vendored deploy/deploy-safety/preflight.py in repo — CI is the gate)"
+fi
+
+# 3. backup before mutation
+if [ -n "$BACKUP_CMD" ]; then log "3. backup: $BACKUP_CMD"; bash -c "$BACKUP_CMD"; fi
+
+# 4. tag each service's CURRENT image :prev (the rollback point). Derive the image NAME from the
 #    running container (.Config.Image) — works for both `image:` services AND build-only services
 #    (whose compose `image:` is empty; compose auto-names the built image <project>-<service>).
 declare -A IMG
@@ -102,13 +117,12 @@ for SVC in $SPINE_SERVICES; do
     IMGID=$(docker inspect --format '{{.Image}}' "$CID")          # sha of the running image
     IMGNAME=$(docker inspect --format '{{.Config.Image}}' "$CID")  # compose-assigned name/tag
     IMG["$SVC"]="$IMGNAME"
-    docker tag "$IMGID" "${IMGNAME%:*}:$PREV_TAG"; log "3. tagged $SVC ($IMGNAME) -> ${IMGNAME%:*}:$PREV_TAG"
+    docker tag "$IMGID" "${IMGNAME%:*}:$PREV_TAG"; log "4. tagged $SVC ($IMGNAME) -> ${IMGNAME%:*}:$PREV_TAG"
   fi
 done
 
-# 4. fast-forward + build + recreate (rm -sf + up: fresh container AND env_file reload)
-git checkout -B "$BRANCH" "origin/$BRANCH"
-log "4. build+recreate: $(git log --oneline -1)"
+# 5. build + recreate (rm -sf + up: fresh container AND env_file reload)
+log "5. build+recreate: $(git log --oneline -1)"
 for SVC in $SPINE_SERVICES; do docker compose build "$SVC"; done
 for SVC in $SPINE_SERVICES; do docker compose rm -sf "$SVC"; docker compose up -d --no-deps "$SVC"; done
 
@@ -142,7 +156,7 @@ log "OK: services healthy on new image"
 REMOTE
 )
 
-log "2-5. remote deploy (backup, tag :prev, build, recreate, health-gate, auto-rollback)"
+log "2-6. remote (checkout, preflight-on-target, backup, tag :prev, build, recreate, health-gate, auto-rollback)"
 if [ "$DRY" = 1 ]; then
   echo "  DRY: ssh $SSH_HOST with REMOTE_DIR=$REMOTE_DIR BRANCH=$BRANCH SPINE_SERVICES='$SPINE_SERVICES' HEALTH_URL=$HEALTH_URL"
   echo "  DRY: would run the remote backup/tag-prev/build/recreate/health-gate/rollback block"
@@ -150,7 +164,7 @@ else
   ssh -o BatchMode=yes "$SSH_HOST" \
     "REMOTE_DIR='$REMOTE_DIR' BRANCH='$BRANCH' SPINE_SERVICES='$SPINE_SERVICES' HEALTH_URL='$HEALTH_URL' \
      HEALTH_POLL='$HEALTH_POLL' HEALTH_TIMEOUT='$HEALTH_TIMEOUT' HEALTH_OK='$HEALTH_OK' \
-     PREV_TAG='$PREV_TAG' BACKUP_CMD='$BACKUP_CMD' bash -seuo pipefail" <<<"$REMOTE_SCRIPT"
+     PREV_TAG='$PREV_TAG' BACKUP_CMD='$BACKUP_CMD' MANIFEST_NAME='$(basename "$MANIFEST")' bash -seuo pipefail" <<<"$REMOTE_SCRIPT"
 fi
 
 # --- 6. post-deploy runtime-behavior smoke (deterministic anchors) → rollback handled by smoke exit ---
