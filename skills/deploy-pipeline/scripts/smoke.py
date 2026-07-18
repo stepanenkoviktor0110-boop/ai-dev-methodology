@@ -74,7 +74,9 @@ def main() -> int:
         return 2
     manifest = yaml.safe_load(man.read_text(encoding="utf-8")) or {}
     checks = (manifest.get("classes", {}).get("runtime-behavior", {}) or {}).get("checks", [])
-    checks = [c for c in checks if c.get("url", "").startswith("http") and "<" not in c.get("url", "")]
+    checks = [
+        c for c in checks if c.get("url", "").startswith("http") and "<" not in c.get("url", "")
+    ]
     if not checks:
         print("smoke: no runtime-behavior checks configured — skipped (fill manifest to enable)")
         return 0

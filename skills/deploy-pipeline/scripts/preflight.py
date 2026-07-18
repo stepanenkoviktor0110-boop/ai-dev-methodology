@@ -36,8 +36,16 @@ except ImportError:
 def sh(cmd: list[str] | str, cwd: Path, timeout: int = 300) -> tuple[int, str]:
     """Run a command, return (rc, combined-output). Shell only for manifest-provided strings."""
     shell = isinstance(cmd, str)
-    p = subprocess.run(cmd, cwd=cwd, shell=shell, capture_output=True,
-                       text=True, encoding="utf-8", errors="replace", timeout=timeout)
+    p = subprocess.run(
+        cmd,
+        cwd=cwd,
+        shell=shell,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=timeout,
+    )
     return p.returncode, (p.stdout + p.stderr).strip()
 
 
@@ -147,8 +155,15 @@ def v_db_migration(repo: Path, frag: dict) -> tuple[bool | None, str]:
     check = frag.get("head_check", "alembic heads")
     rc, out = sh(check, repo)
     if rc != 0:
-        return None, f"cannot run '{check}' here — skipped ({out.splitlines()[-1] if out else 'no tool'})"
-    heads = [ln for ln in out.splitlines() if ln.strip() and "(head)" in ln or ln.strip().endswith("(head)")]
+        return (
+            None,
+            f"cannot run '{check}' here — skipped ({out.splitlines()[-1] if out else 'no tool'})",
+        )
+    heads = [
+        ln
+        for ln in out.splitlines()
+        if ln.strip() and "(head)" in ln or ln.strip().endswith("(head)")
+    ]
     n = len(heads) if heads else len([ln for ln in out.splitlines() if ln.strip()])
     if n != 1:
         return False, f"{n} migration heads (must be 1) — divergent migrations"
@@ -161,8 +176,19 @@ def v_reverse_proxy(repo: Path, frag: dict) -> tuple[bool | None, str]:
     if frag.get("type") != "nginx":
         return None, f"{frag.get('type')} check not implemented — skipped"
     for f in frag.get("files", []):
-        rc, out = sh(["docker", "run", "--rm", "-v", f"{(repo / f)}:/etc/nginx/nginx.conf:ro",
-                      "nginx:alpine", "nginx", "-t"], repo)
+        rc, out = sh(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "-v",
+                f"{(repo / f)}:/etc/nginx/nginx.conf:ro",
+                "nginx:alpine",
+                "nginx",
+                "-t",
+            ],
+            repo,
+        )
         if rc != 0:
             return False, f"{f}: {out.splitlines()[-1] if out else 'nginx -t failed'}"
     return True, f"{len(frag.get('files', []))} nginx conf(s) valid"
@@ -185,7 +211,9 @@ def main() -> int:
     ap.add_argument("--manifest", default="deploy-manifest.yml")
     ap.add_argument("--diff-base", help="run classes touched since this ref (e.g. origin/dev)")
     ap.add_argument("--files", nargs="*", help="explicit changed-file list")
-    ap.add_argument("--all", action="store_true", help="run every present class (CI / first deploy)")
+    ap.add_argument(
+        "--all", action="store_true", help="run every present class (CI / first deploy)"
+    )
     args = ap.parse_args()
 
     # Windows consoles default to a legacy codepage (cp1251) that crashes on tool output
@@ -207,12 +235,21 @@ def main() -> int:
         to_run = list(classes)
         scope = "ALL present classes"
     else:
-        files = args.files if args.files else (changed_files(repo, args.diff_base) if args.diff_base else [])
+        files = (
+            args.files
+            if args.files
+            else (changed_files(repo, args.diff_base) if args.diff_base else [])
+        )
         if not files:
-            print("no changed files resolved (pass --diff-base, --files, or --all) — nothing to check")
+            print(
+                "no changed files resolved (pass --diff-base, --files, or --all) — nothing to check"
+            )
             return 0
-        to_run = [n for n, frag in classes.items()
-                  if any(_match(f, pat) for f in files for pat in class_triggers(n, frag))]
+        to_run = [
+            n
+            for n, frag in classes.items()
+            if any(_match(f, pat) for f in files for pat in class_triggers(n, frag))
+        ]
         scope = f"{len(files)} changed file(s) → {len(to_run)} class(es)"
 
     print(f"preflight [{scope}]")
