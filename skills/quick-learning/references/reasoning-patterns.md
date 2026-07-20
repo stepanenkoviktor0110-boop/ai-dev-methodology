@@ -2287,3 +2287,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** A protective mechanism only holds where it is actually enforced. When the operation you are guarding flows into shared/common downstream that re-establishes its own broader-privilege context, that context nullifies your guard past the entry point — so a guarantee stated over "the whole request" is false. Anchor the guarantee to the boundary where untrusted input enters and produces its effect, trace that the enforcement reaches every step you promise, and rewrite the promised scope to match reality. Do not widen the narrow guard into shared core to make the over-broad promise true; that couples unrelated callers and adds risk. Reformulate the claim honestly instead.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-07-20 bitrix-lead-delivery / session 3: module-level pooled connection outlives per-invocation async runtime
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** pool-outlives-runtime bias
+**Triad:** a resource pool (DB connections, sockets) is created once at module/process scope and then reused across a loop of independent invocations, each of which spins up its own fresh async runtime (new event loop) → scope pool creation to match the actual runtime lifetime — recreate the pool per invocation, or explicitly disable pooling for that code path — instead of assuming a module-level pool is safely shareable → assuming a pooled handle stays valid across runtime boundaries it was never designed to survive
+**Context:** A worker task called a fresh async-runtime entrypoint per job while reusing one module-level pooled connection engine. A connection checked out from the pool stayed bound to the event loop that first opened it; the next job's fresh loop reused a now-dead handle and failed with an opaque "closed/wrong loop" error. It worked in a one-shot manual test (one runtime, one loop) and in unit tests (session mocked out beneath the bug), so it only surfaced under the real repeated-invocation path in production.
+**Pattern:** When a resource pool is shared across a loop of independent invocations that each create their own fresh runtime context (new event loop, new process), don't assume the pool's lifetime matches the runtime it happens to run under first. Either scope pool creation to that context (no persistent module-level pool) or disable pooling (e.g. NullPool-equivalent) for that code path, and verify by driving at least two real back-to-back invocations of the actual repeated path — not a single manual call and not a mocked unit test — before trusting it.
+**Scope:** universal
+**Category:** tool-selection
