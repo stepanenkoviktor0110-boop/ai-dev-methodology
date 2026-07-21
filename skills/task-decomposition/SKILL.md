@@ -129,7 +129,7 @@ After individual validation passes, run a final cross-task check:
 
 After user approves task decomposition, calculate session grouping for predictable execution.
 
-1. Read all task files, collect per task: `wave`, `estimated_loc`, Context Files list.
+1. Read all task files, collect per task: `wave`, `estimated_loc`, Context Files list. Read the tech-spec frontmatter `branch:` — the implementation branch for this feature.
 2. Group waves into sessions using LOC budget:
    a. **Session LOC budget = ~1200 lines (±300)** — matches Phase 0 block size.
    b. Walk waves in order. For each wave, sum `estimated_loc` of its tasks.
@@ -139,7 +139,7 @@ After user approves task decomposition, calculate session grouping for predictab
    f. If a single wave > budget → it gets its own session (warn user: "Wave N exceeds session budget").
 3. For each session, collect unique Context Files from all tasks in that session (deduplicate).
 4. Give each session a short descriptive title based on its tasks' descriptions.
-5. Generate `work/{feature}/logs/session-plan.md` from template `~/.claude/shared/work-templates/session-plan.md.template`. Include prompts for ALL sessions in the file (for reference).
+5. Generate `work/{feature}/logs/session-plan.md` from template `~/.claude/shared/work-templates/session-plan.md.template`. Include prompts for ALL sessions in the file (for reference). Fill the **Branch** field (header + every session block) from the tech-spec `branch:`, applying the template's Branch-discipline rule (isolated `feature/{name}` + worktree for a multi-session/multi-component feature or when the default branch is prod; merge back to the default branch only in the final session after green QA). **Every session prompt MUST open with a `Ветка/Branch:` line** stating the working branch + isolation rule — never leave the branch implicit (big repos have many branches).
 6. Present session plan to user as a table: session number, title, waves, tasks, estimated LOC.
 7. Git commit: `chore(tasks): session plan for {feature} — {N} sessions`
 8. Show ONLY the prompt for Session 1. Do NOT show prompts for later sessions — they are in session-plan.md and will be delivered by feature-execution at the end of each session.

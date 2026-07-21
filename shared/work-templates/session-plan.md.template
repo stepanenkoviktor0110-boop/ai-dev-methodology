@@ -3,12 +3,24 @@
 **Created:** YYYY-MM-DD
 **Total sessions:** N
 **LOC budget per session:** ~1200
+**Branch:** {from tech-spec frontmatter `branch:`}
+
+> **Branch discipline (fill per session, ALWAYS state it in the session prompt).**
+> Every implementation session MUST declare which branch it works on — in large repos there
+> are many branches and an unstated branch is a real footgun. Default rule:
+> - Multi-session / multi-component feature, or the default branch is prod (dev=prod=origin=VPS):
+>   work on an ISOLATED `feature/{name}` branch + git worktree (parallel-tracks). Branch off the
+>   default branch (which holds the specs). Merge back to the default branch only in the FINAL
+>   session after green QA, via the integration train (PR + CI).
+> - Small, low-risk change on a non-prod default branch: the default branch is acceptable.
+> Take the branch from the tech-spec frontmatter `branch:` field; do NOT leave it implicit.
 
 ---
 
 ## Session 1: {Session Title}
 - **Waves:** 1
 - **Tasks:** 1, 2, 3
+- **Branch:** feature/{name} (isolated worktree)  |  {default branch}
 - **Estimated LOC:** ~800
 - **Context files:**
   - `path/to/file1.ts`
@@ -17,6 +29,7 @@
 ## Session 2: {Session Title}
 - **Waves:** 2, 3
 - **Tasks:** 4, 5, 6
+- **Branch:** feature/{name} (isolated worktree)
 - **Estimated LOC:** ~900
 - **Context files:**
   - `path/to/file3.ts`
@@ -24,6 +37,15 @@
 ## Session N: Audit & Finalization
 - **Waves:** Audit Wave, Final Wave
 - **Tasks:** {audit and final task numbers}
+- **Branch:** feature/{name} → merge to {default branch} after QA (integration train: PR + CI)
 - **Estimated LOC:** N/A (review & deploy)
 - **Context files:**
   - all files from tech-spec "Files to modify"
+
+---
+
+## Session prompts
+
+> One fenced block per session (only Session 1 shown to the user at plan time; later ones are
+> delivered by feature-execution at each session's end). EVERY prompt MUST open with a
+> **Ветка/Branch** line stating the working branch + isolation rule, matching the field above.
