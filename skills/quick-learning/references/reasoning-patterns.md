@@ -2298,3 +2298,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a resource pool is shared across a loop of independent invocations that each create their own fresh runtime context (new event loop, new process), don't assume the pool's lifetime matches the runtime it happens to run under first. Either scope pool creation to that context (no persistent module-level pool) or disable pooling (e.g. NullPool-equivalent) for that code path, and verify by driving at least two real back-to-back invocations of the actual repeated path — not a single manual call and not a mocked unit test — before trusting it.
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-07-21 kb-document-upload / task-decomposition: delegated agent reported "completed" but produced no file
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** delegated-output trust
+**Triad:** fanning out delegated work (subagent/tool) that must PRODUCE an artifact (file, commit, record) and it returns a success/"completed" status → verify the concrete artifact actually exists (ls/grep/read) before proceeding — a completion signal is not proof of the deliverable, especially when the agent may have re-delegated (nested spawn) or degraded → treating an agent's "done" as proof the artifact was produced, without checking the artifact itself
+**Context:** In a 14-way fan-out of task-file creators, one creator re-delegated to a nested sub-agent that orphaned; both the parent and the nested agent returned "completed" notifications, yet `tasks/6.md` was never written. A cheap `ls` of the output directory (run to track progress) revealed 13/14, exposing the gap; re-launching that one creator synchronously (run_in_background:false, "do it yourself, don't delegate") produced the file. Trusting the two "completed" signals would have carried a missing task file silently into validation.
+**Pattern:** A delegation's completion signal reports that the agent stopped, not that its deliverable exists. Whenever fanned-out work is supposed to leave a concrete artifact (a file, a commit, a DB row), confirm the artifact directly (ls/grep/read the expected path) before treating that unit as done — the check is near-free and catches orphaned nested spawns, silent degradations, and "I'll do it in the background" non-completions. If an artifact is missing, re-run that unit synchronously and instruct it to do the work itself rather than re-delegate.
+**Scope:** universal
+**Category:** verification
