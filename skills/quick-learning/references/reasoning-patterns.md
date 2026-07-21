@@ -2331,3 +2331,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** For any test of a bounding/abort/kill mechanism, assert the mechanism's own direct evidence of having engaged (bytes consumed at abort time, process liveness after a kill signal, elapsed time at cutoff) in addition to the final exception or return value. A test that only checks the end state can pass for the wrong reason and will not catch a regression where the bounding logic silently stops bounding anything.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-07-21 kb-document-upload / session 2: empty-seed full-replace is a silent wipe
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** empty-seed replace looks non-destructive
+**Triad:** an edit surface overwrites existing stored content with a full replacement but is initialized empty (the current value is not shown) and the store enforces only a maximum, not a minimum → treat any full-replace whose buffer is empty or untouched as a destructive act — block submit on empty/whitespace and gate a real replace behind an explicit "this overwrites everything" confirmation, never relying on the store to reject emptiness → assuming a blank replace field is harmless new input rather than a one-gesture wipe of everything currently stored
+**Context:** A hand-edit surface for stored content opened blank and submitted as a full replace; the backend accepted an empty string (it had a max length but no min length), so a routine correction — or an accidental save on the still-empty field — silently overwrote the value and then de-indexed the whole document. All tests were green; only a reviewer caught the data-loss path.
+**Pattern:** When an editor performs a full replace of existing persisted content but is seeded empty (or the current value is not visible), treat submission as destructive by default. Disable save while the buffer is empty/whitespace and gate a real replace behind an explicit confirmation that says it overwrites everything — do not assume the storage layer rejects an empty payload, because a max-length-only constraint will happily accept "" and wipe the record. Better still, show or pre-fill the current value so the action is a modification, not a blind overwrite.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-07-21 kb-document-upload / session 2: forward-compatible render for a not-yet-populatable field
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** skip-or-require unpopulatable field
+**Triad:** a spec/anchor requires rendering or handling a field that the current increment's producer can never populate yet (always empty/null now, real only in a later increment) → implement a conditional path that cleanly no-ops on the empty value and cover BOTH the empty (current) and populated (future) inputs with tests → collapsing to a binary — either dropping the requirement as "untestable now" or hard-requiring a value the current slice cannot produce
+**Context:** A UI anchor named a "duplicate source name" render, but the current backend slice always sends that field null (the code that populates it ships in a later slice). The tempting options were to skip it (leave the anchor unmet) or hard-require a non-null value (impossible now). It was resolved as a conditional render that shows nothing when null and the name when present, with tests for both the null (current-slice) and non-null (future-slice) branches.
+**Pattern:** When a requirement targets a field the current increment cannot yet populate, don't treat it as binary skip-or-require. Build a forward-compatible conditional path that no-ops on the current empty value and activates on the future real value, and test both branches — so the current slice passes honestly and the future slice needs no rework. This keeps the cross-increment seam validated instead of deferring it or faking a value.
+**Scope:** universal
+**Category:** scope-management
