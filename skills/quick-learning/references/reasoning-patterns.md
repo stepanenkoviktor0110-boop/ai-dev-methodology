@@ -2309,3 +2309,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** A delegation's completion signal reports that the agent stopped, not that its deliverable exists. Whenever fanned-out work is supposed to leave a concrete artifact (a file, a commit, a DB row), confirm the artifact directly (ls/grep/read the expected path) before treating that unit as done — the check is near-free and catches orphaned nested spawns, silent degradations, and "I'll do it in the background" non-completions. If an artifact is missing, re-run that unit synchronously and instruct it to do the work itself rather than re-delegate.
 **Scope:** universal
 **Category:** verification
+
+### 2026-07-21 kb-document-upload / session 1: downstream check backfills upstream trust
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** downstream check backfills upstream trust
+**Triad:** a pipeline has a later stage that enforces safety or validation (an isolation boundary, a terminal validator, a rate limiter) → verify every earlier stage touching the same input is independently safe, exception-total, and bounded on its own → assuming a downstream guarantee retroactively covers code or state that already ran or was persisted before that stage
+**Context:** Reviewers repeatedly found that a later-stage safety mechanism was assumed to cover something that actually happened before it: a raise inside input-type detection escaped to the caller because the code was written as if the subprocess isolation boundary (which comes after detection) already protected it; separately, a filename check placed only at the final commit stage let an oversized filename get accepted and staged first, so the failure showed up as a crash on an already-unrecoverable staged upload instead of being rejected at intake.
+**Pattern:** When a pipeline has a downstream safety/validation stage, do not treat it as covering earlier stages. Audit each earlier stage independently: is it exception-total (every input path returns or raises a handled type, nothing escapes uncaught) and does it apply the same checks the terminal stage will apply, before any state is persisted or handed off? If a check only exists at the end of the pipeline, move (or duplicate) it to the point where the input first enters, so a rejection happens before irrecoverable intermediate state is created.
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-07-21 kb-document-upload / session 1: test proves symptom not mechanism
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** test proves symptom not mechanism
+**Triad:** writing a test for a resource-bounding or abort mechanism (a size cap, a timeout, an incremental limit) → assert the mechanism's direct, causal effect (work actually stopped early, the resource was actually reclaimed) rather than only an eventual correct-looking outcome (an exception was raised, a final state matches) → a test passing via the wrong causal path, which hides that the real protective mechanism never actually engaged
+**Context:** A test for an incremental byte-limit abort passed by checking that a final error occurred, but did not instrument how many bytes were actually processed before the abort — so the test would have passed even if the limit only applied after the full payload was consumed instead of stopping it early. It had to be reworked to measure bytes-actually-produced and prove the abort happened within one chunk of the limit, not just that failure eventually occurred.
+**Pattern:** For any test of a bounding/abort/kill mechanism, assert the mechanism's own direct evidence of having engaged (bytes consumed at abort time, process liveness after a kill signal, elapsed time at cutoff) in addition to the final exception or return value. A test that only checks the end state can pass for the wrong reason and will not catch a regression where the bounding logic silently stops bounding anything.
+**Scope:** universal
+**Category:** problem-decomposition
