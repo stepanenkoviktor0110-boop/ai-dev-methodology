@@ -2375,3 +2375,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a requirement targets a field the current increment cannot yet populate, don't treat it as binary skip-or-require. Build a forward-compatible conditional path that no-ops on the current empty value and activates on the future real value, and test both branches — so the current slice passes honestly and the future slice needs no rework. This keeps the cross-increment seam validated instead of deferring it or faking a value.
 **Scope:** universal
 **Category:** scope-management
+
+### 2026-07-22 indexing-dispatch-race / session 2: deploy gates on the ACTUAL deployed HEAD, not the nominal shared ref
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** nominal-ref-as-deployed-truth
+**Triad:** about to converge or deploy work into a shared mainline whose canonical pointer (a remote branch, a "latest" tag, a symlink) may lag the target's actual deployed state → establish the target's REAL current state directly (read the live/deployed HEAD, resolve the real symlink) and gate the merge/deploy on the change descending from that true state → assuming the nominal shared pointer equals deployed reality when the two can silently diverge
+**Context:** origin/dev was behind the actual prod HEAD, which was itself behind local dev — commits had been deployed to prod without ever being pushed to origin. The standard squash-PR-into-origin/dev train would have produced a history where prod was no longer an ancestor of the new dev, tripping the deploy's anti-rollback guard (or forcing a messy reset). Resolved by ssh-reading prod's real HEAD, confirming the feature branch fast-forwards from it, and gating the deploy on descent from that actual commit — not from the stale origin ref.
+**Pattern:** Before merging or deploying into a shared target, do not trust its nominal pointer as the baseline. Read the target's actual current state — the live/deployed commit, the real symlink target, the true HEAD — and verify your change descends from THAT. Divergence between a canonical ref and deployed reality is common in single-operator flows where changes ship without updating the shared ref. Gate the convergence on the real state, not the assumed one; otherwise the safety guard fires late or you ship against a phantom baseline.
+**Scope:** universal
+**Category:** integration-deploy
+
+### 2026-07-22 indexing-dispatch-race / session 2: a delegate that backgrounds its own work can report a false completion
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** false-completion trust on a self-backgrounding delegate
+**Triad:** a delegated worker signals done or stops, but it had launched its own long-running async/background work and yielded while that work is still pending → treat the completion as unverified: check the actual deliverable at its source, and if the worker merely backgrounded-and-parked, collect the raw result or take the task over directly rather than re-resuming it into another wait → accepting a "completed" signal as proof the deliverable exists, or looping resume-to-wait on a delegate that keeps parking its own async jobs
+**Context:** A QA subagent kept emitting "completed" notifications while it was actually still waiting on background test-suite runs it had itself spawned; each resume just made it park again ("waiting for the background run to finish"). The orchestrator eventually read the actual test output files and finished the verification directly instead of resuming the delegate a third time.
+**Pattern:** A subagent's completion notification is not proof of a deliverable — least of all when the subagent can spawn its own background work and yield. When a delegate reports done but the expected artifact is absent, or it explicitly says it is "waiting," verify the deliverable at its source; if the behavior is background-and-park, collect the raw result or take the task over rather than resuming it into another wait. Better: instruct such delegates to run long work synchronously or write it to a result file you can read directly.
+**Scope:** universal
+**Category:** orchestration
