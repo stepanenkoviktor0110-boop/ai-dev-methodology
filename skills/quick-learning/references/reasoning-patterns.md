@@ -1854,6 +1854,28 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** information-gathering
 
+### 2026-07-22 indexing-dispatch-race / session 1: remote-baseline completeness bias
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** remote-baseline completeness bias
+**Triad:** spinning up an isolated work environment (new branch/worktree/clone) from a canonical shared baseline ref → before trusting the copy, verify the baseline ref actually contains every input the work depends on, and reconcile it to local state if not → avoid discovering mid-task that dependencies are missing because the tool's default source of truth didn't include locally-held work
+**Context:** An isolation tool defaulted to branching from the remote baseline, but the specs and task files it needed existed only in local, unpushed commits — the freshly isolated copy came up empty. Fixed by resetting the isolated branch to the local baseline HEAD instead of assuming the remote mirrored it.
+**Pattern:** Before invoking a tool or process that clones/branches from a canonical baseline, confirm the baseline actually contains every input the task depends on. If required state exists only in local, unpushed work, reconcile the baseline to that local state first — don't assume the shared/remote ref is a superset of your local work.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-07-22 indexing-dispatch-race / session 1: prior-fix non-propagation bias
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** prior-fix non-propagation bias
+**Triad:** writing new code in a category where a specific defect signature was already fixed once elsewhere in the same codebase → explicitly check new output against that known defect signature during self-review, don't rely on incidental recall → avoid re-shipping a defect already solved once because "having learned it" doesn't make you notice it on sight in a new instance
+**Context:** A new resource-client instantiation was left without its teardown call, even though that exact leak type had already been fixed once in a sibling feature. The earlier fix didn't transfer automatically — self-review scanned generically instead of checking against the specific known signature, and an external reviewer caught it instead.
+**Pattern:** When producing code in a category with a known prior defect (already fixed once elsewhere in the same codebase), explicitly re-check the new code against that specific defect signature as its own self-review step — treat "I fixed this before" as a checklist trigger, not as evidence it won't recur.
+**Scope:** universal
+**Category:** information-gathering
+
 ### 2026-04-17 ai-dev-methodology-public / session 1: first-found copy bias
 
 **Seen:** 1
