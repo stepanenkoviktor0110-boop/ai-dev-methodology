@@ -181,7 +181,7 @@ When multi-artifact validator repeatedly flags the same missing required referen
 When a downstream worker reports "checks pass / linter clean" after making targeted edits to syntax-sensitive constructs (exception clauses, decorators, type annotations) → run the check yourself before accepting the claim; never rely solely on the worker's self-report for syntax-correctness, to avoid delegated-verification trust bias. (triad #383)
 
 **63. Batch fork-решений на голосование — отфильтруй через правило полномочий:**
-When about to present a batch of technical/scope fork-decisions to the stakeholder for a vote → filter each fork through any standing decision-authority rule you were given; decide the ones it assigns to you, escalate only what it reserves, and state the decisions made, to avoid default-to-ask bias. (triad #389)
+When about to present a batch of technical/scope fork-decisions to the stakeholder for a vote → filter each fork through any standing decision-authority rule you were given, classifying each by its consequence not its surface; decide the ones it assigns to you, escalate only what it reserves, and state the decisions made. A fork that looks technical on its surface but sets product-visible behavior/scope is STOP-and-confirm even under delegated technical-fork autonomy — never read stakeholder silence as consent. To avoid default-to-ask bias and autonomy-scope overreach. (triads #389, #457)
 
 **64. Off-chain пункт «можно когда угодно, но до X» — проверь, не есть ли шаг сам X:**
 When picking the next step from a plan that shows a main ordered chain plus a side item flagged "independent / can be done anytime, but before X" → before committing to the next step, test whether that step itself is (or triggers) X; if so, the off-chain prerequisite is a hard gate and must come first, to avoid deferred-prerequisite trigger blindness. (triad #391)
@@ -227,3 +227,21 @@ When you just emitted a mechanical/format/output error, the counterpart flagged 
 
 **78. Пишешь handoff/next-phase план — не выводи границу фазы из позиции своей задачи:**
 When writing a handoff/next-phase plan → do NOT infer the session/phase boundary from your own task's position; consult the authoritative session plan to find the actual boundary, to avoid local-position phase inference ("my task is done" ≠ "the phase is done"). (triad #423)
+
+**79. Читаешь shared-файл, пока dispatched-агенты мутируют-и-откатывают его — сверь с committed-базой:**
+When you read a shared file/state while concurrent agents/jobs you dispatched are mutating-then-reverting it → confirm the read against the committed/authoritative baseline (`git show HEAD:file`, source of truth) before acting on it, above all before "fixing" an apparent defect, to avoid concurrent-writer snapshot trust: treating a transient mid-flight read of shared mutable state under active writers as ground truth. (triad #446)
+
+**80. Optional side effect в той же транзакции, что и завершённая primary-операция — вынеси в savepoint:**
+When an optional/secondary side effect is written inside the same transaction as an already-completed primary operation → wrap the secondary write in its own nested transaction/savepoint with independent fail-open handling, to avoid shared blast-radius transaction: the secondary write's failure propagating to the shared commit and rolling back the already-delivered primary result. (triad #449)
+
+**81. Артефакт не доходит из-за застрявшего build/deploy-канала — отдели цель от канала:**
+When a needed artifact isn't reaching consumers because its build/publish/deploy channel is stuck on external infrastructure (queued runner, hung build) → separate the goal (artifact must be reachable at an address) from the channel and check whether the same artifact is already served by another route (raw/source endpoint, cache, direct file, alternate host), pointing the consumer there instead of forcing the blocked channel, to avoid channel-fixation over goal. (triad #452)
+
+**82. Делегировал работу, обязанную ПРОИЗВЕСТИ артефакт, получил «completed» — проверь, что артефакт есть:**
+When you fan out delegated work (subagent/tool) that must PRODUCE an artifact (file, commit, record) and it returns success/"completed" → verify the concrete artifact actually exists (ls/grep/read) before proceeding — a completion signal is not proof of the deliverable, especially with nested spawn or degradation, to avoid delegated-output trust. (triad #466)
+
+**83. Мерж/деплой в mainline, чей canonical pointer может отставать от реального состояния — читай живой HEAD:**
+When about to converge or deploy into a shared mainline whose canonical pointer (remote branch, "latest" tag, symlink) may lag the actual deployed state → read the target's REAL current state directly (live/deployed HEAD, real symlink target) and gate the merge/deploy on descent from that true state, not the nominal ref, to avoid nominal-ref-as-deployed-truth. (triad #473)
+
+**84. Делегат сказал «done», но запустил свою фоновую работу и запарковался — забери результат у источника:**
+When a delegated worker signals done/stops but had launched its own long-running background work and yielded while it is still pending → treat the completion as unverified: check the deliverable at its source, and if it merely backgrounded-and-parked, collect the raw result or take over rather than re-resuming it into another wait, to avoid false-completion trust on a self-backgrounding delegate. (triad #474)

@@ -1,15 +1,15 @@
 # Quick Reference — Code Writing
 
-1. Unit tests with mocks for an external process/API — run at least 1 live smoke pass before declaring QA passed; mock diverges from reality. (Seen: 4)
-2. Complex script on a remote host via SSH — pass it as a file (not inline heredoc), run with unbuffered output. (Seen: 3)
-3. Passing a file/data to a remote host via a complex SSH command that drops the connection — send via stdin pipe instead of heredoc/SCP. (Seen: 3)
-4. Delegating to an agent/tool with unknown limits — verify capability (permissions, resources, RAM, write) with a test operation before the full prompt. (Seen: 3)
-5. Mask secrets BEFORE executing a command — embed sed-masking or grep -c instead of printing .env. (Seen: 2)
-6. Assertions on output format, not input attributes — for format-conversion functions read a real output example before writing the test. (Seen: 2)
-7. Building a file path from any external value — validate each value against an allowlist before use. (Seen: 2)
-8. Config files with enum/nested fields — verify all allowed values from the official schema/docs, including nested objects. (Seen: 2)
-9. Composing a prompt for an external AI agent with API signatures — verify each via inspect.signature()/docs before sending. (Seen: 2)
-10. A structural constraint is violated in several places — after the first fix, scan the whole artifact for the remaining occurrences. (Seen: 2)
+1. Mask secrets BEFORE executing a command — embed sed-masking or grep -c instead of printing .env. (Seen: 2)
+2. Assertions on output format, not input attributes — for format-conversion functions read a real output example before writing the test. (Seen: 2)
+3. Building a file path from any external value — validate each value against an allowlist before use. (Seen: 2)
+4. Extract magic numbers to named constants before first review, to avoid a predictable hardcoded-value finding. (Seen: 1)
+5. Unit tests with mocks for an external process/API — run at least 1 live smoke pass before declaring QA passed. (Seen: 1)
+6. HTTP API-key auth — include timing-safe comparison and an explicit body size limit in the initial implementation. (Seen: 1)
+7. Operation with multiple auth levels — test with the least-privileged real user first, so a 500 for the primary consumer surfaces early (triad #428). (Seen: 1)
+8. When a dispatcher's fall-through default IS the primary consequential action — invert it: require an affirmative positive match, route unrecognized input to a safe handler (triad #442). (Seen: 1)
+9. Set the idempotency sentinel BEFORE the mutation (optimistic lock), not after, to close the duplicate-mutation race window (triad #436). (Seen: 1)
+10. Emit downstream commands in the host's actual shell syntax — do not propagate the upstream-spec's Unix dialect verbatim (triad #461). (Seen: 1)
 
 ## Visual/Layout QA (перед сдачей UI — проверять РЕНДЕР замером, не глазами)
 
