@@ -2408,3 +2408,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a test's job is to prove a concurrency/race fix works, don't trust a revert-and-rerun check performed under default scheduler behavior, even across several runs — the runtime may never exercise the actual race window regardless of run count. Force the real interleaving at the contended step (barrier/rendezvous both actors at the shared read, then release both) so the failure mode is deterministically reproduced. Apply this to the verification method itself, not just to production code: a "mutation-tested" claim is only as good as whether the mutation check's own execution path actually reaches the failure condition.
 **Scope:** universal
 **Category:** tool-selection
+
+### 2026-07-24 client-activation / session 1: reuse-by-name scope conflation (shared field, per-entity write)
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** reuse-by-name scope conflation
+**Triad:** a spec/plan proposes reusing an existing named field/mechanism/column for a NEW per-entity purpose because it already exists and looks fit → before building on it, verify its scope and full consumer set (global-shared vs per-entity/owner); if shared, add a per-entity holder instead of writing to the shared one → reuse-by-name scope conflation: treating a discovered same-purpose-looking resource as private to your use, so a per-entity write to a shared/global resource silently mis-affects every other consumer (blast radius)
+**Context:** A plan claimed to "reuse" an existing deferred-change field as a ready mechanism for staging a change to ONE entity — but that field was global to a shared catalog record: writing it per-entity would have applied the change to every other entity bound to that record. The reuse was presented as free (no new schema), and only an adversarial validator caught that the same-named field lived at the wrong scope, forcing a redesign into a per-entity holder.
+**Pattern:** When a plan reuses an existing field/table/mechanism for a new per-entity (per-tenant/per-owner/per-namespace) purpose, do not accept "it already exists and fits" — first establish WHO ELSE reads/writes it and at WHAT scope (global-shared vs per-entity). A shared/global resource written per-entity has blast radius on all other consumers; introduce a per-entity holder instead. "Same name / same shape" is not "same scope."
+**Scope:** universal
+**Category:** information-gathering
