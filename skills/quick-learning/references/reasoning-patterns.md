@@ -2397,3 +2397,14 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** A subagent's completion notification is not proof of a deliverable — least of all when the subagent can spawn its own background work and yield. When a delegate reports done but the expected artifact is absent, or it explicitly says it is "waiting," verify the deliverable at its source; if the behavior is background-and-park, collect the raw result or take the task over rather than resuming it into another wait. Better: instruct such delegates to run long work synchronously or write it to a result file you can read directly.
 **Scope:** universal
 **Category:** orchestration
+
+### 2026-07-23 onboarding-scan-quality / session 1: revert-and-rerun proves nothing if the race never actually interleaves
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** run-count race blindness
+**Triad:** verifying a fix to a concurrency/race condition by reverting the code and re-running the guard test one or more times under default scheduling → force the actual contended interleaving at the shared step (rendezvous both actors at the read before either proceeds to the write), not merely re-run the test N times → run-count race blindness: a revert-and-rerun check can pass or fail identically regardless of correctness when the runtime never truly interleaves the two paths, making the verification itself invalid
+**Context:** A test meant to guard a race-condition fix was "verified" by reverting the fix and confirming the test failed under repeated runs. It later turned out the two concurrent paths never actually interleaved under default scheduling in that environment — one routinely ran to completion before the other's contended read even executed — so the revert-and-rerun check would have looked identical (all green, or all red) whether the fix was correct or not. The mutation check itself needed to be re-verified by forcing genuine interleaving (rendezvous both paths at the exact contended step) before it could be trusted.
+**Pattern:** When a test's job is to prove a concurrency/race fix works, don't trust a revert-and-rerun check performed under default scheduler behavior, even across several runs — the runtime may never exercise the actual race window regardless of run count. Force the real interleaving at the contended step (barrier/rendezvous both actors at the shared read, then release both) so the failure mode is deterministically reproduced. Apply this to the verification method itself, not just to production code: a "mutation-tested" claim is only as good as whether the mutation check's own execution path actually reaches the failure condition.
+**Scope:** universal
+**Category:** tool-selection
