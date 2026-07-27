@@ -2089,3 +2089,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When a plan reuses an existing field/table/mechanism for a new per-entity (per-tenant/per-owner/per-namespace) purpose, do not accept "it already exists and fits" — first establish WHO ELSE reads/writes it and at WHAT scope (global-shared vs per-entity). A shared/global resource written per-entity has blast radius on all other consumers; introduce a per-entity holder instead. "Same name / same shape" is not "same scope."
 **Scope:** universal
 **Category:** information-gathering
+
+### 2026-07-27 bonodono-answer-quality / session 1: plausible mechanism assumed to have participated
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** mechanism participation assumption
+**Triad:** an observed failure admits a plausible causal chain through a known subsystem → before fixing anything, run that subsystem against the ACTUAL failing input and confirm it engaged → treating explanatory plausibility as proof of participation
+**Context:** A coherent story was built for how a subsystem produced the bad output, and code was written against it, while a one-call check showed that subsystem never activated on that input at all.
+**Pattern:** A causal story is a hypothesis until the suspected component is shown to have RUN on the real input. Reproduce the entry condition (the gate/trigger that hands control to that component) before designing a fix; when it turns out not to have fired, discard the whole chain built on it rather than salvaging the code already written for it.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-07-27 bonodono-answer-quality / session 1: shared mechanism blamed while it works elsewhere
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** shared-mechanism blame bias
+**Triad:** the same shared mechanism yields correct results for comparable peers but fails for one → start the search from what differs in THIS one's INPUT, not from the mechanism's logic → concluding the mechanism is broken when its own track record refutes that
+**Context:** The failing case was attributed to a defect in shared logic, though peers running the identical logic were fine — which by itself made a logic defect the least likely explanation.
+**Pattern:** When peers exercise the same code path successfully, the differentiator is the input, not the algorithm. Enumerate how the failing case's data differs in SHAPE (not content) from the working ones, and test the mechanism's assumptions against that shape — a mechanism can be structurally blind to a form of input it never met before while remaining correct for everything else.
+**Scope:** universal
+**Category:** problem-decomposition
