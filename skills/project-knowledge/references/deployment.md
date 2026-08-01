@@ -24,22 +24,11 @@ How the methodology is distributed, installed, and updated.
 
 ---
 
-## Codex Variant
-
-**GitHub repo:** `https://github.com/stepanenkoviktor0110-boop/ai-dev-methodology-codex`
-
-**Local clone:** `C:/tmp/ai-dev-methodology-codex/`
-
-**Install (Codex):** clone `stepanenkoviktor0110-boop/ai-dev-methodology-codex` into `~/.agents/skills`.
-
----
-
 ## Update Workflow
 
 1. Edit skill files directly in `~/.claude/skills/`
 2. `git add -A && git commit -m "..."` from `~/.claude/skills/`
 3. `git push origin master` → available to all installs on next `git pull`
-4. Codex adaptation: manually diff changed skills, apply `.claude/` → `.agents/` substitution, push to Codex repo
 
 ---
 

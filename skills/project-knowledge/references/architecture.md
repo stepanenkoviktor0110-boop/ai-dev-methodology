@@ -14,7 +14,7 @@ Technical architecture overview — HOW the system is built.
 
 **Scripting:** Bash (shared/scripts/ — e.g., init-feature-folder.sh)
 
-**Version control:** Git + GitHub (two repos: Claude Code version and Codex adaptation)
+**Version control:** Git + GitHub
 
 ---
 
@@ -36,7 +36,7 @@ The repository root (`~/.claude/skills/`) contains:
 
 **Skills** — each is a directory with `SKILL.md` containing instructions Claude follows when the skill is invoked. Skills are loaded by Claude Code's skill system via the Skill tool.
 
-**Agents** — `agents/` directory contains agent definition files (e.g. `sketch-interviewer.md`). In Claude Code, the parent skill reads the agent file and follows its instructions inline. In Codex, agents are spawned directly via `spawn_agent`. Validators are separate: launched via Claude's built-in `Agent` tool with `subagent_type`.
+**Agents** — `agents/` directory contains agent definition files (e.g. `sketch-interviewer.md`). In Claude Code, the parent skill reads the agent file and follows its instructions inline. Validators are separate: launched via Claude's built-in `Agent` tool with `subagent_type`.
 
 **Shared templates** — reusable scaffolds for work artifacts: user-spec, tech-spec, session-plan, tasks. Copied and edited per feature, never modified in place.
 
@@ -67,25 +67,3 @@ No database. All state is in files:
 - `quick-learning/references/` — persistent knowledge accumulation
 - `project-knowledge/references/` — stable project documentation
 
-### Moneymaker Data Storage (`~/.moneymaker/`)
-
-Separate storage tree for the moneymaker pipeline (not inside the methodology repo):
-
-```
-~/.moneymaker/
-  config.yml                          # Global config: hourly_rate, hosting tiers, agent_costs, billing, catalog
-  projects/
-    {project-name}/
-      context.md                      # Accumulated project context: Требования / Договорённости / Открытые вопросы
-      materials/
-        {timestamp}.md                # Raw ingested material (transcript, chat, etc.)
-      expand-output.md                # Cached output of /moneymaker-expand (overwritten on each run)
-      overrides.yml                   # Per-project rate override (optional, created only after explicit confirmation)
-      kp-{timestamp}.md               # Final quote (KP) as markdown table
-```
-
-Key invariants:
-- `config.yml` is never written by any skill except `moneymaker-setup`
-- `overrides.yml` is never written without explicit user confirmation
-- `context.md` is only written after all conflicts resolved (never partial writes)
-- `expand-output.md` is always overwritten, never appended

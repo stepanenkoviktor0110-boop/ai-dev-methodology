@@ -125,8 +125,8 @@ rather than what was intended.
 # 1. the prohibitions that must never be deleted are still present
 rg -l "feedback_never_use_codex|feedback_no_codex" ~/.claude/projects/
 
-# 2. the skills that must be retained still exist
-rg -l . ~/.claude/skills/photo-crop/SKILL.md ~/.claude/skills/content-card/SKILL.md
+# 2. no skill listed in the run's retain-list went missing
+rg -l . ~/.claude/skills/*/SKILL.md | wc -l
 
 # 3. the plugin directory was not touched
 git -C ~/.claude/skills status --short -- ../plugins

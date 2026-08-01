@@ -34,13 +34,12 @@ Context is lost between AI sessions, spec discussions get skipped, and code qual
 - **Sketch Mode** — lightweight path for prototyping: quick interview → sketch.md → code in one session, then decide: develop or discard
 - **Automated validators** — 2–5 parallel validators per pipeline stage (quality, adequacy, security, completeness, reality-check)
 - **Unified knowledge system** — triad-based `reasoning-patterns.md` buffer that accumulates lessons from each feature and feeds them back into skills
-- **Codex adaptation** — parallel version for OpenAI Codex with same methodology but different platform integration (`.agents/` paths, `spawn_agent` API)
 
 ---
 
 ## Skill Classification
 
-The repo contains skills from multiple tracks. Only **core methodology** skills are actively maintained and synced to Codex:
+The repo contains skills from multiple tracks. Only **core methodology** skills are actively maintained:
 
 **Core methodology** (26 skills + sketch):
 - Planning: `user-spec-planning`, `tech-spec-planning`, `task-decomposition`, `project-planning`, `new-user-spec`, `new-tech-spec`, `decompose-tech-spec`
@@ -50,14 +49,16 @@ The repo contains skills from multiple tracks. Only **core methodology** skills 
 - Meta: `methodology`, `quick-learning`, `skill-trainer`, `documentation-writing`, `init-project`, `init-project-knowledge`
 - Sketch: `sketch` *(new — lightweight prototyping mode)*
 
-**Separate pipelines** (in this repo but maintained independently):
-- `design-*` (9 skills) — design pipeline, separate project track
-- `moneymaker-*` (5 skills) — freelance project management pipeline: setup → new → add → expand → finalize. Stores data at `~/.moneymaker/`, independent of methodology storage. Security: billing fields masked in output, `chmod 600 config.yml`, project name validated `^[a-zA-Z0-9_-]+$`, LLM inputs wrapped in isolation tags.
+**Standalone skills** (in this repo, unrelated to the pipeline): `pishi`, `triz-synergy`,
+`triz-combinatorics`, `website-legal-audit`, `project-card`, `parallel-tracks`, `safe-delete`,
+`stack-research`, `recalibrate-all`.
+
+Design work is not in this repo. It goes through the `design-ultimate` skill, installed
+separately.
 
 ---
 
 ## Out of Scope
 
-- Codex repo (`ai-dev-methodology-codex`) — a derived artifact; maintained separately, not the source of truth
 - Multi-user / team usage — methodology is designed for solo developer workflow
 - Web UI / dashboard — no interface planned; everything runs via Claude Code CLI
