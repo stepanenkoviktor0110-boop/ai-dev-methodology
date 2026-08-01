@@ -125,14 +125,14 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
 
    A reviewer is a second pair of eyes with its own context, reading the committed diff — not a re-check of reasoning you already did. Pick reviewers by what the diff actually contains, not by which skill produced it. A task file's `reviewers:` field, when present, wins over this table.
 
-   | Diff contains | Reviewer | Effort |
-   |---|---|---|
-   | Anything beyond a trivial edit | `code-reviewer` | medium |
-   | auth, sessions, tokens, passwords, crypto, user input, SQL, file paths from external data, calls to external APIs | + `security-auditor` | medium |
-   | new or modified test files, or the task carried a TDD Anchor | + `test-reviewer` | low |
-   | CI/CD config, deploy scripts, secrets management | + `deploy-reviewer` | low |
-   | Dockerfile, pre-commit hooks, project scaffolding | + `infrastructure-reviewer` | low |
-   | LLM prompts | + `prompt-reviewer` | low |
+   | Diff contains | Reviewer |
+   |---|---|
+   | Anything beyond a trivial edit | `code-reviewer` |
+   | auth, sessions, tokens, passwords, crypto, user input, SQL, file paths from external data, calls to external APIs | + `security-auditor` |
+   | new or modified test files, or the task carried a TDD Anchor | + `test-reviewer` |
+   | CI/CD config, deploy scripts, secrets management | + `deploy-reviewer` |
+   | Dockerfile, pre-commit hooks, project scaffolding | + `infrastructure-reviewer` |
+   | LLM prompts | + `prompt-reviewer` |
 
    **Trivial edit — no reviewer at all:** a typo, a renamed local variable, a copy string, a version bump. Spawning three agents to look at a one-line change costs more than it can find.
 

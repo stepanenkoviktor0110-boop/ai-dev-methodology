@@ -77,12 +77,12 @@ Tech-spec was already validated by 5 validators. This phase checks only: (1) tas
 
 Launch both in parallel:
 
-[`task-validator`](~/.claude/agents/task-validator.md) (effort `low` — checks a task file against a written template) — Template Compliance + AC/TDD carry-forward:
+[`task-validator`](~/.claude/agents/task-validator.md) — Template Compliance + AC/TDD carry-forward:
 - Batch: 5 tasks per call
 - Pass: feature_path, task_numbers array, batch_number, iteration
 - Report: `logs/tasks/template-batch{N}-review.json`
 
-[`reality-checker`](~/.claude/agents/reality-checker.md) (effort `medium` — verifies claims against the actual codebase) — Reality & Adequacy:
+[`reality-checker`](~/.claude/agents/reality-checker.md) — Reality & Adequacy:
 - Batch: 3 tasks per call
 - Pass: feature_path, task_numbers array, batch_number, iteration
 - Report: `logs/tasks/reality-batch{N}-review.json`

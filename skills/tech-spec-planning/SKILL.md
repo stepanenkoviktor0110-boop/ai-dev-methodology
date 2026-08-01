@@ -30,7 +30,7 @@ Before starting, read [quick-ref-tech-spec-planning.md](../quick-learning/refere
 
 ## Phase 2: Code Research
 
-Launch `code-researcher` subagent (effort `high` — it reads across the codebase and judges reuse) with feature path and user-spec path. It reads existing `code-research.md` (from user-spec phase) and deepens for implementation.
+Launch `code-researcher` subagent with feature path and user-spec path. It reads existing `code-research.md` (from user-spec phase) and deepens for implementation.
 
 After completion — read `{feature_path}/code-research.md`. If gap discovered later — re-launch with specific question.
 

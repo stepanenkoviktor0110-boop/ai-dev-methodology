@@ -33,7 +33,7 @@ Instead, paste the "Coding rules" block below directly into the prompt.
 
 Use `teammate_name` from task frontmatter as the agent name. If not set — pick a descriptive name.
 
-**Teammate** — `subagent_type: "general-purpose"`, `effort: "medium"` (raise to `high` for a task that touches auth, migrations or architecture)
+**Teammate** — `subagent_type: "general-purpose"`
 
 ```
 You are "{name}" implementing task {N}.
@@ -107,7 +107,7 @@ After task is complete:
    {"round": 1, "reviewer": "self", "findings": [...], "status": "approved"|"needs_fixes"}
    For each finding: {"severity": "high|medium|low|info", "file": "...", "line": N, "issue": "...", "fix": "..."}
 3. Fix high/medium findings. After fixes: re-run tests, commit fix, increment round.
-4. Max 3 rounds. If unresolved after 3 → message team lead to escalate.
+4. Repeat while each round leaves strictly fewer open findings than the one before. The first round that does not reduce them → message team lead to escalate.
 ```
 
 If task has `reviewers: none` — omit the review block. Teammate commits code and reports directly.
@@ -116,7 +116,7 @@ If task has `reviewers: none` — omit the review block. Teammate commits code a
 
 ## Reviewer Prompt
 
-**Each reviewer** (when spawned as separate agent) — `subagent_type: "{reviewer_agent}"`, `effort` per [skills-and-reviewers.md](../../tech-spec-planning/references/skills-and-reviewers.md)
+**Each reviewer** (when spawned as separate agent) — `subagent_type: "{reviewer_agent}"`
 
 ```
 You are reviewer "{name}" for task {N}.
@@ -131,7 +131,7 @@ When you receive it:
 2. Write JSON report to: {feature_dir}/logs/working/task-{N}/{reviewer_name}-round{round}.json
 3. Send report path to teammate "{teammate_name}" via SendMessage.
 
-The teammate may send updated diffs for subsequent rounds (max 3).
+The teammate may send updated diffs for subsequent rounds.
 Review each round the same way. After the final round, shut down.
 ```
 

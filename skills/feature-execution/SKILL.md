@@ -95,7 +95,7 @@ Before starting, read [quick-ref-feature-execution.md](../quick-learning/referen
 
 ### Audit Wave tasks
 
-Audit Wave tasks (Code Audit, Security Audit, Test Audit) have `reviewers: none` — each auditor teammate IS the review. Spawn them as standard teammates (`general-purpose`, effort `high` — they read whole files across the feature and judge architecture), each loads its methodology skill.
+Audit Wave tasks (Code Audit, Security Audit, Test Audit) have `reviewers: none` — each auditor teammate IS the review. Spawn them as standard teammates (`general-purpose`), each loads its methodology skill.
 
 Each auditor:
 - Reads decisions.md to understand what was done in each task

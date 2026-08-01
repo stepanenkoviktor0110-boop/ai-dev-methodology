@@ -47,7 +47,7 @@ Read ALL files from `.claude/skills/project-knowledge/references/`. Missing → 
 
 ### Phase 3: Code Scanning
 
-Launch `code-researcher` subagent (effort `high` — it reads across the codebase and judges reuse) with feature path and description. After completion — read `{feature_path}/code-research.md`, use in Cycle 2. If gap discovered later — re-launch with specific question.
+Launch `code-researcher` subagent with feature path and description. After completion — read `{feature_path}/code-research.md`, use in Cycle 2. If gap discovered later — re-launch with specific question.
 
 ### Phase 4: Cycle 2 — Code-Informed Refinement
 
@@ -64,7 +64,7 @@ Launch `code-researcher` subagent (effort `high` — it reads across the codebas
 
 ### Phase 6: Completeness Check
 
-Launch `interview-completeness-checker` subagent (effort `low` — it scores filled items against a written list) with feature path. `needs_more` → ask suggested questions, re-run. `complete` → proceed.
+Launch `interview-completeness-checker` subagent with feature path. `needs_more` → ask suggested questions, re-run. `complete` → proceed.
 
 ### Phase 7: Create User Spec
 
@@ -76,7 +76,7 @@ Git commit: `draft(userspec): create user-spec for {feature}`
 
 ### Phase 8: Validation
 
-Run 2 validators in parallel: `userspec-quality-validator` (effort `low` — structure and template compliance against a written template); `userspec-adequacy-validator` (effort `high` — feasibility, over/underengineering, which needs judgement).
+Run 2 validators in parallel: `userspec-quality-validator` — structure, template compliance; `userspec-adequacy-validator` — feasibility, over/underengineering.
 
 Findings: obvious → fix silently; borderline → discuss with user; disagree → reject with reasoning; conflict between validators → adequacy takes priority (substance over form).
 
