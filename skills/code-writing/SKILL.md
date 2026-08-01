@@ -17,10 +17,18 @@ description: |
 
 When communicating with the user during code writing: use only plain, non-technical language. Describe what the code *does* and *why* — not how it works internally. No class names, method signatures, library names, or implementation details in explanations. If the user needs to make a decision → describe it as a product/logic choice, not a technical one.
 
+## ⛔ Scope — override all defaults
+
+Deliver what was asked, at the scope intended. Make routine judgment calls yourself; check in only when different readings of the request would lead to materially different work. If the request seems mistaken or a better approach exists, say so in a sentence and continue with the task as asked — do not quietly narrow, widen, or transform it. Finish the whole task; stop short of actions clearly beyond it.
+
+Out of scope unless asked: refactoring adjacent code, adding configurability, adding error handling for scenarios that cannot happen, adding docstrings or types to code you did not change, creating abstractions for one-time operations.
+
+Work directly rather than delegating. Spawn a subagent only for a genuinely independent, sizeable track — a wide multi-file investigation you cannot finish in a handful of tool calls. Never spawn one to verify or double-check your own work.
+
 ## ⛔ Karpathy Rules — override all defaults below
 
 **1. Think Before Coding**
-Before writing a single line: list every assumption you are making. If uncertain → ask, don't guess. If multiple interpretations exist → present them, don't pick silently. If something is unclear → stop and name it.
+Before writing a single line: name the assumptions the task rests on. Resolve the routine ones yourself. Stop and ask only where two readings would produce materially different code — then present the readings instead of picking silently.
 
 **2. Simplicity First**
 Write the minimum code that solves the problem. No abstractions for single-use code. No flexibility or configurability that wasn't requested. No error handling for impossible scenarios. If you write 200 lines and 50 would do → rewrite it. Test: "Would a senior engineer say this is overcomplicated?" If yes → simplify before continuing.
@@ -53,21 +61,21 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
 
 3. **Design Context (UI only — conditional)**
 
-   Apply IF task touches UI files (`.css`/`.scss`/`.tsx`/`.jsx`/`.vue`/`.svelte`/`.html`) or creates a new component/page. Skip for bugfix/refactor without visual changes. Keep output in working context only — no file, no user report.
+   Applies IF the task touches UI files (`.css`/`.scss`/`.tsx`/`.jsx`/`.vue`/`.svelte`/`.html`) or creates a new component/page. Skip for bugfix/refactor without visual changes.
 
-   - **CIP brief (always for UI).** Run PowerShell: `& "C:\Users\natel\AppData\Local\Python\bin\python.exe" "C:\Users\natel\.claude\plugins\cache\ui-ux-pro-max-skill\ui-ux-pro-max\2.5.0\.claude\skills\design\scripts\cip\search.py" "<industry/context>" --cip-brief -b "<Brand>"`. Output (palette/typography/style/anti-patterns) informs plan and implementation.
+   | Situation | Action |
+   |---|---|
+   | Project has `DESIGN.md` | Read it. It fixes the project's design direction — follow it, do not re-derive. No skill invocation. |
+   | New UI file, no `DESIGN.md` yet | `Skill(design-ultimate)` — it is the single entry point for design and orchestrates its own dependencies. |
+   | Edit to an existing UI file | Follow the surrounding code and `DESIGN.md`. No skill invocation. |
 
-   - **Deep reasoning (conditional).** If task = new product / non-standard domain / multi-stack → invoke `Skill(ui-ux-pro-max:ui-ux-pro-max)` for 161 industry rules and stack-specific guidelines.
-
-   - **Execution principles (new-from-scratch only).** If task creates a UI file that does not yet exist in the codebase (not an edit to an existing file) → invoke `Skill(frontend-design:frontend-design)` before writing markup — for bold aesthetic and protection from generic-AI design.
+   Do not invoke `impeccable`, `design-motion-principles` or the taste overlays directly — they are muted on purpose and reachable only through `design-ultimate`.
 
 4. **Analyze & Review Approach**
    - Grep usages of code to modify, read files that will change
    - Verify solution follows project patterns, identify reusable code
    - If modifying existing code, run existing tests for baseline
    - If concerns → discuss with user before proceeding
-
-**Checkpoint:** List completed preparation steps before moving to implementation.
 
 ## Phase 2: Implementation (TDD)
 
@@ -91,8 +99,6 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
 
 3. **Run Tests** — all new tests pass, fix any failures
 
-**Checkpoint:** List implemented functionality and test results.
-
 ## Phase 3: Post-work
 
 1. **Run Lint/Format** — run project's linter and formatter before reviews
@@ -113,13 +119,24 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
 
    If violation found → fix, check if it matches a trigger in [triad-index.md](../quick-learning/references/triad-index.md), increment Seen counter.
 
-5. **Run Reviews** (launch in parallel)
+5. **Select and run reviewers**
 
    **Working as part of a team?** Follow team protocol from team lead instead of steps below.
 
-   **Reviewer selection:** task file → reviewers from task's "Reviewers" section; standalone → code-reviewer, security-auditor, test-reviewer.
+   A reviewer is a second pair of eyes with its own context, reading the committed diff — not a re-check of reasoning you already did. Pick reviewers by what the diff actually contains, not by which skill produced it. A task file's `reviewers:` field, when present, wins over this table.
 
-   For each reviewer: spawn subagent (subagent_type = reviewer name), pass git diff + paths to task/tech-spec/user-spec. Reports go to `logs/working/task-{N}/{reviewer-name}-{round}.json`. Re-review → incremented round number.
+   | Diff contains | Reviewer | Effort |
+   |---|---|---|
+   | Anything beyond a trivial edit | `code-reviewer` | medium |
+   | auth, sessions, tokens, passwords, crypto, user input, SQL, file paths from external data, calls to external APIs | + `security-auditor` | medium |
+   | new or modified test files, or the task carried a TDD Anchor | + `test-reviewer` | low |
+   | CI/CD config, deploy scripts, secrets management | + `deploy-reviewer` | low |
+   | Dockerfile, pre-commit hooks, project scaffolding | + `infrastructure-reviewer` | low |
+   | LLM prompts | + `prompt-reviewer` | low |
+
+   **Trivial edit — no reviewer at all:** a typo, a renamed local variable, a copy string, a version bump. Spawning three agents to look at a one-line change costs more than it can find.
+
+   For each selected reviewer: spawn subagent (subagent_type = reviewer name), pass git diff + paths to task/tech-spec/user-spec. Reports go to `logs/working/task-{N}/{reviewer-name}-{round}.json`. Re-review → incremented round number.
 
 6. **Process Findings**
 
@@ -127,19 +144,30 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
    - **Valid** → apply (any severity) | **Disagree** → discuss with user | **Out of scope** → skip, note in log
 
    Produce findings log: `| # | Source | Severity | Finding | Action | Reason |`
-   After fixes → re-run tests → re-run reviewer(s). Limit: 3 iterations, then ask user.
 
-**Checkpoint:** List post-work steps completed.
+   After fixes → re-run tests → re-run the reviewer(s) that raised findings.
 
-## Self-Verification
+   **Stop condition is progress, not a round counter.** Continue while each round leaves strictly fewer open findings than the one before. The moment a round ends with the same or more open findings than the previous round, stop and escalate to the user with: what remains open, what was tried, why the last round did not move it. A loop that stopped converging will not converge on the next pass either.
 
-- [ ] All phases completed; tests pass
-- [ ] Smoke verification executed (if task had Smoke/User checks)
-- [ ] Each reviewer finding evaluated; findings log table produced; reports saved
-- [ ] Design tokens used via CSS custom properties for UI files (if tokens.json was loaded)
-- [ ] Design Context loaded for UI tasks (CIP brief run; ui-ux-pro-max / frontend-design invoked where applicable)
-- [ ] Visual/Layout QA пройден для UI (см. quick-ref-code-writing.md «Visual/Layout QA»): равные высоты/ширины, выравнивание в ряд, никаких стыков, шрифт-компаньон под кириллицу, цифры не в дисплей-шрифте без глифов — каждый пункт подтверждён замером рендера, не на глаз
+## Проверки фактом
 
+These are not a review of your own reasoning — they read state off disk. Run them, read the output, act on what it says. Skip a line only when its precondition does not apply.
+
+```bash
+# 1. decisions.md entry for this task exists
+rg -n "Task {N}" work/{feature}/decisions.md
+
+# 2. reviewer reports were actually written (skip if no reviewer was selected)
+rg -l . work/{feature}/logs/working/task-{N}/
+
+# 3. smoke results recorded (skip if the task had no Smoke/User steps)
+rg -n -A3 "Verification" work/{feature}/decisions.md
+
+# 4. no hardcoded colours left in changed UI files (skip unless tokens.json was loaded)
+rg -n "#[0-9a-fA-F]{3,8}" <changed .css/.scss/.tsx files>
+```
+
+**Visual/Layout QA (UI only).** Confirm by measuring the render, never by eye: equal heights and widths across a row, alignment within a row, no seams at section borders, a companion font covering Cyrillic, digits not left in a display font that lacks their glyphs. See «Visual/Layout QA» in quick-ref-code-writing.md.
 
 ## Promoted Patterns
 
@@ -151,38 +179,3 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
 
 Full pattern history: [references/learned-patterns.md](references/learned-patterns.md)
 Load only for audit wave and retrospective — not during code writing.
-
-- When зависимость мемоизированного вычисления ссылается на промежуточное значение созданное в render → вынести нормализацию внутрь вычисляющей функции, зависимость — исходный prop/state, to гарантировать стабильность референса и реальную работу мемоизации
-- When проект с модульной системой ESM, нужен legacy-совместимый скрипт с CommonJS-зависимостями → выделить скрипт в отдельный файл с явным расширением для legacy-модулей, использовать DI для тестируемых зависимостей, to избежать runtime ошибки несовместимости модулей и хаков при тестировании
-- When написание теста для finally-блока с except Exception → использовать BaseException (например KeyboardInterrupt) как trigger, to гарантировать что finally реально выполняется при любом исходе
-- When скрипт с дорогостоящей инициализацией (auth flow, DB connection) создаёт объект внутри цикла → вынести init за цикл и указать явно в spec, to предотвратить дублирование auth flow и N лишних round-trips
-- When кнопка делает async-запрос (destructive action или оптимистичный UI) → добавить disabled+loading state на время запроса AND .catch() восстанавливающий state при ошибке — до первого review, to предотвратить fix-раунд на предсказуемый UX concurrency guard
-- When расширение API-ответа новым полем → grep тесты на exact-equality assertions для этого endpoint, to не допустить отложенного тест-фейла в следующей сессии
-- When файл не менялся с момента первого чтения → не читать повторно, to экономить токены
-- When несколько git репо в одной bash сессии → всегда указывать `git -C /path/repo` вместо надежды на рабочую директорию, to избежать silent failures от команд из неправильного репо
-- When нужно изучить внешнее репо (GitHub) или прочитать >5 файлов подряд в главной сессии → делегировать сканирование Explore subagent'у одним вызовом, to не исчерпать контекст главной сессии
-- When компонент хранит типизированные async данные, UI переключает режим/таб → сбрасывать данные в начале каждого async-запроса и проверять тип перед обращением к типо-специфичным полям, to предотвратить runtime ошибку из промежуточного рендера со stale типизированными данными
-- When скрипт использует Unix-пути (/tmp, /dev/null) в кросс-платформенном окружении → проверить целевую ОС и использовать платформо-специфичный эквивалент пути, to не получать FileNotFoundError из-за несовместимого системного пути
-- When экспорт данных с числовыми или непредсказуемыми ключами в табличный формат → передавать явный массив заголовков вместо порядка ключей объекта, to гарантировать правильный порядок колонок в итоговом файле
-- When SQL UPDATE обновляет подмножество полей таблицы с NOT NULL → использовать COALESCE($N, column_name) для полей не переданных в запросе, to предотвратить constraint violation при частичном обновлении.
-- When выбор JS scroll/animation библиотеки для SSR-фреймворка → предпочесть CSS-native решение (sticky, scroll-snap) вместо JS-управляемого pin/scroll, to избежать конфликта JS-плагина с SSR layout-моделью и последующего рефакторинга
-- When архитектурное решение изменилось в ходе реализации → обновить architecture.md/patterns.md немедленно, не в конце сессии, to не передать следующей сессии устаревшую документацию.
-- When соседние секции имеют разный backgroundColor при общем overlay-фоне → сделать все секции transparent, базовый цвет — только на wrapper/overlay, to убрать жёсткий шов на границе секций.
-- When добавление prop к JSX через Edit → прочитать весь элемент и проверить существующие props, to не создавать дубликаты.
-- When сервис отвечает мгновенно локально, но медленно снаружи → проверить все вызовы на уровне module import — сетевые, I/O, внешние API; вынести в background thread, to убрать блокировку worker startup.
-- When серверный код должен инициировать auth flow (reset password, verify email) → вызвать серверный API auth-библиотеки, не писать токен в БД вручную, to обеспечить совпадение токенов с форматом который валидирует клиентская часть.
-- When таблица с overflow-x-auto + sticky колонкой → не ставить промежуточный div между scroll-контейнером и table — sticky ломается в Safari, to корректное sticky-поведение колонки во всех браузерах.
-- When делегирование кодогенерации внешнему AI-агенту на много файлов → инструктировать "пиши файлы по одному, не все разом", to предотвратить зависание агента на генерации гигантского патча.
-- When d3 `.each()` на SVG элементах отрисованных React → lookup по data-* атрибутам вместо bound data, to предотвратить crash от undefined datum.
-- When делегирование write-задачи sandboxed-инструменту → проверить write permissions тестовой операцией до полного промта, to не терять время на failed delegation + ручную реализацию.
-- When VPS нужен публичный URL → перед выбором tunnel-сервиса проверить outbound connectivity VPS (HTTPS? SSH?), to не тратить попытки на несовместимые решения.
-- When JS frontend хранит список в in-memory state → POST мутирует один элемент → после успешного POST обновить запись в state синхронно (state[key] = newValue), to не допустить stale display при последующем re-render.
-- When batch endpoint валидирует каждый элемент и возвращает 400 если хоть один неизвестен → изменить на "skip unknowns, return known" (partial success), to не ломать весь batch из-за одного невалидного элемента.
-- When same parameter/field name used across any boundary (SQL JOIN, API, function call) → verify both sides agree on the identifier's semantic domain, to avoid name-match semantics-mismatch where identical names mask different meanings.
-- When стилевой модуль импортирует файл содержащий глобальные селекторы через @use → выносить переменные в отдельный partial без глобальных правил, модули @use только partial, to предотвратить purity error сборщика из-за non-local селекторов в модуле
-- When jsdom integration-тест использует history.replaceState с абсолютным URL → использовать window.location.hash или относительный путь вместо абсолютного URL, to избежать SecurityError в jsdom test environment
-- When визуальный баг в SVG/Canvas layout → вывести координаты нод через unit-тест до фикса, to не итерировать вслепую
-- When нужна визуальная проверка из CLI → Playwright скриншот dev server + Read tool, to не деплоить ради проверки глазами
-- When баг в визуальном поведении, код кажется "неправильным" → сначала читать project-knowledge (domain glossary, patterns), потом код, to не делать ложных выводов из реализации, противоречащих спеке
-- When промт для внешнего AI-агента содержит API-сигнатуры → верифицировать каждую через inspect.signature() или docs до отправки, to не вызвать fix round из-за неверных фактов
-- When настройка bind-адреса процесса внутри контейнера для ограничения внешнего доступа → применять сетевое ограничение на уровне port mapping хоста, внутри контейнера слушать на 0.0.0.0, to не сделать сервис недостижимым из-за применения ограничения на неверном уровне абстракции
