@@ -116,21 +116,29 @@ Conservative-apply only when high confidence:
    retry push once. Second failure → leave local, log to known-issues
 3. Print absolute path to known-issues file
 
-## Self-verification
+## Checks against state
 
-- [ ] Pre-flight clean tree check passed (or aborted)
-- [ ] `~/.claude/plugins/` directory untouched
-- [ ] `feedback_never_use_codex` + `feedback_no_codex` retained across all projects
-- [ ] `photo-crop` + `content-card` retained
-- [ ] Pre-scan orphan-map built before any design deletion
-- [ ] Generic delegation rules retained (codex word stripped, logic preserved)
-- [ ] Checkpoint after Phase 0 verified all 5 commits exist
-- [ ] Checkpoint after Phase 1 verified scope non-empty (or skipped Phase 2)
-- [ ] Per-project MEMORY.md indices updated for every deleted memory file
-- [ ] No active-prohibition memory file deleted (cross-check)
-- [ ] Audit waves of 3 concurrent agents, never larger
-- [ ] >500 line skills → known-issues, no auto-fix attempt
-- [ ] Section extraction only with clear phase boundaries
-- [ ] known-issues file created and appended in each phase
-- [ ] Per-phase commits made (5 cleanup + N per-skill calibration)
-- [ ] git push completed (or logged on failure)
+This skill deletes and rewrites files across every project, so the checks read what survived
+rather than what was intended.
+
+```bash
+# 1. the prohibitions that must never be deleted are still present
+rg -l "feedback_never_use_codex|feedback_no_codex" ~/.claude/projects/
+
+# 2. the skills that must be retained still exist
+rg -l . ~/.claude/skills/photo-crop/SKILL.md ~/.claude/skills/content-card/SKILL.md
+
+# 3. the plugin directory was not touched
+git -C ~/.claude/skills status --short -- ../plugins
+
+# 4. every phase left a commit, and the known-issues file was appended
+git -C ~/.claude/skills log --oneline -20
+rg -c . ~/.claude/skills/.known-issues/recalibrate-*.md
+
+# 5. per-project MEMORY.md indices no longer point at deleted memory files
+rg -o "\]\(([a-z0-9-]+\.md)\)" -r '$1' ~/.claude/projects/*/memory/MEMORY.md
+```
+
+Check 1 returning nothing means an active prohibition was deleted — restore it from git before
+doing anything else. Check 5 lists every file each index claims exists; any name with no file
+behind it is a dangling index entry left by a deletion.

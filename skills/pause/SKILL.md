@@ -130,11 +130,20 @@ Write a concrete, copy-paste-ready prompt. Lead with the goal, include specific 
 2. Print the resume prompt in a code block
 3. "Можешь закрыть сессию. При возобновлении вставь промт выше."
 
-## Self-Verification
+## Checks against state
 
-- [ ] Feature context found (or ad-hoc mode confirmed)
-- [ ] checkpoint.yml, task statuses, decisions.md read (or ad-hoc: conversation reviewed)
-- [ ] In-flight tasks reported to user with explanation
-- [ ] Checkpoint written with all sections (no empty fields — write "none" explicitly)
-- [ ] Resume prompt is specific: wave numbers, task numbers, next command
-- [ ] User shown save path and resume prompt
+The point of this skill is a file the next session can start from, so check the file, not the intent.
+
+```bash
+# 1. the checkpoint landed on disk
+rg -c . {save-path}
+
+# 2. every section is filled — no empty field left blank instead of "none"
+rg -n "^## |^\*\*" {save-path}
+
+# 3. the resume prompt is present and names a concrete next command
+rg -n "^Запусти:|/do-feature|/do-task" {save-path}
+```
+
+Check 3 returning nothing means the resume prompt is prose without an entry point — the next session
+will have to reconstruct it. Fix before reporting the pause as saved.

@@ -182,12 +182,31 @@ existing tooling — do NOT recreate it:
 
 On another project, supply equivalents for these five roles.
 
-## Self-verification
+## Checks against state
 
-- [ ] Feature worked on `feature/<slice>` in its own worktree, never committed to `dev` directly
-- [ ] Track registered via `train.py start`; collisions ordered via `depends_on`
-- [ ] Integration held the `train.py` lock (one track at a time); rebase done
-- [ ] `train.py migration-check` green (single head, reversible on fresh DB)
-- [ ] PR CI green before merge (branch protection on `dev`)
-- [ ] Deploy via `deploy-backend.sh`: only changed services rebuilt; untouched live services still "Up N hours"
-- [ ] Lock released (`train.py unlock`); `/done` run
+Every guarantee this skill makes is a fact about the repo, the lock or the running services,
+so read them — none of it is a judgement call.
+
+```bash
+# 1. work happened on the track branch, inside its worktree, never on dev
+git rev-parse --abbrev-ref HEAD          # expect feature/<slice>
+git worktree list
+
+# 2. the track is registered and collisions are ordered
+python scripts/train.py status
+
+# 3. migrations converge: single head, reversible on a fresh DB
+python scripts/train.py migration-check
+
+# 4. CI was green on the PR before the merge landed
+gh pr checks
+
+# 5. only the changed services were rebuilt
+docker compose ps
+
+# 6. the lock is released, so the next track can enter
+python scripts/train.py status | rg -i "lock"
+```
+
+Check 5 is the one that catches a wrong deploy: an untouched service showing "Up 30 seconds"
+means the deploy rebuilt more than the track changed.

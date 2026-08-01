@@ -47,7 +47,7 @@ Read ALL files from `.claude/skills/project-knowledge/references/`. Missing → 
 
 ### Phase 3: Code Scanning
 
-Launch `code-researcher` subagent (opus) with feature path and description. After completion — read `{feature_path}/code-research.md`, use in Cycle 2. If gap discovered later — re-launch with specific question.
+Launch `code-researcher` subagent (effort `high` — it reads across the codebase and judges reuse) with feature path and description. After completion — read `{feature_path}/code-research.md`, use in Cycle 2. If gap discovered later — re-launch with specific question.
 
 ### Phase 4: Cycle 2 — Code-Informed Refinement
 
@@ -64,7 +64,7 @@ Launch `code-researcher` subagent (opus) with feature path and description. Afte
 
 ### Phase 6: Completeness Check
 
-Launch `interview-completeness-checker` subagent (sonnet) with feature path. `needs_more` → ask suggested questions, re-run. `complete` → proceed.
+Launch `interview-completeness-checker` subagent (effort `low` — it scores filled items against a written list) with feature path. `needs_more` → ask suggested questions, re-run. `complete` → proceed.
 
 ### Phase 7: Create User Spec
 
@@ -76,11 +76,11 @@ Git commit: `draft(userspec): create user-spec for {feature}`
 
 ### Phase 8: Validation
 
-Run 2 validators in parallel: `userspec-quality-validator` (sonnet) — structure, template compliance; `userspec-adequacy-validator` (opus) — feasibility, over/underengineering.
+Run 2 validators in parallel: `userspec-quality-validator` (effort `low` — structure and template compliance against a written template); `userspec-adequacy-validator` (effort `high` — feasibility, over/underengineering, which needs judgement).
 
 Findings: obvious → fix silently; borderline → discuss with user; disagree → reject with reasoning; conflict between validators → adequacy takes priority (substance over form).
 
-After fixes → commit `chore(userspec): validation round {N} — {summary}`. Re-run validators. Max 3 iterations.
+After fixes → commit `chore(userspec): validation round {N} — {summary}`. Re-run the validators that raised findings, while each round leaves strictly fewer open findings than the one before. The first round that does not reduce them, stop and bring what remains to the user.
 
 ### Phase 9: User Approval
 
@@ -111,54 +111,31 @@ All three cycles apply to any work_type, but focus shifts:
 
 If understanding changes significantly: update scores downward, reassess size S/M/L, pivot items if work_type changed, note in interview.yml.
 
-## Self-Verification
 
-- [ ] All cycles completed, completeness checker passed
-- [ ] user-spec.md filled (no placeholders), both validators passed or issues resolved
-- [ ] User approved, frontmatter status: approved, interview.yml completed
-- [ ] Suggested `/new-tech-spec` as next step
+## Checks against state
+
+```bash
+# 1. the spec exists and reached approved status
+rg -n "^status:" work/{feature}/user-spec.md
+
+# 2. no placeholder survived into the approved spec
+rg -n "TBD|\{[a-z_]+\}|\[заполнить\]" work/{feature}/user-spec.md
+
+# 3. the interview record was closed, not abandoned mid-cycle
+rg -n "status:" work/{feature}/logs/userspec/interview.yml
+
+# 4. approval was committed
+git log --oneline -5 --grep "userspec"
+```
+
+Check 2 must return nothing. A placeholder left in an approved spec becomes a task written
+against a blank.
 
 ## Promoted Patterns
 
-- **Генерируй все шаги deliverable целиком** (Seen: 3): Когда deliverable состоит из нескольких шагов (серия промптов, roadmap, план сессий, деплой-инструкция) — генерировать ВСЕ шаги сразу. Частичный deliverable заставляет пользователя ловить недостающие части и запрашивать доработку.
+- **Generate every step of a deliverable at once** (Seen: 3): when a deliverable consists of several steps — a series of prompts, a roadmap, a session plan, deploy instructions — generate ALL of them in one pass. A partial deliverable forces the owner to notice what is missing and ask for the rest.
 
 ## Learned Patterns
 
-- When writing distribution instructions for end users → enumerate prerequisites on a fresh target environment before choosing the delivery method, to avoid projecting the author's environment (tools, access, paths) onto the user's environment
-- When user spec grows to 3+ sequentially-dependent deliverables -> keep the first active, create the rest as planned stubs with visible progress and preserved post-feature context
-- When the repo contains skills/modules from multiple domains -> enumerate all domains and get is_in_scope per domain before writing spec, to avoid rewriting scope from iterative boundary clarification
-- When user-spec has a descriptive block with a requirement not reflected in AC -> follow only the AC; document the gap with a decision record and update user-spec
-- When user adds a non-trivial feature mid-interview -> ask a scope-impact question before updating the spec, to prevent expanding v1 to an architecture of a different complexity level
-- When user-spec describes delete/cleanup in a system with pipeline statuses -> restrict deletion to terminal statuses (enriched/done), not field values, to avoid deleting records still in processing
-- When a new role appears mid-interview -> immediately build a role x capabilities matrix and validate with the user, to avoid 3+ batches clarifying role intersections
-- When user describes several interrelated features to implement -> explicitly clarify implementation order BEFORE initializing the first feature folder
-- When a client sends amendments to an approved user-spec -> run a focused mini-interview on changed points only and update spec directly, to avoid restarting the full interview cycle
-- When clarifying UI element placement during a spec interview -> choose a standard UX pattern without asking, to avoid blocking the interview on details the user does not formulate
-- When updating user-spec for an already-implemented feature -> launch code-researcher to diff new requirements against existing code, to avoid creating tasks for already-implemented functionality
-- When a feature generates a list of items where each item has a numeric attribute (price, score, rating) -> explicitly ask during interview who/what sets that value (LLM estimate, user catalog, or manual input) before writing AC, to prevent a critical architectural gap discovered only at validation
-- When a user rejects a proposed simplification during interview -> ask "what distinction is lost by simplifying?" before continuing, to surface a missing key abstraction before the spec is finalized
-- When spec describes a CRUD form for a single entity but the target workflow is an action over a group -> clarify cardinality ("one or many?") before implementation, to avoid rewriting finished UI due to UX mismatch
-- When user describes "split UI area into X and Y" -> clarify whether existing interaction elements survive in the new layout, to avoid treating an additive change as a replacement
-- When user-spec describes instant-save operations (click → write to DB) -> explicitly add AC for network error and rollback before validation, to avoid missing critical negative scenarios in round 1
-- When a UI task adds visible disabled buttons as placeholders for a future task -> do not add visible disabled placeholders until the future task is confirmed, to prevent reactive feature reversal after user verification
-- When user-spec is for a feature completing an existing sketch/stub with real API routes -> during code scanning read all API implementations (role checks, data filtering) and include found bugs in AC as explicit fix-requirements, to avoid critical/major security and correctness findings from validators that could have been caught earlier
-- When the task adapts existing UI (responsive, a11y) without creating new visuals -> note in spec that design-plan can be skipped and go from design-spec directly to tech-spec, to not block on absent tokens.json or design system
-- When parallel task-creators will reference the same external utility or approach -> explicitly capture the chosen approach as a Decision in user-spec before decomposition, to prevent contradictory instructions across tasks
-- When MVP plan contains only modules without a runnable entry point or start script -> verify during spec writing that the plan includes a runnable entry point and npm start, so the user can launch and verify the result without developer help
-- When user-spec explicitly excludes a capability in post-MVP -> before adding an analogous capability as a Decision check the exclusions list in user-spec, to prevent scope creep caught only at validation
-- When a task creates a UI component -> include entry point integration (import and render in App/page) in the spec's implementation notes, to not leave downstream tasks with a wrong assumption that the component is already wired in
-- When user-spec is for a style-only refactoring with full audit -> skip heavy validators or limit to lightweight validation, to not lose hours on stuck agents when architectural risk is zero
-- When user describes a feature with a familiar term (demo, template, widget) → ask "who is the consumer and why do they need it?" before technical details, to avoid spending 3 interview batches discovering the real need
-- When a stakeholder confirms a proposed decomposition as a whole → validate each element separately by asking targeted questions per item, to avoid bundle confirmation bias where a group "yes" does not equal per-element validation
-- When user-spec imports an external framework/chain and the user names only a subset of its components → open the framework's entry-point (README, main manifest) and enumerate its own dependencies before fixing AC, to avoid user-subset completeness illusion where the user's list is accepted as final scope while the chain requires more
-- When review surfaces a deviation from spec but the delivered behavior still meets the underlying intent → weigh rework cost against actual value before mandating a fix; if the gap is minor, amend the spec and confirm with stakeholders instead of blocking delivery, to avoid spec-compliance reflex driving unnecessary rework
-- When a spec is anchored to a quantitative completion target (coverage %, error count, item count) → fix an explicit scope ceiling up front and require a go/no-go check for any addition beyond it, to prevent metric pressure from disguising scope creep as continued progress
-- When about to click destructive control in third-party system whose label names a narrow target → snapshot full configuration layer the button can touch before clicking, to avoid label-scope conflation (mistaking button's named scope for its actual destructive scope)
-- When task framed as "convert every X in collection C to shape Y" → before conversion enumerate items that don't fit shape Y and declare each fate (keep/transform/delete); after conversion diff item count and names, to avoid transformation-lens deletion bias where items resisting the framing become invisible and get silently dropped
-- When second independent task rediscovers a system gap already noted out-of-scope by an earlier task → stop and escalate the gap to spec/decision level (add Decision entry, file follow-up task) instead of applying a second local workaround, to avoid parallel-rediscovery escalation gap where the spec layer never learns about a recurring cost
-- When spec describes a structured input (fixture/table/payload) alongside numeric AC derived from that input (counts/sums/splits) → walk the input row-by-row once in scratchpad form, derive all counts in a single pass, then paste those numbers into every place they appear; never re-prose the numbers independently, to avoid parallel-spec count drift where fixture description and AC numbers composed independently leave impossible totals until a downstream validator does the addition (triad #375)
-- When adapting a conditional structure (guard, dispatcher, switch) from a template by mirroring only its explicitly present branches → enumerate every possible input value/role/case for the target context and verify each is handled; branches not in the template must get an explicit handler or an explicit deny/error default, to avoid happy-path anchoring where unlisted cases fall through to implicit pass or wrong branch (fail-open) (triad #390)
-- When a frequently-exercised operation gains a new read/write against a shared mutable store (cache, counter, rate-limit, queue) that the existing test suite already drives → retrofit per-case isolation for that store into the base/shared test fixture (reset/override, tolerant of absence) and re-run the WHOLE suite, not just the new cases, to avoid shared-side-effect isolation blindness where every pre-existing case hitting the path now accumulates global state (triad #394)
-- When broadening a matching/classification rule to fix a missed case (false-negative) → before shipping, enumerate the adjacent inputs the widened rule now also matches and confirm none belongs in a different bucket, to avoid over-correction overshoot where widening to catch one miss silently creates a false-positive on a near-neighbour (triad #420)
-- When relaxing an access check to permit one operation for a low-privilege actor → enumerate every operation the same predicate gates and add a separate explicit check for those that must stay closed, then test each still-closed path (not only the one you meant to open), to avoid shared-gate widening blindness where one predicate gating read+write means relaxing it for one silently opens all (triad #456)
-- When a spec/anchor requires rendering or handling a field the current increment's producer can never populate yet (null now, real in a later increment) → implement a conditional path that no-ops on the empty value and test BOTH the empty (current) and populated (future) inputs, to avoid skip-or-require unpopulatable field where the path is either omitted or hard-breaks on the empty value (triad #470)
+Full pattern history: [references/learned-patterns.md](references/learned-patterns.md)
+Load only for audit wave and retrospective — not during an interview.
