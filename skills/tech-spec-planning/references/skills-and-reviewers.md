@@ -26,15 +26,31 @@ Prompt tasks (LLM system prompts, user templates) use `prompt-master` skill — 
 
 ## Reviewer Agents
 
-| Agent | What it checks | Model |
-|-------|---------------|-------|
-| `code-reviewer` | Code quality: structure, patterns, naming, complexity, error handling | sonnet |
-| `security-auditor` | OWASP Top 10, injection, XSS, auth, input validation, secrets | sonnet |
-| `test-reviewer` | Test quality: coverage, meaningful assertions, test pyramid balance | sonnet |
-| `skill-checker` | Skill compliance: frontmatter, structure, skill-master guidelines | sonnet |
-| `prompt-reviewer` | Prompt quality: clarity, positive framing, examples over rules, compression, XML structure, success criteria | sonnet |
-| `infrastructure-reviewer` | Infrastructure setup quality: folder structure, pre-commit, Docker, .gitignore, testing | sonnet |
-| `deploy-reviewer` | CI/CD pipeline and deployment config quality: workflows, secrets, platform config | sonnet |
+`effort` is the cost lever: it sets how much the agent reasons, independently of which
+model runs it. Name an effort level, never a model — an agent's own frontmatter resolves
+the model, and a model named in prose here goes stale the moment the family changes.
+
+| Agent | What it checks | Effort |
+|-------|---------------|--------|
+| `code-reviewer` | Code quality: structure, patterns, naming, complexity, error handling | medium |
+| `security-auditor` | OWASP Top 10, injection, XSS, auth, input validation, secrets | medium |
+| `test-reviewer` | Test quality: coverage, meaningful assertions, test pyramid balance | low |
+| `skill-checker` | Skill compliance: frontmatter, structure, authoring guidelines | low |
+| `prompt-reviewer` | Prompt quality: clarity, positive framing, examples over rules, compression, XML structure, success criteria | low |
+| `infrastructure-reviewer` | Infrastructure setup quality: folder structure, pre-commit, Docker, .gitignore, testing | low |
+| `deploy-reviewer` | CI/CD pipeline and deployment config quality: workflows, secrets, platform config | low |
+
+### Effort tiers
+
+| Tier | Use for |
+|------|---------|
+| `low` | Deterministic checks against a written standard: formatting, structure, template compliance, config shape |
+| `medium` | Default for review and for normal implementation work |
+| `high` | Work that can break production or cross a security boundary: architecture decisions, auth flows, migrations, hard debugging |
+| `xhigh` | Reserve for a task that demonstrably failed at `high` |
+
+Start at the tier above and adjust from what you observe, not from a benchmark table.
+Review accuracy holds well at lower tiers — raise the tier only where quality actually drops.
 
 ## Skill → Reviewers Mapping
 
