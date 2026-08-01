@@ -33,7 +33,7 @@ Instead, paste the "Coding rules" block below directly into the prompt.
 
 Use `teammate_name` from task frontmatter as the agent name. If not set — pick a descriptive name.
 
-**Teammate** — `subagent_type: "general-purpose"`, `model: "sonnet"`
+**Teammate** — `subagent_type: "general-purpose"`, `effort: "medium"` (raise to `high` for a task that touches auth, migrations or architecture)
 
 ```
 You are "{name}" implementing task {N}.
@@ -116,7 +116,7 @@ If task has `reviewers: none` — omit the review block. Teammate commits code a
 
 ## Reviewer Prompt
 
-**Each reviewer** (when spawned as separate agent) — `subagent_type: "{reviewer_agent}"`, `model: "sonnet"`
+**Each reviewer** (when spawned as separate agent) — `subagent_type: "{reviewer_agent}"`, `effort` per [skills-and-reviewers.md](../../tech-spec-planning/references/skills-and-reviewers.md)
 
 ```
 You are reviewer "{name}" for task {N}.

@@ -1,4 +1,5 @@
 ---
+name: new-tech-spec
 disable-model-invocation: true
 description: Create technical specification and tasks (uses tech-spec-planning skill)
 allowed-tools:

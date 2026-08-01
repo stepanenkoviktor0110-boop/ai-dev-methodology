@@ -1,8 +1,8 @@
 ---
+name: do-feature
 disable-model-invocation: true
 description: |
   Execute feature with team of agents — waves, reviews, commits.
-
   Use when: "выполни фичу", "do feature", "execute feature", "запусти фичу"
 ---
 
