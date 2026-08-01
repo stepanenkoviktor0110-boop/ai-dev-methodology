@@ -1,147 +1,149 @@
-# Приёмы с полными примерами
+# Moves with full examples
 
-Развёрнутая версия таблицы «Инструментарий» из SKILL.md. Открывать, когда ход не выбрался
-за один проход по таблице.
+The expanded version of the "Toolkit" table from SKILL.md. Open it when a move did not come out of
+one pass over the table.
 
-Каждый приём: признак-триггер → суть → пример в трёх частях (что было, что сделали, как
-проверили). Все примеры — реальные случаи одного проекта, разбор 28.07.2026. Где проверка
-в исходных материалах не зафиксирована, это сказано прямо, а не додумано.
-
----
-
-## 1. Готовый ресурс
-
-**Признак-триггер.** Собираемся добавить сущность — поле, модуль, сервис, зависимость —
-ради одного свойства.
-
-**Суть.** Прежде чем добавлять элемент, перечислить, что уже есть рядом и не используется:
-поле, ключ, структура, готовая функция в соседнем модуле, инвариант данных. Решение,
-которое ничего не добавляет, сильнее решения, которое добавляет.
-
-**Пример.**
-- *Что было.* Значения не сходились при сверке из-за форматирования. Напрашивалось написать
-  свою нормализацию под этот случай.
-- *Что сделали.* Нашли сворачивание пробелов, которое годами живёт в соседнем модуле, и
-  переиспользовали его один в один, а не переписали «правильнее».
-- *Как проверили.* Тот же опыт с восемью формулировками: 0 из 8 до, 8 из 8 после.
-
-**Связка с правилом.** Механизм уже где-то решён → воспроизвести один в один, оптимизация
-потом (глобальное правило №3). Отклонение от рабочего рецепта по непроверенной теории —
-известная грабля, а не улучшение.
+Each move: trigger feature → the move → an example in three parts (what was there, what was done,
+how it was checked). All examples are real cases from one project, worked through 2026-07-28.
+Where the source material records no check, that is said outright rather than filled in.
 
 ---
 
-## 2. Предварительное действие
+## 1. Ready resource
 
-**Признак-триггер.** Одно и то же условие разбирается заново в каждом случае, ветвлений
-всё больше.
+**Trigger feature.** About to add an entity — a field, a module, a service, a dependency — for the
+sake of one property.
 
-**Суть.** Перенести разрешение конфликта на более ранний этап, где оно делается один раз.
-Конфликт разрешён до того, как возник.
+**The move.** Before adding an element, list what already exists nearby and goes unused: a field, a
+key, a structure, a ready function in a neighbouring module, an invariant of the data. A solution
+that adds nothing is stronger than one that adds.
 
-**Пример.**
-- *Что было.* Слои пересекались; остаточные пересечения будут всегда, и каждое приходилось
-  разбирать отдельно — набор частных случаев рос.
-- *Что сделали.* Объявили приоритет один раз в самом тексте, вместо того чтобы решать
-  конфликт в каждом случае. Неявное сделали явным однократно.
-- *Как проверили.* Отдельная проверка этого хода в исходных материалах не зафиксирована.
-  Ход отнесён к сработавшим, но числа по нему не приводились.
+**Example.**
+- *What was there.* Values failed to reconcile because of formatting. The obvious pull was to write
+  a normalisation of our own for this case.
+- *What was done.* Found the whitespace collapsing that had lived for years in a neighbouring
+  module and reused it one to one, rather than rewriting it "more correctly".
+- *How it was checked.* The same experiment with eight phrasings: 0 out of 8 before, 8 out of 8 after.
 
-**Не путать** с провалившейся попыткой убрать тот же конфликт миграцией прозы в схему —
-это другой ход и другой результат, разбор в [cases.md](cases.md), раздел «Провал метода».
-
----
-
-## 3. Посредник
-
-**Признак-триггер.** Один объект обязан обслуживать двух несовместимых потребителей.
-
-**Суть.** Ввести производный объект под вторую функцию, оригинал не трогать.
-
-**Условия приёмки производной величины** — в таблице «Инструментарий» SKILL.md, строка
-«посредник». Без них приём порождает новый дефект вместо старого: слишком агрессивная
-нормализация даёт ложные совпадения.
-
-**Пример.**
-- *Что было.* Значение обязано быть читаемым человеку и одновременно служить ключом,
-  который переживёт перепечатывание. Одна строка не может быть и тем и другим: сравнение
-  форм показа даёт расхождение там, где различия по существу нет.
-- *Что сделали.* Развели: отдельный ключ сравнения, отдельная форма показа. Сворачивание —
-  только по форматированию.
-- *Как проверили.* Восемь формулировок одной мысли: 0 из 8 → 8 из 8 после починки, тем же
-  опытом.
+**Link to the rule.** The mechanism is already solved somewhere → reproduce it one to one, optimise
+after (global rule 3). Departing from a working recipe on an unverified theory is a known rake, not
+an improvement.
 
 ---
 
-## 4. Местное качество
+## 2. Prior action
 
-**Признак-триггер.** Единое правило применяется к входам, которые по сути разные.
+**Trigger feature.** The same condition is worked out afresh in every case, branches keep multiplying.
 
-**Суть.** Сделать правило неоднородным: разные части объекта или разные классы входов
-работают по-разному.
+**The move.** Move the resolution of the conflict to an earlier stage where it is done once. The
+conflict is resolved before it arises.
 
-**Пример.**
-- *Что было.* Защита обязана гасить перебор и одновременно не гасить выдачу, которую сама
-  и заказала. Строже — режет заказанное, мягче — пропускает перебор.
-- *Что сделали.* Признак различения уже лежал в структуре строки: у карточки товара есть
-  и ссылка на позицию, и цена; у варианта выбора — что-то одно. Ресурс был в данных, его
-  просто не читали. Порог применили к разделам и не применили к карточкам.
-- *Как проверили.* Граничный опыт с обеих сторон: пять карточек проходят порог, шесть
-  разделов — нет.
+**Example.**
+- *What was there.* Layers overlapped; residual overlaps will always exist, and each had to be
+  worked out separately — the set of special cases kept growing.
+- *What was done.* Declared the priority once in the text itself, instead of resolving the conflict
+  in every case. The implicit was made explicit, once.
+- *How it was checked.* No separate check of this move is recorded in the source material. The move
+  is counted among those that worked, but no figures were given for it.
 
----
-
-## 5. Обратная связь
-
-**Признак-триггер.** Отказ бесшумен: события разной природы выглядят одинаково и лечатся
-противоположно.
-
-**Суть.** Сделать различие наблюдаемым в том канале, куда реально смотрят.
-
-**Пример.**
-- *Что было.* Два разных события — «модель ошиблась» и «мы сами не сходимся с собой» —
-  выглядели одинаково. Молчаливый отказ не является ошибкой системы, поэтому его никто
-  не ищет: он не падает, не логируется как сбой, не попадает в метрики.
-- *Что сделали.* Развели эти два события в логе.
-- *Как проверили.* Отдельная проверка этого хода в исходных материалах не зафиксирована.
+**Not to be confused** with the failed attempt to remove the same conflict by migrating prose into a
+schema — that is a different move with a different result, worked through in [cases.md](cases.md),
+section "Failure of the method".
 
 ---
 
-## 6. Привязка к владельцу
+## 3. Mediator
 
-**Признак-триггер.** Значение проверяется «на правдоподобие», без источника.
+**Trigger feature.** One object must serve two incompatible consumers.
 
-**Суть.** Добывать значение по ключу объекта-владельца, а не искать рядом. Отвечает на
-вопрос «откуда берётся значение».
+**The move.** Introduce a derived object for the second function; leave the original alone.
 
-**Почему проверка наличия слабее.** Свободное значение нельзя ни подтвердить, ни опровергнуть —
-у него нет хозяина. Проверка «встречается ли такое значение вообще» ловит выдумку и
-**пропускает подмену**. Подмена хуже выдумки: она выглядит достоверно, потому что значение
-настоящее — просто не от того объекта.
+**Acceptance conditions for the derived value** are in the "Toolkit" table of SKILL.md, row
+"mediator". Without them the move produces a new defect in place of the old one: too aggressive a
+normalisation yields false matches.
 
-**Пример.**
-- *Что было.* Страж обязан быть строгим — не пропускать выдуманные цены — и мягким — не
-  резать настоящие. Ручку крутили в обе стороны, обе стороны были неверны.
-- *Что сделали.* Привязали факт к владельцу: цена добывается по ключу товара. Ресурсом
-  оказалось название товара, которое модель воспроизводит дословно.
-- *Как проверили.* Живой диалог: чужая цена ушла, вырезание настоящих прекратилось.
+**Example.**
+- *What was there.* A value had to be readable by a human and simultaneously serve as a key that
+  survives retyping. One string cannot be both: comparing display forms produces a divergence where
+  there is no difference of substance.
+- *What was done.* Split them: a separate comparison key, a separate display form. The collapsing
+  touches formatting only.
+- *How it was checked.* Eight phrasings of one thought: 0 out of 8 → 8 out of 8 after the fix, by
+  the same experiment.
 
 ---
 
-## 7. Сделай наоборот
+## 4. Local quality
 
-**Признак-триггер.** Пишем детектор плохого результата.
+**Trigger feature.** A single rule is applied to inputs that are different in kind.
 
-**Суть.** Не ловить плохой исход, а сделать его непроизводимым. Отвечает на вопрос «ловим
-или исключаем». Часто исполняется приёмом №6: привязка к владельцу — это способ сделать
-исход непроизводимым.
+**The move.** Make the rule non-uniform: different parts of the object, or different classes of
+input, behave differently.
 
-**Пример.**
-- *Что было.* Задача формулировалась как «поймать неверную цену» — то есть строился детектор.
-- *Что сделали.* Перевернули: цена добывается по ключу объекта, а не ищется рядом. После
-  этого класс дефекта **перестал существовать, а не начал детектироваться**.
-- *Как проверили.* Тот же живой диалог, что и в приёме №6.
+**Example.**
+- *What was there.* The guard had to suppress enumeration and simultaneously not suppress the
+  listing it asked for itself. Stricter cuts what was asked for, looser lets enumeration through.
+- *What was done.* The distinguishing feature was already in the structure of the string: a product
+  card has both an item link and a price; a choice option has one or the other. The resource was in
+  the data, it simply was not read. The threshold was applied to sections and not to cards.
+- *How it was checked.* A boundary experiment on both sides: five cards pass the threshold, six
+  sections do not.
 
-**Проверка приёма на подделку.** Контрольный вопрос шага 2: исход стал невозможен или я
-просто переместил его в другое место? Провал метода случился ровно на подделке этого
-приёма — [cases.md](cases.md), раздел «Провал метода».
+---
+
+## 5. Feedback
+
+**Trigger feature.** Refusal is silent: events of different nature look identical and need opposite
+treatment.
+
+**The move.** Make the difference observable in the channel people actually look at.
+
+**Example.**
+- *What was there.* Two different events — "the model got it wrong" and "we disagree with
+  ourselves" — looked identical. A silent refusal is not a system error, so nobody goes looking for
+  it: it does not crash, is not logged as a failure, does not reach the metrics.
+- *What was done.* Separated the two events in the log.
+- *How it was checked.* No separate check of this move is recorded in the source material.
+
+---
+
+## 6. Bind to the owner
+
+**Trigger feature.** A value is checked "for plausibility", with no source.
+
+**The move.** Obtain the value by the key of the owning object rather than looking for it nearby.
+Answers the question "where does the value come from".
+
+**Why a presence check is weaker.** A free-floating value can be neither confirmed nor refuted — it
+has no owner. A check of "does such a value occur at all" catches invention and **lets substitution
+through**. Substitution is worse than invention: it looks credible, because the value is genuine —
+just not from that object.
+
+**Example.**
+- *What was there.* The guard had to be strict — let no invented price through — and lenient — not
+  cut the genuine ones. The dial was turned both ways, and both ways were wrong.
+- *What was done.* Bound the fact to its owner: the price is obtained by the product's key. The
+  resource turned out to be the product name, which the model reproduces verbatim.
+- *How it was checked.* Live dialogue: the foreign price was gone, the cutting of genuine ones
+  stopped.
+
+---
+
+## 7. Do it the other way round
+
+**Trigger feature.** Writing a detector for a bad result.
+
+**The move.** Do not catch the bad outcome, make it unproducible. Answers the question "catch or
+exclude". Often carried out by move 6: binding to the owner is a way of making the outcome
+unproducible.
+
+**Example.**
+- *What was there.* The task was stated as "catch the wrong price" — that is, a detector was being
+  built.
+- *What was done.* Turned it over: the price is obtained by the object's key rather than looked for
+  nearby. After that the class of defect **stopped existing rather than starting to be detected**.
+- *How it was checked.* The same live dialogue as in move 6.
+
+**Checking the move for a fake.** The control question of step 2: did the outcome become impossible,
+or did I just move it somewhere else? The failure of the method happened on exactly a fake of this
+move — [cases.md](cases.md), section "Failure of the method".

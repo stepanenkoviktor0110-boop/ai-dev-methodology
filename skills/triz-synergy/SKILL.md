@@ -2,10 +2,11 @@
 disable-model-invocation: true
 name: triz-synergy
 description: |
-  Разрешает противоречия в разработке: формулирует пару взаимоисключающих требований
-  к одному объекту, ищет уже существующий ресурс в коде и в структуре данных, разделяет
-  по структуре/времени/условию/отношению и проверяет решение различающим опытом.
-  On-demand only — вызывать явно, когда виден признак противоречия.
+  Resolves contradictions in development: states a pair of mutually exclusive requirements
+  on one object, hunts for a resource already present in the code and in the data,
+  separates by structure / time / condition / relation, and settles the result with a
+  discriminating experiment.
+  On-demand only — invoke explicitly, when a sign of contradiction is visible.
 
   Use when: "триз", "triz", "разбор противоречия", "чиним одно — ломается другое",
   "фиксим A — падает B", "ручку крутят в обе стороны",
@@ -13,268 +14,279 @@ description: |
   "это ограничение платформы, только обходной путь"
 ---
 
-# ТРИЗ-синергия — разрешение противоречий в разработке
+# TRIZ synergy — resolving contradictions in development
 
-Не теория ТРИЗ. Процедура из пяти шагов, записанный инструментарий приёмов и обязательная
-проверка опытом. Каждый приём опирается на реальный разобранный случай; случаев пять, и
-несколько приёмов делят один случай — приёмов, придуманных без случая, здесь нет.
+Not TRIZ theory. A five-step procedure, a written toolkit of moves, and a mandatory
+settlement by experiment. Every move rests on a real case that was worked through; there are
+five cases, and several moves share one case. No move without a case behind it appears here.
 
-Скилл не привязан к стеку и не привязан к проекту: работает везде, где есть код и данные.
-Единственная машинно-зависимая деталь — корень соседних проектов в шаге 3a, он подставляется.
+The skill is tied to no stack and no project: it works anywhere there is code and data. The
+one machine-dependent detail is the root of neighbouring projects in step 3a, which is
+substituted in.
 
-## Порог вызова
+## Threshold
 
-Вызывается по запросу, автоматически не подхватывается. Зовите, когда виден **признак
-противоречия**:
+Invoked on request; never picked up automatically. Call it when a **sign of contradiction**
+is visible:
 
-- чиним одно — ломается другое;
-- ручку крутят в обе стороны, и обе стороны неверны (строже — режет живое, мягче — пропускает);
-- один и тот же класс дефекта возвращается под новым лицом после каждой починки;
-- прозвучало «это ограничение платформы / базового слоя, только обходной путь».
+- fixing one thing breaks another;
+- the dial gets turned both ways and both ways are wrong (stricter cuts the living, looser lets
+  things through);
+- the same class of defect returns wearing a new face after every fix;
+- someone said "that's a platform / base-layer limitation, only a workaround is possible".
 
-**НЕ зовите, когда:**
+**Do NOT call it when:**
 
-| Ситуация | Что делать вместо |
+| Situation | Do this instead |
 |---|---|
-| Симптом плавает, ещё неизвестно даже, какая подсистема виновата | сначала грубая локализация: логи, воспроизведение, бисект |
-| Обычный баг: одна причина, один фикс, никто не страдает | просто починить |
-| Добавляем функцию, которой не было | tech-spec-planning / code-writing |
-| Спор о приоритетах, сроках, вкусе | это не противоречие в объекте, это решение владельца |
-| Параметр надо настроить, и обе стороны согласны куда | настроить и измерить |
-| Готовый рецепт из соседнего проекта **уже известен** | воспроизвести один в один (глобальное правило №3) |
+| The symptom drifts and even the guilty subsystem is unknown | coarse localisation first: logs, reproduction, bisect |
+| An ordinary bug: one cause, one fix, nobody suffers | just fix it |
+| Adding a capability that did not exist | tech-spec-planning / code-writing |
+| An argument about priorities, deadlines, taste | not a contradiction in an object; the owner decides |
+| A parameter needs tuning and both sides agree which way | tune it and measure |
+| A ready recipe from a neighbouring project **is already known** | reproduce it one to one (global rule 3) |
 
-Последняя строка — только про уже известный рецепт. Подозрение, что рецепт где-то есть, из
-скилла не выводит: наличие проверяется поиском внутри шага 3a, это часть процедуры.
+That last row is only about a recipe already known. A suspicion that a recipe exists somewhere
+does not take you out of the skill: whether it exists is settled by the search inside step 3a,
+which is part of the procedure.
 
-Первая строка отсекает неизвестную подсистему. Когда подсистема известна, а конкретный
-объект внутри неё — нет, это **не повод выходить**: объект находится шагом 1 через
-различающий опыт, ровно им и находился на флагманском случае.
+The first row rules out an unknown subsystem. When the subsystem is known but the specific
+object inside it is not, that is **not grounds to leave**: the object is found in step 1 by a
+discriminating experiment, which is exactly how it was found in the flagship case.
 
-Бюджет: два полных прохода процедуры. Если после второго объект противоречия не найден
-или разделение не ложится — зафиксировать результат и выйти в tech-spec-planning, метод
-здесь не тянет.
+Budget: two full passes of the procedure. If after the second the object of the contradiction
+is not found, or no separation fits, record the outcome and leave for tech-spec-planning — the
+method does not carry this one.
 
-## Процедура: пять шагов
+## Procedure: five steps
 
-### Шаг 1. Сформулировать противоречие как пару требований к одному объекту
+### Step 1. State the contradiction as a pair of requirements on one object
 
-Не «плохо работает», а «X обязан быть A и одновременно не-A». Пока не сформулировано —
-разрешать нечего, будет подгонка параметров.
+Not "it works badly", but "X must be A and simultaneously not-A". Until that is stated there is
+nothing to resolve and you will be tuning parameters.
 
-- **техническое**: усиливаем одно свойство — деградирует другое («строже фильтр → режет настоящее»);
-- **физическое**: один и тот же элемент обязан обладать взаимоисключающими свойствами
-  («эта строка обязана быть читаемой человеку и быть ключом сравнения»).
+- **technical**: strengthening one property degrades another ("stricter filter → cuts the real ones");
+- **physical**: one and the same element must hold mutually exclusive properties
+  ("this string must be human-readable and be the comparison key").
 
-Физическое сильнее: оно прямо подсказывает разделение. Техническое всегда доводите
-до физического — спросите «какой конкретно элемент несёт оба требования?».
+Physical is the stronger form: it points directly at the separation. Always drive a technical
+contradiction down to a physical one — ask "which specific element carries both requirements?".
 
-**Если объект неизвестен — найти его различающим опытом, а не догадкой.** Опыт по правилам
-из раздела «Различающий опыт», здесь он работает как локализатор: перечислить две
-конкурирующие причины, поставить наблюдение, дающее при них разный результат, и по
-результату понять, какой элемент несёт оба требования. На флагманском случае именно
-результат «0 из 8, включая однозначную формулировку» показал, что объект — строка значения
-на сверке, а не понимание текста. Тот же опыт повторяется на шаге 5 после починки.
+**If the object is unknown, find it by a discriminating experiment, not by guessing.** Run the
+experiment by the rules in the "Discriminating experiment" section; here it works as a locator:
+list two competing causes, set up an observation that yields a different result under each, and
+from the result work out which element carries both requirements. In the flagship case it was
+exactly the result "0 out of 8, including the unambiguous phrasing" that showed the object was
+the value string at reconciliation, not the understanding of the text. The same experiment is
+repeated in step 5 after the fix.
 
-**Сделано, если:** пара записана как два предиката к одному значению, и на конкретном
-примере видно, что одновременно выполнить их нельзя. Если предикаты относятся к разным
-объектам — это не противоречие, выйти из скилла и зафиксировать это явно.
+**Done when:** the pair is written as two predicates over one value, and on a concrete example
+it is visible that both cannot hold at once. If the predicates apply to different objects, this
+is not a contradiction — leave the skill and record that explicitly.
 
-### Шаг 2. Назвать идеальный конечный результат (ИКР)
+### Step 2. State the ideal final result (IFR)
 
-Формула: **«проблема решается сама, потому что вредный исход стал НЕВОЗМОЖЕН»**.
-Не «поймать ошибку», а «сделать ошибку невыразимой».
+The formula: **"the problem solves itself, because the harmful outcome became IMPOSSIBLE"**.
+Not "catch the error", but "make the error unexpressible".
 
-ИКР не обязан быть достижим — он задаёт направление и отсекает решения-костыли.
+The IFR need not be reachable — it sets the direction and rules out crutch solutions.
 
-**Контрольный вопрос сразу после формулировки ИКР:**
+**Control question, immediately after stating the IFR:**
 
-> Вредный исход стал невозможен — или я просто переместил его в другое место?
+> Did the harmful outcome become impossible, or did I just move it somewhere else?
 
-Реальный провал ровно здесь: ИКР «слот вместо свободной прозы» оказался иллюзией —
-**слот тоже строка**. Разбор: [references/cases.md](references/cases.md), «Провал метода».
+The real failure sits exactly here: the IFR "a slot instead of free prose" turned out to be an
+illusion — **a slot is a string too**. Full account: [references/cases.md](references/cases.md),
+"Failure of the method".
 
-**Сделано, если:** сформулирован негативный тест — проверка на вредный исход, которую после
-решения станет **невозможно написать**. Если тест по-прежнему пишется, только для другого
-поля, это перестановка, а не разрешение.
+**Done when:** you have stated a negative test — a check for the harmful outcome — that after
+the solution becomes **impossible to write**. If the test can still be written, only against a
+different field, that is a rearrangement, not a resolution.
 
-### Шаг 3. Искать ресурс, уже имеющийся в системе
+### Step 3. Look for a resource already present in the system
 
-Лучшее решение не добавляет сущность, а замечает неиспользованную. Ресурс лежит в двух
-разных местах, и ищутся они по-разному.
+The best solution does not add an entity, it notices an unused one. The resource sits in two
+different places, and they are searched differently.
 
-#### 3a. Ресурс в коде — поиск
+#### 3a. Resource in the code — the search
 
-Сначала вывести запросы из формулировки шага 1, а не угадывать. Берутся:
+Derive the queries from the step-1 statement rather than guessing. Take:
 
-- имена полей обеих сторон, которые сравниваются или конфликтуют;
-- имя типа/структуры, которой принадлежит объект противоречия;
-- call-site самой операции, которая ломается;
-- словарь по классу задачи: канонизация — `normaliz|canonical|slug|trim|collapse|\s+`,
-  пороги — `limit|threshold|max_|quota`, приоритеты — `priority|override|precedence`,
-  идентичность — `key|hash|fingerprint|dedup`;
-- имя симптома, как его называет владелец.
+- the field names on both sides that are compared or that conflict;
+- the name of the type/structure the object of the contradiction belongs to;
+- the call site of the operation that breaks;
+- vocabulary by problem class: canonicalisation — `normaliz|canonical|slug|trim|collapse|\s+`,
+  thresholds — `limit|threshold|max_|quota`, priorities — `priority|override|precedence`,
+  identity — `key|hash|fingerprint|dedup`;
+- the name of the symptom as the owner says it.
 
 ```bash
-# 1. Механизм уже решён рядом, в текущем проекте?
-rg -nS "<запрос из списка выше>" --glob '!node_modules' --glob '!.git' .
+# 1. Is the mechanism already solved nearby, in the current project?
+rg -nS "<query from the list above>" --glob '!node_modules' --glob '!.git' .
 
-# 2. Решён у соседних проектов/клиентов с тем же стеком?
-#    <PROJECTS_ROOT> — корень, где лежат остальные проекты (на этой машине "D:/МОИ ПРОЕКТЫ").
-rg -nlS "<запрос>" --glob '!node_modules' --glob '!.git' "<PROJECTS_ROOT>"
+# 2. Solved at neighbouring projects/clients on the same stack?
+#    <PROJECTS_ROOT> — the root holding the other projects (on this machine "D:/МОИ ПРОЕКТЫ").
+rg -nlS "<query>" --glob '!node_modules' --glob '!.git' "<PROJECTS_ROOT>"
 
-# 3. Есть ли разбор в базе знаний и уроках методологии?
-rg -nlS "<симптом|имя механизма>" ~/.claude/skills
+# 3. Is there an account of it in the knowledge base and the methodology lessons?
+rg -nlS "<symptom|mechanism name>" ~/.claude/skills
 ```
 
-Нашли готовый механизм — **воспроизвести один в один, а не улучшать по своей теории**.
-Сначала reproduce, потом оптимизация (глобальное правило №3).
+Found a ready mechanism — **reproduce it one to one, do not improve it by your own theory**.
+Reproduce first, optimise after (global rule 3).
 
-#### 3b. Ресурс в данных — инвентаризация входа
+#### 3b. Resource in the data — inventory of the input
 
-Греп находит механизмы, но не находит различители: они лежат в структуре входа, и их
-обычно просто не читают. Действие:
+Grep finds mechanisms but does not find discriminators: those live in the structure of the
+input, and are usually simply never read. What to do:
 
-1. собрать по 3–5 **реальных** примеров каждого класса входа, которые метод обязан развести;
-2. выписать фактические поля и форму каждого — не по схеме и не по памяти, а как пришло;
-3. найти минимальный признак, который есть у всех примеров класса A и ни у одного не-A;
-4. признака нет — записать это явно: разделение по условию на этих данных невозможно,
-   идти к другим типам разделения;
-5. настоящих примеров не достать (воспроизводится только в проде, логи не сохранены) —
-   записать это явно и остановить 3b. Синтетические примеры вместо настоящих дают
-   фиктивный признак: он будет разделять выдумку, а не реальные популяции.
+1. collect 3–5 **real** examples of each input class the method must tell apart;
+2. write out the actual fields and shape of each — not from the schema and not from memory, but
+   as it arrived;
+3. find the minimal feature present in every example of class A and in no example of not-A;
+4. no such feature — record that explicitly: separation on condition is impossible on this data,
+   move to the other separation types;
+5. real examples unobtainable (reproduces only in production, logs not retained) — record that
+   explicitly and stop 3b. Synthetic examples in place of real ones yield a fictitious feature:
+   it will separate an invention, not the real populations.
 
-Так находился ресурс на случае с порогом перебора: у карточки товара есть и ссылка на
-позицию, и цена, у варианта выбора — что-то одно. Признак лежал в строке, его не читали.
+That is how the resource was found in the enumeration-threshold case: a product card has both a
+link to the item and a price, while a choice option has one or the other. The feature was in the
+string; nobody had read it.
 
-**Сделано, если:** названы результаты обоих поисков. Пустой результат — тоже результат,
-он записывается явно, а не пропускается.
+**Done when:** the results of both searches are named. An empty result is a result too — it gets
+recorded explicitly rather than skipped.
 
-### Шаг 4. Разделить
+### Step 4. Separate
 
-Разделение и есть разрешение физического противоречия. Четыре типа, выбираются по признаку:
+The separation is the resolution of a physical contradiction. Four types, chosen by feature:
 
-| Тип | Признак выбора | Типичные приёмы | Случай |
+| Type | Choosing feature | Typical moves | Case |
 |---|---|---|---|
-| **по структуре** | требования предъявлены объекту «как целому», но объект расщепляется на части или представления | посредник, местное качество | ключ сравнения / форма показа |
-| **во времени** | требования нужны в разные моменты жизни объекта | предварительное действие | приоритет слоёв объявлен один раз |
-| **по условию** | требования нужны при разных входах, и в данных **уже есть** признак, различающий входы (ищется шагом 3b) | местное качество, готовый ресурс | порог перебора: карточки и разделы |
-| **по отношению** | объект обязан быть A для одного потребителя и не-A для другого | обратная связь, посредник | молчаливый отказ в логе |
-| **разделения нет** | объект противоречия можно устранить целиком: значение не проверять, а производить из владельца | сделай наоборот, привязка к владельцу | страж и цена |
+| **in structure** | the requirements are placed on the object "as a whole", but the object splits into parts or representations | mediator, local quality | comparison key / display form |
+| **in time** | the requirements are needed at different moments in the object's life | prior action | layer priority declared once |
+| **on condition** | the requirements are needed for different inputs, and the data **already contains** a feature telling the inputs apart (found by step 3b) | local quality, ready resource | enumeration threshold: cards and sections |
+| **by relation** | the object must be A for one consumer and not-A for another | feedback, mediator | silent refusal in the log |
+| **no separation** | the object of the contradiction can be removed entirely: do not check the value, derive it from its owner | do it the other way round, bind to the owner | the guard and the price |
 
-Пятая строка — не «ничего не выбрали», а самостоятельный исход, и он сильнее любого
-разделения: разводить нечего, если носитель противоречия перестал существовать. Проверяется
-так же, как остальные, — контрольным вопросом шага 2.
+The fifth row is not "we picked nothing" — it is an outcome in its own right, and a stronger one
+than any separation: there is nothing to separate once the carrier of the contradiction has
+ceased to exist. It is tested like the others, by the control question of step 2.
 
-Разделение по отношению часто **реализуется** структурно (два поля, два канала): тип отвечает
-на вопрос «почему разделяем», структура — «чем».
+Separation by relation is often **implemented** structurally (two fields, two channels): the type
+answers "why are we separating", the structure answers "with what".
 
-Разбор случаев из последней колонки: «ключ сравнения» и «порог перебора» —
-[references/cases.md](references/cases.md); «приоритет слоёв» и «молчаливый отказ» —
-[references/moves.md](references/moves.md), приёмы 2 и 5 (числовой проверки по ним
-в исходных материалах нет, это слабейшее место двух нижних типов).
+Accounts of the cases in the last column: "comparison key" and "enumeration threshold" —
+[references/cases.md](references/cases.md); "layer priority" and "silent refusal" —
+[references/moves.md](references/moves.md), moves 2 and 5 (there is no numeric check for those in
+the source material, which is the weakest point of the bottom two types).
 
-> О происхождении признаков: первые три типа взяты из разобранных случаев напрямую. Признак
-> к «по отношению» выведен из случая с логом — прямого случая на этот тип в исходных
-> материалах не было.
+> On where the features came from: the first three types are taken from worked cases directly.
+> The feature for "by relation" was derived from the logging case — there was no direct case for
+> that type in the source material.
 
-Один ход закрыл противоречие целиком — идти на шаг 5. В [triz-combinatorics](../triz-combinatorics/SKILL.md)
-— минимальный набор ходов, покрывающий все части противоречия — уходить в трёх случаях:
-ход выбран, но закрывает не всё; кандидатов несколько и неясно, какой брать; **ни одна
-строка таблицы не легла, при этом поиск шага 3 дал ресурс** — последнее означает не тупик,
-а связку из нескольких ролей, и именно так решался случай со стражем.
+One move closed the contradiction entirely — go to step 5. [triz-combinatorics](../triz-combinatorics/SKILL.md)
+holds the minimal set of moves covering every part of the contradiction; go there in three cases:
+a move is chosen but does not close everything; there are several candidates and it is unclear
+which to take; **no row of the table fits while the step-3 search did yield a resource** — the
+last means not a dead end but a bundle of several roles, and that is exactly how the guard case
+was solved.
 
-**Сделано, если:** назван конкретный артефакт — поле, функция, канал, — и место, где он
-появится. Если тип выбран по похожести примера, а не по признаку, тип не выбран: вернуться
-к шагу 1 и уточнить, какой элемент несёт оба требования.
+**Done when:** a concrete artifact is named — a field, a function, a channel — along with the
+place it will appear. If the type was chosen because an example looked similar rather than by
+the feature, the type is not chosen: go back to step 1 and clarify which element carries both
+requirements.
 
-Если ни один тип не ложится и оба поиска шага 3 **пусты** — второй проход процедуры с другой
-формулировкой объекта; после второго прохода выйти по бюджету. Ресурс найден — это другая
-ветка, она ведёт в комбинаторику, а не на второй круг.
+If no type fits and both step-3 searches came back **empty** — second pass of the procedure with
+a different statement of the object; after the second pass, leave on budget. A resource was
+found — that is a different branch, and it leads into combinatorics, not around the loop again.
 
-### Шаг 5. Проверить опытом, а не рассуждением
+### Step 5. Settle it by experiment, not by argument
 
-Формулировка без различающего опыта — гипотеза, даже если красивая. Правила — раздел ниже.
+A statement without a discriminating experiment is a hypothesis, however elegant. The rules are
+in the section below.
 
-Если объект находился опытом на шаге 1 — повторить **тот же** опыт, а не похожий. Если
-объект был известен сразу или проверочный опыт по природе другой (локализация искала
-причину, проверка меряет результат) — поставить новый различающий опыт по правилам раздела
-и зафиксировать, чем он отличается от локализующего.
+If the object was found by experiment in step 1 — repeat **that same** experiment, not a similar
+one. If the object was known from the start, or the settling experiment is different in nature
+(localisation looked for a cause, settlement measures a result) — set up a new discriminating
+experiment by the rules of that section and record how it differs from the locating one.
 
-Отдельно: перечислить **все** точки, где живёт исправленная операция, и применить решение
-во всех. Починенный один call-site при трёх существующих вернёт класс дефекта, и это
-запишут в «метод не сработал».
+Separately: list **every** point where the fixed operation lives, and apply the solution at all
+of them. One call site fixed out of three existing ones will bring the class of defect back, and
+that gets written down as "the method did not work".
 
-## Инструментарий
+## Toolkit
 
-Семь приёмов. Формулировки универсальные — применимы к любому коду и данным; колонка
-«Пример» показывает, как приём выглядел на реальном случае, и не ограничивает область.
+Seven moves. The wording is universal — applicable to any code and data; the "Example" column
+shows how the move looked on a real case and does not bound its scope.
 
-Ход не выбрался за один проход по таблице — открыть [references/moves.md](references/moves.md):
-там каждый приём с полным примером — что было, что сделали, как проверили.
+A move did not come out of one pass over the table — open [references/moves.md](references/moves.md):
+each move there comes with a full example, what was there, what was done, how it was checked.
 
-| Признак-триггер | Суть хода | Пример |
+| Trigger feature | The move | Example |
 |---|---|---|
-| Собираемся добавить сущность — поле, модуль, сервис, зависимость — ради одного свойства | **готовый ресурс**: сначала перечислить, что уже есть рядом и не используется; решение, которое ничего не добавляет, сильнее | сворачивание пробелов, годами живущее в соседнем модуле, закрыло сверку значений |
-| Одно и то же условие разбирается заново в каждом случае, ветвлений всё больше | **предварительное действие**: перенести разрешение на более ранний этап, где оно делается один раз | приоритет слоёв объявлен один раз в самом тексте вместо разбора конфликта в каждом случае |
-| Один объект обязан обслуживать двух несовместимых потребителей | **посредник**: ввести производный объект под вторую функцию, оригинал не трогать. Приёмка: производная величина идемпотентна, гасит только презентационное различие, различие по существу остаётся различием, считается симметрично для обеих сторон в одной точке | ключ сравнения рядом с формой показа |
-| Единое правило применяется к входам, которые по сути разные | **местное качество**: сделать правило неоднородным — разные части или классы входов работают по-разному; признак классов берётся из шага 3b | порог перебора применяется к разделам, но не к карточкам товаров |
-| Отказ бесшумен: события разной природы выглядят одинаково и лечатся противоположно | **обратная связь**: сделать различие наблюдаемым в том канале, куда реально смотрят | «модель ошиблась» и «мы сами не сходимся с собой» разведены в логе; молчаливый отказ не считается ошибкой системы, поэтому его никто не ищет |
-| Значение проверяется «на правдоподобие», без источника | **привязка к владельцу**: добывать значение по ключу объекта-владельца, а не искать рядом. Отвечает на вопрос «откуда берётся значение» | свободное число нельзя ни подтвердить, ни опровергнуть: проверка «встречается ли такое» ловит выдумку и пропускает подмену, а подмена выглядит достоверно |
-| Пишем детектор плохого результата | **сделай наоборот**: не ловить плохой исход, а сделать его непроизводимым. Отвечает на вопрос «ловим или исключаем»; часто исполняется привязкой к владельцу | факт добывается по ключу объекта → класс дефекта перестал существовать, а не начал детектироваться |
+| About to add an entity — a field, a module, a service, a dependency — for the sake of one property | **ready resource**: first list what already exists nearby and goes unused; a solution that adds nothing is the stronger one | whitespace collapsing, living for years in a neighbouring module, closed the value reconciliation |
+| The same condition is worked out afresh in every case, branches keep multiplying | **prior action**: move the resolution to an earlier stage where it is done once | layer priority declared once in the text itself instead of resolving the conflict in every case |
+| One object must serve two incompatible consumers | **mediator**: introduce a derived object for the second function, leave the original alone. Acceptance: the derived value is idempotent, it erases only presentational difference, a difference of substance stays a difference, and it is computed symmetrically for both sides at one point | the comparison key alongside the display form |
+| A single rule is applied to inputs that are different in kind | **local quality**: make the rule non-uniform — different parts or classes of input behave differently; the class feature comes from step 3b | the enumeration threshold applies to sections but not to product cards |
+| Refusal is silent: events of different nature look identical and need opposite treatment | **feedback**: make the difference observable in the channel people actually look at | "the model got it wrong" and "we disagree with ourselves" separated in the log; a silent refusal does not count as a system error, which is why nobody goes looking for it |
+| A value is checked "for plausibility", with no source | **bind to the owner**: obtain the value by the key of the owning object rather than looking for it nearby. Answers the question "where does the value come from" | a free-floating number can be neither confirmed nor refuted: a check of "does such a value occur" catches invention and lets substitution through, and substitution looks entirely credible |
+| Writing a detector for a bad result | **do it the other way round**: do not catch the bad outcome, make it unproducible. Answers "catch or exclude"; often carried out by binding to the owner | the fact is obtained by the owner's key → the class of defect stopped existing rather than starting to be detected |
 
-Проверка «сделай наоборот» на подделку — тот же контрольный вопрос из шага 2: исход стал
-невозможен или переехал?
+Checking "do it the other way round" for a fake is the same control question from step 2: did the
+outcome become impossible, or did it move?
 
-Полный список сорока классических приёмов и матрица противоречий сюда **сознательно не входят**:
-приём без приложенного примера из практики даёт правдоподобную форму ТРИЗ вместо разрешения
-противоречия, а неиспользуемый список хуже отсутствия. Появится случай с примером — приём
-дописывается сюда вместе с примером.
+The full list of forty classical moves and the contradiction matrix are **deliberately excluded**:
+a move with no attached example from practice produces a plausible-looking TRIZ shape instead of a
+resolved contradiction, and an unused list is worse than no list. When a case with an example
+appears, the move gets written in here together with its example.
 
-## Различающий опыт
+## Discriminating experiment
 
-**Правило: опыт обязан РАЗЛИЧАТЬ гипотезы, а не подтверждать любимую.**
+**Rule: the experiment must DISCRIMINATE between hypotheses, not confirm the favourite one.**
 
-Как ставить:
+How to set one up:
 
-1. перечислить минимум две конкурирующие причины;
-2. придумать наблюдение, которое при разных причинах даёт разный результат;
-3. прогнать на самом узком механизме, без всего остального пути;
-4. интермиттентное поведение — минимум три чистых прогона;
-5. после починки — повторить **тот же** опыт, а не похожий.
+1. list at least two competing causes;
+2. devise an observation that yields a different result under each;
+3. run it on the narrowest mechanism, without the rest of the path;
+4. intermittent behaviour — at least three clean runs;
+5. after the fix — repeat **the same** experiment, not a similar one.
 
-**Образцовый случай.** Гипотеза владельца: бот не понимает разговорное «тысяч до пяти».
-Опыт: восемь формулировок одной мысли, от разговорной до однозначной «до 5000 рублей»,
-каждая поодиночке и внутри диалога.
+**The exemplary case.** The owner's hypothesis: the bot does not understand the colloquial "up to
+about five thousand". The experiment: eight phrasings of the same thought, from colloquial to the
+unambiguous "up to 5000 roubles", each on its own and inside a dialogue.
 
-Результат — **0 из 8**, включая однозначную. Именно это и различило гипотезы: если бы ломалось
-понимание, однозначная формулировка сработала бы. Не сработала ни одна — значит дело не в
-словах, а в сверке. После починки — **8 из 8** тем же опытом.
+The result — **0 out of 8**, including the unambiguous one. That is precisely what discriminated
+the hypotheses: had understanding been what broke, the unambiguous phrasing would have worked. Not
+one worked — so the matter was not the words but the reconciliation. After the fix — **8 out of 8**
+by the same experiment.
 
-Опыт, который проверяет только любимую гипотезу, подтвердит её почти всегда. Диагностическая
-сила берётся из того, что при второй причине результат был бы другим.
+An experiment that only tests the favourite hypothesis will confirm it nearly always. The
+diagnostic power comes from the fact that under the second cause the result would have differed.
 
-## Чеклист
+## Checklist
 
-1. Сформулировано ли противоречие как пара требований к одному объекту?
-2. Названо ли физическое противоречие, а не только техническое?
-3. Записан ли ИКР в форме «вредный исход невозможен»?
-4. Проверено ли, что ИКР не просто перемещает проблему?
-5. Проведён ли поиск готового ресурса — в коде (`grep` по соседним модулям и клиентам) и в структуре данных?
-6. Выбран ли тип разделения осознанно — по признаку, а не по похожести примера?
-7. Поставлен ли опыт, различающий гипотезы, а не подтверждающий любимую?
-8. Повторён ли тот же опыт после починки, и во всех ли точках применено решение?
-9. Закреплено ли решение тестом на **класс**, а не на случай — то есть падающим на любом представителе класса, а не только на исходном примере?
+1. Is the contradiction stated as a pair of requirements on one object?
+2. Is a physical contradiction named, not only a technical one?
+3. Is the IFR written in the form "the harmful outcome is impossible"?
+4. Was it checked that the IFR does not merely move the problem?
+5. Was the search for a ready resource run — in the code (`grep` across neighbouring modules and clients) and in the structure of the data?
+6. Was the separation type chosen deliberately — by its feature, not by resemblance to an example?
+7. Was an experiment set up that discriminates between hypotheses rather than confirming the favourite?
+8. Was the same experiment repeated after the fix, and was the solution applied at every point?
+9. Is the solution locked in by a test on the **class** rather than on the case — one that fails for any member of the class, not only for the original example?
 
-Пункт без ответа — не «пропустили», а стоп: возвращаемся на соответствующий шаг.
+An unanswered item is not "we skipped it" but a stop: go back to the corresponding step.
 
-## Переходы
+## Transitions
 
-- одного хода не хватило → [triz-combinatorics](../triz-combinatorics/SKILL.md), возврат на шаг 5;
-- фикс найден → `code-writing` (сначала тест на класс, п.9 чеклиста);
-- решение меняет архитектуру → `tech-spec-planning`; туда же — выход по бюджету двух проходов;
-- разрешение оказалось повторяемым уроком → `/quick-learning` или `/retrospective`;
-- готовый рецепт нашёлся у соседнего клиента → воспроизвести один в один, глобальное правило №3.
+- one move was not enough → [triz-combinatorics](../triz-combinatorics/SKILL.md), then back to step 5;
+- fix found → `code-writing` (test on the class first, checklist item 9);
+- the solution changes the architecture → `tech-spec-planning`; the same for leaving on the two-pass budget;
+- the resolution turned out to be a repeatable lesson → `/quick-learning`;
+- a ready recipe was found at a neighbouring client → reproduce it one to one, global rule 3.
 
-Метод под другими именами в правилах проекта: «нерешаемо = стоп и проверка, где это уже
-решено» — шаг 3; «идти экспериментом, а не продумыванием» — шаг 5; «чинить причину класса,
-а не следствие» — шаг 2; «блокер → корневой фикс на класс» — вся процедура целиком.
+The method under other names in the project rules: "unsolvable = stop and check where this is
+already solved" — step 3; "go by experiment, not by contemplation" — step 5; "fix the cause of the
+class, not the consequence" — step 2; "blocker → root fix on the class" — the whole procedure.

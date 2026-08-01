@@ -1,128 +1,130 @@
 ---
 name: triz-combinatorics
 description: |
-  Находит минимальный набор приёмов, закрывающий противоречие целиком: раскладывает
-  противоречие на части, порождает кандидатов по фиксированной форме, убивает негодных
-  бинарными фильтрами и берёт минимальное покрытие. Усложнение штрафуется, а не оплачивается.
-  Вызывается из шага 4 скилла triz-synergy.
+  Finds the minimal set of moves that closes a contradiction entirely: decomposes the
+  contradiction into parts, generates candidates in a fixed form, kills the unfit with
+  binary filters, and takes the minimal cover. Added complexity is penalised, not paid for.
+  Invoked from step 4 of the triz-synergy skill.
 
   Use when: "один ход не закрыл противоречие", "связка приёмов", "комбинация ходов",
   "какой вариант решения лучше", "несколько решений, непонятно какое",
   "минимальное решение", "оптимальный вариант"
 ---
 
-# ТРИЗ-комбинаторика — минимальный набор ходов
+# TRIZ combinatorics — the minimal set of moves
 
-Продолжение шага 4 [triz-synergy](../triz-synergy/SKILL.md). Там выбирается один ход.
-Здесь — что делать, когда одного мало.
+A continuation of step 4 of [triz-synergy](../triz-synergy/SKILL.md). There one move is chosen.
+Here: what to do when one is not enough.
 
-## Порог вызова
+## Threshold
 
-Зовите, если на шаге 4 родительского скилла: выбранный ход закрывает противоречие
-не целиком, либо кандидатов несколько и неясно, какой брать.
+Come here if, at step 4 of the parent skill, the chosen move does not close the contradiction
+entirely, or there are several candidates and it is unclear which to take.
 
-Третий вход: ни одна строка таблицы разделений не легла, но поиск шага 3 дал ресурс.
-Это не тупик, а признак связки из нескольких ролей.
+A third entry: no row of the separation table fitted, but the step-3 search did yield a resource.
+That is not a dead end — it is the sign of a bundle of several roles.
 
-**Один ход закрыл противоречие — остановиться. Это и есть оптимум, комбинаторика не нужна.**
-Из пяти разобранных случаев связка понадобилась в двух.
+**One move closed the contradiction — stop. That is the optimum; combinatorics is not needed.**
+Of the five worked cases, a bundle was needed in two.
 
-## Форма комбинации
+## Form of a combination
 
-Комбинация — не произвольное подмножество приёмов, а кортеж с фиксированными ролями.
-Приёмы не взаимозаменяемы, они занимают разные позиции:
+A combination is not an arbitrary subset of moves but a tuple with fixed roles. The moves are not
+interchangeable; they occupy different positions:
 
 ```
-[цель] + [тип разделения | нет] + [механизм ×1..k] + [материал]
+[goal] + [separation type | none] + [mechanism ×1..k] + [material]
 ```
 
-| Роль | Что подставляется | Можно ли пропустить |
+| Role | What goes in | Can it be omitted |
 |---|---|---|
-| **цель** | «сделай наоборот»: исход невозможен, а не пойман | да — тогда противоречие разводится, а не устраняется |
-| **тип разделения** | по структуре / во времени / по условию / по отношению | да — если объект противоречия исчезает целиком |
-| **механизм** | посредник, местное качество, обратная связь, предварительное действие, привязка к владельцу | нет — без механизма это лозунг |
-| **материал** | готовый ресурс из шага 3a/3b либо новый код | нет — источник называется всегда |
+| **goal** | "do it the other way round": the outcome is impossible, not caught | yes — then the contradiction is separated rather than removed |
+| **separation type** | in structure / in time / on condition / by relation | yes — if the object of the contradiction disappears entirely |
+| **mechanism** | mediator, local quality, feedback, prior action, bind to the owner | no — without a mechanism it is a slogan |
+| **material** | a ready resource from step 3a/3b, or new code | no — the source is always named |
 
-Материал заполняется в каждом кортеже, но в счёт добавленных сущностей идёт только новый
-код: готовый ресурс стоит ноль. Иначе «минимальный набор» неизмерим — одна и та же связка
-считается то двумя элементами, то тремя.
+Material is filled in for every tuple, but only new code counts toward added entities: a ready
+resource costs zero. Otherwise "minimal set" is unmeasurable — the same bundle counts as two
+elements one time and three the next.
 
-Все наблюдённые связки, других в материалах нет:
+Every bundle actually observed; there are no others in the material:
 
-- **страж и цена**: цель «сделай наоборот» + механизм «привязка к владельцу» + материал «название товара», разделения нет — объект исчез;
-- **ключ сравнения**: разделение по структуре + механизм «посредник» + материал «сворачивание пробелов из соседнего модуля»;
-- **порог перебора**: разделение по условию + механизм «местное качество» + материал «признак в структуре строки» — один механизм, комбинаторика не понадобилась.
+- **the guard and the price**: goal "do it the other way round" + mechanism "bind to the owner" + material "the product name", no separation — the object disappeared;
+- **the comparison key**: separation in structure + mechanism "mediator" + material "whitespace collapsing from a neighbouring module";
+- **the enumeration threshold**: separation on condition + mechanism "local quality" + material "a feature in the structure of the string" — one mechanism, combinatorics was not needed.
 
-## Шаг 1. Разложить противоречие на части
+## Step 1. Decompose the contradiction into parts
 
-Части берутся из **пары требований шага 1**, а не из ИКР: ИКР — одно утверждение, из него
-выводится одна часть, и покрытие вырождается — любой кандидат закрывает всё. У стража частей
-две, по числу требований пары: чужая цена не проходит **и** настоящая не режется. ИКР при
-этом остаётся мерилом на шаге 3, фильтр 1.
+The parts come from the **pair of requirements of step 1**, not from the IFR: the IFR is a single
+statement, one part follows from it, and the cover degenerates — every candidate closes
+everything. The guard case has two parts, one per requirement of the pair: someone else's price
+must not pass **and** the genuine one must not be cut. The IFR meanwhile stays the yardstick at
+step 3, filter 1.
 
-**Сделано, если:** про каждую часть можно ответить про любого кандидата «да/нет, закрывает».
-Часть, на которую ответ всегда «частично», сформулирована неверно — дробите дальше.
+**Done when:** for every part, any candidate can be answered with "yes/no, it closes it". A part
+that always gets "partially" is stated wrongly — split it further.
 
-## Шаг 2. Породить кандидатов
+## Step 2. Generate candidates
 
-Механически по форме выше. Механизмы берутся **только** из семи приёмов triz-synergy —
-придуманный на ходу восьмой не проверен ничем.
+Mechanically, by the form above. Mechanisms are taken **only** from the seven moves of
+triz-synergy — an eighth invented on the spot has been checked by nothing.
 
-Сразу отбрасывать: механизм, которому нужен признак в данных, а инвентаризация входа
-(шаг 3b родительского скилла) его не нашла.
+Discard immediately: a mechanism that needs a feature in the data when the inventory of the input
+(step 3b of the parent skill) did not find one.
 
-**Сделано, если:** каждый кандидат записан кортежем, а не фразой, и перебраны все пять строк
-таблицы разделений, включая «разделения нет». Сколько кандидатов породилось, столько и есть:
-добирать пустышки под квоту значит кормить фильтры шага 3 мусором.
+**Done when:** every candidate is written as a tuple rather than a phrase, and all five rows of
+the separation table have been gone through, including "no separation". However many candidates
+came out, that is how many there are: padding with blanks to fill a quota means feeding the
+step-3 filters garbage.
 
-## Шаг 3. Убить негодных
+## Step 3. Kill the unfit
 
-Бинарный отсев, ранжирования здесь нет. Кандидат вылетает целиком, если верно хотя бы одно:
+Binary elimination; there is no ranking here. A candidate is out entirely if at least one holds:
 
-1. вредный исход после него не устранён, а перемещён (контрольный вопрос шага 2 родительского скилла);
-2. нельзя придумать различающий опыт, который отличит его от соседнего кандидата — значит это переформулировка, а не решение;
-3. требует данных или признака, которых в реальных примерах нет.
+1. the harmful outcome after it is not removed but relocated (the control question of step 2 of the parent skill);
+2. no discriminating experiment can be devised that would tell it apart from a neighbouring candidate — meaning it is a restatement, not a solution;
+3. it needs data or a feature that the real examples do not contain.
 
-Выживших ноль — возвращайтесь в шаг 1 triz-synergy: объект противоречия назван неверно.
+Zero survivors — return to step 1 of triz-synergy: the object of the contradiction is named wrongly.
 
-## Шаг 4. Минимальное покрытие
+## Step 4. Minimal cover
 
-Таблица «кандидат × часть», отметки — закрывает или нет.
+A "candidate × part" table, marks for closes or does not.
 
-1. взять кандидата, закрывающего больше всего частей;
-2. закрыл все — **стоп, это ответ**;
-3. не закрыл — добрать того, кто закрывает непокрытое. Не того, кто изящнее, не того, кто нравится;
-4. повторять, пока непокрытых частей нет.
+1. take the candidate closing the most parts;
+2. it closed them all — **stop, that is the answer**;
+3. it did not — add whoever closes what is left uncovered. Not whoever is more elegant, not whoever you like;
+4. repeat until no part is uncovered.
 
-**Каждая часть покрывается ровно одним кандидатом.** Два кандидата на одну часть — признак,
-что это одно решение под двумя именами (характерный случай: разделение «по условию» и приём
-«местное качество»). Лишний снимается, бесплатным он не бывает.
+**Each part is covered by exactly one candidate.** Two candidates on one part is a sign that this
+is one solution under two names (the characteristic case: separation "on condition" and the move
+"local quality"). The extra one is removed; it is never free.
 
-**Сделано, если:** набор минимален — удаление любого элемента оставляет часть непокрытой.
-Проверяется перебором: снять по одному и посмотреть.
+**Done when:** the set is minimal — removing any element leaves a part uncovered. Verified by
+enumeration: take one out at a time and look.
 
-## Шаг 5. Ранжировать, если минимальных наборов несколько
+## Step 5. Rank, if there are several minimal sets
 
-Порядок жёсткий, сравнение по первому различающему критерию:
+The order is strict; compare on the first criterion that differs:
 
-1. **устранение бьёт разведение** — набор с ролью «цель», после которого носитель противоречия исчезает, выигрывает у набора, который противоречие только разводит по частям. При равном числе сущностей это единственное, что их различает;
-2. **сколько сущностей добавляет** — готовый ресурс бьёт новый код, ноль новых сущностей бьёт одну;
-3. **сколько точек применения** нужно тронуть;
-4. **чем проверяется** — есть ли граничный опыт с обеих сторон;
-5. **стоимость ошибки** — применяется, только когда ни один кандидат вредный исход не устраняет и выбирать приходится среди разводящих: тогда детектор на существующем тексте дешевле миграции и даёт ту же защиту. Вне этого условия критерий не работает — на страже детектор был именно тем вредом, который снимается фильтром 1.
+1. **removal beats separation** — a set carrying the "goal" role, after which the carrier of the contradiction disappears, wins over a set that only separates the contradiction into parts. At an equal count of entities this is the only thing that distinguishes them;
+2. **how many entities it adds** — a ready resource beats new code, zero new entities beats one;
+3. **how many application points** must be touched;
+4. **what settles it** — is there a boundary experiment on both sides;
+5. **cost of error** — applies only when no candidate removes the harmful outcome and the choice is among separating ones: then a detector over the existing text is cheaper than a migration and gives the same protection. Outside that condition the criterion does not work — in the guard case the detector was precisely the harm that filter 1 removes.
 
-Наборы неразличимы по всем пяти — берите любой и зафиксируйте, что выбор был произвольным.
-Это честнее, чем изобретать пятый критерий под желаемый ответ.
+Sets indistinguishable on all five — take any and record that the choice was arbitrary. That is
+more honest than inventing a fifth criterion to fit the desired answer.
 
-## Выход
+## Exit
 
-Возврат в шаг 5 [triz-synergy](../triz-synergy/SKILL.md): различающий опыт на выбранный
-набор, применение во всех точках, тест на класс.
+Return to step 5 of [triz-synergy](../triz-synergy/SKILL.md): the discriminating experiment on the
+chosen set, application at every point, a test on the class.
 
-## Чеклист
+## Checklist
 
-1. Разложено ли противоречие на части, по которым кандидат оценивается «да/нет»?
-2. Записан ли каждый кандидат кортежем — цель, разделение, механизм, материал?
-3. Проведён ли бинарный отсев до ранжирования, а не вместо него?
-4. Минимален ли набор — падает ли покрытие при снятии любого элемента?
-5. Не попали ли в набор два кандидата на одну и ту же часть?
+1. Is the contradiction decomposed into parts on which a candidate is judged "yes/no"?
+2. Is every candidate written as a tuple — goal, separation, mechanism, material?
+3. Was binary elimination run before ranking rather than instead of it?
+4. Is the set minimal — does the cover break when any element is removed?
+5. Did two candidates for the same part end up in the set?
