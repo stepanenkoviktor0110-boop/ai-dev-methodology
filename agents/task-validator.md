@@ -153,7 +153,7 @@ Not derivable from sources of truth — inline validation rules.
 - [ ] Verification Steps section always present (mandatory for all tasks)
 - [ ] Skills ↔ reviewers mapping valid:
   - `code-writing` → includes `code-reviewer`, `test-reviewer`
-  - `skill-master` → includes `skill-checker`
+  - skill or agent authoring (no skill) → includes `skill-checker`
 
 ### F. Decomposition Quality (cross-task)
 

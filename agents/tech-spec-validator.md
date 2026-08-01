@@ -106,7 +106,7 @@ Read `~/.claude/skills/tech-spec-planning/references/skills-and-reviewers.md` fo
 
 ### 8a. Skill Correctness
 
-- Each task's Skill value must match an entry from the Execution Skills table (`code-writing`, `infrastructure-setup`, `deploy-pipeline`, `documentation-writing`, `skill-master`, `pre-deploy-qa`, `post-deploy-qa`, `prompt-master`). Unknown skill → critical finding.
+- Each task's Skill value must match an entry from the Execution Skills table (`code-writing`, `infrastructure-setup`, `deploy-pipeline`, `documentation-writing`, `pre-deploy-qa`, `post-deploy-qa`, `prompt-master`), or be empty for a task that authors a skill or agent. Unknown skill → critical finding.
 - If a task description mentions writing or modifying LLM prompts (keywords: "prompt", "system prompt", "LLM prompt", "few-shot", "prompt template") but the task uses `code-writing` skill → critical finding: "Prompt task should use `prompt-master` skill, not `code-writing`."
 - If task Reviewers include agents not in the Reviewer Agents table (`code-reviewer`, `security-auditor`, `test-reviewer`, `skill-checker`, `prompt-reviewer`) → minor: "Reviewer `{name}` not in the standard catalog. Verify it exists."
 
