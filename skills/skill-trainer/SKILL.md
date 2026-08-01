@@ -19,6 +19,19 @@ Embeds accumulated quick-learning triads into target skills. Two outcomes per tr
 - **Auto-apply** — skill has no coverage of this case → add new rule directly
 - **Dispute** — skill already has related logic but doesn't cover the specific case → propose refinement to user
 
+## What an embedded rule may look like
+
+A triad becomes either a line of instruction or a command, and the choice matters.
+
+| Triad describes | Embed as | Where |
+|---|---|---|
+| A judgement to make while working | one-line rule `When {trigger} → {action}, to {goal}` | Learned Patterns / write target |
+| A state that can be read off disk — a file that must exist, a field that must be set, a command whose output settles it | a command | the skill's "Checks against state" section |
+
+Prefer the command. A rule restated as a self-check tick-box catches nothing: an executor that broke the rule in the body will not catch itself with a copy of that rule. Only reach for a prose rule when nothing on disk can answer the question.
+
+Write every embedded rule in **English**, whatever language the session ran in.
+
 ## Category → Skill Mapping
 
 | Category | Target skill |
@@ -47,7 +60,9 @@ Secondary mapping: if the triad's Pattern field explicitly describes a workflow 
 
 ## Phase 3+4: Analyze and Apply (delegated to Agents)
 
-For each target skill that has ≥1 triad assigned — spawn one Agent in parallel.
+Spawn one Agent per target skill that has ≥1 triad assigned. Each skill is a genuinely
+independent file, which is what makes delegation pay here. Do not split one skill across
+several agents, and do not spawn an agent to review another agent's edit.
 
 Agent prompt template:
 ```
@@ -65,14 +80,16 @@ Task:
 3. Read the write target file (if different from SKILL.md)
 4. For each triad, search for existing logic covering the same trigger or goal
 5. Classify each triad:
-   - auto-apply: no coverage → add rule to the write target file:
-     "When {trigger} → {action}, to {goal}"
+   - auto-apply: no coverage → add it. If the triad is settled by state on disk, add a
+     command to the skill's "Checks against state" section instead of a prose rule.
+     Otherwise add "When {trigger} → {action}, to {goal}" to the write target file
      (if writing to SKILL.md and no ## Learned Patterns section exists, create it at end of file)
    - dispute: partial coverage exists → do NOT edit file, return existing rule + proposed refinement
    - skip: already fully covered → no changes
 
-6. Apply all auto-apply edits to the write target (Edit tool)
-7. Do NOT touch triad-index.md — main context will update it
+6. Write in English regardless of the language of the triad text.
+7. Apply all auto-apply edits to the write target (Edit tool)
+8. Do NOT touch triad-index.md — main context will update it
 
 Return ONLY this JSON (no extra text):
 {
@@ -84,9 +101,7 @@ Return ONLY this JSON (no extra text):
 }
 ```
 
-Run all skill agents **in parallel**. Collect all JSON results before proceeding.
-
-> Checkpoint: all agents completed. Main context now holds applied/disputes/skipped lists for all skills.
+Run all skill agents in parallel. Collect all JSON results before proceeding.
 
 ### Update triad-index.md (single pass)
 
@@ -95,11 +110,10 @@ After collecting all agent results — update `Adapted` in triad-index.md in one
 - skipped triads → set `Adapted` to `{skill-name}`
 - disputed triads → leave `Adapted: —` (will be resolved in Phase 5)
 
-> Checkpoint: triad-index.md updated. Proceed to disputes.
-
 ## Phase 5: Disputes
 
-Present each dispute to the user one at a time:
+Present each dispute to the user one at a time, in Russian, and wait for a decision before
+showing the next one:
 
 ```
 Dispute: "{pattern title}" → {skill-name}
@@ -115,17 +129,13 @@ Dispute: "{pattern title}" → {skill-name}
 Применить? [да / нет / пропустить]
 ```
 
-Wait for user decision before showing the next dispute.
-
 - **да** → apply the refinement, update Adapted in triad-index.md, add to removal list
 - **нет** → skip, leave Adapted=— (will appear again next run)
 - **пропустить** → mark Adapted: n/a in triad-index.md, add to removal list
 
-> Checkpoint: all disputes resolved. Removal list complete (auto-applies + да/пропустить decisions). Proceed to cleanup.
-
 ### Cleanup
 
-Remove all collected entries from reasoning-patterns.md in a single pass — find each entry by its `### {title}` header and delete it with surrounding blank lines. Verify count matches removal list before writing.
+Remove all collected entries from reasoning-patterns.md in a single pass — find each entry by its `### {title}` header and delete it with surrounding blank lines.
 
 ## Phase 6: Quick-Ref Regeneration
 
@@ -146,19 +156,16 @@ Collect all patterns from the target skill's write target (either SKILL.md "Lear
 ## Phase 6.5: Quality Check (post-embedding)
 
 For each skill that received auto-applies — spawn one Agent in parallel.
+Full checklist, agent prompt and output format: [references/quality-checklist.md](references/quality-checklist.md).
 
-Полный чек-лист, агент-промпт и формат вывода: `references/quality-checklist.md`.
-
-Двухуровневая проверка:
-1. **General compliance** — каждый агент вызывает существующий `skill-checker` агент (size, structure, references, checkpoints). Не дублируем.
-2. **Skill-trainer-specific** — items A1-A3 (size discipline) + B1-B6 (rule quality на новых правилах).
+Two levels:
+1. **General compliance** — each agent calls the existing `skill-checker` agent (size, structure, references, checkpoints). Not duplicated here.
+2. **Skill-trainer-specific** — items A1–A3 (size discipline) and B1–B6 (rule quality on the new rules).
 
 Soft gate:
 - All pass → silent, proceed to Phase 7
-- Only warnings → одна строка в финальном Report
-- Any failed → показать сводку, спросить: починить / записать в known-issues / игнорировать
-
-> Checkpoint: quality issues либо починены, либо явно отложены пользователем.
+- Only warnings → one line in the final Report
+- Any failed → show a summary and ask: fix / record in known-issues / ignore
 
 ## Phase 7: Commit
 
@@ -182,16 +189,19 @@ Skill Trainer: обработано {N} триад.
 Отложено (нет/пропустить): {N}
 ```
 
-## Self-Verification
+## Checks against state
 
-- [ ] Only triads with Adapted=— processed
-- [ ] One Agent spawned per skill, all run in parallel
-- [ ] Agents do NOT touch triad-index.md — only main context writes it
-- [ ] triad-index.md updated in a single pass after all agents complete
-- [ ] Auto-applies written before disputes presented
-- [ ] Disputes shown one at a time, not as a batch
-- [ ] reasoning-patterns.md entries removed in a single pass after all decisions, count verified
-- [ ] Quick-ref cards regenerated for modified skills
-- [ ] Phase 6.5 quality check executed for every modified skill (skill-checker + trainer-specific items)
-- [ ] Quality findings handled (fixed / known-issues / explicitly ignored) before commit
-- [ ] Final report shown (includes quality summary line)
+Read the counts off disk; do not recall them.
+
+```bash
+# 1. every triad reported as applied or skipped no longer shows Adapted: —
+rg -c "\| — \|$" "$AGENTS_HOME/skills/quick-learning/references/triad-index.md"
+
+# 2. removal list and reasoning-patterns.md agree — count entry headers before and after
+rg -c "^### " "$AGENTS_HOME/skills/quick-learning/references/reasoning-patterns.md"
+
+# 3. a quick-ref card exists for every skill that received auto-applies
+rg -l . "$AGENTS_HOME/skills/quick-learning/references/quick-ref-{skill-name}.md"
+```
+
+Count 1 must have dropped by the number of applied plus skipped triads; count 2 by the size of the removal list. A mismatch means a pass wrote fewer rows than it reported — reconcile before committing, do not re-run the phase blind.

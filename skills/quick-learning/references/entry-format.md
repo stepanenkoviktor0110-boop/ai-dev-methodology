@@ -20,6 +20,9 @@ Append to `$AGENTS_HOME/skills/quick-learning/references/reasoning-patterns.md`:
 
 ## Rules
 
+- **Write every field in English**, whatever language the session ran in. These entries end up
+  embedded in skill bodies by skill-trainer, and a skill body carries English. An entry written
+  in the session's language reintroduces it into every skill the trainer touches.
 - Must name a **cognitive error** — can't name in 3-5 words → describing an event.
 - Must be **domain-free** — no file/tool/framework/role names. Pure thinking logic.
 - Must be **non-obvious** — "write tests" is obvious. "Existence ≠ active participation" is not.

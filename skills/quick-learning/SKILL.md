@@ -19,9 +19,12 @@ description: |
 **Input:** `work/{feature}/decisions.md` + git log of current session
 **Output:** entries in `$AGENTS_HOME/skills/quick-learning/references/reasoning-patterns.md`
 
+Entries are written in **English**, whatever language the session ran in. They are embedded
+into skill bodies later by skill-trainer, and skill bodies carry English.
+
 ## Step 1: Signal Gate (5 sec)
 
-Check 4 binary signals. If ALL zero — **exit** with "Clean session, no new patterns."
+Check the signals below. If ALL are zero — **exit** with "Clean session, no new patterns."
 
 | Signal | How to check | Meaning |
 |--------|-------------|---------|
@@ -29,10 +32,15 @@ Check 4 binary signals. If ALL zero — **exit** with "Clean session, no new pat
 | Scope change | `decisions.md` — any deviation, changed approach | Plan didn't survive contact with reality |
 | Recovery event | `git log` — rollbacks, retries, blocked→unblocked | Non-obvious recovery path found |
 | Context waste | `decisions.md` — Concerns field, repeated reads | Inefficient tool use |
+| Silent correction | `decisions.md` / diff — an approach was replaced mid-task without a `fix:` commit ever appearing | The detour happened but left no commit trace |
 
 **Design sessions** — additional signals: iteration rounds, taste correction, layout rework.
 
 At least 1 signal → proceed. All zero → exit.
+
+> The first four signals count *commits and notes*. When an executor corrects itself inside a
+> single pass, the lesson is real but the commit trail is empty — that is what the fifth signal
+> catches. A gate built only on `fix:` counts goes quiet exactly as self-correction improves.
 
 ## Step 2: Analyze (15 sec)
 
@@ -66,6 +74,13 @@ Extract 3-4 key words from the new pattern's trigger and goal.
 ### Write entry
 Read [entry-format.md](references/entry-format.md) for format, rules, and triad-index spec. Max 2 entries per session.
 
+### Choose the carrier
+
+A lesson that some state on disk can settle is worth more as a command than as a sentence.
+Note it in the entry: `Carrier: command` when a file, a field or a command's output answers
+the question, `Carrier: rule` when only judgement does. skill-trainer reads this and embeds
+accordingly.
+
 ## Step 4: Summary (5 sec)
 
 Count unadapted triads: grep `| — |$` in triad-index.md (use `$` anchor — middle columns also contain `| — |`).
@@ -73,13 +88,18 @@ Count unadapted triads: grep `| — |$` in triad-index.md (use `$` anchor — mi
 Show: `Quick Learning: {1 sentence summary, or "Clean session, no signals detected."}`
 If count ≥ 25: append "Накопилось {N} необработанных триад — запусти /skill-trainer."
 
-## Self-Verification
+## Checks against state
 
-- [ ] Signal gate checked — clean sessions skipped
-- [ ] Cognitive error named (3-5 words) on every new entry
-- [ ] Knowledge vs Reasoning passed — "learn fact" → skip
-- [ ] Domain-strip passed — B1→B4 run mechanically, all triad fields stripped
-- [ ] Similarity check: grep-first, no full index read unless matches found
-- [ ] No duplicates — existing patterns got Seen++
-- [ ] Max 2 entries, Adapted: — set on all new
-- [ ] Summary shown; if ≥25 unadapted → notify about /skill-trainer
+```bash
+# 1. new entries carry Adapted: — and did not exceed two per session
+rg -c "^\*\*Adapted:\*\* —" "$AGENTS_HOME/skills/quick-learning/references/reasoning-patterns.md"
+
+# 2. unadapted count for the summary line, and the /skill-trainer threshold
+rg -c "\| — \|$" "$AGENTS_HOME/skills/quick-learning/references/triad-index.md"
+
+# 3. a merged pattern incremented Seen rather than adding a duplicate row
+rg -n "{3-4 key words from the new pattern}" "$AGENTS_HOME/skills/quick-learning/references/triad-index.md"
+```
+
+Check 1 must have grown by at most 2. Check 3 must return one row, not two: two rows for the
+same trigger and goal means the similarity check added a duplicate instead of merging.
