@@ -26,3 +26,8 @@ tasks/
 dashboard.json
 .dashboard-events.jsonl
 *.jsonl
+.last-cleanup
+.last-update-result.json
+
+# Внешние дизайн-скиллы — подключаются отдельно, в методологию не входят
+design-skills/

@@ -208,21 +208,29 @@ Claude Code использует встроенный Agent tool со специ
 
 ### Скиллы
 
+В репозитории 41 скилл. Команды, за которыми стоит скилл, вынесены в первую строку.
+
 | Категория | Скиллы |
 |-----------|--------|
+| Команды пайплайна | `new-user-spec`, `new-tech-spec`, `decompose-tech-spec`, `do-feature`, `do-task`, `write-code`, `done` |
 | Планирование | `user-spec-planning`, `tech-spec-planning`, `task-decomposition`, `project-planning`, `stack-research` |
-| Выполнение | `feature-execution`, `code-writing`, `do-task`, `pre-deploy-qa`, `post-deploy-qa`, `deploy-pipeline` |
+| Выполнение | `feature-execution`, `code-writing`, `pre-deploy-qa`, `post-deploy-qa`, `deploy-pipeline`, `infrastructure-setup` |
 | Качество | `code-reviewing`, `security-auditor`, `test-master` |
-| Дизайн | `design-system-init`, `design-spec`, `design-plan`, `design-plan-planning`, `design-task-decompose`, `design-generate`, `design-review`, `design-retrospective`, `photo-crop` |
-| Контент | `pishi` (редактура русского текста), `content-card`, `project-card`, `promoter` |
-| Инфраструктура | `init-project`, `init-project-knowledge`, `infrastructure-setup` |
-| Мета | `methodology`, `quick-learning`, `skill-trainer`, `documentation-writing`, `prompt-master` |
-| Утилиты | `sketch`, `pause`, `progress`, `done`, `safe-delete` |
+| Разбор противоречий | `triz-synergy`, `triz-combinatorics` — когда чиним A, а ломается B |
+| Оркестрация | `parallel-tracks` — 2–3 фичи параллельно через git worktree + сериализованный поезд интеграции |
+| Дизайн | `design-spec`, `design-plan` |
+| Инфраструктура | `init-project`, `init-project-knowledge` |
+| Знания | `project-knowledge`, `documentation-writing`, `methodology` |
+| Обучение | `quick-learning`, `skill-trainer`, `recalibrate-all`, `prompt-master` |
+| Утилиты | `sketch`, `pause`, `safe-delete`, `project-card` |
+| Прикладные | `pishi` (редактура русского текста по инфостилю), `website-legal-audit` (ФЗ-152 / GDPR) |
 
 Полные детали любого скилла:
 ```
 ~/.claude/skills/{skill-name}/SKILL.md
 ```
+
+**Чего в репозитории нет:** доменные и личные скиллы (карточки для соцсетей, продвижение, диаграммы, анимация, кадрирование фото, e-mail рассылки, JTBD) остаются только на машине автора — они не относятся к методологии разработки.
 
 ## Отличия от Codex-версии
 
@@ -234,7 +242,7 @@ Claude Code использует встроенный Agent tool со специ
 | Конфиг | `~/.claude/settings.json` | `~/.codex/config.toml` |
 | Расположение скиллов | `~/.claude/skills/` | `~/.agents/` |
 | Модели | Claude (Opus/Sonnet/Haiku) | GPT-5.x тиры |
-| Дизайн-пайплайн | Полный (9 скиллов) | Полный (4 скилла) |
+| Дизайн-пайплайн | `design-spec` + `design-plan` | Полный (4 скилла) |
 | Директория agents/ | Да (`agents/`) | Да (`agents/`) |
 
 ## Основано на
@@ -242,6 +250,15 @@ Claude Code использует встроенный Agent tool со специ
 Эволюционный форк [molyanov-ai-dev](https://github.com/pavel-molyanov/molyanov-ai-dev) Павла Молянова (MIT License).
 
 ## Changelog
+
+### v2.1 — Честный инвентарь + чистка истории (2026-08-01)
+
+- **Разрешение противоречий** — `triz-synergy` и `triz-combinatorics`: сформулировать пару взаимоисключающих требований к одному объекту, найти уже существующий ресурс в коде и структуре данных, разделить по структуре / времени / условию / отношению и проверить решение различающим опытом. `triz-combinatorics` подбирает минимальный набор ходов, закрывающий противоречие целиком, — усложнение штрафуется, а не оплачивается. Вызывать, когда один и тот же класс дефекта возвращается под новым лицом или когда фикс A стабильно роняет B.
+- **Параллельные треки фич** — задокументирован `parallel-tracks`: одна сессия = одна фича = один трек, изоляция через ветку + git worktree, координация через файлы в репозитории, а не через память сессии; сходятся через сериализованный поезд интеграции (rebase → слияние миграций → PR/CI → smoke на эфемерном staging → merge → деплой по сервисам).
+- **Инвентарь исправлен** — таблица скиллов перечисляла девять позиций, которых в репозитории не было никогда (`content-card`, `promoter`, `progress` и шесть несуществующих `design-*`), и умалчивала о двенадцати существующих. Теперь таблица совпадает с `git ls-files`: 41 скилл, 22 агента.
+- **Скоуп сужен до методологии** — доменные и личные скиллы (пайплайн JTBD, анимация, диаграммы, кадрирование фото, e-mail рассылки) убраны из публичного репозитория. `pishi`, `project-card` и `website-legal-audit` остаются. `pishi` до этого публиковался неполным: пять reference-файлов отсекало устаревшее правило `.gitignore` — теперь они на месте.
+- **Убраны битые сабмодули** — `design-skills/` лежал в индексе тремя gitlink-записями без `.gitmodules`, поэтому свежий клон давал три пустые папки и ошибку checkout.
+- **История переписана** — в `dashboard.json` от 2026-04-02 лежали GitHub PAT и API-ключ сервиса. История вычищена `git-filter-repo` по всем веткам, `gitleaks` даёт чистый скан по 562 коммитам. Утекшие ключи выведены из обращения. Тем же проходом убраны личные рабочие артефакты (`session-env/`, `paste-cache/`, `tasks/`, `skills/work/`): 639 → 565 коммитов, размер пака вдвое меньше.
 
 ### v2.0 — Чистый публичный релиз + локализация (2026-04-17)
 

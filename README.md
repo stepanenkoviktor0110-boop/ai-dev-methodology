@@ -205,21 +205,29 @@ Claude Code uses the built-in Agent tool with specialized subagent types for par
 
 ### Skills & Agents
 
+41 skills ship in this repo. Commands that front a skill are listed in the Pipeline row.
+
 | Category | Skills |
 |----------|--------|
-| Planning | `user-spec-planning`, `tech-spec-planning`, `task-decomposition`, `project-planning` |
-| Execution | `feature-execution`, `code-writing`, `do-task`, `pre-deploy-qa`, `post-deploy-qa`, `deploy-pipeline` |
+| Pipeline commands | `new-user-spec`, `new-tech-spec`, `decompose-tech-spec`, `do-feature`, `do-task`, `write-code`, `done` |
+| Planning | `user-spec-planning`, `tech-spec-planning`, `task-decomposition`, `project-planning`, `stack-research` |
+| Execution | `feature-execution`, `code-writing`, `pre-deploy-qa`, `post-deploy-qa`, `deploy-pipeline`, `infrastructure-setup` |
 | Quality | `code-reviewing`, `security-auditor`, `test-master` |
-| Design | `design-system-init`, `design-spec`, `design-plan`, `design-plan-planning`, `design-task-decompose`, `design-generate`, `design-review`, `design-retrospective`, `photo-crop` |
-| Content | `pishi` (Russian copy editing), `content-card`, `project-card`, `promoter` |
-| Setup | `init-project`, `init-project-knowledge`, `infrastructure-setup` |
-| Meta | `methodology`, `quick-learning`, `skill-trainer`, `documentation-writing`, `prompt-master` |
-| Utilities | `sketch`, `pause`, `progress`, `done`, `safe-delete` |
+| Problem solving | `triz-synergy`, `triz-combinatorics` — contradiction resolution when fixing A breaks B |
+| Orchestration | `parallel-tracks` — 2–3 features in parallel via git worktrees + serialized integration train |
+| Design | `design-spec`, `design-plan` |
+| Setup | `init-project`, `init-project-knowledge` |
+| Knowledge | `project-knowledge`, `documentation-writing`, `methodology` |
+| Learning | `quick-learning`, `skill-trainer`, `recalibrate-all`, `prompt-master` |
+| Utilities | `sketch`, `pause`, `safe-delete`, `project-card` |
+| Applied | `pishi` (Russian copy editing per Ilyahov's infostyle), `website-legal-audit` (GDPR / ФЗ-152 compliance) |
 
 For full details on any skill:
 ```
 ~/.claude/skills/{skill-name}/SKILL.md
 ```
+
+**Not in this repo:** domain and personal skills (content cards, promotion, diagrams, animation, photo cropping, e-mail campaigns, JTBD) live only on the author's machine — they are not part of the development methodology.
 
 ## Differences from Codex Version
 
@@ -231,7 +239,7 @@ This repo and [ai-dev-methodology-codex](https://github.com/stepanenkoviktor0110
 | Config location | `~/.claude/settings.json` | `~/.codex/config.toml` |
 | Skills location | `~/.claude/skills/` | `~/.agents/` |
 | Models | Claude (Opus/Sonnet/Haiku) | GPT-5.x tiers |
-| Design pipeline | Full (9 skills) | Full (4 skills) |
+| Design pipeline | `design-spec` + `design-plan` | Full (4 skills) |
 | Agents directory | Yes (`agents/`) | Yes (`agents/`) |
 
 ## Based on
@@ -239,6 +247,15 @@ This repo and [ai-dev-methodology-codex](https://github.com/stepanenkoviktor0110
 Evolved fork of [molyanov-ai-dev](https://github.com/pavel-molyanov/molyanov-ai-dev) by Pavel Molyanov (MIT License).
 
 ## Changelog
+
+### v2.1 — Accurate inventory + history purge (2026-08-01)
+
+- **Contradiction resolution** — `triz-synergy` and `triz-combinatorics`: state a pair of mutually exclusive requirements on one object, find an existing resource in the code or data model, separate by structure / time / condition / relation, then verify with a distinguishing experiment. `triz-combinatorics` finds the minimal set of moves that covers the whole contradiction — complexity is penalised, not rewarded. Invoke when a defect class keeps returning under a new face, or when fixing A reliably breaks B.
+- **Parallel feature tracks** — `parallel-tracks` documented: one session = one feature = one track, isolated by branch + git worktree, coordinated through repo files rather than session memory, converging via a serialized integration train (rebase → migration merge → PR/CI → ephemeral staging smoke → merge → per-service deploy).
+- **Inventory corrected** — the skills table listed nine skills that were never in the repo (`content-card`, `promoter`, `progress`, and six phantom `design-*` entries) and omitted twelve that were. The table now matches `git ls-files` exactly: 41 skills, 22 agents.
+- **Scope narrowed to methodology** — domain and personal skills (JTBD pipeline, animation, diagrams, photo cropping, e-mail campaigns) removed from the public repo. `pishi`, `project-card` and `website-legal-audit` stay. `pishi` was previously shipped incomplete — five reference files had been excluded by a stale `.gitignore` rule and are now included.
+- **Broken submodules removed** — `design-skills/` was recorded as three gitlinks with no `.gitmodules`, so every fresh clone produced three empty directories and a checkout error.
+- **History rewritten** — a `dashboard.json` committed on 2026-04-02 carried a GitHub PAT and a service API key. History was purged with `git-filter-repo` across all branches; `gitleaks` now reports a clean scan over 562 commits. The exposed credentials were invalidated. Personal workspace artifacts (`session-env/`, `paste-cache/`, `tasks/`, `skills/work/`) were purged in the same pass: 639 → 565 commits, pack size halved.
 
 ### v2.0 — Clean public release + localization (2026-04-17)
 

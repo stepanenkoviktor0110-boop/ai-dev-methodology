@@ -1,7 +1,8 @@
-pishi/
+# Личные скиллы — не публикуются в методологии
 progress/
 promoter/
 skeleton-pipe/
+content-card/
 moneymaker-add/
 moneymaker-case/
 moneymaker-expand/
@@ -9,7 +10,19 @@ moneymaker-finalize/
 moneymaker-new/
 moneymaker-pattern/
 moneymaker-setup/
-content-card/
+
+# Прикладные скиллы — живут только локально
+mermaid/
+framer-motion/
+photo-crop/
+email-campaign-pipeline/
+jtbd-context/
+jtbd-demand-diagnosis/
+jtbd-job-model/
+jtbd-project-decisions/
+
+# Рабочие артефакты фич (спеки, логи, отчёты валидаторов) — не методология
+work/
 
 # Prevent secrets leaking
 *.bak
