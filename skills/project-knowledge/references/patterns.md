@@ -66,6 +66,13 @@ No automated tests. The "tests" are functional: invoke a skill, observe Claude's
 
 Promotion threshold is `Seen >= 4` (see architecture.md → Quick-learning system). Lower threshold allowed only for critical safety patterns.
 
+### Refinement Patterns
+
+Fourteen patterns for changing a skill — trigger, change, why, and how to tell it landed — live in
+`skill-trainer/references/refinement-patterns.md`. `skill-trainer` applies them when embedding,
+`skill-checker` audits against them, and they are the reference for editing a skill by hand. The
+rules stated below are the two of them that most often get restored by accident.
+
 ### Single Source of Truth Rule
 
 `~/.claude/skills/` is the canonical source. There is no derived copy to keep in sync.

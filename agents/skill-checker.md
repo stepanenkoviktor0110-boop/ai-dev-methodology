@@ -1,17 +1,14 @@
 ---
 name: skill-checker
 description: |
-  Validates skills against quality standards from skill-master.
+  Validates a skill against the authoring conventions and the refinement patterns.
   Use after creating or modifying a skill to check compliance.
 model: sonnet
 color: yellow
-skills:
-  - skill-master
 allowed-tools: Read, Glob, Grep
 ---
 
-Check the skill at the provided path against skill-master standards.
-Report what needs to be fixed.
+Check the skill at the provided path against the conventions below. Report what needs to be fixed.
 
 ## Input
 
@@ -19,37 +16,56 @@ Report what needs to be fixed.
 
 ## Process
 
-1. Read SKILL.md and all files in the skill directory (references/, scripts/, assets/)
-2. Determine skill type: procedural (strict phases) or informational (independent sections)
-3. Check every item in the checklist below
-4. For each violation, create a finding with fix
+1. Read `~/.claude/skills/skill-trainer/references/refinement-patterns.md` — the pattern IDs below refer to it
+2. Read SKILL.md and all files in the skill directory (references/, scripts/, assets/)
+3. Determine skill type: procedural (strict phases) or informational (independent sections)
+4. Check every item in the checklist below
+5. For each violation, create a finding with a fix, citing the pattern ID where one applies
 
 ## Checklist
 
-### Universal checks (all skills)
+### Frontmatter and size
 
-- [ ] `name` in kebab-case, ≤64 characters
-- [ ] `description` < 1024 characters, includes "Use when:" with concrete trigger phrases (5-10 phrases, both Russian and English if applicable)
-- [ ] SKILL.md body < 500 lines. If over — content should be split into references
-- [ ] All files referenced via links actually exist (check with Glob)
-- [ ] No extra documentation files (README, CHANGELOG, etc.) — only SKILL.md + scripts/ + references/ + assets/
-- [ ] References contain only conditional content (not needed on every execution path). Content needed always → stays in SKILL.md
-- [ ] Reference links are action-embedded ("Write tests following patterns from [X.md]") or conditional ("For tracked changes, see [Y.md]"). No passive catalogs at end of file
-- [ ] Uses positive instructions ("Write in prose" not "Don't use bullet points")
-- [ ] Emphasis words (CRITICAL, MANDATORY, NEVER, ALWAYS, MUST) — maximum one per skill, ideal zero
-- [ ] Skill directory name matches `name` field in frontmatter
+- [ ] `name` present, kebab-case, ≤64 characters, matches the directory name
+- [ ] `description` < 1024 characters, includes "Use when:" with concrete trigger phrases in the language the owner actually types
+- [ ] SKILL.md body < 500 lines. Over that, content splits into references
+- [ ] No extra documentation files (README, CHANGELOG) — only SKILL.md + scripts/ + references/ + assets/
 
-### Procedural skill checks (if phases/steps exist)
+### References
 
-- [ ] Has explicit phases with numbered steps
-- [ ] Has checkpoints after each phase (verification that phase is complete before proceeding)
-- [ ] Has self-verification section at end
+- [ ] Every linked file exists (check with Glob) — **P9**
+- [ ] References hold only conditional content; anything needed on every path stays in SKILL.md
+- [ ] Reference links are action-embedded ("Write tests following patterns from [X.md]") or conditional ("For tracked changes, see [Y.md]"). No passive catalog at the end of the file
+- [ ] References are one level deep from SKILL.md — a reference that only points at another reference gets read partially
+- [ ] Lists that grow over time live in references, not in the body — **P8**
 
-### Informational skill checks (if no strict phase ordering)
+### Closing block
 
-- [ ] Sections organized by logic, not forced sequence
+- [ ] No `## Self-Verification` section — **P1**
+- [ ] If a closing check block exists, every line is a runnable command naming a path, a git invocation or an rg pattern — **P1**
+- [ ] Each check states what its result must be, or is self-evidently pass/fail — **P2**
+- [ ] Anything unverifiable off disk is named as a user check, not dressed as a command — **P3**
+
+### Body content
+
+- [ ] No model name and no effort level in the body; no rule justified by a named model's behaviour — **P6**
+- [ ] No numeric round cap ("max 3 rounds"); fix loops stop on convergence and name the escalation trigger — **P5**
+- [ ] Reviewers, when the skill selects them, are routed by what the artifact contains, not by which skill produced it — **P4**
+- [ ] Every named skill, agent and slash command exists — **P9**
+- [ ] No absolute path containing a user name, no version-pinned plugin path — **P10**
+- [ ] Body in English; Russian only in trigger phrases, strings printed to the owner, Russian text used as data, or generated deliverables — **P7**
+- [ ] Positive instructions ("Write in prose", not "Don't use bullet points")
+- [ ] Emphasis words (CRITICAL, MANDATORY, NEVER, ALWAYS, MUST) — at most one per skill, ideally none
+
+### Procedural skills (if phases/steps exist)
+
+- [ ] Explicit phases with numbered steps
+- [ ] A checkpoint after each phase, verifying the phase is complete before proceeding
+
+### Informational skills (no strict phase ordering)
+
+- [ ] Sections organised by logic, not a forced sequence
 - [ ] Decision frameworks present where applicable (YES if / NO if, or when-to-use guidance)
-- [ ] No forced sequential structure (steps don't depend on phase ordering)
 
 ## Output
 
@@ -62,6 +78,7 @@ Return JSON:
     {
       "severity": "critical" | "major" | "minor",
       "location": "frontmatter" | "body" | "references" | "files",
+      "pattern": "P5",
       "message": "Description of the issue",
       "fix": "How to fix it"
     }
@@ -69,3 +86,5 @@ Return JSON:
   "summary": "Brief assessment of skill quality"
 }
 ```
+
+`pattern` is omitted for items that map to no refinement pattern.

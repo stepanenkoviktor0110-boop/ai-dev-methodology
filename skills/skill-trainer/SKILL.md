@@ -19,18 +19,27 @@ Embeds accumulated quick-learning triads into target skills. Two outcomes per tr
 - **Auto-apply** — skill has no coverage of this case → add new rule directly
 - **Dispute** — skill already has related logic but doesn't cover the specific case → propose refinement to user
 
-## What an embedded rule may look like
+## How a skill gets changed
 
-A triad becomes either a line of instruction or a command, and the choice matters.
+Every edit this skill makes to another skill follows
+[refinement-patterns.md](references/refinement-patterns.md) — fourteen patterns with the trigger
+that calls each one, the change, and how to tell it landed. Read it before Phase 3, and again in
+Phase 6.5 when auditing the result.
+
+The two that decide where a rule goes:
 
 | Triad describes | Embed as | Where |
 |---|---|---|
 | A judgement to make while working | one-line rule `When {trigger} → {action}, to {goal}` | Learned Patterns / write target |
 | A state that can be read off disk — a file that must exist, a field that must be set, a command whose output settles it | a command | the skill's "Checks against state" section |
 
-Prefer the command. A rule restated as a self-check tick-box catches nothing: an executor that broke the rule in the body will not catch itself with a copy of that rule. Only reach for a prose rule when nothing on disk can answer the question.
+Prefer the command (P13). A rule restated as a self-check tick-box catches nothing: an executor that broke the rule in the body will not catch itself with a copy of that rule. Only reach for a prose rule when nothing on disk can answer the question.
 
-Write every embedded rule in **English**, whatever language the session ran in.
+Write every embedded rule in **English**, whatever language the session ran in (P7).
+
+When a pattern here changes how skills are written, update
+`project-knowledge/references/patterns.md` in the same pass (P14) — otherwise the next skill
+authored against those conventions restores what was just removed.
 
 ## Category → Skill Mapping
 
@@ -73,6 +82,8 @@ Triads to process (id | trigger | action | goal | scope):
 {paste each triad row as-is from triad-index.md}
 
 Task:
+0. Read $AGENTS_HOME/skills/skill-trainer/references/refinement-patterns.md. Every edit
+   you make below follows it.
 1. Read SKILL.md
 2. Find the "## Learned Patterns" section. Check if it contains a lazy-load reference
    (a link to a references/*.md file). If yes — that file is the write target.
@@ -81,23 +92,29 @@ Task:
 4. For each triad, search for existing logic covering the same trigger or goal
 5. Classify each triad:
    - auto-apply: no coverage → add it. If the triad is settled by state on disk, add a
-     command to the skill's "Checks against state" section instead of a prose rule.
+     command to the skill's "Checks against state" section instead of a prose rule (P13),
+     and state what its result must be (P2).
      Otherwise add "When {trigger} → {action}, to {goal}" to the write target file
      (if writing to SKILL.md and no ## Learned Patterns section exists, create it at end of file)
    - dispute: partial coverage exists → do NOT edit file, return existing rule + proposed refinement
    - skip: already fully covered → no changes
 
-6. Write in English regardless of the language of the triad text.
+6. Write in English regardless of the language of the triad text (P7).
 7. Apply all auto-apply edits to the write target (Edit tool)
-8. Do NOT touch triad-index.md — main context will update it
+8. While you are in this file, report — do not fix — any violation of the patterns you
+   noticed: a surviving self-check checklist (P1), a round counter (P5), a model or effort
+   level in the body (P6), a named skill or agent that does not exist (P9), a
+   machine-specific path (P10). Return them in `observed` so the owner decides.
+9. Do NOT touch triad-index.md — main context will update it
 
 Return ONLY this JSON (no extra text):
 {
   "skill": "{skill-name}",
   "write_target": "{path to file where rules were written}",
-  "applied": [{"id": N, "rule": "one-line rule added"}],
+  "applied": [{"id": N, "rule": "one-line rule added", "carrier": "command|rule"}],
   "disputes": [{"id": N, "existing": "...", "proposed": "..."}],
-  "skipped": [N, N]
+  "skipped": [N, N],
+  "observed": [{"pattern": "P5", "evidence": "line 88: max 3 rounds"}]
 }
 ```
 
@@ -159,8 +176,12 @@ For each skill that received auto-applies — spawn one Agent in parallel.
 Full checklist, agent prompt and output format: [references/quality-checklist.md](references/quality-checklist.md).
 
 Two levels:
-1. **General compliance** — each agent calls the existing `skill-checker` agent (size, structure, references, checkpoints). Not duplicated here.
+1. **General compliance** — each agent calls the existing `skill-checker` agent (size, structure, references, checkpoints, and the refinement patterns). Not duplicated here.
 2. **Skill-trainer-specific** — items A1–A3 (size discipline) and B1–B6 (rule quality on the new rules).
+
+The `observed` entries returned in Phase 3+4 join this report. They are findings about the skill,
+not about the new rules, so they are shown to the owner rather than fixed silently — a pattern
+violation predating this run may be deliberate.
 
 Soft gate:
 - All pass → silent, proceed to Phase 7
