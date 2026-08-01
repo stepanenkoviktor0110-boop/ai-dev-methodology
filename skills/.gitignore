@@ -24,6 +24,15 @@ jtbd-project-decisions/
 # Рабочие артефакты фич (спеки, логи, отчёты валидаторов) — не методология
 work/
 
+# Дизайн — живёт в отдельном репозитории design-ultimate.
+# Здесь только установленные копии: харнесс и его чужие зависимости.
+design-ultimate/
+impeccable/
+design-motion-principles/
+soft-skill/
+minimalist-skill/
+brutalist-skill/
+
 # Prevent secrets leaking
 *.bak
 settings.json*
