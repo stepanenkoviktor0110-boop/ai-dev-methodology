@@ -52,22 +52,6 @@ The repository root (`~/.claude/skills/`) contains:
 - Purpose: Version control and distribution of Claude Code methodology
 - Auth method: HTTPS, credentials via git credential manager
 
-**GitHub (`stepanenkoviktor0110-boop/ai-dev-methodology-codex`)**
-- Purpose: Codex-adapted version of the methodology
-- Key difference: paths use `.agents/` instead of `.claude/`, agent API uses `spawn_agent`/`wait_agent`/`close_agent`
-
----
-
-## Platform Differences: Claude vs Codex
-
-| Aspect | Claude Code (this repo) | Codex |
-|--------|------------------------|-------|
-| Skills path | `~/.claude/skills/` | `~/.agents/skills/` |
-| Agent API | Built-in `Agent` tool | `spawn_agent` / `wait_agent` |
-| Agents dir | `agents/` directory (interview agents, e.g. sketch-interviewer) | `agents/` directory (spawned via spawn_agent) |
-| Config | `~/.claude/settings.json` | `~/.codex/config.toml` |
-| Models | Claude (Opus/Sonnet/Haiku) | GPT-5.x tiers |
-
 ---
 
 ## Data Flow

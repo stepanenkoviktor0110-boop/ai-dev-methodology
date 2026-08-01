@@ -11,7 +11,7 @@ Used by: tech-spec-planning (Phase 4), task-decomposition (Phase 1).
 | `infrastructure-setup` | Framework init, folder structure, Docker, pre-commit hooks, testing setup | Dockerfile, pre-commit hooks, folder structure, .gitignore, smoke tests |
 | `deploy-pipeline` | CI/CD pipelines, deployment config, automated deploy | GitHub Actions, deploy scripts, platform config, secrets management |
 | `documentation-writing` | Documentation, Project Knowledge updates | Architecture docs, API docs, conventions, patterns |
-| `skill-master` | Creating/updating skills and agents | New skills, skill modifications |
+| _(no skill)_ | Creating/updating skills and agents — follow the skill-authoring conventions directly | New skills, skill modifications |
 | `pre-deploy-qa` | Acceptance testing before deploy (tests + acceptance criteria) | QA task in Final Wave |
 | `post-deploy-qa` | Live environment verification after deploy via MCP tools | Post-deploy task in Final Wave |
 | `prompt-master` | Writing/improving LLM prompts, prompt engineering | System prompts, user prompt templates, few-shot examples, prompt optimization |
@@ -49,7 +49,7 @@ and goes stale the moment that setting changes.
 | `infrastructure-setup` | `code-reviewer`, `security-auditor`, `infrastructure-reviewer` |
 | `deploy-pipeline` | `code-reviewer`, `security-auditor`, `deploy-reviewer` |
 | `documentation-writing` | `documentation-reviewer` |
-| `skill-master` | `skill-checker` |
+| skill/agent authoring (no skill) | `skill-checker` |
 | `pre-deploy-qa` | none — QA is its own verification |
 | `post-deploy-qa` | none — verification result is the review |
 | `prompt-master` | `prompt-reviewer` |

@@ -47,7 +47,7 @@ The repo contains skills from multiple tracks. Only **core methodology** skills 
 - Execution: `code-writing`, `feature-execution`, `do-feature`, `do-task`, `done`, `write-code`
 - Quality: `code-reviewing`, `security-auditor`, `test-master`, `prompt-master`
 - QA/Deploy: `pre-deploy-qa`, `post-deploy-qa`, `deploy-pipeline`, `infrastructure-setup`
-- Meta: `methodology`, `quick-learning`, `documentation-writing`, `skill-master`, `skill-test-designer`, `skill-tester`, `init-project`, `init-project-knowledge`
+- Meta: `methodology`, `quick-learning`, `skill-trainer`, `documentation-writing`, `init-project`, `init-project-knowledge`
 - Sketch: `sketch` *(new — lightweight prototyping mode)*
 
 **Separate pipelines** (in this repo but maintained independently):

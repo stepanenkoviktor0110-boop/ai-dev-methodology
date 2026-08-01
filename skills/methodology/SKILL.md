@@ -74,7 +74,7 @@ The full path from idea to production. Each step has a command, a skill behind i
 
 **Skill:** `tech-spec-planning`
 
-**After completion:** run `/retrospective` to extract lessons from the spec creation process.
+**After completion:** run `/quick-learning` to extract lessons from the spec creation process.
 
 ### Step 3: Task Decomposition — `/decompose-tech-spec`
 
@@ -142,24 +142,24 @@ Tasks can be code, user-action, deploy, config, or verification. Task nature is 
 
 **Skill:** `feature-execution`
 
-**After completion:** run `/retrospective` to extract lessons from the implementation process.
+**After completion:** run `/quick-learning` to extract lessons from the implementation process.
 
 **Note:** At every session break within `/do-feature` and `/do-task`, the `quick-learning` skill runs automatically as a background subagent. It extracts meta-level reasoning patterns — not specific technical decisions, but transferable insights about HOW problems were approached. These accumulate in `~/.claude/skills/quick-learning/references/reasoning-patterns.md` and benefit all methodology users.
 
-### Step 5: Retrospective — `/retrospective`
+### Step 5: Lessons — `/quick-learning`
 
-**What:** Extract lessons learned from problems encountered during tech-spec creation and implementation.
+**What:** Extract lessons learned from problems encountered during tech-spec creation and implementation. Runs automatically as a background subagent at session breaks; invoke it by hand to capture a session that ended outside one.
 
 **Process:**
 - Reads `decisions.md` and git log of the feature
 - Identifies process problems: multiple validation rounds, review fix cycles, scope changes, wrong technical choices
 - Writes lessons as triad entries in `~/.claude/skills/quick-learning/references/reasoning-patterns.md`
-- Uses triad-based dedup via `triad-index.md` — same as quick-learning
+- Uses triad-based dedup via `triad-index.md`
 - Each entry: Triad (trigger → action → goal) + Context + Pattern + Scope + Category
 
 **Output:** entries in `~/.claude/skills/quick-learning/references/reasoning-patterns.md`
 
-**Skill:** `retrospective`
+**Skill:** `quick-learning`. Once 25 unadapted triads accumulate, it prompts for `/skill-trainer`, which embeds them into the skills themselves.
 
 ### Step 6: Done — `/done`
 
