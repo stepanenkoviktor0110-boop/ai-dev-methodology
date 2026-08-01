@@ -2111,3 +2111,25 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** When peers exercise the same code path successfully, the differentiator is the input, not the algorithm. Enumerate how the failing case's data differs in SHAPE (not content) from the working ones, and test the mechanism's assumptions against that shape — a mechanism can be structurally blind to a form of input it never met before while remaining correct for everything else.
 **Scope:** universal
 **Category:** problem-decomposition
+
+### 2026-08-01 analiticxxs-revenue-audit / session 1: absence believed without checking the channel could show presence
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** not-found read as not-there
+**Triad:** a lookup, probe or check comes back "nothing is there" → before acting on it, establish that this channel could have returned "something is there" — sufficient access/visibility, and an instrument that actually ran → treating a blind channel's silence as a fact about the world
+**Context:** A negative answer was reported as an established fact twice in one session: a resource was declared non-existent when the query simply ran without the rights to see it, and a capability was declared unsupported when the probe testing it had been silently truncated and could never have fired.
+**Pattern:** A negative result carries information only if a positive result was reachable through the same channel. Two failure modes: (a) permission- or scope-limited lookups deliberately answer "absent" for "not permitted", so absence and no-access are indistinguishable from the outside; (b) a test that never really executed reports the same silence as a genuine negative. Before concluding "it isn't there / it doesn't work": confirm the vantage point (whose credentials, which scope, which tenant) and give the instrument a positive control — make it produce a known-present result once. Never write an unverified negative into shared documentation, where it becomes a premise others build on.
+**Scope:** universal
+**Category:** information-gathering
+
+### 2026-08-01 analiticxxs-revenue-audit / session 1: destructive bulk loop outran its own restore path
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** pilot proves logic, not limits
+**Triad:** scaling up an operation that destroys each item before rebuilding it, having verified it on a single item → before the bulk run, ask what REPETITION itself changes (quotas, throttling, contention, cooldowns) and never let the destructive half get ahead of the restorative half → assuming a green single-item trial transfers to the batch
+**Context:** A per-item destroy-then-rebuild was proven correct on one item, then run over the whole set; a rate limit that a single trial could not reveal rejected the rebuild calls, leaving most of the set destroyed and unrestored.
+**Pattern:** A successful pilot validates the logic of one iteration, never the environment's response to many. When the operation is destroy-then-restore, that gap is not an error but data loss: the destructive half is instant while the restorative half is the one that gets throttled. Either make each item atomic (restore it before touching the next, and stop the loop on the first failure), or measure the limiting resource first and pace to it. Prefer a driver that derives its worklist from what is currently missing, so an interrupted run is resumable instead of destructive.
+**Scope:** universal
+**Category:** sequencing
