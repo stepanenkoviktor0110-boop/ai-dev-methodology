@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 description: Decompose approved tech-spec into tasks with validation
 allowed-tools:
   - Skill

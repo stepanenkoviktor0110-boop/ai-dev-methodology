@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 name: triz-synergy
 description: |
   Разрешает противоречия в разработке: формулирует пару взаимоисключающих требований

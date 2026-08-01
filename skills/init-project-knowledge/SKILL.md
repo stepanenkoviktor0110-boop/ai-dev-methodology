@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 description: Первичное заполнение документации проекта
 ---
 

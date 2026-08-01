@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 name: parallel-tracks
 description: |
   Run 2-3 features in parallel across independent sessions without breaking the

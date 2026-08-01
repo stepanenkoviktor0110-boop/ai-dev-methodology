@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 name: safe-delete
 description: |
   Pre-delete project audit: verify git sync, docs, VPS state, kill local processes.

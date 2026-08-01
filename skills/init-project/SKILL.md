@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 name: init-project
 description: Initialize project with template, git, and GitHub
 ---

@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 name: sketch
 description: |
   Lightweight prototyping mode: collect requirements in 3–5 questions,

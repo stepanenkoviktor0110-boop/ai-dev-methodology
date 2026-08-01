@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 name: methodology
 description: |
   AI-First development methodology: spec-driven pipeline, project structure,

@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 description: |
   Execute feature with team of agents — waves, reviews, commits.
 

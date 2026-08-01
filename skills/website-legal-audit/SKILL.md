@@ -1,4 +1,5 @@
 ---
+disable-model-invocation: true
 name: website-legal-audit
 description: >
   Аудит сайта на соответствие законодательству и план работ по приведению в
