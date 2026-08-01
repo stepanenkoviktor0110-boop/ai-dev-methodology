@@ -149,7 +149,7 @@ Before starting, read [quick-ref-code-writing.md](../quick-learning/references/q
 
    **Stop condition is progress, not a round counter.** Continue while each round leaves strictly fewer open findings than the one before. The moment a round ends with the same or more open findings than the previous round, stop and escalate to the user with: what remains open, what was tried, why the last round did not move it. A loop that stopped converging will not converge on the next pass either.
 
-## Проверки фактом
+## Checks against state
 
 These are not a review of your own reasoning — they read state off disk. Run them, read the output, act on what it says. Skip a line only when its precondition does not apply.
 
@@ -171,9 +171,9 @@ rg -n "#[0-9a-fA-F]{3,8}" <changed .css/.scss/.tsx files>
 
 ## Promoted Patterns
 
-- **Маскируй секреты ДО выполнения команды** (Seen: 2): при любом чтении конфигов удалённой машины — встраивать маскировку в команду (`sed 's/:[^@]*@/:***@/'`) или проверять наличие переменной через `grep -c`. Никогда не выводить `.env` целиком.
-- **Assertions на output-формат, не на input-атрибуты** (Seen: 2): перед написанием assertions прочитать реальный пример вывода функции. Для format-conversion функций (JSON→MD, dict→текст) assertions должны соответствовать output-формату — иначе тест проверяет input surface и не ловит баги конвертации.
-- **Path traversal из любых внешних данных — allowlist** (Seen: 2): Перед построением файлового пути из любого внешнего значения (данные с диска, user input, API-параметры) — валидировать каждое значение против allowlist. Даже значения, записанные самим приложением, могут быть изменены между записью и чтением.
+- **Mask secrets before the command runs** (Seen: 2): when reading config off a remote machine, build the masking into the command itself (`sed 's/:[^@]*@/:***@/'`), or test for a variable's presence with `grep -c`. Never print `.env` whole.
+- **Assert on the output format, not on input attributes** (Seen: 2): read a real sample of the function's output before writing assertions. For format-conversion functions (JSON→MD, dict→text) the assertions must match the output format — otherwise the test checks the input surface and misses conversion bugs.
+- **Path traversal from any external value — allowlist** (Seen: 2): before building a file path from any external value (data read off disk, user input, API parameters), validate each value against an allowlist. Even values the application wrote itself can be altered between write and read.
 
 ## Learned Patterns
 
