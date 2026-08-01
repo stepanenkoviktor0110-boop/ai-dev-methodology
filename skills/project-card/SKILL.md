@@ -2,10 +2,9 @@
 name: project-card
 disable-model-invocation: true
 description: |
-  Генерирует HTML-карточку проекта с полной технической информацией:
-  сервер, домен, репо, CI/CD, DNS, аналитика, логины/пароли, полезные команды.
-  Оформляет в фирменном стиле проекта (цвета, шрифты, лого).
-  Файл для печати в PDF (Ctrl+P), один лист A4.
+  Generates an HTML project card carrying the full technical picture: server, domain, repo,
+  CI/CD, DNS, analytics, logins and passwords, useful commands. Styled in the project's own
+  brand (colours, fonts, logo). Built to print to PDF (Ctrl+P) on a single A4 sheet.
 
   Use when: "карточка проекта", "project card", "project-card",
   "собери карточку", "техническая карточка", "инфо по проекту",
@@ -14,133 +13,146 @@ description: |
 
 # Project Card
 
-Генерирует одностраничную HTML-карточку проекта со всей технической информацией для владельца/команды. Карточка оформляется в фирменном стиле проекта, содержит редактируемые поля для паролей, оптимизирована под печать в PDF (A4, один лист).
+Generates a one-page HTML card holding every technical detail of a project for its owner or team.
+The card is styled in the project's own brand, carries editable fields for passwords, and is
+optimised for printing to PDF (A4, single sheet).
 
-## Phase 1: Собрать данные
+The card itself is written in Russian — it is read by the owner. These instructions are not.
 
-### 1.1 Фирменный стиль
+## Phase 1: Collect the data
 
-Искать в проекте автоматически, НЕ спрашивать пользователя:
+### 1.1 Brand style
 
-1. **Цвета** — искать в SCSS/CSS файлах (`globals.scss`, `_variables.scss`, `tokens.json`, `tailwind.config`), constants, theme files
-2. **Шрифт** — искать в `layout.tsx`, CSS imports, Google Fonts конфиги
-3. **Лого** — искать в `public/` (logo.png, logo.svg, favicon)
-4. **Если ничего не найдено** — использовать нейтральную тёмную тему: `#1a1a2e` фон, `#e0e0e0` текст, `#4fc3f7` акцент, Inter/system font
+Find it in the project automatically; do NOT ask the user:
 
-### 1.2 Инфраструктурные данные
+1. **Colours** — in SCSS/CSS files (`globals.scss`, `_variables.scss`, `tokens.json`, `tailwind.config`), constants, theme files
+2. **Font** — in `layout.tsx`, CSS imports, Google Fonts config
+3. **Logo** — in `public/` (logo.png, logo.svg, favicon)
+4. **Nothing found** — use a neutral dark theme: `#1a1a2e` background, `#e0e0e0` text, `#4fc3f7` accent, Inter/system font
 
-Собрать автоматически из:
+### 1.2 Infrastructure data
 
-- **project-knowledge** (`deployment.md`, `architecture.md`, `project.md`) — основной источник
-- **git remote** — URL репозитория, ветки
-- **.env.example** — переменные окружения (без значений секретов!)
-- **package.json** — стек, название
-- **Dockerfile / docker-compose.yml** — контейнеры
-- **CI/CD** (`.github/workflows/`, `vercel.json`, `netlify.toml`) — деплой
-- **.vercel/project.json** — Vercel проект
-- **ecosystem.config.*js** — PM2 конфигурация
+Collect automatically from:
 
-### 1.3 Данные для сбора
+- **project-knowledge** (`deployment.md`, `architecture.md`, `project.md`) — the main source
+- **git remote** — repository URL, branches
+- **.env.example** — environment variables (never the secret values)
+- **package.json** — stack, name
+- **Dockerfile / docker-compose.yml** — containers
+- **CI/CD** (`.github/workflows/`, `vercel.json`, `netlify.toml`) — deploy
+- **.vercel/project.json** — Vercel project
+- **ecosystem.config.*js** — PM2 configuration
 
-Собрать максимум из следующего (что применимо к проекту):
+### 1.3 What to gather
 
-| Блок | Что собрать |
+Gather as much of the following as applies to the project:
+
+| Block | What to gather |
 |------|------------|
-| **Сайт** | Продакшн URL, редиректы, поддомены |
-| **Репозиторий** | GitHub URL, ветка разработки, ветка деплоя, CI/CD тип |
-| **Сервер** | IP, SSH доступ, OS, Node/Python/etc версия, процесс-менеджер, порт, путь на сервере, nginx/caddy конфиг |
-| **DNS** | Провайдер (Cloudflare, Route53...), записи, SSL mode, прокси |
-| **Домен** | Регистратор, NS-сервера |
-| **Аналитика** | Сервис (Umami, Plausible, GA), URL, логин |
-| **БД** | Тип (PostgreSQL, MySQL, MongoDB...), хост, имя БД |
-| **Хостинг/PaaS** | Vercel, Railway, Fly.io, VPS — специфичные данные |
-| **Стек** | Framework, runtime, ключевые зависимости |
-| **Secrets** | Где хранятся (GitHub Secrets, .env, Vault) — перечислить имена, не значения |
-| **Env переменные** | Список из .env.example с описанием |
-| **Docker** | Контейнеры, compose-файлы, volumes |
+| **Site** | Production URL, redirects, subdomains |
+| **Repository** | GitHub URL, development branch, deploy branch, CI/CD type |
+| **Server** | IP, SSH access, OS, Node/Python/etc version, process manager, port, path on the server, nginx/caddy config |
+| **DNS** | Provider (Cloudflare, Route53...), records, SSL mode, proxy |
+| **Domain** | Registrar, nameservers |
+| **Analytics** | Service (Umami, Plausible, GA), URL, login |
+| **Database** | Type (PostgreSQL, MySQL, MongoDB...), host, database name |
+| **Hosting/PaaS** | Vercel, Railway, Fly.io, VPS — provider-specific details |
+| **Stack** | Framework, runtime, key dependencies |
+| **Secrets** | Where they live (GitHub Secrets, .env, Vault) — list the names, never the values |
+| **Env variables** | The list from .env.example with descriptions |
+| **Docker** | Containers, compose files, volumes |
 
-### 1.4 Чего НЕ хватает — спросить
+### 1.4 Ask for what is missing
 
-После автоматического сбора — показать пользователю что найдено и спросить:
+After the automatic pass, show the user what was found and ask about:
 
-1. **Пароли/логины** — для каждого сервиса где есть вход (аналитика, регистратор домена, хостинг-панель, CI/CD)
-2. **Недостающие данные** — если что-то не нашлось в документации
-3. **Дополнительные сервисы** — «есть ли ещё сервисы, которые нужно добавить?»
+1. **Passwords and logins** — for every service with a sign-in (analytics, domain registrar, hosting panel, CI/CD)
+2. **Missing data** — anything not found in the documentation
+3. **Additional services** — "есть ли ещё сервисы, которые нужно добавить?"
 
-> **CRITICAL:** Никогда не выводить пароли/секреты в tool call логи или текст чата. Все чувствительные данные — только в HTML-файл.
+> **CRITICAL:** Never print passwords or secrets into tool-call logs or chat text. Every sensitive value goes into the HTML file and nowhere else.
 
-## Phase 2: Сгенерировать карточку
+## Phase 2: Generate the card
 
-### 2.1 Структура HTML
+### 2.1 HTML structure
 
-Одностраничный HTML-файл, A4 формат:
+A single-page HTML file, A4 format:
 
 ```
-PROJECT-CARD.html  ← имя файла, добавить в .gitignore
+PROJECT-CARD.html  ← file name, add to .gitignore
 ```
 
-**Обязательные элементы:**
-- `@page { size: A4; margin: 0; }` — для печати
-- `print-color-adjust: exact` — сохранить цвета в PDF
-- `-webkit-print-color-adjust: exact` — для Chrome
-- `overflow: hidden; max-height: 297mm` — не вылезать за лист
-- Google Fonts `<link>` если шрифт проекта из Google Fonts
+**Required elements:**
+- `@page { size: A4; margin: 0; }` — for printing
+- `print-color-adjust: exact` — keep colours in the PDF
+- `-webkit-print-color-adjust: exact` — for Chrome
+- `overflow: hidden; max-height: 297mm` — do not spill past the sheet
+- A Google Fonts `<link>` if the project's font comes from Google Fonts
 
-### 2.2 Дизайн
+### 2.2 Design
 
-**Основа — фирменный стиль проекта:**
-- Фон: самый тёмный цвет из палитры или затемнённый основной
-- Акцент (заголовки секций, ссылки): яркий/контрастный цвет бренда
-- Текст: светлый на тёмном фоне
-- Карточки-блоки: чуть светлее фона с тонкой рамкой
-- Лого в хедере: если тёмное на тёмном фоне — добавить белую подложку (`background: #fff; padding; border-radius`)
+**Built on the project's brand:**
+- Background: the darkest colour in the palette, or the primary darkened
+- Accent (section headings, links): the bright/contrasting brand colour
+- Text: light on a dark background
+- Card blocks: slightly lighter than the background with a thin border
+- Logo in the header: if it is dark on a dark background, add a white plate (`background: #fff; padding; border-radius`)
 
-**Лейаут:**
-- Хедер: лого + название + "Техническая карточка — {месяц} {год}"
-- Тело: grid 2-3 колонки, карточки с key-value строками
-- Футер: "Конфиденциально • Не распространять"
+**Layout:**
+- Header: logo + name + "Техническая карточка — {месяц} {год}"
+- Body: a 2–3 column grid of cards with key-value rows
+- Footer: "Конфиденциально • Не распространять"
 
-**Размеры для A4:**
-- Шрифт body: 10-11px
-- Заголовки секций: 10px uppercase, letter-spacing
-- Значения: 10px
-- Padding body: 24-28px
-- Gap между карточками: 10px
-- Padding карточки: 8-10px
+**Sizes for A4:**
+- Body font: 10–11px
+- Section headings: 10px uppercase, letter-spacing
+- Values: 10px
+- Body padding: 24–28px
+- Gap between cards: 10px
+- Card padding: 8–10px
 
-### 2.3 Пароли — редактируемые поля
+### 2.3 Passwords — editable fields
 
-Для каждого пароля/логина который пользователь НЕ предоставил — вставить:
+For every password or login the user did NOT provide, insert:
 
 ```html
 <span contenteditable="true" style="border-bottom:1px dashed {accent-color};padding:0 4px;min-width:80px;display:inline-block;outline:none">впиши сюда</span>
 ```
 
-Если пользователь предоставил значение — вставить как обычный текст.
+If the user did provide a value, insert it as plain text.
 
 ### 2.4 Gitignore
 
-Добавить в `.gitignore` проекта:
+Add to the project's `.gitignore`:
 
 ```
 # private project card
 PROJECT-CARD.*
 ```
 
-## Phase 3: Показать и итерировать
+## Phase 3: Show and iterate
 
-1. Сообщить что файл создан
-2. Предложить открыть в браузере и проверить
-3. Напомнить: заполнить `contenteditable` поля → Ctrl+P → PDF
-4. Если что-то не влезает в лист — уменьшить, перегруппировать или убрать наименее важное
-5. Итерировать по обратной связи пользователя (цвет, расположение, данные)
+1. Report that the file was created
+2. Offer to open it in a browser and check
+3. Remind: fill the `contenteditable` fields → Ctrl+P → PDF
+4. If something does not fit on the sheet — shrink, regroup, or drop the least important part
+5. Iterate on the user's feedback (colour, placement, data)
 
-## Чеклист качества
+## Checks against state
 
-- [ ] Всё на одном листе A4 при печати
-- [ ] Фирменные цвета и шрифт проекта
-- [ ] Лого видно на фоне (контраст)
-- [ ] Все найденные данные включены
-- [ ] Пароли — либо вставлены, либо contenteditable
-- [ ] Файл в .gitignore
-- [ ] Никаких секретов в логах/чате
+```bash
+# 1. the card was written
+rg -c . PROJECT-CARD.html
+
+# 2. it is excluded from the repository
+rg -n "PROJECT-CARD" .gitignore
+
+# 3. no secret leaked into anything tracked by git
+git status --short
+```
+
+Check 2 returning nothing means the next commit carries the passwords into the repository — fix it
+before telling the user the card is ready.
+
+Fitting on one A4 sheet and the logo's contrast against the background cannot be read off disk —
+they are checked by the user in the browser, which is what Phase 3 step 2 is for.
