@@ -40,7 +40,7 @@ The full path from idea to production. Each step has a command, a skill behind i
 - Runs 3 interview cycles with the user (general → code-informed → edge cases)
 - `interview-completeness-checker` agent verifies coverage
 - Creates `user-spec.md` from interview data → git commit draft
-- 2 validators run in parallel (up to 3 iterations):
+- 2 validators run in parallel (loop while each round reduces open findings):
   - `userspec-quality-validator` — document structure, acceptance criteria testability
   - `userspec-adequacy-validator` — solution feasibility, over/underengineering
 - Git commit after each validation round
@@ -61,7 +61,7 @@ The full path from idea to production. Each step has a command, a skill behind i
 - Copies tech-spec template, edits sections in place → `tech-spec.md` with architecture (including Shared Resources for heavy objects like ML models, DB pools), decisions, testing strategy, brief Implementation Tasks (scope only — AC and TDD are added during task-decomposition) → git commit draft
 - Implementation Tasks include Verify-smoke (executable checks: curl, python -c, docker) and Verify-user (manual UI/UX checks) fields where applicable
 - Last two waves are always Audit Wave (3 parallel auditors: code, security, test) and Final Wave (QA + deploy)
-- 5 validators run in parallel (up to 3 iterations):
+- 5 validators run in parallel (loop while each round reduces open findings):
   - `skeptic` — detects non-existent files, functions, APIs (mirages)
   - `completeness-validator` — bidirectional requirements traceability, over/underengineering, solution depth
   - `security-auditor` — OWASP Top 10 review
@@ -83,7 +83,7 @@ The full path from idea to production. Each step has a command, a skill behind i
 **Process:**
 - For each Implementation Task in tech-spec, `task-creator` agent copies task template and fills it (parallel)
 - Each task file expands brief tech-spec scope into: acceptance criteria, TDD anchor (from Testing Strategy), context files, skills, reviewers, wave, dependencies → git commit draft
-- 2 validators run in parallel (up to 3 iterations):
+- 2 validators run in parallel (loop while each round reduces open findings):
   - `task-validator` — template compliance, content quality
   - `reality-checker` — validates against actual codebase (file existence, feasibility)
 - Cross-task integration check: both validators re-run on all tasks together — catches shared resource conflicts, duplicate heavy resource init, hidden dependencies (max 2 extra iterations)
@@ -129,10 +129,10 @@ All tasks via agent teams. Team lead orchestrates waves of parallel work.
 - Creates team via TeamCreate
 - Executes tasks wave by wave:
   - Spawns one agent per task (parallel within wave)
-  - Each teammate: follows loaded skill workflow, runs smoke verification if task has Verify-smoke (before reviews), commits code (tests pass), sends diff to reviewers, fixes findings with commits per round (max 3 rounds), commits review reports
+  - Each teammate: follows loaded skill workflow, runs smoke verification if task has Verify-smoke (before reviews), commits code (tests pass), sends diff to reviewers, fixes findings with commits per round, while each round leaves strictly fewer open findings, commits review reports
   - Each teammate writes `decisions.md` entry
   - Lead commits status updates (task frontmatter + decisions.md) after wave completes, updates `checkpoint.yml`
-- **Audit Wave** (always present): 3 auditors run in parallel (code-reviewer, security-auditor, test-reviewer) — review all feature code holistically. Issues found → lead spawns fixer agent, auditors become reviewers (max 3 fix rounds)
+- **Audit Wave** (always present): 3 auditors run in parallel (code-reviewer, security-auditor, test-reviewer) — review all feature code holistically. Issues found → lead spawns fixer agent, auditors become reviewers, same converge-or-escalate rule
 - **Ad-hoc agents**: when lead needs work outside planned tasks (fixing audit findings, escalations), assigns matching skill + reviewers based on work type
 - **Final Wave**: QA (always), deploy + post-deploy (if applicable)
 - **Escalation**: after 3 failed fix rounds — stop, report to user, write decisions.md entry, wait for decision
@@ -233,7 +233,7 @@ Completed features are archived to `work/completed/{feature}/`.
 
 - **Spec before code.** User Spec → Tech Spec → Tasks → Code.
 - **Research stack before deciding.** Before stack decisions in `project-planning` (shallow, comparing candidates) and `tech-spec-planning` (deep, chosen element), a BLOCKING gate requires `/stack-research` for critical elements — external APIs, services, non-whitelisted libraries. No memory-based decisions on critical stack.
-- **Validate at every stage.** User spec (2), tech spec (5), tasks (2), code (3 reviewers + smoke), audit wave (3 holistic auditors), QA (pre-deploy + post-deploy). Max 3 fix iterations each.
+- **Validate at every stage.** User spec (2), tech spec (5), tasks (2), code (reviewers selected by what the diff contains, plus smoke), audit wave (3 holistic auditors), QA (pre-deploy + post-deploy). Every fix loop runs while it converges and escalates the moment it stops — no fixed round count.
 - **Commit after each result.** Planning: draft → validation rounds → approval. Execution: code (tests pass) → review fixes → status. Not after every action.
 - **PK = single source of truth.** All project docs in `.claude/skills/project-knowledge/references/`. CLAUDE.md is minimal. `/done` updates PK. `documentation-writing` audits quality.
 - **Just-in-time context.** Read only what's needed. Task files list Context Files explicitly. Context7 MCP for library docs.

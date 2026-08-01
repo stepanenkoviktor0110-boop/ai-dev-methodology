@@ -69,7 +69,7 @@ This ensures predictable scope, manageable task sizes, and clear progress tracki
 - [ ] Each task-creator returned file path
 - [ ] Draft committed
 
-## Phase 2: Validation (up to 3 iterations)
+## Phase 2: Validation (loop while it converges)
 
 Tech-spec was already validated by 5 validators. This phase checks only: (1) task-creator correctly expanded tasks by template, (2) no mismatches with real code appeared during detailing.
 
@@ -77,12 +77,12 @@ Tech-spec was already validated by 5 validators. This phase checks only: (1) tas
 
 Launch both in parallel:
 
-[`task-validator`](~/.claude/agents/task-validator.md) (sonnet) — Template Compliance + AC/TDD carry-forward:
+[`task-validator`](~/.claude/agents/task-validator.md) (effort `low` — checks a task file against a written template) — Template Compliance + AC/TDD carry-forward:
 - Batch: 5 tasks per call
 - Pass: feature_path, task_numbers array, batch_number, iteration
 - Report: `logs/tasks/template-batch{N}-review.json`
 
-[`reality-checker`](~/.claude/agents/reality-checker.md) (sonnet) — Reality & Adequacy:
+[`reality-checker`](~/.claude/agents/reality-checker.md) (effort `medium` — verifies claims against the actual codebase) — Reality & Adequacy:
 - Batch: 3 tasks per call
 - Pass: feature_path, task_numbers array, batch_number, iteration
 - Report: `logs/tasks/reality-batch{N}-review.json`
@@ -95,7 +95,7 @@ Launch both in parallel:
    - Pass: same inputs as creation + `mode: fix` + `findings` from validators
    - task-creator reads existing task, applies fixes, overwrites file
 4. After each validation round, git commit: `chore(tasks): validation round {N} — {summary}`
-5. Re-validate fixed tasks (repeat 1-4). Maximum 3 iterations.
+5. Re-validate fixed tasks (repeat 1-4) while each round leaves strictly fewer open findings than the one before. The first round that does not reduce them, stop and escalate to the user with what remains.
 6. If problems remain after 3rd iteration — show user: "Вот что осталось — давай решим вместе."
 
 ### Cross-Task Integration Check

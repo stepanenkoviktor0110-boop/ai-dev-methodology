@@ -30,7 +30,7 @@ Before starting, read [quick-ref-tech-spec-planning.md](../quick-learning/refere
 
 ## Phase 2: Code Research
 
-Launch `code-researcher` subagent (opus) with feature path and user-spec path. It reads existing `code-research.md` (from user-spec phase) and deepens for implementation.
+Launch `code-researcher` subagent (effort `high` — it reads across the codebase and judges reuse) with feature path and user-spec path. It reads existing `code-research.md` (from user-spec phase) and deepens for implementation.
 
 After completion — read `{feature_path}/code-research.md`. If gap discovered later — re-launch with specific question.
 
@@ -139,7 +139,7 @@ Pass to each: `work/{feature}/tech-spec.md` + `work/{feature}/user-spec.md`.
 
 Read all 5 reports. Fix if valid, reject with reasoning if disagree, discuss with user if controversial.
 
-After fixes → commit `chore(techspec): validation round {N} — {summary}` → re-run validators. Max 3 iterations, then escalate to user.
+After fixes → commit `chore(techspec): validation round {N} — {summary}` → re-run the validators that raised findings, while each round leaves strictly fewer open findings than the one before. The first round that does not reduce them, escalate to the user.
 
 ## Phase 6: User Approval
 
