@@ -112,18 +112,9 @@ ls ~/.claude/skills/methodology/SKILL.md
 /quick-learning                # Извлечь уроки из текущей сессии → обновить reasoning patterns
 ```
 
-### Дизайн-пайплайн
+### Дизайн
 
-```
-/design-system-init            # Создать дизайн-систему: tokens.json + компоненты
-/design-spec                   # Дизайн-спецификация через адаптивное интервью
-/design-plan                   # Дизайн-план с решениями по лейаутам
-/design-task-decompose         # Декомпозиция дизайн-плана на атомарные задачи
-/design-generate               # Генерация HTML/CSS страниц из текстовых описаний
-/photo-crop                    # Расчёт object-position для фото в лейаутах
-/design-review                 # Ревью UI-кода против дизайн-токенов
-/design-retrospective          # Извлечь эстетические уроки, построить профиль вкуса
-```
+Дизайн-работа вынесена в отдельный репозиторий: [design-ultimate](https://github.com/stepanenkoviktor0110-boop/design-ultimate). Здесь — только пайплайн разработки.
 
 ### Другие команды
 
@@ -218,7 +209,6 @@ Claude Code использует встроенный Agent tool со специ
 | Качество | `code-reviewing`, `security-auditor`, `test-master` |
 | Разбор противоречий | `triz-synergy`, `triz-combinatorics` — когда чиним A, а ломается B |
 | Оркестрация | `parallel-tracks` — 2–3 фичи параллельно через git worktree + сериализованный поезд интеграции |
-| Дизайн | `design-spec`, `design-plan` |
 | Инфраструктура | `init-project`, `init-project-knowledge` |
 | Знания | `project-knowledge`, `documentation-writing`, `methodology` |
 | Обучение | `quick-learning`, `skill-trainer`, `recalibrate-all`, `prompt-master` |
@@ -242,7 +232,7 @@ Claude Code использует встроенный Agent tool со специ
 | Конфиг | `~/.claude/settings.json` | `~/.codex/config.toml` |
 | Расположение скиллов | `~/.claude/skills/` | `~/.agents/` |
 | Модели | Claude (Opus/Sonnet/Haiku) | GPT-5.x тиры |
-| Дизайн-пайплайн | `design-spec` + `design-plan` | Полный (4 скилла) |
+| Дизайн-пайплайн | Отдельный репозиторий ([design-ultimate](https://github.com/stepanenkoviktor0110-boop/design-ultimate)) | Полный (4 скилла) |
 | Директория agents/ | Да (`agents/`) | Да (`agents/`) |
 
 ## Основано на
@@ -257,6 +247,7 @@ Claude Code использует встроенный Agent tool со специ
 - **Параллельные треки фич** — задокументирован `parallel-tracks`: одна сессия = одна фича = один трек, изоляция через ветку + git worktree, координация через файлы в репозитории, а не через память сессии; сходятся через сериализованный поезд интеграции (rebase → слияние миграций → PR/CI → smoke на эфемерном staging → merge → деплой по сервисам).
 - **Инвентарь исправлен** — таблица скиллов перечисляла девять позиций, которых в репозитории не было никогда (`content-card`, `promoter`, `progress` и шесть несуществующих `design-*`), и умалчивала о двенадцати существующих. Теперь таблица совпадает с `git ls-files`: 41 скилл, 22 агента.
 - **Скоуп сужен до методологии** — доменные и личные скиллы (пайплайн JTBD, анимация, диаграммы, кадрирование фото, e-mail рассылки) убраны из публичного репозитория. `pishi`, `project-card` и `website-legal-audit` остаются. `pishi` до этого публиковался неполным: пять reference-файлов отсекало устаревшее правило `.gitignore` — теперь они на месте.
+- **Дизайн-пайплайн вынесен** — `/design-spec` и `/design-plan` оказались заглушками на девять строк, делегирующими скиллам `design-spec-planning` и `design-plan-planning`, которых нет ни на диске, ни в кеше плагинов; вся задокументированная дизайн-система из восьми команд была мёртвой. Заглушки и раздел удалены. Дизайн переехал в [design-ultimate](https://github.com/stepanenkoviktor0110-boop/design-ultimate), здесь остаётся только пайплайн разработки.
 - **Убраны битые сабмодули** — `design-skills/` лежал в индексе тремя gitlink-записями без `.gitmodules`, поэтому свежий клон давал три пустые папки и ошибку checkout.
 - **История переписана** — в `dashboard.json` от 2026-04-02 лежали GitHub PAT и API-ключ сервиса. История вычищена `git-filter-repo` по всем веткам, `gitleaks` даёт чистый скан по 562 коммитам. Утекшие ключи выведены из обращения. Тем же проходом убраны личные рабочие артефакты (`session-env/`, `paste-cache/`, `tasks/`, `skills/work/`): 639 → 565 коммитов, размер пака вдвое меньше.
 

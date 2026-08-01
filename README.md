@@ -110,18 +110,9 @@ Each step has validators and **blocking gates** — no step proceeds without exp
 /quick-learning                # Extract lessons from current session → update reasoning patterns
 ```
 
-### Design Pipeline
+### Design
 
-```
-/design-system-init            # Create design system: tokens.json + components
-/design-spec                   # Design specification through adaptive interview
-/design-plan                   # Design plan with layout decisions
-/design-task-decompose         # Decompose design plan into atomic task files
-/design-generate               # Generate HTML/CSS pages from text descriptions
-/photo-crop                    # Calculate object-position for photos in layouts
-/design-review                 # Review UI code against design tokens
-/design-retrospective          # Extract aesthetic lessons, build taste profile
-```
+Design work lives in a separate repository: [design-ultimate](https://github.com/stepanenkoviktor0110-boop/design-ultimate). This repo covers the development pipeline only.
 
 ### Other Commands
 
@@ -215,7 +206,6 @@ Claude Code uses the built-in Agent tool with specialized subagent types for par
 | Quality | `code-reviewing`, `security-auditor`, `test-master` |
 | Problem solving | `triz-synergy`, `triz-combinatorics` — contradiction resolution when fixing A breaks B |
 | Orchestration | `parallel-tracks` — 2–3 features in parallel via git worktrees + serialized integration train |
-| Design | `design-spec`, `design-plan` |
 | Setup | `init-project`, `init-project-knowledge` |
 | Knowledge | `project-knowledge`, `documentation-writing`, `methodology` |
 | Learning | `quick-learning`, `skill-trainer`, `recalibrate-all`, `prompt-master` |
@@ -239,7 +229,7 @@ This repo and [ai-dev-methodology-codex](https://github.com/stepanenkoviktor0110
 | Config location | `~/.claude/settings.json` | `~/.codex/config.toml` |
 | Skills location | `~/.claude/skills/` | `~/.agents/` |
 | Models | Claude (Opus/Sonnet/Haiku) | GPT-5.x tiers |
-| Design pipeline | `design-spec` + `design-plan` | Full (4 skills) |
+| Design pipeline | Separate repo ([design-ultimate](https://github.com/stepanenkoviktor0110-boop/design-ultimate)) | Full (4 skills) |
 | Agents directory | Yes (`agents/`) | Yes (`agents/`) |
 
 ## Based on
@@ -254,6 +244,7 @@ Evolved fork of [molyanov-ai-dev](https://github.com/pavel-molyanov/molyanov-ai-
 - **Parallel feature tracks** — `parallel-tracks` documented: one session = one feature = one track, isolated by branch + git worktree, coordinated through repo files rather than session memory, converging via a serialized integration train (rebase → migration merge → PR/CI → ephemeral staging smoke → merge → per-service deploy).
 - **Inventory corrected** — the skills table listed nine skills that were never in the repo (`content-card`, `promoter`, `progress`, and six phantom `design-*` entries) and omitted twelve that were. The table now matches `git ls-files` exactly: 41 skills, 22 agents.
 - **Scope narrowed to methodology** — domain and personal skills (JTBD pipeline, animation, diagrams, photo cropping, e-mail campaigns) removed from the public repo. `pishi`, `project-card` and `website-legal-audit` stay. `pishi` was previously shipped incomplete — five reference files had been excluded by a stale `.gitignore` rule and are now included.
+- **Design pipeline split out** — `/design-spec` and `/design-plan` were nine-line stubs delegating to `design-spec-planning` and `design-plan-planning`, skills that exist nowhere on disk or in the plugin cache; the documented eight-command design pipeline was entirely dead. Both stubs and the section are removed. Design work now lives in [design-ultimate](https://github.com/stepanenkoviktor0110-boop/design-ultimate); this repo covers the development pipeline only.
 - **Broken submodules removed** — `design-skills/` was recorded as three gitlinks with no `.gitmodules`, so every fresh clone produced three empty directories and a checkout error.
 - **History rewritten** — a `dashboard.json` committed on 2026-04-02 carried a GitHub PAT and a service API key. History was purged with `git-filter-repo` across all branches; `gitleaks` now reports a clean scan over 562 commits. The exposed credentials were invalidated. Personal workspace artifacts (`session-env/`, `paste-cache/`, `tasks/`, `skills/work/`) were purged in the same pass: 639 → 565 commits, pack size halved.
 
