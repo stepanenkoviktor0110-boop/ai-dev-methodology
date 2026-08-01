@@ -12,9 +12,11 @@ description: |
 
 # Sketch Mode
 
-> Sketch Mode закрывает gap: между "полным pipeline" и "ничего".
-> За одну сессию — рабочий прототип. Без validators, без code-reviewer.
-> После: развивать через `/new-user-spec` или архивировать через `/done`.
+> Fills the gap between the full pipeline and nothing at all: a working prototype in one
+> session, no validators, no reviewers. Afterwards either develop it through `/new-user-spec`
+> or archive it through `/done`.
+
+Talk to the user in Russian throughout — the prompts below are the wording to use.
 
 ## Phase 1: Entry
 
@@ -65,10 +67,12 @@ Start coding only after the user explicitly approves sketch.md.
 
 ## Phase 5: Code
 
-**Design Context (UI sketches only).** If the sketch involves UI (component/page/visual prototype), run before writing markup. Skip for non-UI sketches (CLI tools, scripts, backend logic). Keep output in working context only — no file, no user report.
-
-- **CIP brief.** Run PowerShell: `& "C:\Users\natel\AppData\Local\Python\bin\python.exe" "C:\Users\natel\.claude\plugins\cache\ui-ux-pro-max-skill\ui-ux-pro-max\2.5.0\.claude\skills\design\scripts\cip\search.py" "<industry/context>" --cip-brief -b "<sketch-name>"`. Output (palette/typography/style/anti-patterns) informs implementation.
-- **Execution principles.** Invoke `Skill(frontend-design:frontend-design)` before writing markup — sketches are new-from-scratch by definition, so this is unconditional for UI sketches.
+**Design context (UI sketches only).** Skip entirely for CLI tools, scripts and backend logic.
+A sketch is new-from-scratch by definition, so for a UI sketch invoke `Skill(design-ultimate)`
+before writing markup — it is the single entry point for design and pulls in its own
+dependencies. Do not call `impeccable`, `frontend-design` or the taste overlays directly.
+If the project already carries a `DESIGN.md`, read it and follow it instead of re-deriving a
+direction. Keep the outcome in working context — no file, no report to the user.
 
 Write code directly into `work/{sketch-name}/`.
 
@@ -95,10 +99,12 @@ Ask the user:
   `work/{sketch-name}/sketch.md` as pre-filled context for the interview.
 - **"Архивируем"** → invoke `/done` to archive `work/{sketch-name}/`.
 
-## Self-Verification
+## Checks against state
 
-- [ ] `work/{sketch-name}/sketch.md` created and approved by user
-- [ ] Design Context loaded for UI sketches (CIP brief + frontend-design)
-- [ ] Code implements exactly the "What must work" slice — nothing more
-- [ ] Prototype committed
-- [ ] Decision gate reached: user chose develop or archive
+```bash
+# 1. sketch.md exists — the compass the code was supposed to follow
+rg -c . work/{sketch-name}/sketch.md
+
+# 2. the prototype was committed
+git log --oneline -5 --grep "sketch({sketch-name})"
+```

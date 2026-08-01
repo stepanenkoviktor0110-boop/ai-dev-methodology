@@ -2,7 +2,7 @@
 name: feature-execution
 description: |
   Orchestrate feature delivery as team lead: spawn agents by wave,
-  manage review cycles (max 3 rounds), commit per wave.
+  manage review cycles, commit per wave.
 
   Use when: "выполни фичу", "do feature", "execute feature", "запусти фичу",
   "выполни все задачи", "execute all tasks"
@@ -13,6 +13,16 @@ description: |
 > **CRITICAL:** NEVER generate multiple artifacts without stopping. After EACH artifact: list controversial points, explain simply, WAIT for user decision. Only then proceed.
 
 Team lead orchestrates feature delivery. You are a dispatcher: spawn agents, track progress, commit code, escalate issues. Delegate all code reading, diff analysis, and report review to spawned agents. Your only inputs are status messages from teammates ("Task complete") and escalation requests.
+
+Delegation is this skill's job, but it is not free. A wave's tasks are independent by
+construction — that is what makes spawning them worth it. Do not spawn an agent for work you
+could finish in a handful of tool calls, do not split one task across several agents, and
+never spawn an agent to check another agent's output; that is what the reviewer pass is for.
+One agent per task, one reviewer per selected dimension.
+
+Your context is compacted automatically as it fills, so you can keep working across the whole
+feature. Do not wrap up a wave early over token budget: write the checkpoint, let the context
+refresh, continue from it.
 
 Before starting, read [quick-ref-feature-execution.md](../quick-learning/references/quick-ref-feature-execution.md) — top reasoning patterns for this skill (if file exists and non-empty).
 
@@ -78,12 +88,14 @@ Before starting, read [quick-ref-feature-execution.md](../quick-learning/referen
 
 3. For each task, spawn **teammate + reviewers** using prompt templates from [prompt-templates.md](references/prompt-templates.md).
    Read that file once at Phase 2 start, then use templates for all tasks in the wave.
+   Reviewers come from the task's `reviewers` field; when it is empty, select by what the task
+   will change, per [skills-and-reviewers.md](../tech-spec-planning/references/skills-and-reviewers.md).
 
 4. All agents work in parallel. Lead waits for teammates to report "Task complete."
 
 ### Audit Wave tasks
 
-Audit Wave tasks (Code Audit, Security Audit, Test Audit) have `reviewers: none` — each auditor teammate IS the review. Spawn them as standard teammates (general-purpose, opus), each loads its methodology skill.
+Audit Wave tasks (Code Audit, Security Audit, Test Audit) have `reviewers: none` — each auditor teammate IS the review. Spawn them as standard teammates (`general-purpose`, effort `high` — they read whole files across the feature and judge architecture), each loads its methodology skill.
 
 Each auditor:
 - Reads decisions.md to understand what was done in each task
@@ -94,21 +106,21 @@ Each auditor:
 
 After all 3 reports:
 - All clean → proceed to Final Wave
-- Issues found → spawn a fixer teammate (ad-hoc, code-writing skill), assign the auditors who found issues as reviewers, standard review protocol (max 3 rounds). After approval → proceed to Final Wave. If unresolved after 3 rounds → escalate (see Escalation).
+- Issues found → spawn a fixer teammate (ad-hoc, code-writing skill), assign the auditors who found issues as reviewers, standard review protocol. After approval → proceed to Final Wave. If the loop stops converging → escalate (see Escalation).
 
 ### Ad-hoc agents
 
 When lead spawns an agent outside the original execution plan (to fix audit findings, handle escalations, complete missing work):
 
 1. Lead assigns a skill and reviewers matching the type of work:
-   - Code changes → skill: `code-writing`, reviewers: code-reviewer, security-auditor, test-reviewer
+   - Code changes → skill: `code-writing`, reviewers per the diff (see skills-and-reviewers.md)
    - Prompt changes → skill: `prompt-master`, reviewers: prompt-reviewer
-   - Skill changes → skill: `skill-master`, reviewers: skill-checker
+   - Skill or agent changes → no skill; follow the skill-authoring conventions, reviewers: skill-checker
    - Deploy/CI changes → skill: `deploy-pipeline`, reviewers: deploy-reviewer
    - Infrastructure changes → skill: `infrastructure-setup`, reviewers: infrastructure-reviewer, security-auditor
    - Other tasks (research, config, manual steps) → no skill, no reviewers. Agent follows lead's instructions directly.
 2. The ad-hoc agent writes a decisions.md entry (same template as planned tasks)
-3. Standard review protocol: agent commits → sends diff to reviewers → fix → max 3 rounds
+3. Standard review protocol: agent commits → sends diff to reviewers → fix → repeat while each round leaves strictly fewer open findings
 4. Lead verifies decisions.md entry exists before considering ad-hoc work complete
 
 **Checkpoint:** all teammates reported "Task complete", decisions.md entries written.
@@ -172,9 +184,9 @@ When lead spawns an agent outside the original execution plan (to fix audit find
 
 All waves done including Final Wave (QA, deploy if applicable, post-deploy verification if applicable).
 
-1. Show results: what was built, key decisions, QA report summary
+1. Show results: what was built, key decisions, QA report summary. Lead with the outcome — the first sentence answers what happened — and put supporting detail after it.
 2. Describe what to check manually (from execution plan "user checks" section)
-3. Issues found → fix → review → commit (max 3 rounds). If unresolved → escalate (see Escalation).
+3. Issues found → fix → review → commit, while each round leaves strictly fewer open issues. Stops converging → escalate (see Escalation).
 4. All ok → finalize, shutdown team, delete `work/{feature}/logs/checkpoint.yml`
 5. **Integration (parallel projects only).** If the project uses `parallel-tracks` and the
    feature was worked on a `feature/<slice>` branch, it is NOT yet in `dev`. Load the
@@ -187,29 +199,42 @@ All waves done including Final Wave (QA, deploy if applicable, post-deploy verif
 ## Escalation
 
 Call user when:
-- 3 review/fix iterations exhausted with remaining findings
+- A fix/review loop stops reducing open findings
 - Teammate reports blocker or ambiguous requirement
 - Task depends on unavailable MCP tool or external service
 
 When escalating:
 1. Stop all work on the blocked task/wave
-2. Report to user: what failed, what was tried (all 3 attempts), what remains unresolved
+2. Report to user: what failed, what was tried in each round, what remains unresolved
 3. Write decisions.md entry: summary of attempts + unresolved findings
-4. Git commit: `chore: escalate task {N} — unresolved after 3 fix rounds`
+4. Git commit: `chore: escalate task {N} — loop stopped converging`
 5. Wait for user decision before continuing
 
 ## Promoted Patterns
 
-- **Спорные решения ДО генерации:** Артефакт > 200 строк → сначала список решений с вариантами → утверждение → генерация. Один раунд вместо серии переделок.
-- **Субагент не завершил → выполни напрямую:** Не ретраить субагент при внешней блокировке (права, permission). Lead делает сам через Write/Edit.
-- **Верифицируй результат в реальной среде** (Seen: 4): После деплоя — curl/лог/проверка. Не объявлять "готово" без подтверждения работы. Для cron — лог через 5 мин. При READY/200 OK — дополнительно grep уникальный маркер или component name из нового коммита, чтобы убедиться что платформа промоутила именно новую сборку.
+- **Contested decisions before generation, not after:** an artifact over 200 lines → list the decisions with their options first → get approval → then generate. One round instead of a series of rewrites.
+- **Subagent did not finish → do it yourself:** do not retry a subagent that hit an external block (permissions, access). The lead does it directly via Write/Edit.
+- **Verify the result in the real environment** (Seen: 4): after a deploy — curl, logs, an actual check. Never declare "done" without confirming it runs. For cron — check the log five minutes later. On READY/200 OK, additionally grep for a unique marker or component name from the new commit, to confirm the platform promoted the new build and not the previous one.
 
-## Self-Verification
+## Checks against state
 
-- [ ] Execution plan created and approved
-- [ ] All tasks executed, reviewed where applicable (max 3 iterations each), decisions.md filled
-- [ ] All waves committed (including Final Wave)
-- [ ] User reviewed and approved
+```bash
+# 1. execution plan was written and approved before waves started
+rg -c . work/{feature}/logs/execution-plan.md
+
+# 2. every task in the completed wave has a decisions.md entry
+rg -c "^## Task " work/{feature}/decisions.md
+
+# 3. the wave was committed, checkpoint included
+git log --oneline -5 --grep "wave {N}"
+
+# 4. the barrier is durable on disk at a session boundary
+rg -n "^status:|^current_session:|^next_wave:" work/{feature}/logs/checkpoint.yml
+```
+
+Check 2 must equal the number of tasks in the wave. Check 4 at a session boundary must read
+`status: awaiting_user` — if it does not, the barrier never landed and the next entry will roll
+straight into the following wave.
 
 ## Learned Patterns
 

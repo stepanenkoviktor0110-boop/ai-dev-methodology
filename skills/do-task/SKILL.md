@@ -12,6 +12,12 @@ description: |
 
 Execute a spec-driven task with validation and status tracking.
 
+Deliver the task at the scope the task file states. Make routine judgement calls yourself;
+check in only where two readings would produce materially different work. Do not widen the
+task with adjacent cleanup, extra configurability, or defensive code for cases that cannot
+occur. Delegate only the reviewer pass described below — never spawn an agent to re-check
+work you just did yourself.
+
 Before starting, read [quick-ref-do-task.md](../quick-learning/references/quick-ref-do-task.md) — top reasoning patterns for this skill (if file exists and non-empty).
 
 ## Step 1: Read Task
@@ -29,26 +35,30 @@ Before starting, read [quick-ref-do-task.md](../quick-learning/references/quick-
    - If task has no skill (frontmatter `skills: []` or absent) → read the task, execute "What to do" and "Verification Steps" directly. For tasks with user instructions → show the instruction to user, wait for confirmation.
 2. Follow loaded skill workflow
 3. Git commit implementation (code + tests pass): `feat|fix|refactor: task {N} — {brief description}`
-4. For each reviewer from the task's "Reviewers" section (if present):
-   1. Spawn subagent via Task tool (subagent_type = reviewer name, e.g. `code-reviewer`)
-   2. Pass: git diff of changes, path to task file, path to tech-spec, path to user-spec
-   3. Reviewer loads its own skill automatically (via agent frontmatter `skills:`)
-   4. Report is written to the path specified in the task's "Reviewers" section
-   5. Read report. If findings exist → fix, re-run tests, git commit: `fix: address review round {N} for task {N}`, repeat (max 3 rounds)
+4. Reviewers:
+   - The task's "Reviewers" section wins when present.
+   - When it is absent, select by what the diff contains, per the table in
+     [skills-and-reviewers.md](../tech-spec-planning/references/skills-and-reviewers.md).
+     A trivial edit — a typo, a renamed local, a version bump — gets no reviewer at all.
+   - For each selected reviewer: spawn subagent via Task tool (subagent_type = reviewer name),
+     pass the git diff, the task file, the tech-spec and the user-spec. The reviewer loads its
+     own skill via its agent frontmatter.
+   - Read the report. Findings → fix, re-run tests, commit `fix: address review round {N} for task {N}`, re-run the reviewers that raised them.
+   - **Stop on progress, not on a counter:** continue while each round leaves strictly fewer open findings than the one before. The first round that ends with the same or more open findings, stop and report — a loop that stopped converging will not converge next pass.
 
 ## Step 3: Verify
 
 1. Check each acceptance criterion from task file
 2. If task has "Verification Steps → Smoke" → execute each smoke command, record results in decisions.md Verification section
 3. If task has "Verification Steps → User" → ask user to verify, wait for confirmation
-4. If any verification fails → fix → re-run tests → re-run reviewers (new round) → re-verify
-   - After 3 failed rounds → stop, report failures to user, keep status `in_progress`
+4. If any verification fails → fix → re-run tests → re-run reviewers (new round) → re-verify.
+   Same stop condition as Step 2. When it trips, stop, report the failures to the user and keep status `in_progress`.
    - Tool unavailable → document, suggest manual check
 
 ## Step 4: Complete
 
-1. Read template `~/.claude/shared/work-templates/decisions.md.template` and write a concise execution report to `work/{feature}/decisions.md`. Follow template format strictly — no extra sections. Use Planned/Actual/Deviation structure.
-2. Update task frontmatter: `status: in_progress` → `status: done` (or `done_with_concerns` + fill `concerns:` field if something worries you — performance risk, edge case not covered, code smell that passed review, tech debt introduced). Use `done_with_concerns` when the task works but you have reservations. Retrospective will prioritize these.
+1. Read template `~/.claude/shared/work-templates/decisions.md.template` and write a concise execution report to `work/{feature}/decisions.md`. Follow template format strictly — no extra sections. Use Planned/Actual/Deviation structure. Match the length to the substance: no filler sections, no restated summaries.
+2. Update task frontmatter: `status: in_progress` → `status: done` (or `done_with_concerns` + fill `concerns:` field if something worries you — performance risk, edge case not covered, code smell that passed review, tech debt introduced). Use `done_with_concerns` when the task works but you have reservations.
 3. Update tech-spec: `- [ ] Task N` → `- [x] Task N`
 4. Git commit: `chore: complete task {N} — update status and decisions`
 5. **Session boundary check** (skip if `work/{feature}/logs/session-plan.md` does not exist):
@@ -68,12 +78,22 @@ Before starting, read [quick-ref-do-task.md](../quick-learning/references/quick-
      ---
      ```
    - If tasks remain in current session: inform user which tasks are left in this session.
-   - If `session-plan.md` does not exist and all tasks in `work/{feature}/tasks/` are `done` → prompt user: "Все задачи выполнены. Запусти `/done` для архивации, затем `/retrospective` для фиксации уроков."
+   - If `session-plan.md` does not exist and all tasks in `work/{feature}/tasks/` are `done` → prompt user: "Все задачи выполнены. Запусти `/done` для архивации, затем `/quick-learning` для фиксации уроков."
 
-## Self-Verification
+## Checks against state
 
-- [ ] Task status is `done`
-- [ ] Tech-spec checkbox updated
-- [ ] decisions.md entry written with reviews and verification results
-- [ ] Git commit created with task reference
-- [ ] Every acceptance criterion from task file is met
+```bash
+# 1. task frontmatter reached a terminal status
+rg -n "^status:" work/{feature}/tasks/task-{N}*.md
+
+# 2. tech-spec checkbox for this task is ticked
+rg -n "\[x\] Task {N}\b" work/{feature}/tech-spec.md
+
+# 3. decisions.md carries an entry for this task
+rg -n "Task {N}\b" work/{feature}/decisions.md
+
+# 4. a commit references this task
+git log --oneline -10 --grep "task {N}"
+```
+
+Any line returning nothing means that step did not happen — go do it, rather than recording the task as complete.
