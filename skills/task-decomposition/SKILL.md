@@ -158,37 +158,15 @@ After user approves task decomposition, calculate session grouping for predictab
 
 **Verify all cross-references after task generation (Seen: 2):** Check file paths via `test -e`, decision numbers by counting in tech-spec, depends_on by confirming the dependency actually produces the referenced artifact. Agents generate references by analogy/assumption, not by verification.
 
-**Тест на стыке задач — добавить явно в spec/AC (Seen: 2):** Если при выполнении Task N обнаруживается тест, относящийся к scope Task M — добавить его явно в AC или TDD Anchor задачи M. Записи в decisions.md недостаточно: агент Task M decisions.md предыдущих задач не читает.
+**A test that straddles two tasks goes into the spec/AC explicitly (Seen: 2):** if while executing task N you find a test belonging to task M's scope, add it to task M's acceptance criteria or TDD Anchor. A note in decisions.md is not enough — the agent running task M does not read earlier tasks' decisions.
 
-**Wave numbers, not labels (Seen: 3):** Семантические метки ("Audit Wave", "Final Wave", любая "named wave") — не номера. Передавать task-creator числа явно: при N имплементационных волн audit=N+1, final=N+2. Если задачи внутри одной метки зависят (A→B→C) — каждая получает своё число (A=N, B=N+1, C=N+2). Валидация после генерации: для КАЖДОЙ пары depends_on проверять wave(consumer) > wave(producer).
+**Wave numbers, not labels (Seen: 3):** semantic labels ("Audit Wave", "Final Wave", any named wave) are not numbers. Pass task-creator explicit integers: with N implementation waves, audit is N+1 and final is N+2. When tasks inside one label depend on each other (A→B→C) each gets its own number (A=N, B=N+1, C=N+2). After generation, validate every depends_on pair: wave(consumer) > wave(producer).
 
-**Constraint-enforcement scope — проверяй только в enforcing-регионе (Seen: 3):** Для тестов структурированного string-output (markdown, отчёты) недостаточно проверять наличие значения — извлекай нужную секцию (regex/split), затем проверяй значение внутри неё. Обобщённо: когда проверяешь, что структура ЭНФОРСИТ ограничение через наличие токена — определи регион, который реально энфорсит (restricting/predicate-часть), и ищи только там; токен в неэнфорсящем регионе (output, ordering, labels, metadata) не должен засчитываться (non-restricting presence bias). Отличает "значение есть" от "значение в нужном месте". (triad #384)
+**Constraint enforcement — check only inside the enforcing region (Seen: 3):** for tests over structured string output (markdown, reports) it is not enough that a value is present — extract the relevant section first (regex/split), then check the value inside it. Generally: when checking that a structure ENFORCES a constraint through the presence of a token, identify the region that actually enforces it (the restricting/predicate part) and search only there; the same token in a non-enforcing region (output, ordering, labels, metadata) must not count (non-restricting presence bias). This separates "the value exists" from "the value is in the place that binds". (triad #384)
 
-**Scope задач разных волн для одного файла (Seen: 2):** Если задача A создаёт файл а задача B в позднейшей волне его расширяет — явно ограничить scope A ("только save/load — нужны в wave 1"), и в бриф B включить: "файл уже существует с функциями X, Y. Добавить только Z." Параллельные task-creator'ы не общаются — scope должен быть однозначен в каждом брифе.
+**Scope of same-file tasks across waves (Seen: 2):** when task A creates a file and task B in a later wave extends it, bound A explicitly ("save/load only — needed in wave 1") and put into B's brief: "the file already exists with functions X and Y; add only Z". Parallel task-creators do not talk to each other, so the scope must be unambiguous in every brief.
 
 ## Learned Patterns
 
 Full pattern history: [references/learned-patterns.md](references/learned-patterns.md)
 Load only for audit wave and retrospective — not during task decomposition.
-
-When a task changes a mandatory parameter of a public function and a downstream task calls the old signature → explicitly state the new signature in the downstream task's brief, to avoid silent TypeError from cross-task wiring gap.
-
-When a task-creator writes a curl command or HTTP call for a QA step → search the real endpoint path in integration test helpers or route definitions, not guessing by REST convention, to avoid a non-working QA script from a non-existent endpoint.
-
-When two task-creators create new files that share similar code patterns → check real import dependencies between those files (not thematic similarity) before assigning wave and depends_on, to avoid artificial serialization or incorrect parallel placement.
-
-When a tech-spec specifies paths in app-relative format and the app lives in a subdirectory of the repo → pass the full path from the repo root in each task-creator brief, to prevent broken Context File links across all tasks.
-
-When web app responds 20+ sec despite simple route handlers → check all module-level code and background threads for blocking network calls (auth, API) at startup, to find root cause without profiling.
-
-When migration helper / detection banner remains in code after migration completion or rollback → delete migration helper immediately after migration completes; if missed — mark TODO with date, to avoid false positives and blockers on next architecture change.
-
-When scroll-триггер срабатывает в неверной точке на элементе высотой больше viewport → заменить процентный offset на абсолютные пиксели вычисленные из высоты viewport, to триггер срабатывает в предсказуемой точке независимо от высоты элемента.
-
-When при составлении параллельной волны в tech-spec → проверить Files to modify всех задач волны попарно на пересечения файлов, to предотвратить merge conflict до того, как его поймает validator.
-
-When две анимации в разных компонентах управляют одними и теми же элементами → отключить немедленный рендер начального состояния в анимации-потребителе, to не терять начальное состояние установленное другим компонентом.
-
-When задача требует добавить client state (useState) в существующий server component → явно предписать client wrapper pattern, запретить конвертацию layout в "use client", to не потерять server component преимущества из-за неоднозначной инструкции.
-
-When две задачи описывают поведение для одного edge case (напр. "последний элемент удалён") → cross-check описания обеих задач на консистентность до коммита, to предотвратить противоречие пойманное только валидатором.

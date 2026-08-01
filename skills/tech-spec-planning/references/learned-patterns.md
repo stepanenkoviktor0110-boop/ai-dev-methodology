@@ -75,3 +75,18 @@
 - When about to reuse/mirror an existing script/workflow/config as a proven template → confirm it has actually executed successfully at least once (run history/logs + its prerequisites/secrets exist), not just that it is present and looks complete, to avoid presence-implies-proven (triad #459)
 - When a setting declared at a handler's/consumer's own definition site is assumed to also govern every caller/producer that logically depends on it → check whether the caller/producer path actually loads or evaluates that declaration, independent of the consumer path, to avoid config-locality blindspot (triad #463)
 - When spinning up an isolated work environment (new branch/worktree/clone) from a canonical shared baseline ref → before trusting the copy, verify the baseline ref actually contains every input the work depends on and reconcile it to local state if not, to avoid remote-baseline completeness bias (triad #471)
+
+- When launching task-creator agents → check the test runner (jest/vitest/pytest) and the test directories, and state both explicitly in every brief, so the generated TDD Anchor paths actually resolve.
+- When setting depends_on for the audit wave → list EVERY task that produces an audited file, not only the last wave.
+- When the question is about infrastructure, deploy or a production URL → read decisions.md (the changelog) BEFORE the project-knowledge docs.
+- When a tech-spec Data Models section carries an UPDATE SQL for an existing table → have reality-checker diff that SQL against the real route handler, looking for existing parameters it dropped.
+- When wave 1 creates a shared module with named exports and wave 2 consumes it → list EVERY exported symbol and pass the exact import line into each wave-2 brief, to avoid naming divergence.
+- When planning an aggregation over a log table keyed on a column added by ALTER TABLE → check that historical rows are actually populated, not just that the column exists.
+- When a task-creator brief carries a compatibility constraint (ES5/legacy) and the file already uses an HTTP pattern → name the permitted APIs with a sample line from the code, so an obsolete API is not picked.
+- When transforming structured data (items, checklist, acceptance criteria) into prose (spec, report, Solution) → walk every source item and mark that it reached the target document.
+- When a tech-spec contains a public POST endpoint with no authorization → apply the security checklist: CSRF/Origin, input sanitization, IP source, rate limit, security headers.
+- When test-reviewer returns a fail on a tech-spec citing absent tests in files → treat it as a false fail; the prompt must say "review the plan, not the files".
+- When a task touches three or more unfamiliar interfaces → verify each one before generating, to avoid O(N) errors.
+- When planning a refactor from file structure or from a diagnosis → have code research confirm each artifact is actually used (rendered, imported), so the spec is not built on dead code.
+- When assembling the list of decisions to discuss with the owner → filter by "does this change product behaviour?" — if not, decide it yourself.
+- When the owner asks to check something against its original source → fetch the source first, then apply corrections.

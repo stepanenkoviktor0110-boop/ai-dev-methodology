@@ -150,31 +150,11 @@ After fixes → commit `chore(techspec): validation round {N} — {summary}` →
 
 ## Promoted Patterns
 
-- **Верифицируй целевые файлы перед описанием операции (Seen: 2):** Spec описывает "удалить X из N файлов" / "заменить Y" — grep каждый файл перед фиксацией типа операции. Файл без X требует add, не replace.
-- **Верифицируй API response shapes live-вызовом (Seen: 2):** Перед включением response shapes из code-research в спек — live API call. Перенеси все коды ответа, формат, edge cases. Один вызов дешевле миража через pipeline. Это касается и shape, унаследованного из словесного описания информанта (counts, format, schema, retention): получи ОДИН живой сэмпл из источника до фиксации claim'ов в user-spec/tech-spec — информант помнит UI-поведение, а не формат data-dump, и абстракции строятся под изменчивость, которой может не быть (spec-shape inheritance bias) (triad #377).
-- **Верифицируй файловые пути и call sites через ls/grep (Seen: 2):** Пути в tech-spec — через ls/glob, не из памяти/docs. Перед записью "call sites функции X в файле Y" — grep подтверждает существование вызовов.
+- **Verify the target files before describing the operation** (Seen: 2): when a spec says "remove X from N files" or "replace Y", grep every one of them before fixing the operation type. A file that does not contain X needs an add, not a replace.
+- **Verify API response shapes with a live call** (Seen: 2): before carrying response shapes from code-research into the spec, make a live API call and copy over every status code, the format and the edge cases. One call is cheaper than a mirage travelling through the whole pipeline. The same applies to a shape inherited from someone's verbal description (counts, format, schema, retention): get ONE live sample from the source before fixing claims in the user-spec or tech-spec — an informant remembers UI behaviour, not the shape of a data dump, and abstractions then get built for variability that may not exist (spec-shape inheritance bias, triad #377).
+- **Verify file paths and call sites with ls/grep** (Seen: 2): paths in a tech-spec come from ls/glob, never from memory or docs. Before writing "call sites of function X in file Y", let grep confirm the calls exist.
 
 ## Learned Patterns
 
 Full pattern history: [references/learned-patterns.md](references/learned-patterns.md)
 Load only for audit wave and retrospective — not during spec planning.
-
-- When proposal involves project-scope migration → clarify whether the resource is universal or domain-specific before, to avoid breaking universal-access requirements.
-- When tech-spec contains a production default (run time, port, limit) → explicitly verify the value with the user, to avoid late correction cascading across files.
-- When user requests «проверь соответствие первоисточнику» → fetch the source first, then apply corrections.
-- When spec contains permission matrix for one destructive operation (delete) → verify ALL analogous destructive operations (deactivate, reset, role change) against the same matrix.
-- When user-spec AVP contains URLs/endpoints from memory → grep/verify each URL+method in codebase before approving, to prevent URL mirage propagating into skeptic pass.
-- When endpoint role-matrix differs from existing guard (e.g. GET=admin+manager, PUT=manager-only on shared guard) → describe creation of a new guard in the task, to prevent auth gap.
-- When запуск task-creator агентов → проверить runner (jest/vitest/pytest) и тест-директории, передать явно в каждый бриф, чтобы не генерить неработающие TDD Anchor пути.
-- When depends_on для audit wave → перечислить ВСЕ задачи, создающие аудируемые файлы (не только последнюю волну).
-- When вопрос об инфраструктуре, деплое или production URL → читать decisions.md (changelog) ДО project-knowledge docs.
-- When tech-spec Data Models содержит UPDATE SQL для существующей таблицы → reality-checker сверяет SQL против реального route.ts, ища пропущенные существующие параметры.
-- When Wave 1 создаёт shared module с named exports, Wave 2 потребляет → перечислить ВСЕ export-символы и передать точную строку импорта в каждый Wave 2 бриф, чтобы избежать naming divergence.
-- When планирование агрегации из log-таблицы по колонке из ALTER TABLE → проверить заполненность исторических строк, не только наличие колонки.
-- When бриф task-creator содержит compatibility constraint (ES5/legacy) + файл уже использует HTTP-паттерн → указать разрешённые API с примером строки из кода, чтобы не выбрать устаревший API.
-- When трансформация структурированных данных (items, checklist, AC) в прозу (spec, report, Solution) → пройтись по каждому item источника, отметить что попал в целевой документ.
-- When tech-spec содержит публичный POST endpoint без авторизации → применить security checklist: CSRF/Origin, input sanitization, IP source, rate-limit, security headers.
-- When test-reviewer возвращает fail в tech-spec, ссылаясь на отсутствие тестов в файлах → признать false fail; в промпте указывать "проверь план, а не файлы".
-- When задача касается N≥3 незнакомых интерфейсов → верифицировать каждый до генерации, чтобы избежать O(N) ошибок.
-- When планирование рефакторинга по файловой структуре или диагностике → верифицировать code research что каждый артефакт реально используется (рендерится, импортируется), чтобы не строить спек на мёртвом коде.
-- When формирование списка решений для обсуждения с пользователем → фильтр «изменится ли поведение продукта?» — если нет, принять самостоятельно.
