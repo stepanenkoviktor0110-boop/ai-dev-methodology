@@ -185,8 +185,14 @@ the source material, which is the weakest point of the bottom two types).
 > The feature for "by relation" was derived from the logging case — there was no direct case for
 > that type in the source material.
 
-One move closed the contradiction entirely — go to step 5. [triz-combinatorics](../triz-combinatorics/SKILL.md)
-holds the minimal set of moves covering every part of the contradiction; go there in three cases:
+One move closed the contradiction entirely — go to step 5, **through the validation gate all the
+same**. A single move carries the same holes as a bundle: a resource that turns out not to exist, a
+consumer nobody named, a change of behaviour dressed as a simplification. The gate is
+[triz-combinatorics](../triz-combinatorics/SKILL.md), step 6; only the cover table is missing, and
+one move is a cover of one.
+
+That same skill holds the minimal set of moves covering every part of the contradiction; go there in
+three cases:
 a move is chosen but does not close everything; there are several candidates and it is unclear
 which to take; **no row of the table fits while the step-3 search did yield a resource** — the
 last means not a dead end but a bundle of several roles, and that is exactly how the guard case
@@ -202,6 +208,12 @@ a different statement of the object; after the second pass, leave on budget. A r
 found — that is a different branch, and it leads into combinatorics, not around the loop again.
 
 ### Step 5. Settle it by experiment, not by argument
+
+**First the gate, then the experiment** — [triz-combinatorics](../triz-combinatorics/SKILL.md),
+step 6: the chosen set written to a file, three validators over it, every finding with a verdict.
+The gate is static and cheap, the experiment is live and dear, and a set whose material does not
+exist will happily yield a measurement of a fantasy. A mutual contradiction found there sends you
+back to step 4, not on to the experiment.
 
 A statement without a discriminating experiment is a hypothesis, however elegant. The rules are
 in the section below.
@@ -273,15 +285,17 @@ diagnostic power comes from the fact that under the second cause the result woul
 4. Was it checked that the IFR does not merely move the problem?
 5. Was the search for a ready resource run — in the code (`grep` across neighbouring modules and clients) and in the structure of the data?
 6. Was the separation type chosen deliberately — by its feature, not by resemblance to an example?
-7. Was an experiment set up that discriminates between hypotheses rather than confirming the favourite?
-8. Was the same experiment repeated after the fix, and was the solution applied at every point?
-9. Is the solution locked in by a test on the **class** rather than on the case — one that fails for any member of the class, not only for the original example?
+7. Did the chosen set pass the validation gate — written to a file, three validators, every finding with a verdict — **before** any experiment was spent on it?
+8. Was an experiment set up that discriminates between hypotheses rather than confirming the favourite?
+9. Was the same experiment repeated after the fix, and was the solution applied at every point?
+10. Is the solution locked in by a test on the **class** rather than on the case — one that fails for any member of the class, not only for the original example?
 
 An unanswered item is not "we skipped it" but a stop: go back to the corresponding step.
 
 ## Transitions
 
 - one move was not enough → [triz-combinatorics](../triz-combinatorics/SKILL.md), then back to step 5;
+- a set is chosen, whether one move or a bundle → the validation gate, [triz-combinatorics](../triz-combinatorics/SKILL.md) step 6, before the experiment;
 - fix found → `code-writing` (test on the class first, checklist item 9);
 - the solution changes the architecture → `tech-spec-planning`; the same for leaving on the two-pass budget;
 - the resolution turned out to be a repeatable lesson → `/quick-learning`;

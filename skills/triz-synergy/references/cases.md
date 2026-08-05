@@ -4,6 +4,11 @@ Four cards from one project, worked through 2026-07-28. Three cases resolved and
 failure of the method — it is here not for completeness but because it shows the main way to fake
 a resolved contradiction.
 
+One further card, from a different project and dated 2026-08-05, is the case for the validation gate
+(step 6 of [triz-combinatorics](../../triz-combinatorics/SKILL.md)). It is deliberately left
+unnumbered and stands after the failure: it records not a resolved contradiction but what the gate
+catches in a cover that already looked finished.
+
 Two further worked cases — layer priority and the silent refusal in the log — have no numeric
 verification, so they get no cards here; they are worked through in [moves.md](moves.md), moves 2
 and 5. Five cases in total, three of them with a recorded check.
@@ -102,3 +107,48 @@ nothing.
 **Operational form of the check** (step 2 of the procedure): state a negative test — a check for
 the harmful outcome — that after the solution becomes impossible to write. If the test can still be
 written, merely for a different field, it is a rearrangement.
+
+Note whose finding this was: **the validator's**. The illusion was not spotted by the person who
+stated the IFR — it never is. That is the case for the gate below.
+
+---
+
+## The validation gate: what it caught in a finished cover
+
+A different project, 2026-08-05. An offline app that names the card to pay with at the till.
+Contradiction: the record of a condition must be fully specified — otherwise the wrong card is
+named — and must arise with almost no input, since it is retyped every month for every category of
+every card.
+
+Combinatorics gave a four-element cover, each part covered exactly once, three of the four moves on
+ready material. It passed its own checklist. Then three validators were run over it.
+
+**`skeptic` found nothing — and that was worth having.** It reproduced the matching logic
+independently and recomputed every figure: 632 of 771 name matches, 139 misses each occurring
+once, 44 of 51 cards without slots. All confirmed to the digit. An empty finding from the material
+lens is what makes the consequence lens worth reading.
+
+**`reality-checker` found the hole that invalidated the cover.** Two candidates cancelled each
+other: one made monthly confirmation a single tap, the other made a validity date compulsory — so
+the single tap either silently stamps a fresh date, which is exactly the IFR the document had
+rejected a paragraph earlier, or demands the date and stops being a single tap. The parts table
+showed nothing: each candidate closed its own part honestly. Also found: a hard dependency of the
+monthly notification on the very screen being removed, and a new screen introduced by one candidate
+while the summary advertised one screen fewer.
+
+**`userspec-adequacy-validator` found the smuggled decision.** One of the four changed which cards
+take part in the ranking at all. That is not a simplification of a form; it is a product decision,
+and the project already had the precedent for how such a thing is recorded — a separate line in the
+project document, not a bullet inside a UI task.
+
+**Disagreement between validators, and how it was settled.** `reality-checker` claimed a figure had
+been computed over data absent at runtime. `skeptic` had reproduced the mechanism and shown it had
+not. The one that reproduced won. What survived from the objection was real all the same, and got
+written beside the figure: 82% measures canonical names, while a person types by hand — a ceiling,
+not a guarantee.
+
+**What it teaches.** A cover is consistent by construction: the table is filled in, therefore it
+looks complete. The gate checks what the table cannot represent — that the material exists, that
+the candidates do not cancel one another outside their own cells, and that none of them is a
+different kind of decision in disguise. Three of the five hole classes in step 6 come from this one
+case; the mutual contradiction was the one that sent the work back to step 4.

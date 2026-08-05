@@ -4,11 +4,14 @@ description: |
   Finds the minimal set of moves that closes a contradiction entirely: decomposes the
   contradiction into parts, generates candidates in a fixed form, kills the unfit with
   binary filters, and takes the minimal cover. Added complexity is penalised, not paid for.
-  Invoked from step 4 of the triz-synergy skill.
+  Invoked from step 4 of the triz-synergy skill. Also holds the validation gate — step 6 —
+  which runs before any experiment and applies even when a single move closed the
+  contradiction and no combination was needed.
 
   Use when: "один ход не закрыл противоречие", "связка приёмов", "комбинация ходов",
   "какой вариант решения лучше", "несколько решений, непонятно какое",
-  "минимальное решение", "оптимальный вариант"
+  "минимальное решение", "оптимальный вариант", "проверить решение перед экспериментом",
+  "прогнать валидаторов по решению"
 ---
 
 # TRIZ combinatorics — the minimal set of moves
@@ -116,10 +119,68 @@ The order is strict; compare on the first criterion that differs:
 Sets indistinguishable on all five — take any and record that the choice was arbitrary. That is
 more honest than inventing a fifth criterion to fit the desired answer.
 
+## Step 6. Validation gate
+
+The cover is internally consistent **by construction**: every part got a mark. That says nothing
+about whether the named resources exist, whether two candidates cancel each other outside the
+table, or whether one of them is a separate decision wearing the costume of a move. Those are the
+holes the table cannot represent, and every class of them listed below comes from one worked case:
+"The validation gate" in the parent skill's [cases.md](../triz-synergy/references/cases.md).
+
+Why a validator rather than another pass by the author: the "failure of the method" in that same
+file was also a validator's finding. Whoever stated the IFR does not see its illusion — that is the
+one regularity both cases share.
+
+**Precondition: the cover is written to a file, not left in the dialogue.** Validators read
+artifacts. The file carries four things, and each earns its place:
+
+1. the pair of requirements from step 1 and the IFR;
+2. every candidate as its tuple, with the material named as a **checkable fact** — file, function,
+   figure. "A ready resource exists" is not checkable; "`significantWords`, called only from
+   `repairOrphanCategories`" is;
+3. the parts table and which candidate covers which;
+4. **a section of constraints that must not be undermined** — the project's obvious limits, written
+   as boundaries rather than wishes. Without it no validator can tell a simplification from a
+   demolition, and the one question the owner actually cares about goes unanswered.
+
+Three lenses, run in parallel:
+
+| Validator | Lens | What it answers |
+|---|---|---|
+| `skeptic` | material | Does every named resource exist, and is it unused for what the tuple claims? Figures recomputed, not trusted |
+| `reality-checker` | consequences | What has to be touched, what breaks for someone who already has the thing installed, which consumers are hit that the cover never names |
+| `userspec-adequacy-validator` | proportion | Is each candidate solving a real problem or simplifying for its own sake; is anything here a separate decision smuggled in as a move |
+
+Classes of hole, each one observed:
+
+| Class | How it looks | What it costs |
+|---|---|---|
+| **mutual contradiction inside the cover** | two candidates each close their part and cancel one another | the cover is invalid — **back to step 4** |
+| **a smuggled decision** | a candidate changes behaviour rather than the carrier of the contradiction | out of the bundle, into a decision of its own with its own record |
+| **an unnamed consumer** | something depends hard on the element being removed | either it survives as a target, or the cover grows by the rework — and stops being minimal |
+| **an entity claimed as removed** | the summary says "one screen fewer" while a candidate adds one | recount: the count is part of the claim |
+| **a ceiling read as a guarantee** | a figure measured on canonical data, applied to input typed by hand | the figure stays, its scope gets written beside it |
+
+Rules:
+
+- **a mutual contradiction sends you back to step 4, not on to step 5.** The other classes are
+  recorded and reshape the plan without invalidating the cover.
+- **validators disagree with each other.** Prefer the one that reproduced the mechanism over the one
+  that reasoned about it. Record the disagreement and how it was settled — an unrecorded one comes
+  back later as a fact.
+- an empty finding is a result, not a failed run.
+
+**Done when:** every finding carries a verdict — folded into the plan, or rejected with a reason. A
+finding left without a verdict is a stop.
+
 ## Exit
 
-Return to step 5 of [triz-synergy](../triz-synergy/SKILL.md): the discriminating experiment on the
-chosen set, application at every point, a test on the class.
+Through the gate of step 6, then return to step 5 of
+[triz-synergy](../triz-synergy/SKILL.md): the discriminating experiment on the chosen set,
+application at every point, a test on the class.
+
+The order matters. The gate is static and cheap, the experiment is live and dear; spending an
+experiment on a set whose material does not exist buys a measurement of a fantasy.
 
 ## Checklist
 
@@ -128,3 +189,6 @@ chosen set, application at every point, a test on the class.
 3. Was binary elimination run before ranking rather than instead of it?
 4. Is the set minimal — does the cover break when any element is removed?
 5. Did two candidates for the same part end up in the set?
+6. Is the cover written to a file, with the material as checkable facts and a section of constraints that must not be undermined?
+7. Did the three validators run over that file, and does every finding carry a verdict?
+8. Was any mutual contradiction inside the cover sent back to step 4 rather than carried into the experiment?
