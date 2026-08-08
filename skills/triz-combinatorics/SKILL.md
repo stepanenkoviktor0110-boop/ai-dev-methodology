@@ -132,16 +132,29 @@ file was also a validator's finding. Whoever stated the IFR does not see its ill
 one regularity both cases share.
 
 **Precondition: the cover is written to a file, not left in the dialogue.** Validators read
-artifacts. The file carries four things, and each earns its place:
+artifacts.
 
-1. the pair of requirements from step 1 and the IFR;
-2. every candidate as its tuple, with the material named as a **checkable fact** — file, function,
-   figure. "A ready resource exists" is not checkable; "`significantWords`, called only from
-   `repairOrphanCategories`" is;
-3. the parts table and which candidate covers which;
-4. **a section of constraints that must not be undermined** — the project's obvious limits, written
-   as boundaries rather than wishes. Without it no validator can tell a simplification from a
-   demolition, and the one question the owner actually cares about goes unanswered.
+**Where.** `~/.claude/triz-runs/<YYYY-MM-DD>-<slug>.md` — a local store, outside every project and
+outside the methodology repository, never committed. A run describes someone else's codebase and
+usually their business detail; neither belongs in a published repo. The path is the same wherever
+the run happens, so a contradiction met mid-bugfix in any project has somewhere to go without that
+project needing a scaffold of its own.
+
+**Headings are fixed**, because the checks below and the case card both read them by name:
+
+| Heading | What it carries, and why it earns its place |
+|---|---|
+| `## 1. Requirements and IFR` | the pair from step 1 and the IFR |
+| `## 2. Candidates` | every candidate as its tuple, material named as a **checkable fact** — file, function, figure. "A ready resource exists" is not checkable; "`significantWords`, called only from `repairOrphanCategories`" is |
+| `## 3. Parts` | the parts table, and which candidate covers which |
+| `## 4. Constraints` | the project's obvious limits, written as boundaries rather than wishes. Without them no validator can tell a simplification from a demolition, and the one question the owner actually cares about goes unanswered |
+| `## 5. Gate` | validator findings, each with a verdict |
+| `## 6. Check` | filled at step 5 of triz-synergy, after the experiment |
+
+Sections 1 and 2 plus section 6 are exactly the five fields of a card in
+[cases.md](../triz-synergy/references/cases.md) — Contradiction, IFR, Resource, Move, Check — so a
+finished run yields its card by selection, not by retelling. Sections 3, 4 and 5 stay in the run
+file; a card has no counterpart for them and does not need one.
 
 Three lenses, run in parallel:
 
@@ -179,16 +192,33 @@ Through the gate of step 6, then return to step 5 of
 [triz-synergy](../triz-synergy/SKILL.md): the discriminating experiment on the chosen set,
 application at every point, a test on the class.
 
-The order matters. The gate is static and cheap, the experiment is live and dear; spending an
-experiment on a set whose material does not exist buys a measurement of a fantasy.
+The order matters, and why it does is stated once, in step 5 of the parent skill.
 
-## Checklist
+## Checks against state
 
-1. Is the contradiction decomposed into parts on which a candidate is judged "yes/no"?
-2. Is every candidate written as a tuple — goal, separation, mechanism, material?
-3. Was binary elimination run before ranking rather than instead of it?
-4. Is the set minimal — does the cover break when any element is removed?
-5. Did two candidates for the same part end up in the set?
-6. Is the cover written to a file, with the material as checkable facts and a section of constraints that must not be undermined?
-7. Did the three validators run over that file, and does every finding carry a verdict?
-8. Was any mutual contradiction inside the cover sent back to step 4 rather than carried into the experiment?
+```bash
+RUN=~/.claude/triz-runs/<YYYY-MM-DD>-<slug>.md
+
+# 1. the four pre-gate sections exist
+rg -c "^## [1-4]\. " "$RUN"
+
+# 2. constraints were written as boundaries, not left as a heading
+rg -A20 "^## 4\. Constraints" "$RUN" | rg -c "^[0-9]+\.|^- "
+
+# 3. all three validators are named in the gate section
+rg -c "skeptic|reality-checker|userspec-adequacy-validator" "$RUN"
+
+# 4. no finding was left with an empty verdict cell
+rg -n "^\|[^|]*\|[^|]*\| *\|" "$RUN"
+```
+
+Check 1 must print **4** before the gate is run at all; a missing section is the step to go back to.
+
+Check 2 must print **at least 1**. Zero means no validator can tell a simplification from a
+demolition, and the gate will read as passed while answering the wrong question.
+
+Check 3 must print **at least 3**. Fewer means a lens was skipped — and the lens that finds nothing
+is what makes the others worth reading.
+
+Check 4 must return **nothing**. Any row it prints is a finding without a verdict, which is a stop
+by the rule above, not a formality.

@@ -41,7 +41,7 @@ Check the skill at the provided path against the conventions below. Report what 
 
 ### Closing block
 
-- [ ] No `## Self-Verification` section — **P1**
+- [ ] No closing section of self-report tick-boxes, **whatever it is called** — `## Self-Verification`, `## Checklist`, `## Final checks`, or any other name. Recognise it by content, not by heading: numbered or bulleted questions the executor answers about its own work. Any item that merely restates a rule already in the body is a duplicate and goes; an item naming state a command can read moves into the check block; an item carrying content found nowhere else moves into the step it belongs to, and is not simply deleted — **P1**
 - [ ] If a closing check block exists, every line is a runnable command naming a path, a git invocation or an rg pattern — **P1**
 - [ ] Each check states what its result must be, or is self-evidently pass/fail — **P2**
 - [ ] Anything unverifiable off disk is named as a user check, not dressed as a command — **P3**

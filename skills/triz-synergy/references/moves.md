@@ -103,7 +103,23 @@ treatment.
   ourselves" — looked identical. A silent refusal is not a system error, so nobody goes looking for
   it: it does not crash, is not logged as a failure, does not reach the metrics.
 - *What was done.* Separated the two events in the log.
-- *How it was checked.* No separate check of this move is recorded in the source material.
+- *How it was checked.* No check of this move is recorded in the source material.
+
+**Second example, 2026-08-09, with a check.** A sign of contradiction is visible during ordinary
+work — the same file keeps being repaired — but the person seeing it is busy with the bug and does
+not call the method. The channel people actually look at is the end-of-session summary.
+
+- *What was there.* The proposed difference was a raw count of `fix:` commits. Measured, it is not a
+  difference at all: one repository showed 67% built from two fixes out of three.
+- *What was done.* Made the difference observable as a ratio against the repository's own baseline,
+  with a floor of 8 fix commits, printed as one line where a conditional line was already printed.
+  It names the file; it never invokes anything.
+- *How it was checked.* Four repositories. Fires on the two carrying real contradictions —
+  `answer_guard.py` at 72% against a 27% baseline, `deploy.yml` at 69% against 15% — and silent on
+  the two whose high ratios rest on two or three commits. It is not activity: `config.py` and
+  `cli.py` carry 50 commits each, as many as `criteria_navigator.py` at 55, and sit at 26% and 32%
+  while the navigator sits at 71%. The two files it ranks highest are the ones behind cases 1 and 3
+  of [cases.md](cases.md) — found by hand at the time, named by the signal from history alone.
 
 ---
 

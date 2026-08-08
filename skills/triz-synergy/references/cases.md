@@ -1,20 +1,31 @@
 # Worked cases
 
-Four cards from one project, worked through 2026-07-28. Three cases resolved and verified, one a
-failure of the method — it is here not for completeness but because it shows the main way to fake
-a resolved contradiction.
+Four cards from one project, worked through 2026-07-28, and a fifth from 2026-08-09. Four cases
+resolved and verified, one a failure of the method — it is here not for completeness but because it
+shows the main way to fake a resolved contradiction.
 
 One further card, from a different project and dated 2026-08-05, is the case for the validation gate
 (step 6 of [triz-combinatorics](../../triz-combinatorics/SKILL.md)). It is deliberately left
 unnumbered and stands after the failure: it records not a resolved contradiction but what the gate
 catches in a cover that already looked finished.
 
-Two further worked cases — layer priority and the silent refusal in the log — have no numeric
-verification, so they get no cards here; they are worked through in [moves.md](moves.md), moves 2
-and 5. Five cases in total, three of them with a recorded check.
+One further worked case — layer priority — has no verification, so it gets no card here; it is
+worked through in [moves.md](moves.md), move 2. The silent refusal in the log, move 5, had none
+either until 2026-08-09, when the same move was worked a second time with a measurement; that second
+run is card 4 above.
+
+Six cases in total, four with a recorded check, three of those numeric — case 1's check is a live
+dialogue, not a figure.
 
 Figures and wording are as in the source material. They have not been rewritten for elegance: the
 value lies precisely in the real numbers and the real mistake.
+
+**Where cards come from.** Every run leaves a file in the local store,
+`~/.claude/triz-runs/<YYYY-MM-DD>-<slug>.md`, whose fixed sections are specified in step 6 of
+[triz-combinatorics](../../triz-combinatorics/SKILL.md). Sections 1, 2 and 6 of that file are the
+five fields of a card here, so a card is a selection out of the run file rather than a retelling of
+it. The run files are not committed — they describe other people's codebases — so cards are copied
+here, not linked. The five cards below predate that convention and have no run file behind them.
 
 ## Summary table
 
@@ -24,6 +35,7 @@ value lies precisely in the real numbers and the real mistake.
 | A value is human-readable and serves as the comparison key | comparing display forms is impossible | whitespace collapsing, living for years in a neighbouring module | 0 out of 8 → 8 out of 8 across eight phrasings |
 | The guard suppresses enumeration and does not suppress the requested listing | a list of five products physically cannot count as enumeration | structure of the string: item link + price = a result | five cards pass the threshold, six sections do not |
 | Behaviour is uniform for everyone and different for the client | the conflict is unexpressible | — | **not confirmed**: the IFR turned out to be an illusion, see below |
+| The trigger must fire only by hand and must fire without the owner | a visible sign that goes unnoticed is unexpressible | the conditional line the session summary already prints | fires on 2 repositories of 4, silent on the 2 whose ratios rest on 2–3 commits |
 
 ---
 
@@ -110,6 +122,35 @@ written, merely for a different field, it is a rearrangement.
 
 Note whose finding this was: **the validator's**. The illusion was not spotted by the person who
 stated the IFR — it never is. That is the case for the gate below.
+
+---
+
+## Case 4. Only by hand, and without the person
+
+**Contradiction (physical).** One trigger must be closed to automatic invocation — the procedure is
+expensive and its failure mode is producing a plausible TRIZ shape — and open to automatic
+recognition, because the sign is visible exactly when the person is busy with the bug.
+
+**IFR.** A visible sign that goes unnoticed is unexpressible. Honestly: **this one moved rather than
+disappeared.** A detector can miss. Recorded as a separation, not a removal.
+
+**Resource.** The end-of-session summary already prints one conditional line to the owner. No new
+branch was needed in the skill that hosts it — the shape existed.
+
+**Move.** Separation by relation + mediator + feedback: the executor gets a detector, the owner keeps
+the launch. The detector names a file and stops.
+
+**Check.** Four repositories. Fires where contradictions were really worked — `answer_guard.py`
+26/36 = 72% against a 27% baseline, `deploy.yml` 11/16 = 69% against 15% — and silent where the
+ratio rests on two or three commits. Discriminating, not confirming: under "it is only activity",
+`config.py` and `cli.py` at 50 commits each would rank with `criteria_navigator.py` at 55; they sit
+at 26% and 32% while it sits at 71%.
+
+**What it teaches.** The first form of the signal was rejected by a validator as a claim with no case
+behind it, and the validator was right: measured, the raw `fix:` count is noise. The signal that
+survived carries two guards that came out of the measurement rather than out of taste — a baseline
+per repository, because baselines ranged 5%–27%, and a floor of 8 fix commits. The move it belongs
+to, "feedback", had no recorded check before this; it has one now.
 
 ---
 

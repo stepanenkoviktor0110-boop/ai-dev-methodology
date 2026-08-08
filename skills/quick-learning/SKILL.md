@@ -88,6 +88,13 @@ Count unadapted triads: grep `| — |$` in triad-index.md (use `$` anchor — mi
 Show: `Quick Learning: {1 sentence summary, or "Clean session, no signals detected."}`
 If count ≥ 25: append "Накопилось {N} необработанных триад — запусти /skill-trainer."
 
+### Recurring-defect detector
+
+Run the measurement in [recurring-defect.md](references/recurring-defect.md): a file whose fix-ratio
+is twice the repository's own baseline, over at least 8 fix commits, is where a contradiction sits.
+Output non-empty → append one line naming the file and offering `/triz-synergy`. It never invokes
+anything.
+
 ## Checks against state
 
 ```bash

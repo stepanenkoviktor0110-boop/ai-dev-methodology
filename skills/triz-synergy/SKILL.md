@@ -16,13 +16,14 @@ description: |
 
 # TRIZ synergy — resolving contradictions in development
 
-Not TRIZ theory. A five-step procedure, a written toolkit of moves, and a mandatory
-settlement by experiment. Every move rests on a real case that was worked through; there are
-five cases, and several moves share one case. No move without a case behind it appears here.
+Not TRIZ theory. A five-step procedure, a written toolkit of moves, and a mandatory settlement by
+experiment. Every move rests on a real case that was worked through; no move without a case behind
+it appears here. Tied to no stack and no project — it works anywhere there is code and data.
 
-The skill is tied to no stack and no project: it works anywhere there is code and data. The
-one machine-dependent detail is the root of neighbouring projects in step 3a, which is
-substituted in.
+Provenance of every rule below — where it came from, how thin the evidence is, the exemplary
+experiment in full, the mapping to the older project rules — is in
+[references/rationale.md](references/rationale.md). Open it when a rule looks arbitrary; a run does
+not need it.
 
 ## Threshold
 
@@ -46,13 +47,8 @@ is visible:
 | A parameter needs tuning and both sides agree which way | tune it and measure |
 | A ready recipe from a neighbouring project **is already known** | reproduce it one to one (global rule 3) |
 
-That last row is only about a recipe already known. A suspicion that a recipe exists somewhere
-does not take you out of the skill: whether it exists is settled by the search inside step 3a,
-which is part of the procedure.
-
-The first row rules out an unknown subsystem. When the subsystem is known but the specific
-object inside it is not, that is **not grounds to leave**: the object is found in step 1 by a
-discriminating experiment, which is exactly how it was found in the flagship case.
+The known-recipe row and the unknown-subsystem row are read wrongly more often than the rest;
+neither takes you out of the skill as readily as it looks (rationale, "Reading the threshold").
 
 Budget: two full passes of the procedure. If after the second the object of the contradiction
 is not found, or no separation fits, record the outcome and leave for tech-spec-planning — the
@@ -75,10 +71,8 @@ contradiction down to a physical one — ask "which specific element carries bot
 **If the object is unknown, find it by a discriminating experiment, not by guessing.** Run the
 experiment by the rules in the "Discriminating experiment" section; here it works as a locator:
 list two competing causes, set up an observation that yields a different result under each, and
-from the result work out which element carries both requirements. In the flagship case it was
-exactly the result "0 out of 8, including the unambiguous phrasing" that showed the object was
-the value string at reconciliation, not the understanding of the text. The same experiment is
-repeated in step 5 after the fix.
+from the result work out which element carries both requirements. The same experiment is repeated in
+step 5 after the fix.
 
 **Done when:** the pair is written as two predicates over one value, and on a concrete example
 it is visible that both cannot hold at once. If the predicates apply to different objects, this
@@ -178,25 +172,18 @@ answers "why are we separating", the structure answers "with what".
 
 Accounts of the cases in the last column: "comparison key" and "enumeration threshold" —
 [references/cases.md](references/cases.md); "layer priority" and "silent refusal" —
-[references/moves.md](references/moves.md), moves 2 and 5 (there is no numeric check for those in
-the source material, which is the weakest point of the bottom two types).
+[references/moves.md](references/moves.md), moves 2 and 5. The "in time" row is the weakest — no
+check behind its move at all; the "by relation" feature was reasoned rather than observed, though its
+move has carried a measurement since 2026-08-09.
 
-> On where the features came from: the first three types are taken from worked cases directly.
-> The feature for "by relation" was derived from the logging case — there was no direct case for
-> that type in the source material.
+One move closed the contradiction entirely — go to step 5, through the gate all the same. A single
+move carries the same holes as a bundle: a resource that turns out not to exist, a consumer nobody
+named, a change of behaviour dressed as a simplification.
 
-One move closed the contradiction entirely — go to step 5, **through the validation gate all the
-same**. A single move carries the same holes as a bundle: a resource that turns out not to exist, a
-consumer nobody named, a change of behaviour dressed as a simplification. The gate is
-[triz-combinatorics](../triz-combinatorics/SKILL.md), step 6; only the cover table is missing, and
-one move is a cover of one.
-
-That same skill holds the minimal set of moves covering every part of the contradiction; go there in
-three cases:
-a move is chosen but does not close everything; there are several candidates and it is unclear
-which to take; **no row of the table fits while the step-3 search did yield a resource** — the
-last means not a dead end but a bundle of several roles, and that is exactly how the guard case
-was solved.
+Go to [triz-combinatorics](../triz-combinatorics/SKILL.md) for the minimal set in three cases: a
+move is chosen but does not close everything; there are several candidates and it is unclear which
+to take; **no row of the table fits while the step-3 search did yield a resource** — the last means
+not a dead end but a bundle of several roles, and that is exactly how the guard case was solved.
 
 **Done when:** a concrete artifact is named — a field, a function, a channel — along with the
 place it will appear. If the type was chosen because an example looked similar rather than by
@@ -223,17 +210,27 @@ one. If the object was known from the start, or the settling experiment is diffe
 (localisation looked for a cause, settlement measures a result) — set up a new discriminating
 experiment by the rules of that section and record how it differs from the locating one.
 
-Separately: list **every** point where the fixed operation lives, and apply the solution at all
-of them. One call site fixed out of three existing ones will bring the class of defect back, and
-that gets written down as "the method did not work".
+Separately: list **every** point where the fixed operation lives, and apply the solution at all of
+them, as a line `Applied at:` naming each. One call site fixed out of three existing ones will bring
+the class of defect back, and that gets written down as "the method did not work".
+
+**Lock it in with a test on the class, not on the case** — one that fails for any member of the
+class, not only for the original example. A test that only pins the example lets the next member of
+the same class through, which is indistinguishable from never having fixed it.
+
+**Then write the result into `## 6. Check` of the same run file** — the one the gate already
+required, at `~/.claude/triz-runs/<YYYY-MM-DD>-<slug>.md`. With that line the file holds all five
+fields of a case card, and the card is taken from it by selection rather than written afresh: a
+move with no case behind it never enters the toolkit, and a case that costs a separate act of
+writing never gets written. A run abandoned on the two-pass budget is recorded the same way, under
+what was tried — the method not carrying a contradiction is itself worth knowing.
 
 ## Toolkit
 
-Seven moves. The wording is universal — applicable to any code and data; the "Example" column
-shows how the move looked on a real case and does not bound its scope.
-
-A move did not come out of one pass over the table — open [references/moves.md](references/moves.md):
-each move there comes with a full example, what was there, what was done, how it was checked.
+Seven moves. The wording is universal — applicable to any code and data; the "Example" column shows
+how the move looked on a real case and does not bound its scope. A move that did not come out of one
+pass over the table — open [references/moves.md](references/moves.md), where each carries a full
+example: what was there, what was done, how it was checked.
 
 | Trigger feature | The move | Example |
 |---|---|---|
@@ -245,13 +242,8 @@ each move there comes with a full example, what was there, what was done, how it
 | A value is checked "for plausibility", with no source | **bind to the owner**: obtain the value by the key of the owning object rather than looking for it nearby. Answers the question "where does the value come from" | a free-floating number can be neither confirmed nor refuted: a check of "does such a value occur" catches invention and lets substitution through, and substitution looks entirely credible |
 | Writing a detector for a bad result | **do it the other way round**: do not catch the bad outcome, make it unproducible. Answers "catch or exclude"; often carried out by binding to the owner | the fact is obtained by the owner's key → the class of defect stopped existing rather than starting to be detected |
 
-Checking "do it the other way round" for a fake is the same control question from step 2: did the
-outcome become impossible, or did it move?
-
-The full list of forty classical moves and the contradiction matrix are **deliberately excluded**:
-a move with no attached example from practice produces a plausible-looking TRIZ shape instead of a
-resolved contradiction, and an unused list is worse than no list. When a case with an example
-appears, the move gets written in here together with its example.
+The forty classical moves and the contradiction matrix are **deliberately excluded**; a move enters
+this table only together with its case.
 
 ## Discriminating experiment
 
@@ -265,42 +257,48 @@ How to set one up:
 4. intermittent behaviour — at least three clean runs;
 5. after the fix — repeat **the same** experiment, not a similar one.
 
-**The exemplary case.** The owner's hypothesis: the bot does not understand the colloquial "up to
-about five thousand". The experiment: eight phrasings of the same thought, from colloquial to the
-unambiguous "up to 5000 roubles", each on its own and inside a dialogue.
+An experiment that only tests the favourite hypothesis will confirm it nearly always. The diagnostic
+power comes from the fact that under the second cause the result would have differed. The exemplary
+case — eight phrasings, 0 out of 8 before, 8 out of 8 after — is worked through in the rationale.
 
-The result — **0 out of 8**, including the unambiguous one. That is precisely what discriminated
-the hypotheses: had understanding been what broke, the unambiguous phrasing would have worked. Not
-one worked — so the matter was not the words but the reconciliation. After the fix — **8 out of 8**
-by the same experiment.
+## Checks against state
 
-An experiment that only tests the favourite hypothesis will confirm it nearly always. The
-diagnostic power comes from the fact that under the second cause the result would have differed.
+```bash
+RUN=~/.claude/triz-runs/<YYYY-MM-DD>-<slug>.md
 
-## Checklist
+# 1. the run file exists and carries all six sections
+rg -c "^## [1-6]\. " "$RUN"
 
-1. Is the contradiction stated as a pair of requirements on one object?
-2. Is a physical contradiction named, not only a technical one?
-3. Is the IFR written in the form "the harmful outcome is impossible"?
-4. Was it checked that the IFR does not merely move the problem?
-5. Was the search for a ready resource run — in the code (`grep` across neighbouring modules and clients) and in the structure of the data?
-6. Was the separation type chosen deliberately — by its feature, not by resemblance to an example?
-7. Did the chosen set pass the validation gate — written to a file, three validators, every finding with a verdict — **before** any experiment was spent on it?
-8. Was an experiment set up that discriminates between hypotheses rather than confirming the favourite?
-9. Was the same experiment repeated after the fix, and was the solution applied at every point?
-10. Is the solution locked in by a test on the **class** rather than on the case — one that fails for any member of the class, not only for the original example?
+# 2. the experiment was run and its result written, not merely planned
+rg -A3 "^## 6\. Check" "$RUN"
 
-An unanswered item is not "we skipped it" but a stop: go back to the corresponding step.
+# 3. every point of application was enumerated
+rg -n "^Applied at:" "$RUN"
+
+# 4. does the toolkit actually grow from runs? settled runs, against cards on file
+rg -l "^## 6\. Check" ~/.claude/triz-runs/*.md 2>/dev/null | wc -l
+rg -c "^## Case " references/cases.md
+```
+
+Check 1 must print **6**. Fewer means a section is missing and the gate did not complete — the
+missing number tells you which step to return to.
+
+Check 2 must print a non-empty block. Empty means the settlement never happened or was never
+recorded; the case card cannot be taken from the file and no move may enter the toolkit from it.
+
+Check 3 must print exactly one line. Nothing means the call sites were never listed, which is the
+known way the class of defect comes back after a fix that looked complete.
+
+Check 4 is the standing measurement of whether this arrangement works, and it settles over time
+rather than in one session. The two numbers must not diverge: a settled run that left no card means
+the card cost a separate act of writing after all — which is exactly what putting the card's fields
+inside the run file was meant to remove. Cards written before the local store existed are the known
+offset; subtract them before reading the gap.
 
 ## Transitions
 
-- one move was not enough → [triz-combinatorics](../triz-combinatorics/SKILL.md), then back to step 5;
-- a set is chosen, whether one move or a bundle → the validation gate, [triz-combinatorics](../triz-combinatorics/SKILL.md) step 6, before the experiment;
-- fix found → `code-writing` (test on the class first, checklist item 9);
+- one move was not enough, or a set is chosen → [triz-combinatorics](../triz-combinatorics/SKILL.md), then back to step 5;
+- fix found → `code-writing`, test on the class first;
 - the solution changes the architecture → `tech-spec-planning`; the same for leaving on the two-pass budget;
 - the resolution turned out to be a repeatable lesson → `/quick-learning`;
 - a ready recipe was found at a neighbouring client → reproduce it one to one, global rule 3.
-
-The method under other names in the project rules: "unsolvable = stop and check where this is
-already solved" — step 3; "go by experiment, not by contemplation" — step 5; "fix the cause of the
-class, not the consequence" — step 2; "blocker → root fix on the class" — the whole procedure.
