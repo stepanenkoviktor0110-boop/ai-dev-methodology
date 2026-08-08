@@ -1,7 +1,13 @@
 # Recurring-defect detector
 
-Run at step 4 of quick-learning, only when the signal gate already proceeded — a clean session costs
-nothing.
+Runs in two places, and they cover different gaps:
+
+- **step 4 of quick-learning**, only when the signal gate already proceeded — a clean session costs
+  nothing;
+- **at session start**, as a `SessionStart` hook, which is what stops the sign being missed while the
+  owner is mid-bugfix and no session boundary follows. The script is machine configuration, not skill
+  content, so it lives in the harness at `~/.claude/hooks/recurring-defect.sh` rather than in this
+  repository. This file is the method; that file is one deployment of it.
 
 A file repaired far more often than the repository repairs anything is where a contradiction sits:
 someone is turning a dial both ways. This names the file and stops. It **never** invokes anything —
@@ -15,7 +21,9 @@ BASE=$(git log --oneline | wc -l)
 ALLFIX=$(git log --grep="^fix" -i --oneline | wc -l)
 
 # files repaired in this session, measured against the whole history
-git log --grep="^fix" -i --name-only --pretty=format:"" -20 | sort -u | while read -r f; do
+git log --grep="^fix" -i --name-only --pretty=format:"" -20 \
+  | grep -Ev '(^|/)tests?/|(^|/)test_|_test\.|\.test\.|\.spec\.' \
+  | sort -u | while read -r f; do
   [ -n "$f" ] || continue
   fx=$(git log --grep="^fix" -i --oneline -- "$f" | wc -l)
   tot=$(git log --oneline -- "$f" | wc -l)
@@ -25,7 +33,8 @@ git log --grep="^fix" -i --name-only --pretty=format:"" -20 | sort -u | while re
 done
 ```
 
-Output non-empty → append one line to the summary, and nothing more:
+Report at most the two highest ratios — a list of five is a wall, not a signal. Output
+non-empty → append one line, and nothing more:
 
 `Файл чинят непропорционально часто: {file} ({fx}/{tot} = {pct}%, база репо {base}%). Похоже на противоречие — /triz-synergy разберёт.`
 
@@ -61,5 +70,6 @@ history alone, two places where a contradiction was later found by hand.
   have a baseline.
 - It is blind between sessions — it speaks only when quick-learning already ran. A sign met while
   the owner is mid-bugfix and no session boundary follows is still missed.
-- A test file tracks its subject and fires alongside it (`test_criteria_navigator.py` at 72%). It
-  names the same place, so filtering it would cost a rule and buy nothing.
+- A test file tracks its subject and fires alongside it. Left in, it took one of the two reported
+  slots and named the place its subject had already named, so test paths are now excluded. The cost
+  is that a contradiction living genuinely in test code goes unreported — no case has shown one.
