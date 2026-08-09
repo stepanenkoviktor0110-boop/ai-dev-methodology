@@ -45,6 +45,7 @@ is visible:
 | Adding a capability that did not exist | tech-spec-planning / code-writing |
 | An argument about priorities, deadlines, taste | not a contradiction in an object; the owner decides |
 | A parameter needs tuning and both sides agree which way | tune it and measure |
+| The whole surface of the decision is a handful of lines in a document you control | judge it directly. A pair of requirements can be stated truthfully over almost anything; that it **can** be stated is not the threshold |
 | A ready recipe from a neighbouring project **is already known** | reproduce it one to one (global rule 3) |
 
 The known-recipe row and the unknown-subsystem row are read wrongly more often than the rest;
@@ -167,6 +168,17 @@ The fifth row is not "we picked nothing" — it is an outcome in its own right, 
 than any separation: there is nothing to separate once the carrier of the contradiction has
 ceased to exist. It is tested like the others, by the control question of step 2.
 
+Reaching it is not a matter of inspiration. Ask three questions in order, and answer each by naming
+a thing or by "no":
+
+1. can the **owner of the fact** supply it, so it is obtained by key rather than looked for nearby?
+2. can something **already upstream** — a caller, a platform, a layer that ran earlier — carry it?
+3. does a **change of conditions** remove the need for the value at all?
+
+An unanswered question here is visible, which a decision to "remove the object" is not. The guard
+case is the answer to the first: the price came from the product's key, and the class of defect
+stopped existing rather than starting to be detected.
+
 Separation by relation is often **implemented** structurally (two fields, two channels): the type
 answers "why are we separating", the structure answers "with what".
 
@@ -255,7 +267,11 @@ How to set one up:
 2. devise an observation that yields a different result under each;
 3. run it on the narrowest mechanism, without the rest of the path;
 4. intermittent behaviour — at least three clean runs;
-5. after the fix — repeat **the same** experiment, not a similar one.
+5. after the fix — repeat **the same** experiment, not a similar one;
+6. measure **both sides** of the contradiction and the new harm. A fix that improves the side you
+   were watching while quietly giving up the other reads as a success when only one side is
+   measured — and so does one that buys the trade with a fresh failure elsewhere. Name what would
+   count as the other side being damaged before running it.
 
 An experiment that only tests the favourite hypothesis will confirm it nearly always. The diagnostic
 power comes from the fact that under the second cause the result would have differed. The exemplary

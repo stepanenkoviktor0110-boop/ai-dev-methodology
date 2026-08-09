@@ -8,6 +8,7 @@ Nothing here is a step of the procedure. If you are executing a run, you do not 
 ## Contents
 
 - What the six cases are, and what "no move without a case" costs
+- Two rules on probation, and what settles them
 - Reading the threshold: the known recipe, and the unknown subsystem
 - Where the features of the separation table came from
 - Why the forty classical moves are excluded
@@ -36,6 +37,35 @@ is needed rarely, not that it is starved. Nothing recorded so far discriminates 
 
 The one machine-dependent detail in the whole skill is the root of neighbouring projects used in
 step 3a, which is substituted in per machine. Everything else is tied to no stack and no project.
+
+## Two rules on probation, and what settles them
+
+Added 2026-08-09 from two foreign MIT-licensed skills, `NiiyazG/triz` and `snow-ghost/triz`. Both
+are classical TRIZ framings rather than those authors' inventions, but the wordings that made them
+usable came from there and the credit belongs there.
+
+- **the three questions under row five** — a compression of classical trimming, whose full form asks
+  whether the object itself, another component, the supersystem, or a change of conditions can carry
+  the function;
+- **experiment rule 6, both sides and the new harm** — two unrelated rubrics state it independently,
+  which is why it was taken on two foreign sources rather than one.
+
+**Neither has an internal case where the rule caught something.** Rule 6 rests on foreign rubrics
+that agree with each other; the three questions rest on a case that was solved without them. By this
+skill's own evidence rule that is not enough to call them proven, so they are recorded as on
+probation rather than dressed as verified.
+
+What settles it without building an evaluation harness: the next runs that reach row five or the
+experiment rules record in their own `## 6. Check` whether the imported rule fired and whether it
+changed the answer. Three runs of silence and the rule comes back out — a line that never fires is
+worse than no line, because it reads as coverage.
+
+**What was rejected, and why it is worth knowing.** A third candidate, a `clarify` routing outcome
+for "evidence insufficient to establish the conflict", was dropped: the skill already exits on that
+in three places — the step-1 `Done when`, the threshold row on an unknown subsystem, and the
+two-pass budget. The forty classical moves, the contradiction matrix, the 76 standard solutions,
+su-field analysis and ARIZ-85C were not imported at all; both sources carry them, and taking content
+rather than mechanism is the failure this skill exists to avoid.
 
 ## Reading the threshold: the known recipe, and the unknown subsystem
 
