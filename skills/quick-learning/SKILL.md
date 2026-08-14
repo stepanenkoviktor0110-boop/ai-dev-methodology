@@ -106,7 +106,15 @@ rg -c "\| — \|$" "$AGENTS_HOME/skills/quick-learning/references/triad-index.md
 
 # 3. a merged pattern incremented Seen rather than adding a duplicate row
 rg -n "{3-4 key words from the new pattern}" "$AGENTS_HOME/skills/quick-learning/references/triad-index.md"
+
+# 4. no id answers to two rows — the citation handle skill bodies keep after the entry is deleted
+rg -o '^\| [0-9]+ ' "$AGENTS_HOME/skills/quick-learning/references/triad-index.md" | sort | uniq -d
 ```
 
 Check 1 must have grown by at most 2. Check 3 must return one row, not two: two rows for the
 same trigger and goal means the similarity check added a duplicate instead of merging.
+
+Check 4 must print nothing, and nothing here means clean only because the command matched rows at
+all — confirm by removing the `uniq -d` and seeing the id column print. Measured 2026-08-14: 54 ids
+carried two rows and five carried three, and none of the other checks could see it, because they
+read the columns this file's writers fill rather than the handle its readers follow.

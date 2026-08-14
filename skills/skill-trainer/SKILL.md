@@ -215,14 +215,35 @@ Skill Trainer: обработано {N} триад.
 Read the counts off disk; do not recall them.
 
 ```bash
+IDX="$AGENTS_HOME/skills/quick-learning/references/triad-index.md"
+
 # 1. every triad reported as applied or skipped no longer shows Adapted: —
-rg -c "\| — \|$" "$AGENTS_HOME/skills/quick-learning/references/triad-index.md"
+#    \s* before the anchor: the rows may carry CRLF, and "\| — \|$" then matches nothing
+rg -c '\| — \|\s*$' "$IDX"
 
 # 2. removal list and reasoning-patterns.md agree — count entry headers before and after
 rg -c "^### " "$AGENTS_HOME/skills/quick-learning/references/reasoning-patterns.md"
 
 # 3. a quick-ref card exists for every skill that received auto-applies
 rg -l . "$AGENTS_HOME/skills/quick-learning/references/quick-ref-{skill-name}.md"
+
+# 4. the citations this pass wrote resolve — one row per cited id, and no id answers to two rows.
+#    -L: most skills are symlinks into their source repos, and without it this reads ~2 of ~150.
+rg -o '^\| [0-9]+ ' "$IDX" | sort | uniq -d
+for id in $(rg -L --no-ignore -o 'triads? #[0-9]+' -N "$AGENTS_HOME/skills" \
+            | grep -o '[0-9]\+' | sort -u); do
+  n=$(rg -c "^\| $id \|" "$IDX" || echo 0)
+  [ "$n" = 1 ] || echo "triad #$id resolves to $n rows"
+done
 ```
 
 Count 1 must have dropped by the number of applied plus skipped triads; count 2 by the size of the removal list. A mismatch means a pass wrote fewer rows than it reported — reconcile before committing, do not re-run the phase blind.
+
+Checks 1 and 2 count the columns this pass itself writes, so they answer whether the pass did what
+it said, never whether the store still holds together — they cannot report the damage they cause.
+Check 4 is the independent signal: it reads the id column and the skill bodies, neither of which is
+the pass's selector. It must print nothing. **Nothing here is only evidence when the loop read
+something** — drop the `|| echo` guard once and confirm ids print, because a traversal that silently
+reaches no files prints nothing too, and that is indistinguishable from health. Measured 2026-08-14
+on a state where checks 1–3 all passed: 54 ids carried two rows and 7 citations were ambiguous, 4 of
+them pointing at the wrong row.

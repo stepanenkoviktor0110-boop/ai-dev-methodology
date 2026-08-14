@@ -54,6 +54,20 @@ File: `$AGENTS_HOME/skills/quick-learning/references/triad-index.md`
 - Updated on every write/merge/Seen increment. Never removed.
 - `Adapted: —` = unprocessed. `{skill}` = embedded. `n/a` = no matching skill.
 
+**The `#` is obtained, never invented.** Read the largest id in the file and take the next one:
+
+```bash
+rg -o '^\| [0-9]+ ' "$AGENTS_HOME/skills/quick-learning/references/triad-index.md" \
+  | grep -o '[0-9]\+' | sort -n | tail -1
+```
+
+One number for the whole file — `PROMOTED → {skill}` rows are numbered from the same sequence as
+every other row, not from their own. A second series sharing the column is how 54 ids came to carry
+two rows each: the low numbers collided first, and the collision is invisible until someone follows
+a citation. Skill bodies cite these ids as `(triad #N)` and keep citing them after the full entry
+here is deleted by skill-trainer, so an id that answers to two rows makes every citation of it
+unreadable.
+
 ## Guard-triggered Seen increment
 
 When a guard catches an error matching an existing pattern's trigger — increment Seen in triad-index.md, even outside quick-learning flow.
