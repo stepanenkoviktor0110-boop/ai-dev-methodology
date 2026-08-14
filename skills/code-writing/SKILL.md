@@ -165,7 +165,24 @@ rg -n -A3 "Verification" work/{feature}/decisions.md
 
 # 4. no hardcoded colours left in changed UI files (skip unless tokens.json was loaded)
 rg -n "#[0-9a-fA-F]{3,8}" <changed .css/.scss/.tsx files>
+
+# 5. a self-written classifier used for a measurement (truncation, stemming, substring,
+#    threshold) is calibrated and reads the live artefact (skip if no such classifier)
+<run the classifier over a hand-labelled sample: known positives and known negatives>
+rg -n "<artefact path the classifier opens>" <the live code path>
+
+# 6. a background worker has produced something (skip unless work was handed off)
+ls -l <artefact the worker was told to produce> && wc -c < <that artefact>
 ```
+
+Check 5 must classify every known positive as positive and every known negative as negative;
+any miss on either side means the aggregate is a property of the rule, not of the population —
+fix the rule before reading any count. The rg line must show the live path opening the same
+artefact the classifier opened; a different path means the measurement is off a different input. (triad #504)
+
+Check 6 must be run early and once, not after a long silence. A missing file, a zero-byte file
+or an empty listing is a dead worker, not work in progress — treat it as failure and restart or
+take the work back. Absence of a completion signal is not evidence of progress. (triad #505)
 
 **Visual/Layout QA (UI only).** Confirm by measuring the render, never by eye: equal heights and widths across a row, alignment within a row, no seams at section borders, a companion font covering Cyrillic, digits not left in a display font that lacks their glyphs. See «Visual/Layout QA» in quick-ref-code-writing.md.
 

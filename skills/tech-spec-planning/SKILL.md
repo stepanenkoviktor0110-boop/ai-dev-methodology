@@ -11,7 +11,7 @@ description: |
 
 # Tech Spec Planning
 
-> **CRITICAL:** NEVER generate multiple artifacts without stopping. After EACH artifact: list controversial points, explain simply, WAIT for user decision. Only then proceed.
+> **Stop after each artifact.** Produce one artifact, then list its controversial points, explain them simply, and wait for the user's decision before starting the next one.
 
 Create technical specification through code research, adaptive clarification, and multi-validator review.
 
@@ -36,8 +36,8 @@ After completion — read `{feature_path}/code-research.md`. If gap discovered l
 
 ## Phase 3: Clarification (Adaptive)
 
-**⛔ Think Before Coding (Karpathy — overrides default behavior):**
-Before writing any architecture: list every assumption you are making about the system — explicitly, as a numbered list. For each assumption that isn't confirmed in user-spec or code research → ask the user. If multiple architectural interpretations exist → present them, don't pick silently. If something is unclear → stop and name it before proceeding.
+**Think before designing.**
+Before writing any architecture, list every assumption you are making about the system — explicitly, as a numbered list. Ask the user about each assumption that user-spec or code research does not confirm. When several architectural interpretations fit, present them all and let the user pick, rather than choosing silently. When something stays unclear, stop and name it before proceeding.
 
 Analyze if additional information is needed based on user-spec and code research.
 - Ask technical questions if gaps exist (no limit on count). Focus: constraints, integration points, data sources, external deps.
@@ -84,8 +84,8 @@ After the gate passes, read the fresh report(s) and the registry. In Phase 4, wh
 
 ## Phase 4: Create tech-spec
 
-**⛔ Simplicity First (Karpathy — overrides default behavior):**
-Design the minimum architecture that solves today's problem. No components added "for future flexibility". No abstractions until needed by at least 2 concrete use cases in this spec. Before adding any architectural element ask: "Is this required by user-spec, or am I speculating?" If speculating → don't add it. If the spec grows beyond 15 tasks → treat it as a signal of overengineering, not scope, and propose MVP split before continuing.
+**Simplicity first.**
+Design the minimum architecture that solves today's problem. Include a component when user-spec requires it; leave out anything added "for future flexibility". Introduce an abstraction once at least 2 concrete use cases in this spec need it. Before adding any architectural element ask: "Is this required by user-spec, or am I speculating?" — add it only on the first answer. A spec that grows beyond 15 tasks reads as overengineering rather than scope: propose an MVP split before continuing.
 
 1. Copy template and edit sections one by one:
    ```bash

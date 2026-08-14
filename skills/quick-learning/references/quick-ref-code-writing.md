@@ -1,15 +1,15 @@
 # Quick Reference — Code Writing
 
-1. Mask secrets BEFORE executing a command — embed sed-masking or grep -c instead of printing .env. (Seen: 2)
-2. Assertions on output format, not input attributes — for format-conversion functions read a real output example before writing the test. (Seen: 2)
-3. Building a file path from any external value — validate each value against an allowlist before use. (Seen: 2)
-4. Extract magic numbers to named constants before first review, to avoid a predictable hardcoded-value finding. (Seen: 1)
-5. Unit tests with mocks for an external process/API — run at least 1 live smoke pass before declaring QA passed. (Seen: 1)
-6. HTTP API-key auth — include timing-safe comparison and an explicit body size limit in the initial implementation. (Seen: 1)
-7. Operation with multiple auth levels — test with the least-privileged real user first, so a 500 for the primary consumer surfaces early (triad #428). (Seen: 1)
-8. When a dispatcher's fall-through default IS the primary consequential action — invert it: require an affirmative positive match, route unrecognized input to a safe handler (triad #442). (Seen: 1)
-9. Set the idempotency sentinel BEFORE the mutation (optimistic lock), not after, to close the duplicate-mutation race window (triad #436). (Seen: 1)
-10. Emit downstream commands in the host's actual shell syntax — do not propagate the upstream-spec's Unix dialect verbatim (triad #461). (Seen: 1)
+1. Unit tests mock an external process/API — run at least 1 live smoke pass before declaring QA passed. (Seen: 4)
+2. Delegating to an agent/tool with unknown limits — probe capability (write permissions, resources) with a test operation before the full prompt. (Seen: 3)
+3. File transfer to a remote host over a complex SSH command drops the connection — pass the file as an stdin pipe instead of heredoc/SCP. (Seen: 3)
+4. Mask secrets BEFORE the command runs — embed sed-masking or `grep -c` instead of printing `.env` whole. (Seen: 2)
+5. Assert on the output format, not on input attributes — read a real output sample before writing assertions for a format-conversion function. (Seen: 2)
+6. Building a file path from any external value — validate each value against an allowlist first. (Seen: 2)
+7. A subprocess must outlive the current agent turn — spawn it at OS level (detached, output to file), not as an agent-managed background task. (Seen: 2)
+8. "No references found" used as a precondition for an irreversible action — first search for a case known to match and confirm it is found. (Seen: 2)
+9. Adding error handling to a reusable component — separate transient (propagate) from permanent (mark failed); do not swallow both through a generic `Exception`. (Seen: 2)
+10. A resource is reachable by several paths (external and internal, sync test path vs async prod path) — enumerate every path and verify each independently. (Seen: 2)
 
 ## Visual/Layout QA (перед сдачей UI — проверять РЕНДЕР замером, не глазами)
 

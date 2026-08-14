@@ -9,7 +9,7 @@ description: |
 
 # Task Decomposition
 
-> **CRITICAL:** NEVER generate multiple artifacts without stopping. After EACH artifact: list controversial points, explain simply, WAIT for user decision. Only then proceed.
+> **CRITICAL:** stop after every artifact. Generating several in a row is not allowed. After each one, list the controversial points, explain them simply, and wait for the user's decision before proceeding.
 
 Decompose tech-spec Implementation Tasks into individual task files with parallel creation and validation.
 
@@ -64,11 +64,6 @@ This ensures predictable scope, manageable task sizes, and clear progress tracki
 7. Confirm each task-creator returned a file path. Skip reading task content — preserve context budget for validation phase.
 8. Git commit: `draft(tasks): create {N} tasks from tech-spec for {feature}`
 
-**Checkpoint:**
-- [ ] All `tasks/*.md` files created
-- [ ] Each task-creator returned file path
-- [ ] Draft committed
-
 ## Phase 2: Validation (loop while it converges)
 
 Tech-spec was already validated by 5 validators. This phase checks only: (1) task-creator correctly expanded tasks by template, (2) no mismatches with real code appeared during detailing.
@@ -95,24 +90,17 @@ Launch both in parallel:
    - Pass: same inputs as creation + `mode: fix` + `findings` from validators
    - task-creator reads existing task, applies fixes, overwrites file
 4. After each validation round, git commit: `chore(tasks): validation round {N} — {summary}`
-5. Re-validate fixed tasks (repeat 1-4) while each round leaves strictly fewer open findings than the one before. The first round that does not reduce them, stop and escalate to the user with what remains.
-6. If problems remain after 3rd iteration — show user: "Вот что осталось — давай решим вместе."
+5. Re-validate fixed tasks (repeat 1-4) while each round leaves strictly fewer open findings than the one before. The first round that does not reduce them, stop and show the user what remains: "Вот что осталось — давай решим вместе."
 
 ### Cross-Task Integration Check
 
 After individual validation passes, run a final cross-task check:
 
-1. Launch both validators on ALL tasks in a single batch (not split into smaller batches):
+1. Launch both validators on all tasks in a single batch (not split into smaller batches):
    - `task-validator` — focus: shared resource ownership (one owner, consumers depend_on owner), no competing instances in same wave
    - `reality-checker` — focus: duplicate heavy resource init, hidden dependencies, inconsistent approaches across tasks
 
-2. If issues found → launch `task-creator` in fix mode for affected tasks. Re-validate fixed tasks.
-
-3. Max 2 iterations for cross-task check (on top of the 3 individual iterations).
-
-**Checkpoint:**
-- [ ] Both validators: status=approved OR user resolved remaining issues
-- [ ] Cross-task integration check: no cross-task conflicts
+2. If issues found → launch `task-creator` in fix mode for affected tasks. Re-validate fixed tasks, on the same convergence rule: keep going while each round leaves strictly fewer open findings than the one before, and escalate to the user on the first round that does not reduce them.
 
 ## Phase 3: Present to User
 
@@ -120,10 +108,7 @@ After individual validation passes, run a final cross-task check:
 2. Wait for user approval.
 3. Git commit: `chore(tasks): task decomposition approved for {feature}`
 
-**Checkpoint:**
-- [ ] Summary presented to user
-- [ ] User approved task decomposition
-- [ ] Approval committed
+**User check:** only the user can settle whether the decomposition is approved. Do not move to Phase 4 until they say so in step 2.
 
 ## Phase 4: Session Planning
 
@@ -139,20 +124,64 @@ After user approves task decomposition, calculate session grouping for predictab
    f. If a single wave > budget → it gets its own session (warn user: "Wave N exceeds session budget").
 3. For each session, collect unique Context Files from all tasks in that session (deduplicate).
 4. Give each session a short descriptive title based on its tasks' descriptions.
-5. Generate `work/{feature}/logs/session-plan.md` from template `~/.claude/shared/work-templates/session-plan.md.template`. Include prompts for ALL sessions in the file (for reference). Fill the **Branch** field (header + every session block) from the tech-spec `branch:`, applying the template's Branch-discipline rule (isolated `feature/{name}` + worktree for a multi-session/multi-component feature or when the default branch is prod; merge back to the default branch only in the final session after green QA). **Every session prompt MUST open with a `Ветка/Branch:` line** stating the working branch + isolation rule — never leave the branch implicit (big repos have many branches).
+5. Generate `work/{feature}/logs/session-plan.md` from template `~/.claude/shared/work-templates/session-plan.md.template`. Include prompts for all sessions in the file (for reference). Fill the **Branch** field (header + every session block) from the tech-spec `branch:`, applying the template's Branch-discipline rule (isolated `feature/{name}` + worktree for a multi-session/multi-component feature or when the default branch is prod; merge back to the default branch only in the final session after green QA). **Every session prompt opens with a `Ветка/Branch:` line** stating the working branch + isolation rule — the branch is never left implicit (big repos have many branches).
 6. Present session plan to user as a table: session number, title, waves, tasks, estimated LOC.
 7. Git commit: `chore(tasks): session plan for {feature} — {N} sessions`
-8. Show ONLY the prompt for Session 1. Do NOT show prompts for later sessions — they are in session-plan.md and will be delivered by feature-execution at the end of each session.
+8. Show only the prompt for Session 1. Do not show prompts for later sessions — they are in session-plan.md and will be delivered by feature-execution at the end of each session.
 
-**Checkpoint:**
-- [ ] session-plan.md created and committed
-- [ ] User saw session grouping
+## Checks against state
 
-## Final Check
+Run these when the situation each one names comes up, not on every invocation.
 
-- [ ] All phases completed (tasks created, validation passed)
-- [ ] All tasks match template (frontmatter: status, depends_on, wave, skills, reviewers, teammate_name)
-- [ ] Validation: both validators passed or user confirmed remaining issues
+```bash
+# 1. About to restructure an accumulating artifact (task list, patterns file, catalog) on the
+#    promise of "making the implicit explicit" or "a single source of truth":
+#    count the units in the current form and in the proposed one.
+rg -c "^- |^## " <current-file>
+rg -c "^- |^## " <proposed-file>
+```
+
+Result: the second count must be greater than or equal to the first, and every unit the diff drops
+must be named out loud before the design is defended. A restructure that reduces the count moved
+material, it did not make anything explicit — and if the counts are equal with the same units, the
+change is notation, not structure, and the promise was already satisfied. (triad #486)
+
+```bash
+# 2. A task, validator or check that was green earlier now fails and its logic was not edited
+#    between the runs: diff the state it reads against the green commit.
+git diff <green-commit>..HEAD -- work/{feature}/tasks work/{feature}/logs
+```
+
+Result: must be empty. Any diff means a regenerating step — task-creator in fix mode, a validation
+round, a re-decomposition — rewrote the state the logic consumes. Fix the step that regenerated the
+state; do not re-read the logic first. (triad #489)
+
+```bash
+# 3. End of Phase 1 — every task file was written and the draft is in git.
+ls work/{feature}/tasks/*.md | wc -l
+git log --oneline -1 -- work/{feature}/tasks
+```
+
+Result: the count must equal the number of Implementation Tasks in the tech-spec, and the log must
+show the `draft(tasks): create ...` commit. A smaller count means a task-creator returned a path it
+never wrote; an empty log means the draft commit was skipped.
+
+```bash
+# 4. End of Phase 2 — read the verdict out of the validator reports, do not recall it.
+rg -o '"status"\s*:\s*"[a-z]+"' work/{feature}/logs/tasks/*-review.json
+```
+
+Result: every line must read `approved`. Any other status means the loop is not finished — run
+another round if findings are still going down, otherwise escalate to the user.
+
+```bash
+# 5. End of Phase 4 — the session plan exists and is committed.
+ls work/{feature}/logs/session-plan.md
+git log --oneline -1 -- work/{feature}/logs/session-plan.md
+```
+
+Result: the file must exist and the last commit touching it must be the `chore(tasks): session
+plan ...` one. Nothing here settles whether the plan is good — that is the user's call in step 6.
 
 ## Promoted Patterns
 

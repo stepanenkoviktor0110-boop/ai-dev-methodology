@@ -41,55 +41,74 @@ and goes stale the moment that setting changes.
 | `infrastructure-reviewer` | Infrastructure setup quality: folder structure, pre-commit, Docker, .gitignore, testing |
 | `deploy-reviewer` | CI/CD pipeline and deployment config quality: workflows, secrets, platform config |
 
-## Skill → Reviewers Mapping
+## Reviewer Routing
 
-| Skill | Default reviewers |
-|-------|------------------|
-| `code-writing` | `code-reviewer`, `security-auditor`, `test-reviewer` |
-| `infrastructure-setup` | `code-reviewer`, `security-auditor`, `infrastructure-reviewer` |
-| `deploy-pipeline` | `code-reviewer`, `security-auditor`, `deploy-reviewer` |
-| `documentation-writing` | `documentation-reviewer` |
-| skill/agent authoring (no skill) | `skill-checker` |
-| `pre-deploy-qa` | none — QA is its own verification |
-| `post-deploy-qa` | none — verification result is the review |
-| `prompt-master` | `prompt-reviewer` |
-| `code-reviewing` | none — auditor IS the review (Audit Wave) |
-| `security-auditor` | none — auditor IS the review (Audit Wave) |
-| `test-master` | none — auditor IS the review (Audit Wave) |
+Route by what the task's files actually contain, not by which skill produced them. Read the task's
+`Files to modify` and `Files to read`, match every row whose trigger fires, and take the union of
+the reviewers. A task that matches no row gets no reviewer.
 
-When `reviewers` field is empty in a task — fall back to the default set for that skill.
+| Trigger — what the task's files contain | Reviewer |
+|---|---|
+| Non-trivial application code: modules, endpoints, services, components, scripts | `code-reviewer` |
+| Authentication or authorization, user-supplied input, secrets and credentials, database queries built from input, external API calls, file uploads, publicly reachable endpoints, database schema migrations | `security-auditor` |
+| Test files added or changed, or a task whose contract is defined by tests (TDD anchor) | `test-reviewer` |
+| Dockerfile, compose file, pre-commit hooks, project scaffolding, `.gitignore`, test-harness config | `infrastructure-reviewer` |
+| CI/CD workflows, deploy scripts, platform config, secrets handling in CI | `deploy-reviewer` |
+| Files under `.claude/skills/` or `.claude/agents/` | `skill-checker` |
+| LLM prompts: system prompts, prompt templates, few-shot examples | `prompt-reviewer` |
+| Project-knowledge files or other project documentation | `documentation-reviewer` |
+| Trivial change only: typo, comment, renamed local, version bump, formatting | none |
+| Audit Wave or Final Wave task — the audit or QA run is itself the review | none |
+
+When the `reviewers` field is empty in a task — apply this table to the task's files.
 
 ## Examples
 
-### Code task (most common)
+### Code task touching no auth and no user input
+```yaml
+skills: [code-writing]
+reviewers: [code-reviewer, test-reviewer]
+```
+Internal logic with its unit tests. No security-relevant surface → no security pass.
+
+### Code task handling user input or auth
 ```yaml
 skills: [code-writing]
 reviewers: [code-reviewer, security-auditor, test-reviewer]
 ```
+
+### Code task shipping a schema migration
+```yaml
+skills: [code-writing]
+reviewers: [code-reviewer, security-auditor, test-reviewer]
+```
+The migration fires the security row even when the task touches no auth.
 
 ### Infrastructure setup task
 ```yaml
 skills: [infrastructure-setup]
-reviewers: [code-reviewer, security-auditor, infrastructure-reviewer]
+reviewers: [infrastructure-reviewer, security-auditor]
 ```
+Security fires on the `.gitignore` / secrets side; add `code-reviewer` when the task also writes
+application code.
 
 ### Deploy pipeline task
 ```yaml
 skills: [deploy-pipeline]
-reviewers: [code-reviewer, security-auditor, deploy-reviewer]
+reviewers: [deploy-reviewer, security-auditor]
 ```
-
-### Task handling user input or auth
-```yaml
-skills: [code-writing]
-reviewers: [code-reviewer, security-auditor, test-reviewer]
-```
-Security-auditor is already in the default set for code-writing. No extra action needed.
+Security fires on secrets handling in CI.
 
 ### Documentation task
 ```yaml
 skills: [documentation-writing]
 reviewers: [documentation-reviewer]
+```
+
+### Trivial change (version bump, typo)
+```yaml
+skills: [code-writing]
+reviewers: []
 ```
 
 ### Audit task (Audit Wave)

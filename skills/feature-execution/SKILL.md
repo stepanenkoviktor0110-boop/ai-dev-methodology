@@ -10,7 +10,7 @@ description: |
 
 # Feature Execution
 
-> **CRITICAL:** NEVER generate multiple artifacts without stopping. After EACH artifact: list controversial points, explain simply, WAIT for user decision. Only then proceed.
+> After each generated artifact, stop: list the controversial points, explain them simply, wait for the user's decision. Generating a second artifact before that decision arrives is a defect.
 
 Team lead orchestrates feature delivery. You are a dispatcher: spawn agents, track progress, commit code, escalate issues. Delegate all code reading, diff analysis, and report review to spawned agents. Your only inputs are status messages from teammates ("Task complete") and escalation requests.
 
@@ -31,20 +31,21 @@ Before starting, read [quick-ref-feature-execution.md](../quick-learning/referen
 0. Check `work/{feature}/logs/checkpoint.yml`:
    - **`status: awaiting_user` → STOP barrier (session boundary reached, waiting for user).**
      This state means the previous session ended cleanly and the next session must be user-initiated.
-     Do NOT auto-continue into the next wave — that is exactly the bug this barrier prevents
+     Do not auto-continue into the next wave — that is exactly the bug this barrier prevents
      (a truncated session-boundary message must never roll forward into Phase 2).
      - If the user's current input **explicitly** names the next session or its waves/tasks
        (e.g. "Session 2", "waves 3–6", pasted next-session prompt) → treat as explicit start:
        clear `status` (set to `running`), then proceed with the resume logic below from `next_wave`.
-     - Otherwise (empty re-entry, auto-resume after compaction/output truncation) → do NOT proceed.
+     - Otherwise (empty re-entry, auto-resume after compaction/output truncation) → do not proceed.
        Output: "Предыдущая сессия завершена на границе. Промт следующей сессии:
        `work/{feature}/logs/next-session-prompt.md`. Подтвердите запуск следующей сессии." and END.
    - `last_completed_wave > 0` → this is a resume after context compaction.
      Read checkpoint, then read `work/{feature}/decisions.md` to confirm what was actually completed.
      For tasks in the resumed wave: if a task has a decisions.md entry, it completed — update its
      frontmatter to `done` and skip it. Only re-execute tasks without a decisions.md entry.
-     Check if `~/.claude/teams/{team_name}/config.json` exists: if yes, team is alive; if no,
-     recreate via TeamCreate. Skip to Phase 2 starting from `next_wave`.
+     No roster to restore — agents live only for their wave, and a resume re-spawns them from the
+     task files of `next_wave`. State lives on disk: checkpoint.yml, task frontmatter, decisions.md,
+     wave commits. Skip to Phase 2 starting from `next_wave`.
      Read session-plan.md to determine which session the next_wave belongs to. Update current_session accordingly.
      Report to user: "Resuming from wave {N} (session {S}). Waves 1-{N-1} completed."
    - `last_completed_wave: 0` → fresh start, proceed below.
@@ -67,7 +68,7 @@ Before starting, read [quick-ref-feature-execution.md](../quick-learning/referen
    | `depends_on` | Task numbers that must be done first |
    | `skills` | Skills the teammate loads |
    | `reviewers` | Reviewer agents to spawn (source of truth) |
-   | `teammate_name` | Agent name for team spawning (optional) |
+   | `teammate_name` | Name given to the spawned agent in its prompt (optional) |
    | `verify` | Verification types: [smoke], [user], [smoke, user], or [] (optional) |
 
    Build waves: group tasks by `wave` field. Within a wave, all tasks run in parallel.
@@ -75,11 +76,13 @@ Before starting, read [quick-ref-feature-execution.md](../quick-learning/referen
 3. Build execution plan following template at `~/.claude/shared/work-templates/execution-plan.md.template`
 4. Save to `work/{feature}/logs/execution-plan.md`
 5. Show plan to user, wait for approval
-6. Create team via TeamCreate
-7. Update `work/{feature}/logs/checkpoint.yml`: set `total_waves` from the execution plan.
-8. If session-plan.md was found (step 1.5): write `current_session` and `total_sessions` to checkpoint.yml.
+6. Update `work/{feature}/logs/checkpoint.yml`: set `total_waves` from the execution plan.
+7. If session-plan.md was found (step 1.5): write `current_session` and `total_sessions` to checkpoint.yml.
 
-**Checkpoint:** execution plan approved, team created, checkpoint initialized.
+No team object is created: agents are spawned per wave in Phase 2 with the Agent tool
+(`general-purpose` for teammates, the named reviewer agent for reviewers) and end with their wave.
+
+**Checkpoint:** execution plan approved, checkpoint initialized.
 
 ## Phase 2: Execute Wave
 
@@ -133,7 +136,7 @@ When lead spawns an agent outside the original execution plan (to fix audit find
 3. Update task frontmatter: `status: in_progress` → `status: done` (or `done_with_concerns` if teammate reported concerns — preserve the `concerns:` field from decisions.md entry into task frontmatter)
 4. Git commit: `chore: complete wave {N} — update task statuses and decisions`. Code is already committed by teammates.
 5. Update `work/{feature}/logs/checkpoint.yml`: set `last_completed_wave`, update task statuses, set `next_wave`.
-   At session boundary: also set `status: awaiting_user` (the STOP barrier read by Phase 1 step 0) so a
+   At session boundary: also set `status: awaiting_user` (the stop barrier read by Phase 1 step 0) so a
    truncated boundary message can never auto-roll into the next wave. For a non-boundary wave keep
    `status: running`. Explicitly commit checkpoint.yml even if no code changed in the last wave — next
    session must start with accurate state including the barrier flag.
@@ -147,12 +150,12 @@ When lead spawns an agent outside the original execution plan (to fix audit find
 6. **Session boundary check** (skip if session-plan.md does not exist):
    Read session-plan.md. If current wave is the **last wave of current_session**:
    a00. **Update project-knowledge** (before generating the next-session prompt): check if roles, architecture, or business rules changed during this session — update the relevant `.claude/skills/project-knowledge/` docs so the next session does not re-ask what was already discussed.
-   a0. **Quick Learning (subagent, background).** Spawn a subagent to run [quick-learning](../quick-learning/SKILL.md). Pass it: feature path, current session number, path to decisions.md. The subagent runs in the **background** while you proceed with the session report. When it finishes, show the user its one-line summary. Do NOT read the quick-learning SKILL.md yourself — the subagent loads it independently in its own context.
-   a. Set `status: awaiting_user` in checkpoint.yml FIRST (before anything below), then increment
+   a0. **Quick Learning (subagent, background).** Spawn a subagent to run [quick-learning](../quick-learning/SKILL.md). Pass it: feature path, current session number, path to decisions.md. The subagent runs in the **background** while you proceed with the session report. When it finishes, show the user its one-line summary. Do not read the quick-learning SKILL.md yourself — the subagent loads it independently in its own context.
+   a. Set `status: awaiting_user` in checkpoint.yml first (before anything below), then increment
       `current_session`. Make the increment **idempotent**: only increment if `current_session` still
-      equals the session that just finished — a re-entry that finds the barrier already set must NOT
+      equals the session that just finished — a re-entry that finds the barrier already set must not
       increment again. Order matters: the barrier is written before the prompt is generated, so even if
-      generation or the final message is truncated, the STOP state is already durable on disk.
+      generation or the final message is truncated, the stop state is already durable on disk.
    b. Generate next-session prompt from template `~/.claude/shared/work-templates/session-prompt.md.template`:
       - Fill: feature name, description (first line of tech-spec Description), completed sessions/waves, next session's waves and tasks, context files from session-plan.md.
       - Apply prompt-master principles to the generated prompt before saving: make it concrete (specific files, wave numbers, task names), remove filler phrases, lead with the goal, not the context.
@@ -162,7 +165,7 @@ When lead spawns an agent outside the original execution plan (to fix audit find
       - **What is excess / confusing / contradictory / over-constraining** — deploy mechanics front-loaded at spec-start (belongs to the deploy wave), parameters locked that the spec itself should decide, irrelevant remarks, duplication.
       Then **revise the draft** to close the gaps and cut the noise. **Resolve any technical fork surfaced here autonomously** (simplicity / efficiency / growth) — do not defer it into the prompt as an open question for the user; only genuinely process/irreversible/scope items get escalated. Keep the decision-patterns block intact. The saved prompt is the post-calibration version, not the first draft.
    c. Save prompt to `work/{feature}/logs/next-session-prompt.md` (overwrite each time).
-   d. Present to user — **do NOT paste the full prompt inline** (a long inline prompt is what gets
+   d. Present to user — **do not paste the full prompt inline** (a long inline prompt is what gets
       truncated mid-text). Keep the final message SHORT and point to the saved file:
       ```
       Сессия {N} из {total} завершена. Барьер выставлен — следующая волна автоматически не стартует.
@@ -172,10 +175,10 @@ When lead spawns an agent outside the original execution plan (to fix audit find
       ```
       (If the user explicitly asks to see the prompt in chat, only then print it — but the file is the
       source of truth, never a half-typed chat block.)
-   e. **STOP execution.** Do not proceed to next wave. End the session here. The barrier (`status:
+   e. **Stop execution.** Do not proceed to next wave. End the session here. The barrier (`status:
       awaiting_user`, step a) is the durable guarantee — this text instruction alone is not relied upon.
 
-   If current wave is NOT a session boundary → proceed to Phase 2 for next wave.
+   If current wave is not a session boundary → proceed to Phase 2 for next wave.
 7. Next wave → Phase 2
 
 **Checkpoint:** all wave tasks done, committed, checkpoint updated.
@@ -187,9 +190,9 @@ All waves done including Final Wave (QA, deploy if applicable, post-deploy verif
 1. Show results: what was built, key decisions, QA report summary. Lead with the outcome — the first sentence answers what happened — and put supporting detail after it.
 2. Describe what to check manually (from execution plan "user checks" section)
 3. Issues found → fix → review → commit, while each round leaves strictly fewer open issues. Stops converging → escalate (see Escalation).
-4. All ok → finalize, shutdown team, delete `work/{feature}/logs/checkpoint.yml`
+4. All ok → finalize, delete `work/{feature}/logs/checkpoint.yml` (agents already ended with their waves)
 5. **Integration (parallel projects only).** If the project uses `parallel-tracks` and the
-   feature was worked on a `feature/<slice>` branch, it is NOT yet in `dev`. Load the
+   feature was worked on a `feature/<slice>` branch, it is not yet in `dev`. Load the
    `parallel-tracks` skill and run its Part B (integration train) + Part C (per-service
    deploy) — one word from the user, "собери", triggers this. Only after the track is
    merged+deployed proceed to `/done`. Non-parallel projects skip this (feature is already
@@ -210,12 +213,6 @@ When escalating:
 4. Git commit: `chore: escalate task {N} — loop stopped converging`
 5. Wait for user decision before continuing
 
-## Promoted Patterns
-
-- **Contested decisions before generation, not after:** an artifact over 200 lines → list the decisions with their options first → get approval → then generate. One round instead of a series of rewrites.
-- **Subagent did not finish → do it yourself:** do not retry a subagent that hit an external block (permissions, access). The lead does it directly via Write/Edit.
-- **Verify the result in the real environment** (Seen: 4): after a deploy — curl, logs, an actual check. Never declare "done" without confirming it runs. For cron — check the log five minutes later. On READY/200 OK, additionally grep for a unique marker or component name from the new commit, to confirm the platform promoted the new build and not the previous one.
-
 ## Checks against state
 
 ```bash
@@ -230,13 +227,24 @@ git log --oneline -5 --grep "wave {N}"
 
 # 4. the barrier is durable on disk at a session boundary
 rg -n "^status:|^current_session:|^next_wave:" work/{feature}/logs/checkpoint.yml
+
+# 5. the capture instrument a procedure names really produces a durable artifact —
+#    run the capture once on a throwaway input BEFORE the expensive run
+ls -l {capture_path} && rg -c . {capture_path}
 ```
 
-Check 2 must equal the number of tasks in the wave. Check 4 at a session boundary must read
+Check 1 must return a non-zero count before the first agent of wave 1 is spawned; a missing file or
+0 means waves started without an approved plan. Check 2 must equal the number of tasks in the wave.
+Check 3 must list a commit naming the wave just finished; empty means the wave was never committed
+and the next session resumes from a checkpoint that does not match the tree. Check 4 at a session
+boundary must read
 `status: awaiting_user` — if it does not, the barrier never landed and the next entry will roll
-straight into the following wave.
+straight into the following wave. Check 5 must list the file and return a non-zero line count
+**after the producing process has exited**; an empty or missing path means the named instrument
+never captured anything, so switch the procedure to a source written to durable state (a file, a
+commit, a table row) instead of a value that lives only inside the run that produced it. Authorship
+of the procedure by the requester is not evidence that the instrument was ever exercised. (triad #484)
 
 ## Learned Patterns
 
-**Lazy load:** Full orchestrator patterns in [orchestrator-patterns.md](references/orchestrator-patterns.md).
-Read at Phase 2 start when executing waves. Audit agents use [learned-patterns.md](references/learned-patterns.md) separately.
+**Lazy load:** Full orchestrator patterns, including the promoted ones, in [orchestrator-patterns.md](references/orchestrator-patterns.md). Read at Phase 2 start when executing waves. Audit agents use [learned-patterns.md](references/learned-patterns.md) separately.

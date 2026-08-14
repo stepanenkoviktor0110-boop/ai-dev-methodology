@@ -2133,3 +2133,4 @@ Patterns that apply to any project, any stack, any domain.
 **Pattern:** A successful pilot validates the logic of one iteration, never the environment's response to many. When the operation is destroy-then-restore, that gap is not an error but data loss: the destructive half is instant while the restorative half is the one that gets throttled. Either make each item atomic (restore it before touching the next, and stop the loop on the first failure), or measure the limiting resource first and pace to it. Prefer a driver that derives its worklist from what is currently missing, so an interrupted run is resumable instead of destructive.
 **Scope:** universal
 **Category:** sequencing
+

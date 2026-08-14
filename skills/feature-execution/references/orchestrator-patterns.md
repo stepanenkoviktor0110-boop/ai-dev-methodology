@@ -10,7 +10,7 @@
 "Не нужен" → уточни: UI или вся функциональность (API, DB)? "X здесь, а не там" → добавь в новое место, убери только из названного. Неоднозначное название → покажи варианты, спроси. При нескольких похожих метриках/счётчиках — явно сопоставить термин пользователя с конкретной метрикой до ответа, не подменять один другим по схожести. Диагностический вопрос ≠ запрос на действие. Task file > prompt для значений.
 
 **3. Любое изменение — проверяй радиус поражения:**
-Изменён элемент из группы → примени к каждому sibling. Синхронизация файлов → проверь index-файлы. Hotfix вне плана → добавь в audit wave. Новый marker в промте → опиши во всех секциях. DRY-нарушение в N задачах → extraction-задача в audit. Validation добавлена в route → немедленно grep по имени поля во всех route-файлах, убедиться что structurally-similar endpoints имеют ту же validation. Смена домена → grep hardcoded CORS/CSRF/allowed_origins в кодовой базе и обновить ВСЕ до деплоя, иначе молчаливый 403 после переключения. Частный случай: пользователь изменил ранее принятое решение, зафиксированное в нескольких артефактах (spec, decisions, task) → сначала перечислить ВСЕ места захвата, затем синхронизировать одним заходом, чтобы reviewer не флажил phantom-противоречия из устаревших sibling-документов.
+Изменён элемент из группы → примени к каждому sibling. Синхронизация файлов → проверь index-файлы. Hotfix вне плана → добавь в audit wave. Новый marker в промте → опиши во всех секциях. DRY-нарушение в N задачах → extraction-задача в audit. Validation добавлена в route → немедленно grep по имени поля во всех route-файлах, убедиться что structurally-similar endpoints имеют ту же validation. Смена домена → grep hardcoded CORS/CSRF/allowed_origins в кодовой базе и обновить ВСЕ до деплоя, иначе молчаливый 403 после переключения. Частный случай: пользователь изменил ранее принятое решение, зафиксированное в нескольких артефактах (spec, decisions, task) → сначала перечислить ВСЕ места захвата, затем синхронизировать одним заходом, чтобы reviewer не флажил phantom-противоречия из устаревших sibling-документов. Обратное направление (не ты инициировал правку, а ревьюер прислал отчёт): reviewer reports one concrete failing instance and states how that instance should behave → repair the class the instance belongs to, and treat the reported wording as the acceptance example, not the specification, to avoid report-shaped repair: a per-instance rule passes the reviewer's check while the next member of the same class arrives in a form the rule never mentions. (triad #502)
 
 **4. Не подтверждай без проверки реальности:**
 "Это работает?" → grep до ответа. Pipeline ok но экспорт упал → алерт на N consecutive 0. Тесты зелёные но покрытие иллюзорно → ad-hoc fix. Pre-existing failures → проверь working tree (git stash). Done только после проверки реального эффекта (файл создан ≠ фича работает; graceful fallback с success ≠ полнота — count/sample ключевых полей).
@@ -190,7 +190,7 @@ When picking the next step from a plan that shows a main ordered chain plus a si
 When an identical failure recurs across >=2 attempts → stop retrying; diagnose and fix the behaviour/config that generates it, not the instance, to break the symptom-retry loop with one root fix. (triad #395)
 
 **66. Несколько актёров в одном shared workspace — изолируй и чекпойнти:**
-When two or more actors operate on one shared mutable workspace at once → isolate each into its own copy/branch or serialize, and checkpoint work the moment it is verified, to stop concurrent actors silently clobbering each other's unsaved state. (triad #396)
+When two or more actors operate on one shared mutable workspace at once → isolate each into its own copy/branch or serialize, and checkpoint work the moment it is verified, to stop concurrent actors silently clobbering each other's unsaved state. (triad #561)
 
 **67. Несколько независимо-скоупленных финальных выходов, но один catch-all шаг захватывает весь накопленный workspace — финализируй по единицам:**
 When goal is several independently-scoped final outputs but one available action captures the whole accumulated workspace at once → finalize each unit with explicit boundaries first; never run the catch-all aggregate step before the units are separated, to avoid premature aggregation that assumes a scope-less bulk action will respect intended granularity. (triad #398)
@@ -245,3 +245,20 @@ When about to converge or deploy into a shared mainline whose canonical pointer 
 
 **84. Делегат сказал «done», но запустил свою фоновую работу и запарковался — забери результат у источника:**
 When a delegated worker signals done/stops but had launched its own long-running background work and yielded while it is still pending → treat the completion as unverified: check the deliverable at its source, and if it merely backgrounded-and-parked, collect the raw result or take over rather than re-resuming it into another wait, to avoid false-completion trust on a self-backgrounding delegate. (triad #474)
+
+**85. Stakeholder decision bundling several obligations — split it before starting:**
+When a stakeholder decision bundles two or more obligations and the current task naturally covers only one of them → split the decision into its obligations verbatim before starting and report completion per obligation, never per decision, to avoid part-for-whole completion: the obligation you worked on stands in for the whole decision in your report while the untouched half stays invisible until the stakeholder meets it in the product. (triad #494)
+
+**86. Batch step that deletes then recreates — two states, keep both outputs:**
+When a batch sequence removes something and recreates it in the next step → keep the output of every step that deletes, and treat remove-then-recreate as two states rather than one action, to avoid destructive-step evidence discard: the pair feels atomic, so a failure landing between them looks like work still in progress. (triad #496)
+
+**87. Zero for a rate/quantity limit means no limit:**
+When defining what zero means for a numeric setting that limits how often or how much something may happen → make zero mean "no limit" and let only a positive value impose the constraint, to avoid zero-as-strictest inversion: the operator reads an empty limit as the constraint switched off, so a strictest-zero disables the feature while looking like its default. (triad #500)
+
+## Promoted patterns
+
+Moved out of SKILL.md; load with the rest of this file at Phase 2 start.
+
+- **Contested decisions before generation, not after:** an artifact over 200 lines → list the decisions with their options first → get approval → then generate. One round instead of a series of rewrites.
+- **Subagent did not finish → do it yourself:** do not retry a subagent that hit an external block (permissions, access). The lead does it directly via Write/Edit.
+- **Verify the result in the real environment** (Seen: 4): after a deploy — curl, logs, an actual check. Never declare "done" without confirming it runs. For cron — check the log five minutes later. On READY/200 OK, additionally grep for a unique marker or component name from the new commit, to confirm the platform promoted the new build and not the previous one.

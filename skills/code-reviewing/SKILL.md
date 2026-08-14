@@ -193,6 +193,8 @@ Focus on dimensions based on code context:
 
 ## Review Process
 
+Before starting, read [quick-ref-code-reviewing.md](../quick-learning/references/quick-ref-code-reviewing.md) — top reasoning patterns for this skill (if file exists and non-empty).
+
 1. **Initial Scan**: Quick overview to understand scope and context
 2. **Deep Analysis**: Systematic review of each dimension listed above
 3. **Cross-Reference**: Compare implementation against userspec, techspec, and project standards
@@ -208,3 +210,58 @@ Focus on dimensions based on code context:
 - Provide specific examples and code snippets; explain "why", not just "what"
 - Consider project context from documentation when available
 - Acknowledge good practices when present
+
+## Checks against state
+
+These read state off disk — they are not a re-check of the reasoning above. Run each line whose
+precondition applies, read the output, act on what it says. Substitute `<diff paths>` with the files
+under review.
+
+```bash
+# 1. a failing test cites a document — open the cited document before touching either side
+rg -n -i "see |spec|doc/|docs/|§|раздел" <the failing test file>
+<open each cited document at the cited place and read the passage>
+
+# 2. secrets or PII inside logging calls (dimension 4 → critical)
+rg -n -i "log|logger|print|console\.(log|error)" <diff paths> | rg -i "password|secret|token|api_key|email|phone|\.env"
+
+# 3. empty catch blocks — errors swallowed silently (dimension 4 → major)
+rg -n -U "catch\s*\([^)]*\)\s*\{\s*\}|except[^:]*:\s*pass" <diff paths>
+
+# 4. unstructured logging where a logger exists (dimension 4 → minor)
+rg -n "console\.log|^\s*print\(" <diff paths>
+
+# 5. cross-file usage — the definition of every called function/class must be read, not assumed
+rg -n "def <name>|function <name>|class <name>|export .*<name>" <repo>
+
+# 6. heavy resource instantiated in more than one file (dimension 11 → major)
+rg -n "new <ResourceClass>|<ResourceClass>\(" <repo> --glob '!**/test*'
+
+# 7. secret-bearing paths are ignored (dimension 8)
+rg -n "^\.env|\*\.key|credentials\.json|secrets/" .gitignore
+```
+
+Required results:
+
+- **Check 1** must be run before the failing test is made to pass again, and its outcome written
+  into the finding. The cited passage must actually state the asserted claim. If it does not, the
+  test encodes the error being corrected — fix the test, not the code. A citation proves where a
+  claim came from, never that it is right, so "the test cites a document" is not a reason to make
+  the code match it. (triad #498)
+- **Checks 2, 3, 4** must return nothing. Any hit is a finding at the severity given in the
+  dimension-4 mapping table; report it, do not weigh it.
+- **Check 5** must return a definition for every function, method and class the diff calls across a
+  file boundary, and each signature must match the call site. No hit means a broken import or a
+  renamed symbol — a runtime crash, reported as critical.
+- **Check 6** must return hits in at most one non-test file per heavy resource class. Two or more
+  files instantiating the same class means no shared instance; inside a loop or a per-request
+  handler it is critical.
+- **Check 7** must return a hit for every pattern whose file type exists in the repo. A missing
+  pattern is a finding — add it to .gitignore before the review closes.
+
+## Learned Patterns
+
+Top reasoning patterns for this skill live in
+[quick-ref-code-reviewing.md](../quick-learning/references/quick-ref-code-reviewing.md), loaded at
+the start of the Review Process. Rules that a command can settle are in "Checks against state"
+above rather than repeated here.
