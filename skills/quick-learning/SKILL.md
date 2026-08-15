@@ -83,7 +83,7 @@ accordingly.
 
 ## Step 4: Summary (5 sec)
 
-Count unadapted triads: grep `| — |$` in triad-index.md (use `$` anchor — middle columns also contain `| — |`).
+Count unadapted triads: grep `| — |\s*$` in triad-index.md. The `$` anchor is needed because middle columns also contain `| — |`; the `\s*` before it is needed because the file is stored with CRLF line endings, and ripgrep's `$` does not match before the carriage return. A bare `$` returns **zero** here, silently, and that is how it read on 2026-08-09 while eight rows were unadapted. Do not confirm with `grep` or `sed`: on this machine they open the file in text mode and drop the carriage return before matching, so they agree with the wrong command and hide the cause. `od -c` on the file itself is the only reading that shows the truth.
 
 Show: `Quick Learning: {1 sentence summary, or "Clean session, no signals detected."}`
 If count ≥ 25: append "Накопилось {N} необработанных триад — запусти /skill-trainer."
@@ -102,7 +102,7 @@ anything.
 rg -c "^\*\*Adapted:\*\* —" "$AGENTS_HOME/skills/quick-learning/references/reasoning-patterns.md"
 
 # 2. unadapted count for the summary line, and the /skill-trainer threshold
-rg -c "\| — \|$" "$AGENTS_HOME/skills/quick-learning/references/triad-index.md"
+rg -c "\| — \|\s*$" "$AGENTS_HOME/skills/quick-learning/references/triad-index.md"
 
 # 3. a merged pattern incremented Seen rather than adding a duplicate row
 rg -n "{3-4 key words from the new pattern}" "$AGENTS_HOME/skills/quick-learning/references/triad-index.md"

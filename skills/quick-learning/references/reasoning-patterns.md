@@ -2134,3 +2134,147 @@ Patterns that apply to any project, any stack, any domain.
 **Scope:** universal
 **Category:** sequencing
 
+
+### 2026-08-14 lot-collector / session 1: spatial claim trusted from its rendering
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** rendered-impression trust
+**Triad:** the artefact declares quantitative rules (a grid, a scale, a budget, a schema) and its rendering looks plausible → recompute the expected values from the declared rules and compare them against the produced artefact programmatically, then re-run that comparison after every change → plausible-rendering bias: an output that looks correct while breaking the system it claims to follow
+**Context:** Conformance to a declared spatial system was judged from how the result looked; two separate systematic offsets survived several review passes and were found only when expected positions were computed and diffed against actual ones.
+**Pattern:** When the output carries declared numeric rules, the check is derivable from those rules — write it and let it produce a verdict. Looking at the result answers "is it ugly", never "does it obey". Re-run after every change, because a single local override silently shifts everything downstream of it, and that shift is exactly the size the eye cannot see.
+**Carrier:** command
+**Scope:** universal
+**Category:** design-process
+
+### 2026-08-14 lot-collector / session 1: grouping key chosen by prominence, not by uniqueness
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** salient id taken as unique id
+**Triad:** records arriving from several sources must be merged and a grouping key is being chosen → pick the field that is unique per record rather than the most official-looking shared code, and prove it with two negative cases: records that must stay apart, and records whose key fields are empty → salient-identifier bias: a prominent shared code merges siblings into one, and a degenerate empty key sweeps every leftover into a single bucket
+**Context:** The most authoritative-looking shared identifier was taken as the merge key; it belonged to a parent grouping rather than to the record, so distinct records collapsed together, and the fallback key evaluated to empty for records missing fields and silently merged all of them.
+**Pattern:** A key earns its place by distinguishing records, not by looking canonical. Before merging, run it against pairs that must remain separate and against records with missing fields; a key that degenerates to empty must group nothing rather than everything. Wrong grouping is worse than no grouping: it reads as a clean result and hides how many records it destroyed.
+**Carrier:** command
+**Scope:** universal
+**Category:** problem-decomposition
+
+### 2026-08-15 bitrix-openlines / session 1: isolate at the level the shared thing lives at
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** isolation at symptom's level
+**Triad:** a defect returns after it was already isolated, wearing a new face each time → find the level the shared thing actually lives at and isolate THERE — the symptom names a level, not the boundary → stop paying for the same class of failure once per disguise
+**Context:** The first isolation was drawn at the level the symptom pointed to, while the resource being shared lived one level up, so the failure came back in a new disguise and read as a new problem each time.
+**Pattern:** When a defect recurs after an isolation that looked correct, do not isolate harder at the same level. Ask which layer actually owns the contended thing and whether the boundary you drew is below it; if it is, every fix at that layer buys one disguise, not the class. Prove the new boundary by reproducing the ORIGINAL failure across it, not by re-running the case you just fixed.
+**Scope:** universal
+**Category:** problem-decomposition
+**Carrier:** rule
+
+### 2026-08-15 lot-collector / session 2: resolved state answers, the declaration does not
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** declaration-over-resolution bias
+**Triad:** changing a value in a system that resolves conflicts by precedence or order → verify by querying the resolved state, not by re-reading the declaration you wrote → mistaking an overridden declaration for an applied change
+**Context:** I checked my own edit at the place I wrote it, while the system decided the outcome elsewhere by precedence, so three separate changes silently never took effect.
+**Pattern:** When a system settles competing declarations by order, specificity or layering, your edit is a proposal, not a result. Verify by asking the system for the value it actually resolved to, and keep that query as a command so the next change is checked the same way. Reading the declaration again only re-reads the proposal.
+**Scope:** universal
+**Category:** information-gathering
+**Carrier:** command
+
+### 2026-08-15 lot-collector / session 2: a matcher that finds nothing reports success
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** no-op accepted as applied
+**Triad:** applying a targeted change through a matcher (pattern, key, selector) → assert how many places matched and treat zero as failure → a change that matched nothing passing as a change that was made
+**Context:** The tool that applies a change reports success both when it changed what I meant and when it matched nothing at all, and I read the second case as the first — the damage surfaced much later, far from the edit.
+**Pattern:** An operation whose success signal cannot distinguish "changed as intended" from "matched nothing" carries no information. Make the operation prove its effect — count the matches, assert the count, fail on zero — before you accept it as done. This holds for every targeted mutation: the more precise the matcher, the more likely it silently misses.
+**Scope:** universal
+**Category:** recovery
+**Carrier:** command
+
+### 2026-08-15 lot-collector / session 3: agreeing checks can agree on the same error
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** self-consistency read as correctness
+**Triad:** trusting a value because several of your own checks agree on it → confirm it against a source keyed by something different, and treat every disagreement as pointing at either side → shared-evidence agreement mistaken for independent corroboration
+**Context:** Two anchors that "independently agreed" had both read the same sentence, so a clerical phrase sat as a person's name across forty records; a third-party source keyed by a different identifier exposed it, along with two more defect classes none of my own checks could see.
+**Pattern:** Checks that draw on the same evidence agree by construction, and their agreement measures nothing. Corroboration requires a source reached by a different key — a different identifier, a different route, someone else's system. Cross-check against it, and when it disagrees, investigate both sides: the outside source may be stale, but the count and the shape of the disagreements will tell you which side is broken. Cheap to run, and it finds classes of error that self-consistency cannot.
+**Scope:** universal
+**Category:** information-gathering
+**Carrier:** command
+
+### 2026-08-12 paseka-client-reply / session 1: source cited from a keyword hit
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** excerpt-as-evidence bias
+**Triad:** about to cite an authoritative document as forbidding or requiring something, located by keyword match -> read the whole passage around every hit, including the sentences that follow it, and weaken the claim to what the read text supports -> excerpt-as-evidence bias: one matching line taken for the position of the whole document
+**Context:** Four keyword hits supported a prohibition and were quoted as the document's position; the sentences immediately after them permitted the very thing, and the unread sentence was the decisive one.
+**Pattern:** When a source is the authority for a claim, quote only what you have read in context. A search returns candidate lines, not positions. Before asserting "the specification forbids this", read the passage around each hit and check whether adjacent text qualifies, narrows or reverses it; then state the claim at the strength the read text supports. The failure is invisible from inside the search: every quote is genuine.
+**Scope:** universal
+**Category:** information-gathering
+**Carrier:** rule
+
+### 2026-08-12 paseka-client-reply / session 1: alarm classified before it is named
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** severity inflation by mislabel
+**Triad:** a freshly discovered risk feels urgent enough to fix without asking -> name the exact class of what is at risk and who owns the decision about it, then choose act-versus-ask from that classification rather than from the alarm -> severity inflation by mislabel: a lesser class named as the graver one turns someone else's decision into your emergency
+**Context:** Material of one class was named as a graver, regulated class; the inflated label made a reversible stakeholder decision look like an incident, and the protective action taken on it was reversed.
+**Pattern:** Before acting on a risk you just found, say out loud which class the thing belongs to and whose call it is. That label, chosen while alarmed, is what decides whether you act or ask, so it has to be checked before it is used rather than after. Report the finding immediately either way; what needs the owner is the response, not the news.
+**Scope:** universal
+**Category:** scope-management
+**Carrier:** rule
+
+### 2026-08-12 paseka-handoff / session 1: ask-list assembled from residual doubt
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** unresolved-by-feel escalation
+**Triad:** about to hand work onward with a list of questions reserved for the decision-maker -> check each item against material you already produced and against the record, keep only what none of it answers, and attach the default you would take to those that survive -> unresolved-by-feel escalation: items reach the ask-list by leftover uncertainty rather than by absence of an answer, and each one costs a round-trip
+**Context:** Three items were marked as the decision-maker's call; one had already been settled by a caveat sent earlier, one was answered by a warning recorded in the project's own files, and the third blocked work that a stated default would have carried.
+**Pattern:** An ask-list is an artifact with a price: every entry stops someone. Before handing it on, test each item twice - has this already been answered somewhere I wrote, and would a stated default let the work continue while the answer arrives. Escalate what survives both, and write the default beside the question instead of the question alone. The list feels like diligence, which is why it is never re-read.
+**Scope:** universal
+**Category:** communication
+**Carrier:** rule
+
+### 2026-08-15 declarative-answer-rules / session 1: probe answered by a guard clause
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** stub-argument probe
+**Triad:** about to call a function in isolation to decide whether a mechanism works -> pass arguments of the same shape the real caller passes, and check the function did not exit through a guard clause before reaching the logic under test -> stub-argument probe: an empty or placeholder argument trips an early return, and the guard's answer is read as the mechanism's verdict
+**Context:** A rule-replacement mechanism was probed with an empty first argument; the function returns its input unchanged when that argument is falsy. The probe showed "nothing was replaced", the mechanism was reported broken to the owner, and a working feature was queued for repair until the same call with a non-empty argument replaced six rules.
+**Pattern:** An isolated call is a measurement, and its arguments are the instrument. A placeholder passed "because this parameter does not matter here" is exactly what a guard clause tests first, so the result reports the guard rather than the logic. Before believing a negative result from a probe, feed it one input that is known to work and see the positive; a probe that cannot produce a positive has not been calibrated. The failure is silent because the return value has the right type and the right shape.
+**Scope:** universal
+**Category:** debugging
+**Carrier:** rule
+
+### 2026-08-15 kb-bonodono / session 1: stored input read instead of the queried artifact
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** source-instead-of-artifact inspection
+**Triad:** about to conclude what a system knows or serves by reading the material that was loaded into it -> read the artifact the consumer actually queries — the index, the built bundle, the rendered output — and count there -> source-instead-of-artifact inspection: the stored input and the derived artifact diverge, and every conclusion drawn from the input describes a system that is not running
+**Context:** The share of a contradictory fact was counted in the stored document text; the conclusion named the documents as the source and shaped the fix. The artifact the retrieval actually searches held a different distribution — the bulk of the occurrences came from a generated catalogue, not from the documents, and the real fix lay outside the files being edited.
+**Pattern:** Between what was loaded and what is served sits a transformation: chunking, indexing, bundling, templating. Ask which artifact the consumer reads and measure there; the input is evidence about intent, not about behaviour. This is the same discipline as verifying a deployed bundle rather than the source that built it, and it fails the same way — the numbers from the input are real, precise, and about the wrong object.
+**Scope:** universal
+**Category:** information-gathering
+**Carrier:** command
+
+### 2026-08-09 bank-mcc-sets / session 1: the rule passed its own tests and failed the population
+
+**Seen:** 1
+**Adapted:** —
+**Cognitive Error:** motivating-case validation
+**Triad:** about to encode a comparison or selection rule derived from the case that motivated it → run the rule over the full real population it will serve and read the outputs, before writing the tests → motivating-case validation: hand-written tests inherit the one case the rule was designed on, so they pass while the rule degenerates on neighbours it never met
+**Context:** A rule for distinguishing near-identical items was designed on the pair that exposed the problem, covered with unit tests built from that same pair, and shipped as verified — while on the real population it produced one identical output for four of five members of another group, and paired two unrelated items that a substring match had dragged into the same result set.
+**Pattern:** When a rule compares, ranks or selects among items, its correctness is a property of the population, not of the example. Before writing tests, run it over the whole real set and read the outputs; the failures that matter are the ones where it returns something plausible but useless. Tests written afterwards then encode the population's shape, not the anecdote's — and they are cheap to write because the bad outputs are already in hand.
+**Scope:** universal
+**Category:** information-gathering
+**Carrier:** command
