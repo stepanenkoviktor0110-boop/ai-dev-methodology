@@ -234,11 +234,23 @@ class, not only for the original example. A test that only pins the example lets
 the same class through, which is indistinguishable from never having fixed it.
 
 **Then write the result into `## 6. Check` of the same run file** — the one the gate already
-required, at `~/.claude/triz-runs/<YYYY-MM-DD>-<slug>.md`. With that line the file holds all five
-fields of a case card, and the card is taken from it by selection rather than written afresh: a
-move with no case behind it never enters the toolkit, and a case that costs a separate act of
-writing never gets written. A run abandoned on the two-pass budget is recorded the same way, under
-what was tried — the method not carrying a contradiction is itself worth knowing.
+required, at `~/.claude/triz-runs/<YYYY-MM-DD>-<slug>.md`. Write the heading in the language the run
+is written in — `## 6. Check` or `## 6. Проверка`; the checks below read both. A run abandoned on the
+two-pass budget is recorded the same way, under what was tried — the method not carrying a
+contradiction is itself worth knowing.
+
+**Then, before closing the run, append the card to
+[references/cases.md](references/cases.md).** This is a step of the procedure, not a wish: the run
+is not finished while the card is missing. The five fields are already written, so the card is a
+selection out of the run file, not a fresh act of writing — section 1 gives the contradiction,
+section 2 the IFR, section 3 the resource, section 4 the move, section 6 the check. Append a
+numbered `## Case` section in the shape of the ones already there, and one row to the summary table.
+Run files are not committed — they describe other people's codebases — so the card is copied across,
+never linked.
+
+**Skip the card, and only then, when:** the run is not settled — no experiment, or the result says
+the contradiction stands. Such a run gets no card by design: a move with no case behind it must not
+enter the toolkit. Any other reason for skipping is the failure this step exists to prevent.
 
 ## Toolkit
 
@@ -289,20 +301,20 @@ RUN=~/.claude/triz-runs/<YYYY-MM-DD>-<slug>.md
 rg -c "^## [1-6]\. " "$RUN"
 
 # 2. the experiment was run and its result written, not merely planned
-rg -A3 "^## 6\. Check" "$RUN"
+rg -A3 "^## 6\. (Check|Проверка)" "$RUN"
 
 # 3. every point of application was enumerated
 rg -n "^Applied at:" "$RUN"
 
 # 4. does the toolkit actually grow from runs? settled runs, against cards on file
-# Считать надо УЛАЖЕННЫЕ прогоны, а не файлы с заголовком: прогон, который
-# честно пишет «улажено не было», заголовок всё равно несёт. Замерено
-# 2026-08-09: заголовок у 32 файлов из 56, но 15 из них прямо говорят, что
-# опыта не было, а карточек на файле 4. Разрыв реальный, не артефакт счёта.
-rg -l "^## 6\. Check" ~/.claude/triz-runs/*.md 2>/dev/null | wc -l
-rg -l -i "не улажен|улажено не было|опыта не было|не проводил" ~/.claude/triz-runs/*.md 2>/dev/null | wc -l
+# Заголовок шестой секции пишется на языке прогона — считать оба, иначе счёт
+# молча теряет часть файлов. И считать надо УЛАЖЕННЫЕ прогоны, а не файлы с
+# заголовком: прогон, честно пишущий «улажено не было», заголовок всё равно несёт.
+# Путь к cases.md абсолютный: из чужого каталога относительный вернёт пустоту.
+rg -l "^## 6\. (Check|Проверка)" ~/.claude/triz-runs/*.md 2>/dev/null | wc -l
+rg -l -i "не урегулирован|не улажен|улажено не было|опыта не было|не проведён|не проведено|не проведена|not settled" ~/.claude/triz-runs/*.md 2>/dev/null | wc -l
 #   ^ второе вычесть из первого и только тогда сравнивать с числом карточек
-rg -c "^## Case " references/cases.md
+rg -c "^## Case " ~/.claude/skills/triz-synergy/references/cases.md
 ```
 
 Check 1 must print **6 per pass**. Fewer than six means a section is missing and the gate did not

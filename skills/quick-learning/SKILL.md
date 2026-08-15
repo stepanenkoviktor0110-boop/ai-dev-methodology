@@ -99,7 +99,15 @@ anything.
 
 ```bash
 # 1. new entries carry Adapted: — and did not exceed two per session
-rg -c "^\*\*Adapted:\*\* —" "$AGENTS_HOME/skills/quick-learning/references/reasoning-patterns.md"
+# Мерить надо ПРИРОСТ: голое число записей ни о чём не говорит, сравнивать
+# его не с чем. Отсчёт уже лежит в git — та же версия файла на HEAD. Каталог
+# скилла — junction, поэтому репозиторий спрашивается у самого файла.
+PAT="$AGENTS_HOME/skills/quick-learning/references/reasoning-patterns.md"
+REPO=$(git -C "$(dirname "$(readlink -f "$PAT")")" rev-parse --show-toplevel)
+REL=$(git -C "$REPO" ls-files --full-name -- "*/reasoning-patterns.md")
+was=$(git -C "$REPO" show HEAD:"$REL" | rg -c "^\*\*Adapted:\*\* —")
+now=$(rg -c "^\*\*Adapted:\*\* —" "$PAT")
+echo "было $was, стало $now, прирост $((now - was))"
 
 # 2. unadapted count for the summary line, and the /skill-trainer threshold
 rg -c "\| — \|\s*$" "$AGENTS_HOME/skills/quick-learning/references/triad-index.md"

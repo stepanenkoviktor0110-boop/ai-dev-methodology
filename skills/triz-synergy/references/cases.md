@@ -22,10 +22,13 @@ value lies precisely in the real numbers and the real mistake.
 
 **Where cards come from.** Every run leaves a file in the local store,
 `~/.claude/triz-runs/<YYYY-MM-DD>-<slug>.md`, whose fixed sections are specified in step 6 of
-[triz-combinatorics](../../triz-combinatorics/SKILL.md). Sections 1, 2 and 6 of that file are the
-five fields of a card here, so a card is a selection out of the run file rather than a retelling of
-it. The run files are not committed — they describe other people's codebases — so cards are copied
-here, not linked. The five cards below predate that convention and have no run file behind them.
+[triz-combinatorics](../../triz-combinatorics/SKILL.md). Sections 1, 2, 3, 4 and 6 of that file are
+the five fields of a card here — contradiction, IFR, resource, move, check — so a card is a
+selection out of the run file rather than a retelling of it. The run files are not
+committed — they describe other people's codebases — so cards are copied here, not linked.
+All the cards below except case 4 predate that convention and have no run file behind
+them; case 4 is the one card ever taken from a run file — `2026-08-09-triz-on-itself.md`.
+When reading check 4 of [SKILL.md](../SKILL.md), that is the offset to subtract.
 
 ## Summary table
 
