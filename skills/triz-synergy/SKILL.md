@@ -299,8 +299,10 @@ rg -l "^## 6\. Check" ~/.claude/triz-runs/*.md 2>/dev/null | wc -l
 rg -c "^## Case " references/cases.md
 ```
 
-Check 1 must print **6**. Fewer means a section is missing and the gate did not complete — the
-missing number tells you which step to return to.
+Check 1 must print **6 per pass**. Fewer than six means a section is missing and the gate did not
+complete — the missing number tells you which step to return to. **More than six is normal on a
+second pass** and is not a fault: the budget allows two, the gate can send you back to step 4, and
+the returning pass writes its own numbered sections. Read the missing numbers, never the total.
 
 Check 2 must print a non-empty block. Empty means the settlement never happened or was never
 recorded; the case card cannot be taken from the file and no move may enter the toolkit from it.
