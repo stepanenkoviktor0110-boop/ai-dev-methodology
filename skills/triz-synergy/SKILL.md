@@ -124,7 +124,10 @@ rg -nS "<query from the list above>" --glob '!node_modules' --glob '!.git' .
 rg -nlS "<query>" --glob '!node_modules' --glob '!.git' "<PROJECTS_ROOT>"
 
 # 3. Is there an account of it in the knowledge base and the methodology lessons?
-rg -nlS "<symptom|mechanism name>" ~/.claude/skills
+#    -L is not optional: most skills are junctions, and without it ripgrep
+#    walks past them. Measured 2026-08-09 — the bare form saw 2 files where
+#    -L saw 12, and an empty result here is recorded as a result.
+rg -L -nlS "<symptom|mechanism name>" ~/.claude/skills
 ```
 
 Found a ready mechanism — **reproduce it one to one, do not improve it by your own theory**.

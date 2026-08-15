@@ -128,11 +128,16 @@ rg -l "feedback_never_use_codex|feedback_no_codex" ~/.claude/projects/
 # 2. no skill listed in the run's retain-list went missing
 rg -l . ~/.claude/skills/*/SKILL.md | wc -l
 
-# 3. the plugin directory was not touched
-git -C ~/.claude/skills status --short -- ../plugins
+# 3. the plugin directory was not touched.
+#    ~/.claude/skills is NOT a repository — it is a folder of junctions into
+#    three of them (38 skills in ai-dev-methodology, one each in design-ultimate
+#    and design-critique). `git -C ~/.claude/skills` answers 'not a git
+#    repository' and the check reads as clean. Ask the repo behind the skill.
+REPO=$(git -C ~/.claude/skills/recalibrate-all rev-parse --show-toplevel)
+git -C "$REPO" status --short -- plugins
 
 # 4. every phase left a commit, and the known-issues file was appended
-git -C ~/.claude/skills log --oneline -20
+git -C "$REPO" log --oneline -20
 rg -c . ~/.claude/skills/.known-issues/recalibrate-*.md
 
 # 5. per-project MEMORY.md indices no longer point at deleted memory files
