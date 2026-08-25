@@ -141,18 +141,29 @@ PROJECT-CARD.*
 ## Checks against state
 
 ```bash
-# 1. the card was written
-rg -c . PROJECT-CARD.html
+# 1. the card exists and is ignored — one verdict, never silence
+if [ -f PROJECT-CARD.html ]; then
+  echo "card: $(wc -l < PROJECT-CARD.html) lines"
+  git check-ignore -q PROJECT-CARD.html     && echo "ignored: OK"     || echo "ignored: FAIL — the next commit carries the passwords into the repository"
+else
+  echo "card: MISSING — Phase 2 did not run"
+fi
 
-# 2. it is excluded from the repository
-rg -n "PROJECT-CARD" .gitignore
-
-# 3. no secret leaked into anything tracked by git
+# 2. no secret leaked into anything tracked by git
 git status --short
 ```
 
-Check 2 returning nothing means the next commit carries the passwords into the repository — fix it
-before telling the user the card is ready.
+Check 1 prints one of three verdicts and never nothing. Two things were wrong with its earlier
+form, `rg -n "PROJECT-CARD" .gitignore`. It answered the wrong question: a line in `.gitignore` is
+not the same as the file being ignored, and it misses a global gitignore or an entry already
+covered by another pattern. `git check-ignore` answers what is actually asked — will this file
+reach the commit. And it returned empty on every project on disk, because no card had ever been
+generated, so empty read as a passing check. Measured 2026-08-25 by
+`~/.claude/hooks/checks-audit.mjs`: zero matches across 44 repositories, flagged dead. A check
+whose silence is indistinguishable from success is worse than no check.
+
+`ignored: FAIL` blocks telling the user the card is ready. `MISSING` means Phase 2 never ran, so there is
+nothing to report yet.
 
 Fitting on one A4 sheet and the logo's contrast against the background cannot be read off disk —
 they are checked by the user in the browser, which is what Phase 3 step 2 is for.
