@@ -53,6 +53,9 @@ File: `$AGENTS_HOME/skills/quick-learning/references/triad-index.md`
 
 - Updated on every write/merge/Seen increment. Never removed.
 - `Adapted: —` = unprocessed. `{skill}` = embedded. `n/a` = no matching skill.
+- Counting unadapted rows: match `\| — \|\s*$`, anchored at end of line. `Goal`, `Scope` and
+  `Section` carry `—` as well, so an unanchored pattern counts adapted rows too — it read 43
+  against a true 16 on 2026-08-25. The file uses CRLF, hence `\s*$` rather than `$`.
 
 **The `#` is obtained, never invented.** Read the largest id in the file and take the next one:
 

@@ -35,6 +35,8 @@ The two that decide where a rule goes:
 
 Prefer the command (P13). A rule restated as a self-check tick-box catches nothing: an executor that broke the rule in the body will not catch itself with a copy of that rule. Only reach for a prose rule when nothing on disk can answer the question.
 
+Then prove it (P15). A command goes into a skill only after it has been run against live project data and matched something. One that matches nothing always returns empty, and empty reads as "the step was taken" — worse than no check at all. Measured 2026-08-20: `do-task` carried two such commands, both silently passing for as long as they existed.
+
 Write every embedded rule in **English**, whatever language the session ran in (P7).
 
 When a pattern here changes how skills are written, update
@@ -55,13 +57,34 @@ authored against those conventions restores what was just removed.
 
 ## Phase 1: Check
 
-1. Count rows with `Adapted: —` in `$AGENTS_HOME/skills/quick-learning/references/triad-index.md`
+1. Count unadapted rows. Run this, do not hand-roll the pattern:
+
+```bash
+IDX="$AGENTS_HOME/skills/quick-learning/references/triad-index.md"
+rg -c '\| — \|\s*$' "$IDX"          # unadapted rows
+rg -c '^\| [0-9]+ ' "$IDX"           # all triad rows, for scale
+```
+
+**The end-of-line anchor is the whole check.** `Goal`, `Scope` and `Section` also hold `—`, so
+`Adapted` is only the em dash that ends the row. Dropping `\s*$` counts adapted rows as
+unadapted and inflates the number severalfold. Measured 2026-08-25: the unanchored pattern
+reported 43 where the true count was 16, and the gate below was declared open when it was shut.
+The file has CRLF endings, which is why the anchor is `\s*$` and not `$`.
+
 2. If count < 25 → report: "Skill Trainer: {count}/25 триад накоплено. Запуск при ≥25." and exit.
+   The number in that line is the command's output, never a recollection or a hand-made count.
 3. If count ≥ 25 → proceed.
 
 ## Phase 2: Load Triads
 
-1. Read `triad-index.md` — collect all rows where `Adapted = —`
+1. Read `triad-index.md` — collect the unadapted rows with the same anchored pattern as Phase 1:
+
+```bash
+rg -n '\| — \|\s*$' "$AGENTS_HOME/skills/quick-learning/references/triad-index.md"
+```
+
+   The row count here must equal Phase 1's count. A larger set means the anchor was dropped again,
+   and adapted triads are about to be re-embedded on top of rules that already exist.
 2. For each row, load the full entry from `reasoning-patterns.md` by matching the title `### {date} {feature}: {title}`
 3. Group triads by target skill using the Category → Skill mapping above
 
@@ -178,6 +201,7 @@ Full checklist, agent prompt and output format: [references/quality-checklist.md
 Two levels:
 1. **General compliance** — each agent calls the existing `skill-checker` agent (size, structure, references, checkpoints, and the refinement patterns). Not duplicated here.
 2. **Skill-trainer-specific** — items A1–A3 (size discipline) and B1–B6 (rule quality on the new rules).
+3. **Dead-check gate (mechanical, not a judgement).** Run `node ~/.claude/hooks/checks-audit.mjs`. It parses every `## Checks against state` command in every skill and runs it against live project data. Any command named in its output that this pass wrote or touched is a **failed** item, not a warning: it never matched anything and never will.
 
 The `observed` entries returned in Phase 3+4 join this report. They are findings about the skill,
 not about the new rules, so they are shown to the owner rather than fixed silently — a pattern
@@ -235,6 +259,13 @@ for id in $(rg -L --no-ignore -o 'triads? #[0-9]+' -N "$AGENTS_HOME/skills" \
   n=$(rg -c "^\| $id \|" "$IDX" || echo 0)
   [ "$n" = 1 ] || echo "triad #$id resolves to $n rows"
 done
+
+# 5. no command this pass embedded is dead — it must match live data somewhere.
+#    Exit code 1 means at least one check in some skill matches nothing at all.
+node ~/.claude/hooks/checks-audit.mjs
+
+# 6. the dead-check finder still tells a live check from a dead one
+node ~/.claude/hooks/test/run-checks-audit-test.mjs
 ```
 
 Count 1 must have dropped by the number of applied plus skipped triads; count 2 by the size of the removal list. A mismatch means a pass wrote fewer rows than it reported — reconcile before committing, do not re-run the phase blind.
